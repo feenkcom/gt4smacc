@@ -67,6 +67,11 @@ SmaCCProductionExpressionNode >> hasNodeDefined [
 ]
 
 { #category : #'*GT-SmaCC-Development-UI' }
+SmaCCProductionExpressionNode >> isEmptyExpression [
+	^ terms isEmpty
+]
+
+{ #category : #'*GT-SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> originalAstNodeName [
 	^ ''
 ]
