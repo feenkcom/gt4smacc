@@ -124,7 +124,9 @@ FkSmaCCStylingVisitor >> formatVariableName: aText [
 { #category : #'initialize-release' }
 FkSmaCCStylingVisitor >> initialize [
 	super initialize.
-	completions := GtPrefixTree new
+	completions := GtPrefixTree
+		withAll:
+			#('%annotate_tokens;' '%attributes' '%excludes' '%glr;' '%hierarchy' '%id' '%ignorecase;' '%ignore_variables' '%left' '%nonassoc' '%prefix' '%right' '%root' '%scopes' '%start' '%suffix' '%states')
 ]
 
 { #category : #private }
@@ -195,6 +197,8 @@ FkSmaCCStylingVisitor >> visitCodeProductionExpression: aCodeProductionExpressio
 	(self text from: aCodeProductionExpression code startPosition to: aCodeProductionExpression code stopPosition)
 		italic;
 		fontSize: 12.
+	(self text from: aCodeProductionExpression code startPosition + 1 to: aCodeProductionExpression code stopPosition - 1)
+		attributes: {(GtCompletionStrategyAttribute new strategy: (FkSmaCCExpressionCompletionStrategy onToken: aCodeProductionExpression code))}.
 	super visitCodeProductionExpression: aCodeProductionExpression
 ]
 
