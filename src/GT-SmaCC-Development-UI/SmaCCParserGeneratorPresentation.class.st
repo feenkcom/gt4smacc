@@ -438,7 +438,7 @@ SmaCCParserGeneratorPresentation >> buildTestFilesTabOn: stacker [
 						act: [ self reloadTestFiles ] icon: GLMUIThemeExtraIcons glamorousRefresh entitled: 'Refresh';
 						display: [ self testFiles ];
 						updateOn: #testFiles from: self;
-						column: 'File' evaluated: [ :each | each first basename ] tags: [ :each | Array with: each last ];
+						column: 'File' evaluated: [ :each | each first basename ] tags: [ :each | each last ];
 						column: 'Directory' evaluated: [ :each | each first parent pathString ] ].
 			tabulator transmit
 				from: #files port: #selection;
@@ -1062,7 +1062,7 @@ SmaCCParserGeneratorPresentation >> promptToSaveChanges [
 
 { #category : #actions }
 SmaCCParserGeneratorPresentation >> reloadTestFiles [
-	| filenames fileResults class |
+	| filenames fileResults class previousResults |
 	testFileDirectory isNil
 		ifTrue: [ ^ self ].
 	class := self parserClass.
@@ -1070,25 +1070,34 @@ SmaCCParserGeneratorPresentation >> reloadTestFiles [
 		ifTrue: [ ^ self ].
 	(class fileExtensions anySatisfy: [ :each | each isEmpty ])
 		ifTrue: [ ^ self ].
+	previousResults := Dictionary new.
+	self testFiles do: [ :each | previousResults at: each first put: (each last includes: 'OK') ].
 	filenames := class sourceFilesIn: testFileDirectory.
 	fileResults := OrderedCollection new: filenames size.
 	filenames
 		do: [ :each | 
-			| hasError |
+			| hasError tags |
 			hasError := false.
 			[ class parseFile: each ]
 				on: Error
 				do: [ :ex | 
 					hasError := true.
 					ex return ].
-			fileResults
-				add:
-					(Array
-						with: each
-						with:
-							(hasError
-								ifTrue: [ 'Error' ]
-								ifFalse: [ 'OK' ])) ]
+			tags := OrderedCollection
+				with:
+					(hasError
+						ifTrue: [ 'Error' ]
+						ifFalse: [ 'OK' ]).
+			previousResults
+				at: each
+				ifPresent: [ :passed | 
+					passed = hasError
+						ifTrue: [ tags
+								add:
+									(passed
+										ifTrue: [ '-' ]
+										ifFalse: [ '+' ]) ] ].
+			fileResults add: (Array with: each with: tags) ]
 		displayingProgress: 'Parsing files'.
 	self testFiles: fileResults
 ]
