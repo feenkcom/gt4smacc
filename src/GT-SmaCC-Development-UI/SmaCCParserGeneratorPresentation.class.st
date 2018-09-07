@@ -755,7 +755,7 @@ SmaCCParserGeneratorPresentation >> findParserClass [
 SmaCCParserGeneratorPresentation >> gotoDefinitionIn: anElement [
 	| node definition |
 	node := self nodeAtCursor.
-	(node isKindOf: SmaCCSymbolNode)
+	((node isKindOf: SmaCCSymbolNode) or: [ node isKindOf: SmaCCTokenRegexNode ])
 		ifFalse: [ ^ self ].
 	definition := node definition.
 	definition isNil
