@@ -90,7 +90,15 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 						meta;
 						key: Key i;
 						build);
-				action: [ self inlineSource ])
+				action: [ self inlineSource ]);
+		addShortcut:
+			(BlShortcut new
+				combination:
+					(BlKeyCombination builder
+						meta;
+						key: Key g;
+						build);
+				action: [ self gotoDefinitionIn: element ])
 ]
 
 { #category : #building }
@@ -743,6 +751,18 @@ SmaCCParserGeneratorPresentation >> findParserClass [
 	self markAsUnmodified
 ]
 
+{ #category : #'actions-source' }
+SmaCCParserGeneratorPresentation >> gotoDefinitionIn: anElement [
+	| node definition |
+	node := self nodeAtCursor.
+	(node isKindOf: SmaCCSymbolNode)
+		ifFalse: [ ^ self ].
+	definition := node definition.
+	definition isNil
+		ifTrue: [ ^ self ].
+	self scrollToPosition: definition startPosition in: anElement
+]
+
 { #category : #'initialize-release' }
 SmaCCParserGeneratorPresentation >> initialize [
 	super initialize.
@@ -1121,6 +1141,23 @@ SmaCCParserGeneratorPresentation >> scannerClassName: aString [
 { #category : #building }
 SmaCCParserGeneratorPresentation >> scannerTestLabel [
 	^ 'Scanner Test'
+]
+
+{ #category : #'private-source' }
+SmaCCParserGeneratorPresentation >> scrollToPosition: anInteger [
+	| stream line |
+	stream := SmaCCLineNumberStream on: self definition readStream.
+	stream position: anInteger.
+	stream lineNumber
+]
+
+{ #category : #'private-source' }
+SmaCCParserGeneratorPresentation >> scrollToPosition: anInteger in: element [
+	| stream |
+	stream := SmaCCLineNumberStream on: self definition readStream.
+	stream position: anInteger.
+	element scrollToPosition: stream lineNumber.
+	element editor moveCursorTo: anInteger - 1
 ]
 
 { #category : #actions }

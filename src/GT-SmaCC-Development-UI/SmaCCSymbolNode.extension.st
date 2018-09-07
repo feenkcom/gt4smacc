@@ -52,6 +52,11 @@ SmaCCSymbolNode >> buildVariableNameInterfaceElement: aBrTextEditor [
 ]
 
 { #category : #'*GT-SmaCC-Development-UI' }
+SmaCCSymbolNode >> definition [
+	^ nil
+]
+
+{ #category : #'*GT-SmaCC-Development-UI' }
 SmaCCSymbolNode >> updateSource: aSmaCCString [
 	| name |
 	name := self attributeNamed: #variableName ifAbsent: [ ^ self ].
