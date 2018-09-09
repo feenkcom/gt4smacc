@@ -19,3 +19,8 @@ SmaCCKeywordSymbolNode >> displayString [
 SmaCCKeywordSymbolNode >> matches: aString [
 	^ (self name value asLowercase indexOfSubCollection: aString asLowercase) > 0
 ]
+
+{ #category : #'*GT-SmaCC-Development-UI' }
+SmaCCKeywordSymbolNode >> tags [
+	^ #('Token')
+]
