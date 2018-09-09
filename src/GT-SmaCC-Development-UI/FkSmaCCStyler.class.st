@@ -29,6 +29,12 @@ FkSmaCCStyler >> completions [
 	^ completions
 ]
 
+{ #category : #'initialize-release' }
+FkSmaCCStyler >> initialize [
+	super initialize.
+	completions := GtPrefixTree new
+]
+
 { #category : #accessing }
 FkSmaCCStyler >> originalGrammar [
 	^ originalGrammar

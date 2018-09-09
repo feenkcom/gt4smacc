@@ -647,7 +647,8 @@ SmaCCParserGeneratorPresentation >> definitionAST [
 { #category : #private }
 SmaCCParserGeneratorPresentation >> definitionItems [
 	| items keywords |
-	definitionAST := self definitionAST.
+	(definitionAST isNil or: [ definitionAST completeSource asString ~= self definition ])
+		ifTrue: [ definitionAST := self definitionAST ].
 	items := OrderedCollection withAll: definitionAST rules.
 	keywords := Dictionary new.
 	definitionAST allNodesOfType: SmaCCKeywordSymbolNode do: [ :each | keywords at: each name value put: each ].
