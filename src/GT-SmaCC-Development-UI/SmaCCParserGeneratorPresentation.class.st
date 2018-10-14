@@ -619,8 +619,8 @@ SmaCCParserGeneratorPresentation >> debugParse [
 
 { #category : #'private-accessing' }
 SmaCCParserGeneratorPresentation >> defaultTextAttributes [
-	^ {(BrFontSizeAttribute size: 14) beNotOverwritableByStyler.
-	BrFontGenericFamilyAttribute monospace beNotOverwritableByStyler}
+	^ {(BlFontSizeAttribute size: 14) beNotOverwritableByStyler.
+	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler}
 ]
 
 { #category : #'private-accessing' }

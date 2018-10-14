@@ -1,6 +1,6 @@
 Class {
 	#name : #FkSmaCCStyler,
-	#superclass : #BrTextStyler,
+	#superclass : #BlTextStyler,
 	#instVars : [
 		'scannerClass',
 		'originalGrammar',
@@ -51,8 +51,8 @@ FkSmaCCStyler >> privateStyle: aText [
 	stylingVisitor := FkSmaCCStylingVisitor new.
 	aText
 		attributes:
-			{BrFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-			(BrTextForegroundAttribute new paint: Color darkGray darker)}.
+			{BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
+			(BlTextForegroundAttribute new paint: Color darkGray darker)}.
 	stylingVisitor
 		text: aText;
 		styler: self;
