@@ -403,7 +403,7 @@ SmaCCParserGeneratorPresentation >> buildSourceTabOn: stacker [
 								on: Error
 								do: [ :ex | ex return: SmaCCScanner ]).
 					element editor styler: styler.
-					styler when: BrTextStyledEvent do: [ :event | completionStrategy completions: styler completions ].
+					styler when: BlTextStyledEvent do: [ :event | completionStrategy completions: styler completions ].
 					element ] ]
 ]
 
@@ -1209,8 +1209,8 @@ SmaCCParserGeneratorPresentation >> setScannerClass [
 
 { #category : #'private-scanner' }
 SmaCCParserGeneratorPresentation >> simulateUsing: simulator tokenEditor: editor testEditor: testerEditor index: anIndex [
-	editor text clearAttributes: [ :each | each isKindOf: BrTextBackgroundAttribute ].
-	testerEditor text clearAttributes: [ :each | each isKindOf: BrTextBackgroundAttribute ].
+	editor text clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
+	testerEditor text clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
 	simulator
 		matchesOn: testerEditor text asString
 		do: [ :index :nodes | 

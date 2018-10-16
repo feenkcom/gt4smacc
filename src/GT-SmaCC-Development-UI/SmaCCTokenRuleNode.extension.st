@@ -27,8 +27,8 @@ SmaCCTokenRuleNode >> buildMethodInterfaceIn: presentation [
 			text := ((self scannerClass whichClassIncludesSelector: self selector) sourceCodeAt: self selector) asRopedText.
 			text
 				attributes:
-					{BrFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-					(BrFontSizeAttribute size: 14) beNotOverwritableByStyler}.
+					{BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
+					(BlFontSizeAttribute size: 14) beNotOverwritableByStyler}.
 			styler := BrRBTextStyler new.
 			styler classOrMetaClass: self scannerClass.
 			editor := BrTextEditor new.

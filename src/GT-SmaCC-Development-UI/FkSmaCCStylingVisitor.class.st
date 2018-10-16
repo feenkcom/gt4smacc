@@ -19,8 +19,8 @@ FkSmaCCStylingVisitor >> formatCharacterRegex: aText [
 	aText
 		attributes:
 			{(BrTextHoverAttribute new
-				textAttributes: {(BrTextBackgroundAttribute new paint: (Color gray alpha: 0.2))};
-				leaveTextAttributes: {(BrTextBackgroundAttribute new paint: Color transparent)})}
+				textAttributes: {(BlTextBackgroundAttribute new paint: (Color gray alpha: 0.2))};
+				leaveTextAttributes: {(BlTextBackgroundAttribute new paint: Color transparent)})}
 ]
 
 { #category : #'private-formatting' }
