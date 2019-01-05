@@ -1,5 +1,5 @@
 Class {
-	#name : #FkSmaCCStylingVisitor,
+	#name : #GtSmaCCStylingVisitor,
 	#superclass : #SmaCCDefinitionNodeVisitor,
 	#instVars : [
 		'text',
@@ -10,12 +10,12 @@ Class {
 }
 
 { #category : #accessing }
-FkSmaCCStylingVisitor >> completions [
+GtSmaCCStylingVisitor >> completions [
 	^ completions
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatCharacterRegex: aText [
+GtSmaCCStylingVisitor >> formatCharacterRegex: aText [
 	aText
 		attributes:
 			{(BrTextHoverAttribute new
@@ -24,27 +24,27 @@ FkSmaCCStylingVisitor >> formatCharacterRegex: aText [
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatCode: aText [
+GtSmaCCStylingVisitor >> formatCode: aText [
 	aText foreground: Color darkGray
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatComment: aText [
+GtSmaCCStylingVisitor >> formatComment: aText [
 	aText foreground: Color lightGray
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatDirective: aText [
+GtSmaCCStylingVisitor >> formatDirective: aText [
 	aText foreground: Color veryDarkGray
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatDirectiveKeyword: aText [
+GtSmaCCStylingVisitor >> formatDirectiveKeyword: aText [
 	aText bold
 ]
 
 { #category : #private }
-FkSmaCCStylingVisitor >> formatInlineDefinition: aNode [
+GtSmaCCStylingVisitor >> formatInlineDefinition: aNode [
 	| name definition grammar |
 	name := aNode name source.
 	grammar := styler originalGrammar ifNil: [ aNode topParent ].
@@ -56,47 +56,47 @@ FkSmaCCStylingVisitor >> formatInlineDefinition: aNode [
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ self textEditorOn: definition source usingStyler: (FkSmaCCStyler for: styler scannerClass grammar: grammar) ] ])}
+						stencil: [ self textEditorOn: definition source usingStyler: (GtSmaCCStyler for: styler scannerClass grammar: grammar) ] ])}
 		from: aNode name stopPosition
 		to: aNode name stopPosition
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatKeyword: aText [
+GtSmaCCStylingVisitor >> formatKeyword: aText [
 	aText foreground: Color magenta
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatProduction: aText [
+GtSmaCCStylingVisitor >> formatProduction: aText [
 	aText foreground: Color purple
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatProductionDefinition: aText [
+GtSmaCCStylingVisitor >> formatProductionDefinition: aText [
 	aText bold.
 	self formatProduction: aText
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatRepeat: aText [
+GtSmaCCStylingVisitor >> formatRepeat: aText [
 	aText
 		foreground: Color black;
 		bold
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatToken: aText [
+GtSmaCCStylingVisitor >> formatToken: aText [
 	aText foreground: Color blue
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatTokenDefinition: aText [
+GtSmaCCStylingVisitor >> formatTokenDefinition: aText [
 	aText bold.
 	self formatToken: aText
 ]
 
 { #category : #private }
-FkSmaCCStylingVisitor >> formatTokenMethod: aToken [
+GtSmaCCStylingVisitor >> formatTokenMethod: aToken [
 	| name class stStyler |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1) asSymbol.
 	class := styler scannerClass whichClassIncludesSelector: name.
@@ -117,12 +117,12 @@ FkSmaCCStylingVisitor >> formatTokenMethod: aToken [
 ]
 
 { #category : #'private-formatting' }
-FkSmaCCStylingVisitor >> formatVariableName: aText [
+GtSmaCCStylingVisitor >> formatVariableName: aText [
 	aText foreground: Color gray
 ]
 
 { #category : #'initialize-release' }
-FkSmaCCStylingVisitor >> initialize [
+GtSmaCCStylingVisitor >> initialize [
 	super initialize.
 	completions := GtPrefixTree
 		withAll:
@@ -130,32 +130,32 @@ FkSmaCCStylingVisitor >> initialize [
 ]
 
 { #category : #private }
-FkSmaCCStylingVisitor >> style: anItem with: aSymbol [
+GtSmaCCStylingVisitor >> style: anItem with: aSymbol [
 	self perform: aSymbol with: (text from: anItem startPosition to: anItem stopPosition)
 ]
 
 { #category : #accessing }
-FkSmaCCStylingVisitor >> styler [
+GtSmaCCStylingVisitor >> styler [
 	^ styler
 ]
 
 { #category : #accessing }
-FkSmaCCStylingVisitor >> styler: smaccStyler [
+GtSmaCCStylingVisitor >> styler: smaccStyler [
 	styler := smaccStyler
 ]
 
 { #category : #accessing }
-FkSmaCCStylingVisitor >> text [
+GtSmaCCStylingVisitor >> text [
 	^ text
 ]
 
 { #category : #accessing }
-FkSmaCCStylingVisitor >> text: anObject [
+GtSmaCCStylingVisitor >> text: anObject [
 	text := anObject
 ]
 
 { #category : #private }
-FkSmaCCStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
+GtSmaCCStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 	| editor editorElement innerText |
 	innerText := aString asRopedText.
 	editor := BrTextEditor new.
@@ -181,13 +181,13 @@ FkSmaCCStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitClassProductionExpression: aClassProductionExpression [
+GtSmaCCStylingVisitor >> visitClassProductionExpression: aClassProductionExpression [
 	self style: aClassProductionExpression with: #formatCode:.
 	super visitClassProductionExpression: aClassProductionExpression
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitCodeProductionExpression: aCodeProductionExpression [
+GtSmaCCStylingVisitor >> visitCodeProductionExpression: aCodeProductionExpression [
 	| codeText |
 	codeText := self text from: aCodeProductionExpression code startPosition + 1 to: aCodeProductionExpression code stopPosition - 1.
 	BrRBTextStyler new
@@ -198,12 +198,12 @@ FkSmaCCStylingVisitor >> visitCodeProductionExpression: aCodeProductionExpressio
 		italic;
 		fontSize: 12.
 	(self text from: aCodeProductionExpression code startPosition + 1 to: aCodeProductionExpression code stopPosition - 1)
-		attributes: {(GtCompletionStrategyAttribute new strategy: (FkSmaCCExpressionCompletionStrategy onToken: aCodeProductionExpression code))}.
+		attributes: {(GtCompletionStrategyAttribute new strategy: (GtSmaCCExpressionCompletionStrategy onToken: aCodeProductionExpression code))}.
 	super visitCodeProductionExpression: aCodeProductionExpression
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitDirective: aDirective [
+GtSmaCCStylingVisitor >> visitDirective: aDirective [
 	self style: aDirective directiveStartToken with: #formatDirectiveKeyword:.
 	self style: aDirective directiveNameToken with: #formatDirectiveKeyword:.
 	self style: aDirective with: #formatDirective:.
@@ -211,39 +211,39 @@ FkSmaCCStylingVisitor >> visitDirective: aDirective [
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
+GtSmaCCStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
 	super visitGrammarDefinition: aGrammarDefinition.
 	aGrammarDefinition comments do: [ :each | self formatComment: (text from: each first to: each last) ]
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitKeywordSymbol: aKeywordSymbol [
+GtSmaCCStylingVisitor >> visitKeywordSymbol: aKeywordSymbol [
 	self style: aKeywordSymbol name with: #formatKeyword:.
 	super visitKeywordSymbol: aKeywordSymbol
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitProductionRule: aProductionRule [
+GtSmaCCStylingVisitor >> visitProductionRule: aProductionRule [
 	completions add: aProductionRule name source.
 	self style: aProductionRule name with: #formatProductionDefinition:.
 	super visitProductionRule: aProductionRule
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitProductionSymbol: aProductionSymbol [
+GtSmaCCStylingVisitor >> visitProductionSymbol: aProductionSymbol [
 	self style: aProductionSymbol name with: #formatProduction:.
 	self formatInlineDefinition: aProductionSymbol.
 	super visitProductionSymbol: aProductionSymbol
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitRepeatRegex: aRepeatRegex [
+GtSmaCCStylingVisitor >> visitRepeatRegex: aRepeatRegex [
 	self style: aRepeatRegex count with: #formatRepeat:.
 	super visitRepeatRegex: aRepeatRegex
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitSymbol: aSymbol [
+GtSmaCCStylingVisitor >> visitSymbol: aSymbol [
 	completions add: aSymbol name source.
 	aSymbol variableNameToken notNil
 		ifTrue: [ self style: aSymbol variableNameToken with: #formatVariableName:.
@@ -253,14 +253,14 @@ FkSmaCCStylingVisitor >> visitSymbol: aSymbol [
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitTokenRegex: aTokenRegex [
+GtSmaCCStylingVisitor >> visitTokenRegex: aTokenRegex [
 	completions add: aTokenRegex name source.
 	self style: aTokenRegex with: #formatTokenDefinition:.
 	super visitTokenRegex: aTokenRegex
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitTokenRule: aTokenRule [
+GtSmaCCStylingVisitor >> visitTokenRule: aTokenRule [
 	completions add: aTokenRule name source.
 	self style: aTokenRule name with: #formatTokenDefinition:.
 	self formatTokenMethod: aTokenRule name.
@@ -268,7 +268,7 @@ FkSmaCCStylingVisitor >> visitTokenRule: aTokenRule [
 ]
 
 { #category : #visiting }
-FkSmaCCStylingVisitor >> visitTokenSymbol: aTokenSymbol [
+GtSmaCCStylingVisitor >> visitTokenSymbol: aTokenSymbol [
 	self style: aTokenSymbol name with: #formatToken:.
 	self formatInlineDefinition: aTokenSymbol.
 	super visitTokenSymbol: aTokenSymbol

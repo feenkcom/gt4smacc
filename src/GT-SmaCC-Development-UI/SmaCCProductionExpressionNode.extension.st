@@ -81,7 +81,7 @@ SmaCCProductionExpressionNode >> styledText [
 	| text rule |
 	rule := self parentOfType: SmaCCProductionRuleNode.
 	text := rule source asRopedText.
-	FkSmaCCStyler new style: text.
+	GtSmaCCStyler new style: text.
 	^ text copyFrom: self startPosition - rule startPosition + 1 to: self stopPosition - rule startPosition + 1
 ]
 

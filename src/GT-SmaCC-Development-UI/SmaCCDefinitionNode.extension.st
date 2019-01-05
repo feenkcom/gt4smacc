@@ -14,7 +14,7 @@ SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 	bloc
 		element: [ | styler text editor element |
 			text := self source asRopedText.
-			styler := FkSmaCCStyler for: SmaCCScanner.
+			styler := GtSmaCCStyler for: SmaCCScanner.
 			editor := BrTextEditor new.
 			editor text: (styler style: text).
 			element := BrEditorElement new.

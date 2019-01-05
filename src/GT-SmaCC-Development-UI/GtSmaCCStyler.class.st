@@ -1,5 +1,5 @@
 Class {
-	#name : #FkSmaCCStyler,
+	#name : #GtSmaCCStyler,
 	#superclass : #BlTextStyler,
 	#instVars : [
 		'scannerClass',
@@ -10,14 +10,14 @@ Class {
 }
 
 { #category : #'instance creation' }
-FkSmaCCStyler class >> for: aSmaCCScannerClass [
+GtSmaCCStyler class >> for: aSmaCCScannerClass [
 	^ self new
 		scannerClass: aSmaCCScannerClass;
 		yourself
 ]
 
 { #category : #'instance creation' }
-FkSmaCCStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionNode [
+GtSmaCCStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionNode [
 	^ self new
 		scannerClass: aSmaCCScannerClass;
 		originalGrammar: aSmaCCGrammarDefinitionNode;
@@ -25,30 +25,30 @@ FkSmaCCStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionN
 ]
 
 { #category : #accessing }
-FkSmaCCStyler >> completions [
+GtSmaCCStyler >> completions [
 	^ completions
 ]
 
 { #category : #'initialize-release' }
-FkSmaCCStyler >> initialize [
+GtSmaCCStyler >> initialize [
 	super initialize.
 	completions := GtPrefixTree new
 ]
 
 { #category : #accessing }
-FkSmaCCStyler >> originalGrammar [
+GtSmaCCStyler >> originalGrammar [
 	^ originalGrammar
 ]
 
 { #category : #accessing }
-FkSmaCCStyler >> originalGrammar: anObject [
+GtSmaCCStyler >> originalGrammar: anObject [
 	originalGrammar := anObject
 ]
 
 { #category : #private }
-FkSmaCCStyler >> privateStyle: aText [
+GtSmaCCStyler >> privateStyle: aText [
 	[ | stylingVisitor |
-	stylingVisitor := FkSmaCCStylingVisitor new.
+	stylingVisitor := GtSmaCCStylingVisitor new.
 	aText
 		attributes:
 			{BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
@@ -64,11 +64,11 @@ FkSmaCCStyler >> privateStyle: aText [
 ]
 
 { #category : #accessing }
-FkSmaCCStyler >> scannerClass [
+GtSmaCCStyler >> scannerClass [
 	^ scannerClass
 ]
 
 { #category : #accessing }
-FkSmaCCStyler >> scannerClass: anObject [
+GtSmaCCStyler >> scannerClass: anObject [
 	scannerClass := anObject
 ]

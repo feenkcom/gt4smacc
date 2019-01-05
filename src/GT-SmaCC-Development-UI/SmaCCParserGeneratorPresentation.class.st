@@ -326,7 +326,7 @@ SmaCCParserGeneratorPresentation >> buildScannerTestTabOn: stacker [
 								element: [ | element definitionText definitionElement tester testElement simulator |
 									simulator := SmaCCRegexSimulator on: rule topParent tokenName: rule name value.
 									definitionText := rule source asRopedText.
-									definitionText := FkSmaCCStyler new style: definitionText.
+									definitionText := GtSmaCCStyler new style: definitionText.
 									element := BlElement new.
 									element
 										constraintsDo: [ :c | 
@@ -397,7 +397,7 @@ SmaCCParserGeneratorPresentation >> buildSourceTabOn: stacker [
 					completionStrategy := GtWeightedStringsCompletionStrategy new.
 					completionController := GtCompletionController on: element strategy: completionStrategy.
 					completionController install.
-					styler := FkSmaCCStyler
+					styler := GtSmaCCStyler
 						for:
 							([ self scannerClass ]
 								on: Error

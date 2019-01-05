@@ -1,5 +1,5 @@
 Class {
-	#name : #FkSmaCCExpressionCompletionStrategy,
+	#name : #GtSmaCCExpressionCompletionStrategy,
 	#superclass : #GtCompletionStrategy,
 	#instVars : [
 		'codeCompletionStrategy',
@@ -9,14 +9,14 @@ Class {
 }
 
 { #category : #'instance creation' }
-FkSmaCCExpressionCompletionStrategy class >> onToken: aSmaCCToken [
+GtSmaCCExpressionCompletionStrategy class >> onToken: aSmaCCToken [
 	^ self new
 		token: aSmaCCToken;
 		yourself
 ]
 
 { #category : #accessing }
-FkSmaCCExpressionCompletionStrategy >> completionActionsFor: aText at: positionInteger max: maxSize [
+GtSmaCCExpressionCompletionStrategy >> completionActionsFor: aText at: positionInteger max: maxSize [
 	| actions first last |
 	first := positionInteger.
 	[ first > 0
@@ -35,23 +35,23 @@ FkSmaCCExpressionCompletionStrategy >> completionActionsFor: aText at: positionI
 ]
 
 { #category : #testing }
-FkSmaCCExpressionCompletionStrategy >> hasCompletionsAt: anInteger in: aText [
+GtSmaCCExpressionCompletionStrategy >> hasCompletionsAt: anInteger in: aText [
 	^ true
 ]
 
 { #category : #'initialize-release' }
-FkSmaCCExpressionCompletionStrategy >> initialize [
+GtSmaCCExpressionCompletionStrategy >> initialize [
 	super initialize.
 	codeCompletionStrategy := GtPharoCompletionStrategy newForExpression.
 	codeCompletionStrategy classOrMetaClass: SmaCCParser
 ]
 
 { #category : #accessing }
-FkSmaCCExpressionCompletionStrategy >> token [
+GtSmaCCExpressionCompletionStrategy >> token [
 	^ token
 ]
 
 { #category : #accessing }
-FkSmaCCExpressionCompletionStrategy >> token: aSmaCCToken [
+GtSmaCCExpressionCompletionStrategy >> token: aSmaCCToken [
 	token := aSmaCCToken
 ]
