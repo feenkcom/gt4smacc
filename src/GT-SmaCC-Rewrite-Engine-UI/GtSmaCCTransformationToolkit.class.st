@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCTransformationToolkit,
 	#superclass : #Object,
 	#instVars : [
-		'model'
+		'model',
+		'filesList'
 	],
 	#category : #'GT-SmaCC-Rewrite-Engine-UI'
 }
@@ -23,6 +24,19 @@ GtSmaCCTransformationToolkit class >> open [
 ]
 
 { #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> configurationBody [
+	| element |
+	element := BlElement new.
+	element layout: BlLinearLayout vertical.
+	element
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+	element addChild: self filesElement.
+	^ element
+]
+
+{ #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationElement [
 	^ BlElement new
 		layout: BlLinearLayout vertical;
@@ -30,6 +44,7 @@ GtSmaCCTransformationToolkit >> configurationElement [
 			c horizontal matchParent.
 			c vertical matchParent ];
 		addChild: self configurationToolbar;
+		addChild: self configurationBody;
 		yourself
 ]
 
@@ -42,7 +57,7 @@ GtSmaCCTransformationToolkit >> configurationToolbar [
 				rowCount: 1;
 				cellSpacing: 3);
 		constraintsDo: [ :c | 
-			c horizontal fitContent.
+			c horizontal matchParent.
 			c vertical fitContent ];
 		addItems: self configurationToolbarItems
 ]
@@ -61,6 +76,27 @@ GtSmaCCTransformationToolkit >> configurationToolbarItems [
 				action: [ self perform: each last ] ]
 ]
 
+{ #category : #private }
+GtSmaCCTransformationToolkit >> connectModel [
+	| announcer |
+	announcer := model announcer weak.
+	#(
+		#(#createSubdirectories #updateCreateSubdirectories)
+		#(#files #updateFiles)
+		#(#inputParserClass #updateInputParserClass)
+		#(#outputDirectory #updateOutputDirectory)
+		#(#rewrites #updateRewrites)
+		#(#runOnServer #updateRunOnServer)
+		#(#server #updateServer)
+		#(#validationParserClass #updateValidationParserClass)
+	) do: [ :each | 
+		announcer when: each first send: each last to: self.
+		self perform: each last ].
+"		#(#addTransformation:under:)
+		#(#resultAdded #addedResult:)
+		#(#removedTransformation:)"
+]
+
 { #category : #ui }
 GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action: aBlock [
 	^ BrButton new
@@ -69,6 +105,46 @@ GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action
 		label: aString;
 		icon: anIcon asElement;
 		action: aBlock
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> disconnectModel [
+	model announcer unsubscribe: self
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> filesElement [
+	| element label |
+	element := BlElement new
+		layout: BlLinearLayout vertical;
+		padding: (BlInsets all: 5);
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+	label := BrLabel new
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ];
+		look: BrGlamorousLabelLook new;
+		text: 'Files'.
+	element addChild: label.
+	filesList := BrSimpleList new
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		stencil: [ :each :index | 
+			BlTextElement new
+				text: each asRopedText;
+				constraintsDo: [ :c | c horizontal matchParent ];
+				padding: (BlInsets all: 5);
+				when: BlClickEvent
+					do: [ :anEvent | 
+					anEvent consumed: true.
+					filesList selectOne: index ] ].
+	element addChild: filesList.
+	^ element
 ]
 
 { #category : #'initialize-release' }
@@ -95,7 +171,11 @@ GtSmaCCTransformationToolkit >> model [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
-	model := aSmaCCTransformationToolkitModel
+	model notNil
+		ifTrue: [ self disconnectModel ].
+	model := aSmaCCTransformationToolkitModel.
+	model notNil
+		ifTrue: [ self connectModel ]
 ]
 
 { #category : #ui }
@@ -141,6 +221,40 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 { #category : #ui }
 GtSmaCCTransformationToolkit >> transformationsElement [
 	^ BlElement new
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateFiles [
+	filesList notNil
+		ifTrue: [ filesList display: model files ]
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateInputParserClass [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateOutputDirectory [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateRewrites [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateRunOnServer [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateServer [
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> updateValidationParserClass [
 ]
 
 { #category : #ui }
