@@ -117,13 +117,25 @@ GtSmaCCTransformationToolkit >> disconnectModel [
 ]
 
 { #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> editorFor: aString [
+GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
+	previewResult := aResult.
+	self previewElement
+		removeChildren;
+		addChild: self previewFilesElement
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
 	| editor element |
 	editor := BrTextEditor new.
 	editor text: aString asRopedText.
+	aClass notNil
+		ifTrue:
+			[ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
 	element := BrEditorElement new.
 	element
 		editor: editor;
+		padding: (BlInsets all: 5);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
@@ -226,7 +238,7 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename [
 			processor debug: true.
 			[ processor processFile: aFilename usingResult: result ]
 				ensure: [ processor debug: false ].
-			self result: result.
+			self displayPreviewResult: result.
 			self gotoPreviewTab ]
 ]
 
@@ -239,10 +251,24 @@ GtSmaCCTransformationToolkit >> preview [
 GtSmaCCTransformationToolkit >> previewElement [
 	^ previewElement
 		ifNil: [ previewElement := BlElement new
+				layout: BlLinearLayout vertical;
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ];
 				yourself ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewFilesElement [
+	^ BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		look: BrGlamorousWithResizerLook;
+		addChild: self previewInputSourceElement;
+		addChild: self previewOutputSourceElement;
+		yourself
 ]
 
 { #category : #'ui-preview' }
@@ -258,7 +284,9 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 	sourceTab := BrTabModel new
 		add: (BrLabelModel text: self previewInputFilename);
 		stencil: [ | editor |
-			editor := self editorFor: previewResult inputSource.
+			editor := self
+				editorFor: previewResult inputSource
+				parser: model inputParserClass.
 			BlElement new
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
@@ -272,10 +300,54 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 				look: BrMaterialTabLabelledLook;
 				viewModel: each ].
 	^ BlElement new
+		effect: (BlDropShadowEffect color: Color black width: 5 offset: 0 @ 0);
+		margin: (BlInsets all: 10);
+		background: Color white;
 		padding: (BlInsets all: 5);
 		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ];
+			c vertical matchParent.
+			c frame horizontal weight: 0.5 ];
+		look: BrMaterialTabGroupLook;
+		viewModel: tabGroup;
+		yourself
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewOutputFilename [
+	^ previewResult notNil
+		ifTrue: [ previewResult outputFilename asFileReference basename ]
+		ifFalse: [ 'Output' ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewOutputSourceElement [
+	| sourceTab tabGroup |
+	sourceTab := BrTabModel new
+		add: (BrLabelModel text: self previewOutputFilename);
+		stencil: [ | editor |
+			editor := self
+				editorFor: previewResult outputSource
+				parser: model validationParserClass.
+			BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				addChild: editor asScrollableElement as: #inputSource;
+				yourself ].
+	tabGroup := BrTabGroupModel with: {sourceTab}.
+	tabGroup tabs
+		do: [ :each | 
+			BlElement new
+				look: BrMaterialTabLabelledLook;
+				viewModel: each ].
+	^ BlElement new
+		effect: (BlDropShadowEffect color: Color black width: 5 offset: 0 @ 0);
+		margin: (BlInsets all: 10);
+		background: Color white;
+		padding: (BlInsets all: 5);
+		constraintsDo: [ :c | 
+			c vertical matchParent.
+			c frame horizontal weight: 0.5 ];
 		look: BrMaterialTabGroupLook;
 		viewModel: tabGroup;
 		yourself
@@ -293,13 +365,6 @@ GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 		extensions: anArray
 		path: FileSystem workingDirectory
 		preview: nil
-]
-
-{ #category : #'configuration-actions' }
-GtSmaCCTransformationToolkit >> result: aResult [
-	previewResult := aResult.
-	self previewElement removeChildren.
-	self previewElement addChild: self previewInputSourceElement
 ]
 
 { #category : #private }
@@ -388,6 +453,7 @@ GtSmaCCTransformationToolkit >> windowElement [
 				look: BrMaterialTabLabelledLook;
 				viewModel: each ].
 	^ (windowElement := BlElement new)
+		padding: (BlInsets all: 5);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ];
