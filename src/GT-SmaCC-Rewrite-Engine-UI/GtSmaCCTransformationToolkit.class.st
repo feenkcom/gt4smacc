@@ -3,7 +3,10 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'model',
-		'filesList'
+		'windowElement',
+		'filesList',
+		'previewElement',
+		'previewResult'
 	],
 	#category : #'GT-SmaCC-Rewrite-Engine-UI'
 }
@@ -68,6 +71,7 @@ GtSmaCCTransformationToolkit >> configurationToolbarItems [
 		#('Load' #open #loadConfiguration) 
 		#('Save' #save #saveConfiguration)
 		#('Run' #play #run)
+		#('Preview' #playinspect #preview)
 		)
 		collect: [ :each | 
 			self
@@ -112,6 +116,20 @@ GtSmaCCTransformationToolkit >> disconnectModel [
 	model announcer unsubscribe: self
 ]
 
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> editorFor: aString [
+	| editor element |
+	editor := BrTextEditor new.
+	editor text: aString asRopedText.
+	element := BrEditorElement new.
+	element
+		editor: editor;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+	^ element
+]
+
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> filesElement [
 	| element label |
@@ -145,6 +163,11 @@ GtSmaCCTransformationToolkit >> filesElement [
 					filesList selectOne: index ] ].
 	element addChild: filesList.
 	^ element
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> gotoPreviewTab [
+	self previewTab select
 ]
 
 { #category : #'initialize-release' }
@@ -189,9 +212,78 @@ GtSmaCCTransformationToolkit >> open [
 	space show
 ]
 
-{ #category : #ui }
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> openResultFor: aFilename [
+	| result processor |
+	aFilename isNil
+		ifTrue: [ ^ self ].
+	Cursor wait
+		showWhile: [ result := SmaCCRewriteCompleteResult new.
+			processor := SmaCCRewriteProcessor new.
+			processor rules: self model rewrites.
+			processor parserClass: self model inputParserClass.
+			processor validationParserClass: self model validationParserClass.
+			processor debug: true.
+			[ processor processFile: aFilename usingResult: result ]
+				ensure: [ processor debug: false ].
+			self result: result.
+			self gotoPreviewTab ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> preview [
+	self openResultFor: self selectedFile
+]
+
+{ #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewElement [
+	^ previewElement
+		ifNil: [ previewElement := BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewInputFilename [
+	^ previewResult notNil
+		ifTrue: [ previewResult filename asFileReference basename ]
+		ifFalse: [ 'Input' ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewInputSourceElement [
+	| sourceTab tabGroup |
+	sourceTab := BrTabModel new
+		add: (BrLabelModel text: self previewInputFilename);
+		stencil: [ | editor |
+			editor := self editorFor: previewResult inputSource.
+			BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				addChild: editor asScrollableElement as: #inputSource;
+				yourself ].
+	tabGroup := BrTabGroupModel with: {sourceTab}.
+	tabGroup tabs
+		do: [ :each | 
+			BlElement new
+				look: BrMaterialTabLabelledLook;
+				viewModel: each ].
 	^ BlElement new
+		padding: (BlInsets all: 5);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		look: BrMaterialTabGroupLook;
+		viewModel: tabGroup;
+		yourself
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> previewTab [
+	^ windowElement viewModel tabs at: 3
 ]
 
 { #category : #'configuration-actions' }
@@ -201,6 +293,22 @@ GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 		extensions: anArray
 		path: FileSystem workingDirectory
 		preview: nil
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> result: aResult [
+	previewResult := aResult.
+	self previewElement removeChildren.
+	self previewElement addChild: self previewInputSourceElement
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> selectedFile [
+	filesList selection
+		do: [ :each | 
+			each isNotEmpty
+				ifTrue: [ ^ filesList items at: each from ] ].
+	^ nil
 ]
 
 { #category : #ui }
@@ -279,7 +387,10 @@ GtSmaCCTransformationToolkit >> windowElement [
 			BlElement new
 				look: BrMaterialTabLabelledLook;
 				viewModel: each ].
-	^ BlElement new
+	^ (windowElement := BlElement new)
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
 		look: BrMaterialTabGroupLook;
 		viewModel: tabGroup
 ]
