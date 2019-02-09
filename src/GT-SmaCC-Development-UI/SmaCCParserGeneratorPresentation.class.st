@@ -1356,6 +1356,9 @@ SmaCCParserGeneratorPresentation >> updateDefinitionFor: parserClass [
 	self messages: ''.
 	self symbols: ''.
 	self itemSets: ''.
+	parserClass notNil
+		ifTrue: [ parserClass gtStyler
+				ifNotNil: [ :styler | testEditor styler: styler ] ].
 	self switchToSource
 ]
 

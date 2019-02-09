@@ -17,48 +17,87 @@ GtSmaCCParserStyler class >> forParser: aSmaCCParserClass [
 ]
 
 { #category : #instances }
-GtSmaCCParserStyler class >> javaStyler [
-	<gtExample>
+GtSmaCCParserStyler class >> javaStyler: aParserClass [
 	<smaccStyler: #JavaParser priority: 50>
-	^ (self forParser: JavaParser)
+	^ (self forParser: aParserClass)
 		stylerRules:
 			{(GtSmaCCKeywordTokensStylerRule
 				styleBlock: [ :styler | 
 					styler
 						bold;
 						foreground: Color purple ]).
-			(GtSmaCCCommentStylerRule styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCTokenStylerRule
 				tokenName: '";""'
 				styleBlock: [ :styler | 
 					styler
 						foreground: Color black;
 						bold ]).
-			(GtSmaCCNodeStylerRule nodeClassName: #JavaLiteralNode styleBlock: [ :styler | styler foreground: Color blue ]).
-			(GtSmaCCNodeStylerRule nodeClassName: #JavaAnnotationNode styleBlock: [ :styler | styler bold ])}
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #JavaLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #JavaAnnotationNode
+				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCError
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
 { #category : #instances }
-GtSmaCCParserStyler class >> jsStyler [
-	<gtExample>
+GtSmaCCParserStyler class >> jsStyler: aParserClass [
 	<smaccStyler: #JSParser priority: 50>
-	^ (self forParser: JSParser)
+	^ (self forParser: aParserClass)
 		stylerRules:
 			{(GtSmaCCKeywordTokensStylerRule
 				styleBlock: [ :styler | 
 					styler
 						bold;
 						foreground: Color purple ]).
-			(GtSmaCCCommentStylerRule styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCTokenStylerRule
 				tokenName: '<semicolon>'
 				styleBlock: [ :styler | 
 					styler
 						foreground: Color black;
 						bold ]).
-			(GtSmaCCNodeStylerRule nodeClassName: #JSLiteralNode styleBlock: [ :styler | styler foreground: Color blue ]).
-			(GtSmaCCNodeStylerRule nodeClassName: #JSThisExpressionNode styleBlock: [ :styler | styler italic ]).
-			(GtSmaCCNodeVariableStylerRule nodeClassName: #JSArrayLiteralNode variableNames: #(expressions) styleBlock: [ :styler | styler italic ])}
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #JSLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #JSThisExpressionNode
+				styleBlock: [ :styler | styler italic ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #JSArrayLiteralNode
+				variableNames: #(expressions)
+				styleBlock: [ :styler | styler italic ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCError
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
+GtSmaCCParserStyler class >> smaccStyler: aParserClass [
+	"This is a generic styler that does a little formatting for any parser"
+
+	<smaccStyler: #SmaCCParser priority: 1000>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCError
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
 { #category : #accessing }

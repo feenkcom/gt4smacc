@@ -17,10 +17,14 @@ SmaCCParser class >> gtStylers [
 		allClassesAndTraitsDo: [ :each | 
 			(Pragma allNamed: #smaccStyler:priority: in: each classSide)
 				do: [ :pragma | 
-					pragma arguments first = self name
+					((self
+						includesBehavior: (Smalltalk at: pragma arguments first ifAbsent: [ Array ]))
+						and: [ pragma method numArgs = 1 ])
 						ifTrue: [ pragmas add: pragma ] ] ].
 	^ (pragmas
 		asSortedCollection: [ :a :b | a arguments last < b arguments last ])
-		collect:
-			[ :each | each method methodClass instanceSide perform: each method selector ]
+		collect: [ :each | 
+			each method methodClass instanceSide
+				perform: each method selector
+				with: self ]
 ]

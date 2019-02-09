@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #styling }
+GtSmaCCParserStylerExamples >> csvStyler [
+	<gtExample>
+	^ CSVParser gtStyler
+]
+
+{ #category : #styling }
 GtSmaCCParserStylerExamples >> javaStyler [
 	<gtExample>
 	^ JavaParser gtStyler
@@ -29,6 +35,19 @@ GtSmaCCParserStylerExamples >> jsStylerTextElement [
 			c horizontal matchParent.
 			c vertical matchParent ].
 	^ editorElement
+]
+
+{ #category : #styling }
+GtSmaCCParserStylerExamples >> styledCSV [
+	<gtExample>
+	| text |
+	text := '1,a,!
+2,b,@
+3,c,#
+4,"error
+5,e,''error' asRopedText.
+	self csvStyler style: text.
+	^ text
 ]
 
 { #category : #styling }
