@@ -22,6 +22,7 @@ FileReference >> gtStyledCodeFor: aView [
 				attributes: {BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler}.
 			textEditor text: text.
 			editorElement
+				padding: (BlInsets all: 10);
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ].
