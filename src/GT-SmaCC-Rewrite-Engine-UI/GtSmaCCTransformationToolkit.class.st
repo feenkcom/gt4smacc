@@ -26,6 +26,30 @@ GtSmaCCTransformationToolkit class >> open [
 	^ self new open
 ]
 
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
+	| items |
+	items := IdentitySet new.
+	intervals
+		do: [ :each | 
+			items
+				addAll: (previewResult transformedString annotationsInNewRange: each) ].
+	^ items
+		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
+	| items |
+	items := IdentitySet new.
+	intervals
+		do: [ :each | 
+			items
+				addAll: (previewResult transformedString annotationsInOriginalRange: each) ].
+	^ items
+		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
+]
+
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationBody [
 	| element |
@@ -120,8 +144,13 @@ GtSmaCCTransformationToolkit >> disconnectModel [
 GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 	previewResult := aResult.
 	self previewElement
+		layout: (BlGridLayout vertical rowCount: 2);
 		removeChildren;
-		addChild: self previewFilesElement
+		addChild:
+			(self previewFilesElement
+				constraintsDo: [ :c | c grid vertical weight: 3 ];
+				yourself);
+		addChild: self previewRulesElement
 ]
 
 { #category : #'ui-preview' }
@@ -186,6 +215,14 @@ GtSmaCCTransformationToolkit >> gotoPreviewTab [
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
 	self model: SmaCCTransformationToolkitModel new
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
+	| stream |
+	stream := SmaCCLineNumberStream on: aString readStream.
+	stream position: anInteger.
+	^ stream lineNumber
 ]
 
 { #category : #'configuration-actions' }
@@ -261,7 +298,7 @@ GtSmaCCTransformationToolkit >> previewElement [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewFilesElement [
 	^ BlElement new
-		layout: BlLinearLayout horizontal;
+		layout: (BlGridLayout horizontal columnCount: 2);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ];
@@ -283,15 +320,20 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 	| sourceTab tabGroup |
 	sourceTab := BrTabModel new
 		add: (BrLabelModel text: self previewInputFilename);
-		stencil: [ | editor |
-			editor := self
+		stencil: [ | editorElement |
+			editorElement := self
 				editorFor: previewResult inputSource
 				parser: model inputParserClass.
+			self
+				whenCursorEventsIn: editorElement editor
+				do: [ :intervals | 
+					self
+						updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
 			BlElement new
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ];
-				addChild: editor asScrollableElement as: #inputSource;
+				addChild: editorElement asScrollableElement as: #inputSource;
 				yourself ].
 	tabGroup := BrTabGroupModel with: {sourceTab}.
 	tabGroup tabs
@@ -305,8 +347,8 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 		background: Color white;
 		padding: (BlInsets all: 5);
 		constraintsDo: [ :c | 
-			c vertical matchParent.
-			c frame horizontal weight: 0.5 ];
+			c horizontal matchParent.
+			c vertical matchParent ];
 		look: BrMaterialTabGroupLook;
 		viewModel: tabGroup;
 		yourself
@@ -324,15 +366,20 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 	| sourceTab tabGroup |
 	sourceTab := BrTabModel new
 		add: (BrLabelModel text: self previewOutputFilename);
-		stencil: [ | editor |
-			editor := self
+		stencil: [ | editorElement |
+			editorElement := self
 				editorFor: previewResult outputSource
 				parser: model validationParserClass.
+			self
+				whenCursorEventsIn: editorElement editor
+				do: [ :intervals | 
+					self
+						updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
 			BlElement new
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ];
-				addChild: editor asScrollableElement as: #inputSource;
+				addChild: editorElement asScrollableElement as: #outputSource;
 				yourself ].
 	tabGroup := BrTabGroupModel with: {sourceTab}.
 	tabGroup tabs
@@ -346,10 +393,42 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 		background: Color white;
 		padding: (BlInsets all: 5);
 		constraintsDo: [ :c | 
-			c vertical matchParent.
-			c frame horizontal weight: 0.5 ];
+			c horizontal matchParent.
+			c vertical matchParent ];
 		look: BrMaterialTabGroupLook;
 		viewModel: tabGroup;
+		yourself
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> previewRulesElement [
+	| list |
+	list := BrColumnedList new.
+	list column
+		title: 'Rewrite';
+		stencil: [ :each | BrListLabelStencil matchParent: each rewrite displayString ].
+	list column
+		title: 'Node';
+		stencil:
+				[ :each | BrListLabelStencil matchParent: each nodeClass displayString ].
+	list column
+		title: 'Location';
+		stencil:
+				[ :each | BrListLabelStencil matchParent: each nodeInterval displayString ].
+	list
+		when: BrSelectionChanged
+		do: [ :event | 
+			event
+				selectedDo:
+					[ :each | self updateEditorsForAnnotation: (list items at: each first) ] ].
+	^ BlElement new
+		margin: (BlInsets all: 10);
+		padding: (BlInsets all: 5);
+		border: (BlBorder paint: Color lightGray width: 1);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		addChild: list as: #previewRewrites;
 		yourself
 ]
 
@@ -400,6 +479,46 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
 ]
 
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
+	annotation isNil
+		ifTrue: [ ^ self ].
+	(self previewElement childNamed: #inputSource)
+		ifNotNil: [ :element | 
+			element editor text
+				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+			(element editor text
+				from: annotation nodeInterval first
+				to: annotation nodeInterval last)
+				attributes: {GtSmaCCTransformedAttribute new}.
+			element editor
+				invalidateAll;
+				updateAll.
+			element
+				scrollToPosition:
+					(self
+						lineNumberFor: annotation nodeInterval first
+						in: previewResult inputSource) ].
+	(self previewElement childNamed: #outputSource)
+		ifNotNil: [ :element | 
+			| firstIndex |
+			firstIndex := SmallInteger maxVal.
+			element editor text
+				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+			(previewResult transformedString annotationRangesFor: annotation)
+				do: [ :each | 
+					firstIndex := firstIndex min: each first.
+					(element editor text from: each first to: each last)
+						attributes: {GtSmaCCTransformedAttribute new} ].
+			element editor
+				invalidateAll;
+				updateAll.
+			firstIndex < SmallInteger maxVal
+				ifTrue: [ element
+						scrollToPosition:
+							(self lineNumberFor: firstIndex in: previewResult outputSource) ] ]
+]
+
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateFiles [
 	filesList notNil
@@ -412,6 +531,15 @@ GtSmaCCTransformationToolkit >> updateInputParserClass [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateOutputDirectory [
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
+	(self previewElement childNamed: #previewRewrites)
+		ifNotNil: [ :element | 
+			element
+				deselectAll;
+				items: aCollection ]
 ]
 
 { #category : #private }
@@ -428,6 +556,23 @@ GtSmaCCTransformationToolkit >> updateServer [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateValidationParserClass [
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
+	editor
+		when: BrTextEditorEvent
+		do: [ :event | 
+			| intervals |
+			intervals := OrderedCollection new.
+			editor selection
+				do: [ :each | 
+					each isNotEmpty
+						ifTrue: [ intervals add: (each from + 1 to: each to) ] ].
+			intervals isEmpty
+				ifTrue: [ editor cursors
+						do: [ :each | intervals add: (each position to: each position) ] ].
+			aBlock value: intervals ]
 ]
 
 { #category : #ui }
