@@ -14,6 +14,12 @@ GtSmaCCPropertyDefinitionElement class >> propertyDefinition: aSmaCCRewritePrope
 		yourself
 ]
 
+{ #category : #initialization }
+GtSmaCCPropertyDefinitionElement >> initialize [
+	super initialize.
+	self look: BrGlamorousAccordionWithBorderLook new
+]
+
 { #category : #accessing }
 GtSmaCCPropertyDefinitionElement >> propertyDefinition [
 	^ propertyDefinition

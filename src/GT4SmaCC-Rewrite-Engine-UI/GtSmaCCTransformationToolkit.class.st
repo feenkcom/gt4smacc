@@ -6,7 +6,8 @@ Class {
 		'windowElement',
 		'filesList',
 		'previewElement',
-		'previewResult'
+		'previewResult',
+		'transformationsElement'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -470,9 +471,15 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 			c vertical matchParent ]
 ]
 
-{ #category : #ui }
+{ #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> transformationsElement [
-	^ BlElement new
+	^ transformationsElement
+		ifNil: [ transformationsElement := BlElement new
+				padding: (BlInsets all: 5);
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself ]
 ]
 
 { #category : #private }
@@ -542,8 +549,16 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 				items: aCollection ]
 ]
 
-{ #category : #private }
+{ #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> updateRewrites [
+	| rewritesElement |
+	self transformationsElement removeChildren.
+	rewritesElement := model rewrites element.
+	rewritesElement
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+	self transformationsElement addChild: rewritesElement
 ]
 
 { #category : #private }
