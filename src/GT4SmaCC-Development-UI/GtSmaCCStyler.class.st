@@ -24,6 +24,12 @@ GtSmaCCStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionN
 		yourself
 ]
 
+{ #category : #stylers }
+GtSmaCCStyler class >> stylerFor: aClass [
+	<smaccStyler: #SmaCCDefinitionParser priority: 10>
+	^ self new
+]
+
 { #category : #accessing }
 GtSmaCCStyler >> completions [
 	^ completions
