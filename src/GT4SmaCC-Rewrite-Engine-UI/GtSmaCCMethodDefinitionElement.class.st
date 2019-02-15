@@ -12,7 +12,12 @@ GtSmaCCMethodDefinitionElement >> contentElement [
 	editor text: rewrite source asRopedText.
 	editor text attributes: self defaultTextAttributes.
 	^ BrEditorElement new
-		padding: (BlInsets all: 5);
+		padding:
+			(BlInsets
+				top: 5
+				left: 10
+				bottom: 5
+				right: 10);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ];

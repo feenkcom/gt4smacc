@@ -51,7 +51,13 @@ GtSmaCCRewriteAccordion >> updateContent [
 	self content: [ self contentElement ].
 	self
 		header: [ BrButton new
-				look: BrGlamorousAccordionHeaderLook new;
+				padding: (BlInsets all: 5);
+				look:
+					BrLayoutLook linearHorizontal vFitContent hMatchParent
+						+
+							(BrGlamorousTextLabelLook new
+								weight: 550;
+								yourself);
 				label: rewrite displayString;
 				background: (Color veryLightGray alpha: 0.2);
 				action: [ self toggle ] ]
