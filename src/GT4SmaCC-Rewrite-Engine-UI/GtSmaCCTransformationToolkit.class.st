@@ -475,6 +475,7 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 GtSmaCCTransformationToolkit >> transformationsElement [
 	^ transformationsElement
 		ifNil: [ transformationsElement := BlElement new
+				layout: BlLinearLayout vertical;
 				padding: (BlInsets all: 5);
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
@@ -554,11 +555,8 @@ GtSmaCCTransformationToolkit >> updateRewrites [
 	| rewritesElement |
 	self transformationsElement removeChildren.
 	rewritesElement := model rewrites element.
-	rewritesElement
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	self transformationsElement addChild: rewritesElement
+	self transformationsElement
+		addChild: rewritesElement asScrollableElement
 ]
 
 { #category : #private }
