@@ -11,9 +11,21 @@ GtSmaCCRewriteFileElement >> contentElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ];
-		addChild: self parserElement;
+		"addChild: self parserElement;"
 		addChild: self rewritesElement;
 		yourself
+]
+
+{ #category : #updating }
+GtSmaCCRewriteFileElement >> headerElement [
+	| header |
+	header := super headerElement.
+	header layout: BlFrameLayout new.
+	header addChild: self parserElement.
+	(header childNamed: #label)
+		ifNotNil:
+			[ :label | label constraintsDo: [ :c | c frame vertical alignCenter ] ].
+	^ header
 ]
 
 { #category : #initialization }
@@ -21,7 +33,6 @@ GtSmaCCRewriteFileElement >> parserDropDown [
 	| dropdown |
 	dropdown := BrDropdown new.
 	dropdown layout: BlLinearLayout horizontal.
-	dropdown relocate: 200 @ 100.
 	dropdown
 		constraintsDo: [ :c | 
 			c horizontal fitContent.
@@ -40,7 +51,13 @@ GtSmaCCRewriteFileElement >> parserDropDown [
 GtSmaCCRewriteFileElement >> parserDropDownButton [
 	^ BrButton new
 		look: BrGlamorousButtonWithLabelLook;
-		padding: (BlInsets all: 5);
+		padding:
+			(BlInsets
+				top: 3
+				left: 5
+				bottom: 3
+				right: 5);
+		constraintsDo: [ :c | c minWidth: 150 ];
 		label: (rewrite parserClass ifNil: [ '' ] ifNotNil: [ :cls | cls name ]);
 		yourself
 ]
@@ -57,7 +74,8 @@ GtSmaCCRewriteFileElement >> parserElement [
 	^ BlElement new
 		layout: BlLinearLayout horizontal;
 		constraintsDo: [ :c | 
-			c horizontal matchParent.
+			c frame horizontal alignRight.
+			c horizontal fitContent.
 			c vertical fitContent ];
 		addChild: label;
 		addChild: self parserDropDown;

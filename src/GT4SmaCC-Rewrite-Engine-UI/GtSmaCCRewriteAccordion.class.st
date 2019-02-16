@@ -27,6 +27,21 @@ GtSmaCCRewriteAccordion >> defaultTextAttributes [
 	(BlFontSizeAttribute size: 14) beNotOverwritableByStyler}
 ]
 
+{ #category : #updating }
+GtSmaCCRewriteAccordion >> headerElement [
+	^ BrButton new
+		padding: (BlInsets all: 5);
+		look:
+			BrLayoutLook linearHorizontal vFitContent hMatchParent
+				+
+					(BrGlamorousTextLabelLook new
+						weight: 550;
+						yourself);
+		label: rewrite displayString;
+		background: (Color veryLightGray alpha: 0.2);
+		action: [ self toggle ]
+]
+
 { #category : #'instance creation' }
 GtSmaCCRewriteAccordion >> initialize [
 	super initialize.
@@ -49,16 +64,5 @@ GtSmaCCRewriteAccordion >> rewrite: aRewrite [
 { #category : #updating }
 GtSmaCCRewriteAccordion >> updateContent [
 	self content: [ self contentElement ].
-	self
-		header: [ BrButton new
-				padding: (BlInsets all: 5);
-				look:
-					BrLayoutLook linearHorizontal vFitContent hMatchParent
-						+
-							(BrGlamorousTextLabelLook new
-								weight: 550;
-								yourself);
-				label: rewrite displayString;
-				background: (Color veryLightGray alpha: 0.2);
-				action: [ self toggle ] ]
+	self header: [ self headerElement ]
 ]
