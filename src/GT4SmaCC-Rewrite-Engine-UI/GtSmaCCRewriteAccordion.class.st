@@ -38,7 +38,7 @@ GtSmaCCRewriteAccordion >> headerElement [
 						weight: 550;
 						yourself);
 		label: rewrite displayString;
-		background: (Color veryLightGray alpha: 0.2);
+		background: (Color veryLightGray alpha: 0.6);
 		action: [ self toggle ]
 ]
 

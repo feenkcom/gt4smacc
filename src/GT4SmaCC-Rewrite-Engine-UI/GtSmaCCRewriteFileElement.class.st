@@ -11,7 +11,6 @@ GtSmaCCRewriteFileElement >> contentElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ];
-		"addChild: self parserElement;"
 		addChild: self rewritesElement;
 		yourself
 ]
@@ -23,8 +22,7 @@ GtSmaCCRewriteFileElement >> headerElement [
 	header layout: BlFrameLayout new.
 	header addChild: self parserElement.
 	(header childNamed: #label)
-		ifNotNil:
-			[ :label | label constraintsDo: [ :c | c frame vertical alignCenter ] ].
+		constraintsDo: [ :c | c frame vertical alignCenter ].
 	^ header
 ]
 
