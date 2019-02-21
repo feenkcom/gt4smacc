@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #baseline }
-BaselineOfGToolkit4SmaCC >> baselineOf: spec [
+BaselineOfGToolkit4SmaCC >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
