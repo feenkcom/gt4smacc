@@ -81,6 +81,32 @@ GtSmaCCParserStyler class >> jsStyler: aParserClass [
 ]
 
 { #category : #instances }
+GtSmaCCParserStyler class >> jsonStyler: aParserClass [
+	<smaccStyler: #JSONParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCNodeStylerRule
+				nodeClassName: #JSONLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #JSONMemberNode
+				variableNames: #(name)
+				styleBlock: [ :styler | styler foreground: Color purple ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #JSONObjectNode
+				variableNames: #(leftBrace rightBrace commas)
+				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #JSONArrayNode
+				variableNames: #(leftBracket rightBracket commas)
+				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCError
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 	"This is a generic styler that does a little formatting for any parser"
 
