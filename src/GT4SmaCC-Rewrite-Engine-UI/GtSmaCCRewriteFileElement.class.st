@@ -28,36 +28,12 @@ GtSmaCCRewriteFileElement >> headerElement [
 
 { #category : #initialization }
 GtSmaCCRewriteFileElement >> parserDropDown [
-	| dropdown |
-	dropdown := BrDropdown new.
-	dropdown layout: BlLinearLayout horizontal.
-	dropdown
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ].
-	dropdown
-		toggle: [ self parserDropDownButton action: [ dropdown toggle ] ].
-	dropdown popup: [ self popupParserClassListFor: dropdown ].
-	dropdown
-		look:
-			(BrDropdownLook new
-				outskirtsEmbellisher: [ :e | e look: BrDropdownOutskirtsLook new ]).
-	^ dropdown
-]
-
-{ #category : #initialization }
-GtSmaCCRewriteFileElement >> parserDropDownButton [
-	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook;
-		padding:
-			(BlInsets
-				top: 3
-				left: 5
-				bottom: 3
-				right: 5);
-		constraintsDo: [ :c | c minWidth: 150 ];
-		label: (rewrite parserClass ifNil: [ '' ] ifNotNil: [ :cls | cls name ]);
-		yourself
+	^ GtSmaCCDropDownList new
+		selectedItem: rewrite parserClass;
+		labelBlock: [ :each | each displayString ];
+		items:
+			(SmaCCParser allSubclasses
+				asSortedCollection: [ :a :b | a name < b name ])
 ]
 
 { #category : #initialization }
@@ -78,32 +54,6 @@ GtSmaCCRewriteFileElement >> parserElement [
 		addChild: label;
 		addChild: self parserDropDown;
 		yourself
-]
-
-{ #category : #initialization }
-GtSmaCCRewriteFileElement >> popupParserClassListFor: aDropDown [
-	| list |
-	list := BrSimpleList new.
-	list vExact: 200.
-	list hFitContent.
-	list
-		stencil: [ :each :index | 
-			BrLabel new
-				look: BrGlamorousLabelLook new;
-				padding: (BlInsets all: 5);
-				text: each name;
-				hFitContent;
-				when: BlClickEvent
-					do: [ :anEvent | 
-					anEvent consumed: true.
-					list selectOne: index.
-					aDropDown collapse ];
-				yourself ].
-	list
-		items:
-			(SmaCCParser allSubclasses
-				asSortedCollection: [ :a :b | a name < b name ]).
-	^ list
 ]
 
 { #category : #initialization }

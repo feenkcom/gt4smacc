@@ -41,6 +41,26 @@ GtSmaCCMatchElement >> labelFor: aString [
 		yourself
 ]
 
+{ #category : #updating }
+GtSmaCCMatchElement >> nodeClassElement [
+	| classLabel classList |
+	classLabel := self labelFor: 'Class:'.
+	classList := GtSmaCCDropDownList new
+		items:
+			(SmaCCParseNode withAllSubclasses
+				asSortedCollection: [ :a :b | a name < b name ]);
+		selectedItem: rewrite match nodeClass;
+		yourself.
+	^ BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ];
+		addChild: classLabel;
+		addChild: classList;
+		yourself
+]
+
 { #category : #accessing }
 GtSmaCCMatchElement >> rewrite [
 	^ rewrite
@@ -54,6 +74,27 @@ GtSmaCCMatchElement >> rewrite: aSmaCCRewrite [
 
 { #category : #private }
 GtSmaCCMatchElement >> sourceChanged [
+]
+
+{ #category : #updating }
+GtSmaCCMatchElement >> stateElement [
+	| stateLabel stateList |
+	stateLabel := self labelFor: 'State:'.
+	stateList := GtSmaCCDropDownList new
+		items:
+			(rewrite parserClass
+				ifNil: [ #() ]
+				ifNotNil: [ :cls | cls startingStateNames ]);
+		selectedItem: rewrite match startingState;
+		yourself.
+	^ BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ];
+		addChild: stateLabel;
+		addChild: stateList;
+		yourself
 ]
 
 { #category : #private }
@@ -92,9 +133,7 @@ GtSmaCCMatchElement >> updateContents [
 
 { #category : #updating }
 GtSmaCCMatchElement >> updatePatternMatch [
-	| stateLabel |
-	stateLabel := self labelFor: 'State:'.
-	self addChild: stateLabel.
+	self addChild: self stateElement.
 	editor text: rewrite match source asRopedText.
 	editor text attributes: self defaultTextAttributes.
 	self
@@ -118,9 +157,7 @@ GtSmaCCMatchElement >> updatePatternMatch [
 
 { #category : #updating }
 GtSmaCCMatchElement >> updateTypeMatch [
-	| classLabel |
-	classLabel := self labelFor: 'Class:'.
-	self addChild: classLabel.
+	self addChild: self nodeClassElement.
 	editor text: rewrite match code asRopedText.
 	editor text attributes: self defaultTextAttributes.
 	editor
