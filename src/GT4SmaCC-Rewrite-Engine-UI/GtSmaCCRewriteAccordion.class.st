@@ -50,6 +50,16 @@ GtSmaCCRewriteAccordion >> initialize [
 	self look: BrGlamorousAccordionWithBorderLook new
 ]
 
+{ #category : #private }
+GtSmaCCRewriteAccordion >> labelFor: aString [
+	^ BrLabel new
+		text: aString;
+		look: BrGlamorousLabelLook new;
+		padding: (BlInsets all: 5);
+		hFitContent;
+		yourself
+]
+
 { #category : #accessing }
 GtSmaCCRewriteAccordion >> rewrite [
 	^ rewrite
