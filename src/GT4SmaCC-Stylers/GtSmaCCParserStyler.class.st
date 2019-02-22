@@ -3,11 +3,41 @@ Class {
 	#superclass : #BlTextStyler,
 	#instVars : [
 		'stylerRules',
-		'completions',
-		'parserClass'
+		'parserClass',
+		'startingState'
 	],
 	#category : #'GT4SmaCC-Stylers'
 }
+
+{ #category : #instances }
+GtSmaCCParserStyler class >> csharpStyler: aParserClass [
+	<smaccStyler: #CSharpParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCTokenStylerRule
+				tokenName: '";""'
+				styleBlock: [ :styler | 
+					styler
+						foreground: Color black;
+						bold ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #CSLiteralExpressionNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #CSAttributeNode
+				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCError
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
 
 { #category : #'instance creation' }
 GtSmaCCParserStyler class >> forParser: aSmaCCParserClass [
@@ -127,6 +157,19 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 ]
 
 { #category : #accessing }
+GtSmaCCParserStyler >> addStylerRule: aStylerRule [
+	self stylerRules add: aStylerRule.
+	aStylerRule initializeForParser: parserClass
+]
+
+{ #category : #private }
+GtSmaCCParserStyler >> ast [
+	^ parserClass
+		parseWithErrors: text asString
+		startingAt: self startingState
+]
+
+{ #category : #accessing }
 GtSmaCCParserStyler >> parserClass [
 	^ parserClass
 ]
@@ -138,15 +181,24 @@ GtSmaCCParserStyler >> parserClass: aSmaCCParserClass [
 
 { #category : #private }
 GtSmaCCParserStyler >> privateStyle: aText [
-	[ completions := GtPrefixTree new.
-	text := aText.
-	(parserClass parseWithErrors: aText asString)
+	[ text := aText.
+	self ast
 		withAllNodesDo: [ :node | self styleNode: node ]
 		andTokensDo: [ :token | self styleToken: token ]
 		includesErrors: true ]
 		on: Error
 		do: [ :ex | ex return ].
 	^ aText
+]
+
+{ #category : #accessing }
+GtSmaCCParserStyler >> startingState [
+	^ startingState ifNil: [ parserClass defaultStartingState ]
+]
+
+{ #category : #accessing }
+GtSmaCCParserStyler >> startingState: anInteger [
+	startingState := anInteger
 ]
 
 { #category : #private }
@@ -159,7 +211,6 @@ GtSmaCCParserStyler >> styleNode: aSmaCCParseNode [
 
 { #category : #private }
 GtSmaCCParserStyler >> styleToken: aSmaCCToken [
-	completions add: aSmaCCToken value.
 	stylerRules
 		do: [ :each | 
 			(each shouldApplyToToken: aSmaCCToken)
@@ -168,11 +219,11 @@ GtSmaCCParserStyler >> styleToken: aSmaCCToken [
 
 { #category : #accessing }
 GtSmaCCParserStyler >> stylerRules [
-	^ stylerRules
+	^ stylerRules ifNil: [ stylerRules := OrderedCollection new ]
 ]
 
 { #category : #accessing }
 GtSmaCCParserStyler >> stylerRules: aCollection [
-	stylerRules := aCollection.
+	stylerRules := aCollection asOrderedCollection.
 	stylerRules do: [ :each | each initializeForParser: parserClass ]
 ]
