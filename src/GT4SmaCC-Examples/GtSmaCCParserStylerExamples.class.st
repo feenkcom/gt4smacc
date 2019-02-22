@@ -5,9 +5,22 @@ Class {
 }
 
 { #category : #styling }
+GtSmaCCParserStylerExamples >> csharpStyler [
+	<gtExample>
+	^ CSharpParser gtStyler
+]
+
+{ #category : #styling }
 GtSmaCCParserStylerExamples >> csvStyler [
 	<gtExample>
 	^ CSVParser gtStyler
+]
+
+{ #category : #styling }
+GtSmaCCParserStylerExamples >> javaExpressionStyler [
+	<gtExample>
+	^ self javaStyler
+		startingState: JavaParser startingStateForexpression
 ]
 
 { #category : #styling }
@@ -38,6 +51,12 @@ GtSmaCCParserStylerExamples >> jsStylerTextElement [
 ]
 
 { #category : #styling }
+GtSmaCCParserStylerExamples >> jsonStyler [
+	<gtExample>
+	^ JSONParser gtStyler
+]
+
+{ #category : #styling }
 GtSmaCCParserStylerExamples >> styledCSV [
 	<gtExample>
 	| text |
@@ -51,6 +70,26 @@ GtSmaCCParserStylerExamples >> styledCSV [
 ]
 
 { #category : #styling }
+GtSmaCCParserStylerExamples >> styledCSharp [
+	<gtExample>
+	| text |
+	text := 'using System;
+	
+namespace Foo.Bar {
+	public class Baz {
+		MyClass inst = new MyClass();
+		
+		[TestMethod]
+		public void TestFunction() { 
+			Assert.AreEqual(inst.Value, 1);
+		}
+	}
+}' asRopedText.
+	self csharpStyler style: text.
+	^ text
+]
+
+{ #category : #styling }
 GtSmaCCParserStylerExamples >> styledJS [
 	<gtExample>
 	| text |
@@ -58,6 +97,44 @@ GtSmaCCParserStylerExamples >> styledJS [
 for (var i = 0; i < 10; i++)
 	this.write(i);' asRopedText.
 	self jsStyler style: text.
+	^ text
+]
+
+{ #category : #styling }
+GtSmaCCParserStylerExamples >> styledJSON [
+	<gtExample>
+	| text |
+	text := '{"menu": {
+  "id": "file",
+  "value": "File",
+  "popup": {
+    "menuitem": [
+      {"value": "New", "onclick": "CreateNewDoc()"},
+      {"value": "Open", "onclick": "OpenDoc()"},
+      {"value": "Close", "onclick": "CloseDoc()"}
+    ]
+  }
+}}' asRopedText.
+	self jsonStyler style: text.
+	^ text
+]
+
+{ #category : #styling }
+GtSmaCCParserStylerExamples >> styledJSONWithError [
+	<gtExample>
+	| text |
+	text := '{"menu": {
+  "id": "file",
+  "value": "File",
+  "popup": {
+    "menuitem": [
+      {"value": "New", "onclick": "CreateNewDoc()"}
+      {"value": "Open", "onclick": "OpenDoc()"},
+      {"value": "Close", "onclick": "CloseDoc()"}
+    ]
+  }
+}}' asRopedText.
+	self jsonStyler style: text.
 	^ text
 ]
 
@@ -79,5 +156,14 @@ public class Something {
 }
 	' asRopedText.
 	self javaStyler style: text.
+	^ text
+]
+
+{ #category : #styling }
+GtSmaCCParserStylerExamples >> styledJavaWithStartingState [
+	<gtExample>
+	| text |
+	text := 'this.foo(3 + 4 /* 7 */)' asRopedText.
+	self javaExpressionStyler style: text.
 	^ text
 ]
