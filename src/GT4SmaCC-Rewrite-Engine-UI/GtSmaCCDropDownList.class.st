@@ -11,7 +11,7 @@ Class {
 
 { #category : #private }
 GtSmaCCDropDownList >> buttonLabel [
-	^ self selectedItem ifNil: [ '' ] ifNotNil: labelBlock
+	^ self labelFor: self selectedItem
 ]
 
 { #category : #private }
@@ -69,6 +69,11 @@ GtSmaCCDropDownList >> labelBlock: aBlock [
 ]
 
 { #category : #private }
+GtSmaCCDropDownList >> labelFor: anObject [
+	^ anObject ifNil: [ '' ] ifNotNil: labelBlock
+]
+
+{ #category : #private }
 GtSmaCCDropDownList >> popupList [
 	| list |
 	list := BrSimpleList new.
@@ -79,8 +84,8 @@ GtSmaCCDropDownList >> popupList [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				padding: (BlInsets all: 5);
-				text: (labelBlock value: each);
-				hFitContent;
+				text: (self labelFor: each);
+				hMatchParent;
 				when: BlClickEvent
 					do: [ :anEvent | 
 					anEvent consumed: true.

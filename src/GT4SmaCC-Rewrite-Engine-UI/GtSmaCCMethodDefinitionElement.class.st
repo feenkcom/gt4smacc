@@ -7,7 +7,7 @@ Class {
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #updating }
+{ #category : #ui }
 GtSmaCCMethodDefinitionElement >> contentElement [
 	editor text: rewrite source asRopedText.
 	editor text attributes: self defaultTextAttributes.
@@ -37,6 +37,7 @@ GtSmaCCMethodDefinitionElement >> initialize [
 
 { #category : #updating }
 GtSmaCCMethodDefinitionElement >> sourceChanged [
+	rewrite source: editor text asString
 ]
 
 { #category : #private }

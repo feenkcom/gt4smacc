@@ -10,21 +10,11 @@ Class {
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #updating }
+{ #category : #ui }
 GtSmaCCRewriteElement >> contentElement [
 	^ BlElement new
 		look: BrLayoutLook linearVertical vFitContent hMatchParent;
-		addChild:
-			((self labelFor: 'Match')
-				hMatchParent;
-				background: (Color veryLightGray alpha: 0.2);
-				yourself);
 		addChild: self matchElement;
-		addChild:
-			((self labelFor: 'Transformation')
-				hMatchParent;
-				background: (Color veryLightGray alpha: 0.2);
-				yourself);
 		addChild: self transformationElement;
 		yourself
 ]
@@ -48,7 +38,7 @@ GtSmaCCRewriteElement >> editorElementFor: anEditor [
 		yourself
 ]
 
-{ #category : #'instance creation' }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteElement >> initialize [
 	super initialize.
 	matchEditor := BrTextEditor new.
@@ -62,8 +52,23 @@ GtSmaCCRewriteElement >> initialize [
 		when: BrTextEditorDeletedEvent do: [ :event | self transformationChanged ]
 ]
 
+{ #category : #testing }
+GtSmaCCRewriteElement >> isCodeTransformation [
+	^ rewrite transformation isKindOf: SmaCCRewriteCodeTransformation
+]
+
+{ #category : #testing }
+GtSmaCCRewriteElement >> isPatternMatch [
+	^ rewrite match isKindOf: SmaCCRewriteTreeMatch
+]
+
 { #category : #changes }
 GtSmaCCRewriteElement >> matchChanged [
+	| string |
+	string := matchEditor text asString.
+	self isPatternMatch
+		ifTrue: [ rewrite match source: string ]
+		ifFalse: [ rewrite match code: string ]
 ]
 
 { #category : #'match ui' }
@@ -76,6 +81,30 @@ GtSmaCCRewriteElement >> matchElement [
 ]
 
 { #category : #'match ui' }
+GtSmaCCRewriteElement >> matchHeaderElement [
+	| typeLabel patternLabel toggle |
+	typeLabel := self labelFor: 'Match: Type'.
+	toggle := BrToggle new
+		look: BrHydraSwitchWithTrackLook new;
+		margin: (BlInsets all: 3);
+		activated: (rewrite match isKindOf: SmaCCRewriteTypeMatch);
+		when: BrToggleActivatedEvent
+			do:
+				[ :anEvent | rewrite match: (SmaCCRewriteTypeMatch on: SmaCCParseNode) ];
+		when: BrToggleDeactivatedEvent
+			do: [ :anEvent | rewrite match: SmaCCRewriteTreeMatch new ];
+		yourself.
+	patternLabel := self labelFor: 'Pattern'.
+	^ BlElement new
+		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
+		background: (Color veryLightGray alpha: 0.2);
+		addChild: typeLabel;
+		addChild: toggle;
+		addChild: patternLabel;
+		yourself
+]
+
+{ #category : #'match ui' }
 GtSmaCCRewriteElement >> matchNodeClassElement [
 	| classLabel classList |
 	classLabel := self labelFor: 'Class:'.
@@ -84,6 +113,8 @@ GtSmaCCRewriteElement >> matchNodeClassElement [
 			(SmaCCParseNode withAllSubclasses
 				asSortedCollection: [ :a :b | a name < b name ]);
 		selectedItem: rewrite match nodeClass;
+		when: BrSelectionChanged
+			do: [ :event | rewrite match nodeClass: event target selectedItem ];
 		yourself.
 	^ BlElement new
 		layout: BlLinearLayout horizontal;
@@ -103,8 +134,10 @@ GtSmaCCRewriteElement >> matchStateElement [
 		items:
 			(rewrite parserClass
 				ifNil: [ #() ]
-				ifNotNil: [ :cls | cls startingStateNames ]);
+				ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
 		selectedItem: rewrite match startingState;
+		when: BrSelectionChanged
+			do: [ :event | rewrite match startingState: event target selectedItem ];
 		yourself.
 	^ BlElement new
 		layout: BlLinearLayout horizontal;
@@ -113,24 +146,6 @@ GtSmaCCRewriteElement >> matchStateElement [
 			c vertical fitContent ];
 		addChild: stateLabel;
 		addChild: stateList;
-		yourself
-]
-
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> matchTypeElement [
-	| typeLabel patternLabel toggle |
-	typeLabel := self labelFor: 'Type'.
-	toggle := BrToggle new
-		look: BrHydraSwitchWithTrackLook new;
-		margin: (BlInsets all: 3);
-		activated: (rewrite match isKindOf: SmaCCRewriteTypeMatch);
-		yourself.
-	patternLabel := self labelFor: 'Pattern'.
-	^ BlElement new
-		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
-		addChild: typeLabel;
-		addChild: toggle;
-		addChild: patternLabel;
 		yourself
 ]
 
@@ -160,8 +175,20 @@ GtSmaCCRewriteElement >> sourceStyler [
 		yourself
 ]
 
+{ #category : #private }
+GtSmaCCRewriteElement >> subscribeEvents [
+	rewrite announcer weak
+		when: #match send: #updateMatch to: self;
+		when: #transformation send: #updateTransformation to: self
+]
+
 { #category : #changes }
 GtSmaCCRewriteElement >> transformationChanged [
+	| string |
+	string := transformationEditor text asString.
+	self isCodeTransformation
+		ifTrue: [ rewrite transformation code: string ]
+		ifFalse: [ rewrite transformation string: string ]
 ]
 
 { #category : #'transformation ui' }
@@ -174,16 +201,25 @@ GtSmaCCRewriteElement >> transformationElement [
 ]
 
 { #category : #'transformation ui' }
-GtSmaCCRewriteElement >> transformationTypeElement [
+GtSmaCCRewriteElement >> transformationHeaderElement [
 	| codeLabel stringLabel toggle |
-	codeLabel := self labelFor: 'Code'.
+	codeLabel := self labelFor: 'Transformation: Code'.
 	toggle := BrToggle new
 		look: BrHydraSwitchWithTrackLook new;
 		margin: (BlInsets all: 3);
 		activated: (rewrite transformation isKindOf: SmaCCRewriteCodeTransformation);
+		when: BrToggleActivatedEvent
+			do: [ :anEvent | 
+			rewrite
+				transformation: (SmaCCRewriteCodeTransformation on: 'self continue') ];
+		when: BrToggleDeactivatedEvent
+			do:
+				[ :anEvent | rewrite transformation: SmaCCRewriteStringTransformation new ];
 		yourself.
 	stringLabel := self labelFor: 'String'.
 	^ BlElement new
+		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
+		background: (Color veryLightGray alpha: 0.2);
 		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
 		addChild: codeLabel;
 		addChild: toggle;
@@ -201,10 +237,12 @@ GtSmaCCRewriteElement >> updateCodeTransformation [
 
 { #category : #'match ui' }
 GtSmaCCRewriteElement >> updateMatch [
+	matchElement isNil
+		ifTrue: [ ^ self ].
 	matchElement removeChildren.
-	matchElement addChild: self matchTypeElement.
+	matchElement addChild: self matchHeaderElement.
 	matchEditor styler: matchEditor defaultStyler.
-	(rewrite match isKindOf: SmaCCRewriteTreeMatch)
+	self isPatternMatch
 		ifTrue: [ self updatePatternMatch ]
 		ifFalse: [ self updateTypeMatch ]
 ]
@@ -228,18 +266,42 @@ GtSmaCCRewriteElement >> updateStringTransformation [
 { #category : #'transformation ui' }
 GtSmaCCRewriteElement >> updateTransformation [
 	transformationElement removeChildren.
-	transformationElement addChild: self transformationTypeElement.
+	transformationElement addChild: self transformationHeaderElement.
 	transformationEditor styler: transformationEditor defaultStyler.
-	(rewrite transformation isKindOf: SmaCCRewriteCodeTransformation)
+	self isCodeTransformation
 		ifTrue: [ self updateCodeTransformation ]
 		ifFalse: [ self updateStringTransformation ]
 ]
 
 { #category : #'match ui' }
 GtSmaCCRewriteElement >> updateTypeMatch [
+	| element variablesList editorElement |
 	matchElement addChild: self matchNodeClassElement.
 	matchEditor text: rewrite match code asRopedText.
 	matchEditor text attributes: self defaultTextAttributes.
 	matchEditor styler: self sourceStyler.
-	matchElement addChild: (self editorElementFor: matchEditor)
+	element := BlElement new.
+	element look: BrLayoutLook linearHorizontal vFitContent hMatchParent.
+	editorElement := self editorElementFor: matchEditor.
+	editorElement constraintsDo: [ :c | c vertical matchParent ].
+	element addChild: editorElement.
+	rewrite match nodeClass notNil
+		ifTrue: [ variablesList := BrGridList new.
+			variablesList
+				vMatchParent;
+				margin: (BlInsets all: 10);
+				border: (BlBorder paint: Color lightGray width: 1);
+				stencil: [ :each :index | 
+					BlTextElement new
+						text: each asRopedText;
+						constraintsDo: [ :c | c horizontal matchParent ];
+						padding: (BlInsets all: 5) ];
+				display:
+					(Set new
+						addAll: rewrite match nodeClass allInstVarNames;
+						removeAll: SmaCCParseNode allInstVarNames;
+						yourself) asSortedCollection.
+			element addChild: variablesList.
+			element constraintsDo: [ :c | c minHeight: 100 ] ].
+	matchElement addChild: element
 ]

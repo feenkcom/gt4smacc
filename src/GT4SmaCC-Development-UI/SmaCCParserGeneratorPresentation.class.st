@@ -37,7 +37,7 @@ SmaCCParserGeneratorPresentation class >> menuCommandOn: aBuilder [
 	<worldMenu>
 	(aBuilder item: #'SmaCC Parser Generator (GT)')
 		parent: #Tools;
-		order: 0.555;
+		order: 490.30;
 		action: [ self open ]
 ]
 

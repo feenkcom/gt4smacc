@@ -14,11 +14,9 @@ GtSmaCCRewriteAccordion class >> rewrite: aRewrite [
 		yourself
 ]
 
-{ #category : #updating }
+{ #category : #ui }
 GtSmaCCRewriteAccordion >> contentElement [
-	^ BlElement new
-		size: 100 @ 100;
-		yourself
+	^ self subclassResponsibility
 ]
 
 { #category : #private }
@@ -27,7 +25,7 @@ GtSmaCCRewriteAccordion >> defaultTextAttributes [
 	(BlFontSizeAttribute size: 14) beNotOverwritableByStyler}
 ]
 
-{ #category : #updating }
+{ #category : #ui }
 GtSmaCCRewriteAccordion >> headerElement [
 	^ BrButton new
 		padding: (BlInsets all: 5);
@@ -42,7 +40,7 @@ GtSmaCCRewriteAccordion >> headerElement [
 		action: [ self toggle ]
 ]
 
-{ #category : #'instance creation' }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteAccordion >> initialize [
 	super initialize.
 	self vFitContent.
@@ -67,8 +65,17 @@ GtSmaCCRewriteAccordion >> rewrite [
 
 { #category : #accessing }
 GtSmaCCRewriteAccordion >> rewrite: aRewrite [
+	rewrite notNil
+		ifTrue: [ rewrite unsubscribe: self ].
 	rewrite := aRewrite.
+	rewrite notNil
+		ifTrue: [ self subscribeEvents ].
 	self updateContent
+]
+
+{ #category : #private }
+GtSmaCCRewriteAccordion >> subscribeEvents [
+	
 ]
 
 { #category : #updating }
