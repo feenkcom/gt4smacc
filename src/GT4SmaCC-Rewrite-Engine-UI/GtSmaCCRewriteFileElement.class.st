@@ -4,7 +4,7 @@ Class {
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #initialization }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteFileElement >> contentElement [
 	^ BlElement new
 		layout: BlLinearLayout vertical;
@@ -15,7 +15,7 @@ GtSmaCCRewriteFileElement >> contentElement [
 		yourself
 ]
 
-{ #category : #updating }
+{ #category : #ui }
 GtSmaCCRewriteFileElement >> headerElement [
 	| header |
 	header := super headerElement.
@@ -26,17 +26,19 @@ GtSmaCCRewriteFileElement >> headerElement [
 	^ header
 ]
 
-{ #category : #initialization }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteFileElement >> parserDropDown [
 	^ GtSmaCCDropDownList new
 		selectedItem: rewrite parserClass;
 		labelBlock: [ :each | each displayString ];
 		items:
 			(SmaCCParser allSubclasses
-				asSortedCollection: [ :a :b | a name < b name ])
+				asSortedCollection: [ :a :b | a name < b name ]);
+		when: BrSelectionChanged
+			do: [ :event | rewrite parserClass: event target selectedItem ]
 ]
 
-{ #category : #initialization }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteFileElement >> parserElement [
 	| label |
 	label := BrLabel new
@@ -56,7 +58,7 @@ GtSmaCCRewriteFileElement >> parserElement [
 		yourself
 ]
 
-{ #category : #initialization }
+{ #category : #'initialize-release' }
 GtSmaCCRewriteFileElement >> rewritesElement [
 	| list |
 	list := BrSimpleList new.

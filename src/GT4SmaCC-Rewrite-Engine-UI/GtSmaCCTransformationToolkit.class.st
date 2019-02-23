@@ -15,9 +15,9 @@ Class {
 { #category : #'world menu' }
 GtSmaCCTransformationToolkit class >> menuCommandOn: aBuilder [
 	<worldMenu>
-	(aBuilder item: #'Gt SmaCC Transformation Toolkit')
+	(aBuilder item: #'SmaCC Transformation Toolkit (GT)')
 		parent: #Tools;
-		order: 0.57;
+		order: 490.31;
 		action: [ self open ].
 	aBuilder withSeparatorAfter
 ]
