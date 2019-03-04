@@ -17,8 +17,7 @@ ZnResponse >> gtJsonFor: aView [
 			editorElement := BrEditorElement new.
 			editorElement editor: textEditor.
 			text := (STONJSON toStringPretty: (STONJSON fromString: self contents)) asRopedText.
-			text
-				attributes: {BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler}.
+			text glamorousCodeFontDo: #beNotOverwritableByStyler; glamorousCodeSizeDo: #beNotOverwritableByStyler.
 			textEditor text: text.
 			editorElement
 				padding: (BlInsets all: 10);
