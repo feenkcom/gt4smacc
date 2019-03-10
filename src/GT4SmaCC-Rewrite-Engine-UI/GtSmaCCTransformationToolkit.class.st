@@ -407,15 +407,15 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 	list := BrColumnedList new.
 	list column
 		title: 'Rewrite';
-		stencil: [ :each | BrListLabelStencil matchParent: each rewrite displayString ].
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: each rewrite displayString ].
 	list column
 		title: 'Node';
 		stencil:
-				[ :each | BrListLabelStencil matchParent: each nodeClass displayString ].
+				[ :each | BrColumnCellLabelStencil matchParent: each nodeClass displayString ].
 	list column
 		title: 'Location';
 		stencil:
-				[ :each | BrListLabelStencil matchParent: each nodeInterval displayString ].
+				[ :each | BrColumnCellLabelStencil matchParent: each nodeInterval displayString ].
 	list
 		when: BrSelectionChanged
 		do: [ :event | 
