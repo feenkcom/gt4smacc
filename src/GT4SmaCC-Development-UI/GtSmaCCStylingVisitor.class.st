@@ -3,25 +3,10 @@ Class {
 	#superclass : #SmaCCDefinitionNodeVisitor,
 	#instVars : [
 		'text',
-		'styler',
-		'completions'
+		'styler'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
-
-{ #category : #accessing }
-GtSmaCCStylingVisitor >> completions [
-	^ completions
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatCharacterRegex: aText [
-	aText
-		attributes:
-			{(BrTextHoverAttribute new
-				textAttributes: {(BlTextBackgroundAttribute new paint: (Color gray alpha: 0.2))};
-				leaveTextAttributes: {(BlTextBackgroundAttribute new paint: Color transparent)})}
-]
 
 { #category : #'private-formatting' }
 GtSmaCCStylingVisitor >> formatCode: aText [
@@ -45,20 +30,7 @@ GtSmaCCStylingVisitor >> formatDirectiveKeyword: aText [
 
 { #category : #private }
 GtSmaCCStylingVisitor >> formatInlineDefinition: aNode [
-	| name definition grammar |
-	name := aNode name source.
-	grammar := styler originalGrammar ifNil: [ aNode topParent ].
-	definition := grammar definitionNamed: name.
-	definition isNil
-		ifTrue: [ ^ self ].
-	text
-		attributes:
-			{(BrTextExpandButtonAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ self textEditorOn: definition source usingStyler: (GtSmaCCStyler for: styler scannerClass grammar: grammar) ] ])}
-		from: aNode name stopPosition
-		to: aNode name stopPosition
+	
 ]
 
 { #category : #'private-formatting' }
@@ -97,36 +69,12 @@ GtSmaCCStylingVisitor >> formatTokenDefinition: aText [
 
 { #category : #private }
 GtSmaCCStylingVisitor >> formatTokenMethod: aToken [
-	| name class stStyler |
-	name := (aToken source copyFrom: 2 to: aToken source size - 1) asSymbol.
-	class := styler scannerClass whichClassIncludesSelector: name.
-	class isNil
-		ifTrue: [ ^ self ].
-	(class includesBehavior: SmaCCScanner)
-		ifFalse: [ ^ self ].
-	stStyler := BrRBTextStyler new.
-	stStyler classOrMetaClass: class.
-	text
-		attributes:
-			{(BrTextExpandButtonAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ self textEditorOn: (class lookupSelector: name) sourceCode usingStyler: stStyler ] ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
+	
 ]
 
 { #category : #'private-formatting' }
 GtSmaCCStylingVisitor >> formatVariableName: aText [
 	aText foreground: Color gray
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCStylingVisitor >> initialize [
-	super initialize.
-	completions := GtPrefixTree
-		withAll:
-			#('%annotate_tokens;' '%attributes' '%excludes' '%glr;' '%hierarchy' '%id' '%ignorecase;' '%ignore_variables' '%left' '%nonassoc' '%prefix' '%right' '%root' '%scopes' '%start' '%suffix' '%states')
 ]
 
 { #category : #private }
@@ -152,32 +100,6 @@ GtSmaCCStylingVisitor >> text [
 { #category : #accessing }
 GtSmaCCStylingVisitor >> text: anObject [
 	text := anObject
-]
-
-{ #category : #private }
-GtSmaCCStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
-	| editor editorElement innerText |
-	innerText := aString asRopedText.
-	editor := BrTextEditor new.
-	aStyler notNil
-		ifTrue: [ editor styler: aStyler ].
-	editor text: innerText.
-	editorElement := BrEditorElement new.
-	editorElement editor: editor.
-	editorElement
-		constraintsDo: [ :c | 
-			c textFlow pushLine.
-			c horizontal matchParent.
-			c vertical fitContent ];
-		background: Color white;
-		border: (BlBorder paint: Color veryLightGray width: 1);
-		margin:
-			(BlInsets
-				top: 0
-				right: 10
-				bottom: 10
-				left: 10).
-	^ editorElement
 ]
 
 { #category : #visiting }
@@ -224,7 +146,6 @@ GtSmaCCStylingVisitor >> visitKeywordSymbol: aKeywordSymbol [
 
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitProductionRule: aProductionRule [
-	completions add: aProductionRule name source.
 	self style: aProductionRule name with: #formatProductionDefinition:.
 	super visitProductionRule: aProductionRule
 ]
@@ -244,24 +165,19 @@ GtSmaCCStylingVisitor >> visitRepeatRegex: aRepeatRegex [
 
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitSymbol: aSymbol [
-	completions add: aSymbol name source.
 	aSymbol variableNameToken notNil
-		ifTrue: [ self style: aSymbol variableNameToken with: #formatVariableName:.
-			completions add: aSymbol name source , ' ' , aSymbol variableNameToken value.
-			completions add: aSymbol variableNameToken value ].
+		ifTrue: [ self style: aSymbol variableNameToken with: #formatVariableName: ].
 	super visitSymbol: aSymbol
 ]
 
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitTokenRegex: aTokenRegex [
-	completions add: aTokenRegex name source.
 	self style: aTokenRegex with: #formatTokenDefinition:.
 	super visitTokenRegex: aTokenRegex
 ]
 
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitTokenRule: aTokenRule [
-	completions add: aTokenRule name source.
 	self style: aTokenRule name with: #formatTokenDefinition:.
 	self formatTokenMethod: aTokenRule name.
 	super visitTokenRule: aTokenRule
