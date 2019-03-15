@@ -27,6 +27,14 @@ Class {
 	#category : #'GT4SmaCC-Development-UI'
 }
 
+{ #category : #accessing }
+SmaCCParserGeneratorPresentation class >> defaultTextAttributes [
+	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
+		beNotOverwritableByStyler.
+	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
+	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
+]
+
 { #category : #'class initialization' }
 SmaCCParserGeneratorPresentation class >> initialize [
 	ShowPrecedenceConflicts := false
@@ -315,7 +323,8 @@ SmaCCParserGeneratorPresentation >> buildScannerTestTabOn: stacker [
 				to: #tokens;
 				andShow: [ :presentation | 
 					| items |
-					items := self definitionItems select: [ :each | each isKindOf: SmaCCTokenRuleNode ].
+					items := self definitionItems
+						select: [ :each | each isKindOf: SmaCCTokenRuleNode ].
 					self buildRuleList: items in: presentation ].
 			tabulator transmit
 				from: #tokens port: #selection;
@@ -323,10 +332,14 @@ SmaCCParserGeneratorPresentation >> buildScannerTestTabOn: stacker [
 				andShow: [ :presentation :rule | 
 					rule notNil
 						ifTrue: [ presentation bloc
-								element: [ | element definitionText definitionElement tester testElement simulator |
-									simulator := SmaCCRegexSimulator on: rule topParent tokenName: rule name value.
+								element:
+									[ | element definitionText definitionElement tester testElement simulator |
+									simulator := SmaCCRegexSimulator
+										on: rule topParent
+										tokenName: rule name value.
 									definitionText := rule source asRopedText.
-									definitionText := GtSmaCCStyler new style: definitionText.
+									definitionText attributes: self defaultTextAttributes.
+									definitionText := GtSmaCCGrammarStyler new style: definitionText.
 									element := BlElement new.
 									element
 										constraintsDo: [ :c | 
@@ -397,7 +410,7 @@ SmaCCParserGeneratorPresentation >> buildSourceTabOn: stacker [
 					completionStrategy := GtWeightedStringsCompletionStrategy new.
 					completionController := GtCompletionController on: element strategy: completionStrategy.
 					completionController install.
-					styler := GtSmaCCStyler
+					styler := GtSmaCCGrammarStyler
 						for:
 							([ self scannerClass ]
 								on: Error
@@ -617,10 +630,9 @@ SmaCCParserGeneratorPresentation >> debugParse [
 	process debug
 ]
 
-{ #category : #'private-accessing' }
+{ #category : #private }
 SmaCCParserGeneratorPresentation >> defaultTextAttributes [
-	^ {(BlFontSizeAttribute size: 14) beNotOverwritableByStyler.
-	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler}
+	^ self class defaultTextAttributes
 ]
 
 { #category : #'private-accessing' }
