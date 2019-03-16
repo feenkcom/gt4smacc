@@ -14,7 +14,9 @@ SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 	bloc
 		element: [ | styler text editor element |
 			text := self source asRopedText.
-			styler := GtSmaCCStyler for: SmaCCScanner.
+			text
+				attributes: SmaCCParserGeneratorPresentation defaultTextAttributes.
+			styler := GtSmaCCGrammarStyler for: SmaCCScanner.
 			editor := BrTextEditor new.
 			editor text: (styler style: text).
 			element := BrEditorElement new.
@@ -92,6 +94,14 @@ SmaCCDefinitionNode >> buildVariableNameInterfaceFor: aString in: presentation [
 										height: 2;
 										border: (BlBorder paint: (Color black alpha: 0.75) width: 1)) ] ].
 			element ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCDefinitionNode >> defaultTextAttributes [
+	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
+		beNotOverwritableByStyler.
+	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
+	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }

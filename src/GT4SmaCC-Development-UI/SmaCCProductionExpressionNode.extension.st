@@ -81,8 +81,12 @@ SmaCCProductionExpressionNode >> styledText [
 	| text rule |
 	rule := self parentOfType: SmaCCProductionRuleNode.
 	text := rule source asRopedText.
-	GtSmaCCStyler new style: text.
-	^ text copyFrom: self startPosition - rule startPosition + 1 to: self stopPosition - rule startPosition + 1
+	text
+		attributes: SmaCCParserGeneratorPresentation defaultTextAttributes.
+	GtSmaCCGrammarStyler new style: text.
+	^ text
+		copyFrom: self startPosition - rule startPosition + 1
+		to: self stopPosition - rule startPosition + 1
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }

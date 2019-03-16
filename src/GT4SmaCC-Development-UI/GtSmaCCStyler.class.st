@@ -2,68 +2,98 @@ Class {
 	#name : #GtSmaCCStyler,
 	#superclass : #BlTextStyler,
 	#instVars : [
-		'scannerClass',
-		'originalGrammar',
-		'completions'
+		'startingState',
+		'grammarCoder'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #'instance creation' }
-GtSmaCCStyler class >> for: aSmaCCScannerClass [
-	^ self new
-		scannerClass: aSmaCCScannerClass;
-		yourself
+{ #category : #formatting }
+GtSmaCCStyler class >> formatCode: aText [
+	aText foreground: Color darkGray
 ]
 
-{ #category : #'instance creation' }
-GtSmaCCStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionNode [
-	^ self new
-		scannerClass: aSmaCCScannerClass;
-		originalGrammar: aSmaCCGrammarDefinitionNode;
-		yourself
+{ #category : #formatting }
+GtSmaCCStyler class >> formatComment: aText [
+	aText foreground: Color lightGray
 ]
 
-{ #category : #stylers }
-GtSmaCCStyler class >> stylerFor: aClass [
-	<smaccStyler: #SmaCCDefinitionParser priority: 10>
-	^ self new
+{ #category : #formatting }
+GtSmaCCStyler class >> formatDirective: aText [
+	aText foreground: Color veryDarkGray
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatDirectiveKeyword: aText [
+	aText bold
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatKeyword: aText [
+	aText foreground: Color magenta
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatProduction: aText [
+	aText foreground: Color purple
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatProductionDefinition: aText [
+	aText bold.
+	self formatProduction: aText
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatRepeat: aText [
+	aText
+		foreground: Color black;
+		bold
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatToken: aText [
+	aText foreground: Color blue
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatTokenDefinition: aText [
+	aText bold.
+	self formatToken: aText
+]
+
+{ #category : #formatting }
+GtSmaCCStyler class >> formatVariableName: aText [
+	aText foreground: Color gray
 ]
 
 { #category : #accessing }
-GtSmaCCStyler >> completions [
-	^ completions
+GtSmaCCStyler >> grammarCoder [
+	^ grammarCoder
 ]
 
-{ #category : #'initialize-release' }
+{ #category : #accessing }
+GtSmaCCStyler >> grammarCoder: aGrammarCoder [
+	grammarCoder := aGrammarCoder
+]
+
+{ #category : #private }
 GtSmaCCStyler >> initialize [
 	super initialize.
-	completions := GtPrefixTree new
-]
-
-{ #category : #accessing }
-GtSmaCCStyler >> originalGrammar [
-	^ originalGrammar
-]
-
-{ #category : #accessing }
-GtSmaCCStyler >> originalGrammar: anObject [
-	originalGrammar := anObject
+	startingState := 1
 ]
 
 { #category : #private }
 GtSmaCCStyler >> privateStyle: aText [
 	[ | stylingVisitor |
-	stylingVisitor := GtSmaCCStylingVisitor new.
-	aText
-		attributes:
-			{BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-			(BlTextForegroundAttribute new paint: Color darkGray darker)}.
+	stylingVisitor := GtSmaCCCoderStylingVisitor new.
 	stylingVisitor
 		text: aText;
 		styler: self;
-		acceptNode: (SmaCCDefinitionParser parseWithErrors: aText asString).
-	completions := stylingVisitor completions ]
+		acceptNode:
+			(SmaCCDefinitionParser
+				parseWithErrors: aText asString
+				startingAt: startingState) ]
 		on: Error
 		do: [ :ex | ex return ].
 	^ aText
@@ -71,10 +101,15 @@ GtSmaCCStyler >> privateStyle: aText [
 
 { #category : #accessing }
 GtSmaCCStyler >> scannerClass [
-	^ scannerClass
+	^ grammarCoder scannerClass
 ]
 
 { #category : #accessing }
-GtSmaCCStyler >> scannerClass: anObject [
-	scannerClass := anObject
+GtSmaCCStyler >> startingState [
+	^ startingState
+]
+
+{ #category : #accessing }
+GtSmaCCStyler >> startingState: anInteger [
+	startingState := anInteger
 ]
