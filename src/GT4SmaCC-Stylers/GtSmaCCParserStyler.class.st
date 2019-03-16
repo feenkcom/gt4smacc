@@ -34,7 +34,7 @@ GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 				nodeClassName: #CSAttributeNode
 				styleBlock: [ :styler | styler bold ]).
 			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #SmaCCError
+				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
@@ -71,7 +71,7 @@ GtSmaCCParserStyler class >> javaStyler: aParserClass [
 				nodeClassName: #JavaAnnotationNode
 				styleBlock: [ :styler | styler bold ]).
 			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #SmaCCError
+				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
@@ -105,7 +105,7 @@ GtSmaCCParserStyler class >> jsStyler: aParserClass [
 				variableNames: #(expressions)
 				styleBlock: [ :styler | styler italic ]).
 			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #SmaCCError
+				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
@@ -131,7 +131,7 @@ GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 				variableNames: #(leftBracket rightBracket commas)
 				styleBlock: [ :styler | styler bold ]).
 			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #SmaCCError
+				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
@@ -151,7 +151,7 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 			(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #SmaCCError
+				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
