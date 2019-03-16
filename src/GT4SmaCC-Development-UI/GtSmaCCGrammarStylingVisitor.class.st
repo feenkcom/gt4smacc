@@ -30,27 +30,6 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode [
 		to: aNode name stopPosition
 ]
 
-{ #category : #private }
-GtSmaCCGrammarStylingVisitor >> formatTokenMethod: aToken [
-	| name class stStyler |
-	name := (aToken source copyFrom: 2 to: aToken source size - 1) asSymbol.
-	class := styler scannerClass whichClassIncludesSelector: name.
-	class isNil
-		ifTrue: [ ^ self ].
-	(class includesBehavior: SmaCCScanner)
-		ifFalse: [ ^ self ].
-	stStyler := BrRBTextStyler new.
-	stStyler classOrMetaClass: class.
-	text
-		attributes:
-			{(BrTextExpandButtonAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ self textEditorOn: (class lookupSelector: name) sourceCode usingStyler: stStyler ] ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
-]
-
 { #category : #'initialize-release' }
 GtSmaCCGrammarStylingVisitor >> initialize [
 	super initialize.

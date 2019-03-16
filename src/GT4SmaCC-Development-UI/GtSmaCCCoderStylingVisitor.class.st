@@ -5,23 +5,20 @@ Class {
 }
 
 { #category : #private }
-GtSmaCCCoderStylingVisitor >> formatTokenMethod: aToken [
-	| name class stStyler |
-	name := (aToken source copyFrom: 2 to: aToken source size - 1)
-		asSymbol.
-	class := styler scannerClass whichClassIncludesSelector: name.
-	class isNil
+GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
+	| coder |
+	coder := styler grammarCoder coderNamed: aNode name source.
+	coder isNil
 		ifTrue: [ ^ self ].
-	(class includesBehavior: SmaCCScanner)
-		ifFalse: [ ^ self ].
-	stStyler := BrRBTextStyler new.
-	stStyler classOrMetaClass: class.
 	text
 		attributes:
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ (GtMethodCoder forMethod: (class lookupSelector: name)) asElement ] ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
+						stencil: [ | element |
+							element := coder asElement.
+							element expand.
+							element ] ])}
+		from: aNode name stopPosition
+		to: aNode name stopPosition
 ]

@@ -30,6 +30,13 @@ GtSmaCCGrammarCoder >> asElement [
 ]
 
 { #category : #accessing }
+GtSmaCCGrammarCoder >> coderNamed: aString [
+	^ coders
+		detect: [ :each | each definitionName = aString ]
+		ifNone: [  ]
+]
+
+{ #category : #accessing }
 GtSmaCCGrammarCoder >> coders [
 	^ coders
 ]

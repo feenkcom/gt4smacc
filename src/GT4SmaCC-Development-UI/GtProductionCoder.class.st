@@ -10,3 +10,11 @@ GtProductionCoder >> definitionName [
 		ifTrue: [ '' ]
 		ifFalse: [ ast name source ]
 ]
+
+{ #category : #ui }
+GtProductionCoder >> styledName [
+	| text |
+	text := super styledName.
+	GtSmaCCStyler formatProductionDefinition: text.
+	^ text
+]

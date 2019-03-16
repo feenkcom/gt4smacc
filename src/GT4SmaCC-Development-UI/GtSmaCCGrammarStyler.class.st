@@ -61,7 +61,7 @@ GtSmaCCGrammarStyler >> privateStyle: aText [
 		acceptNode: (SmaCCDefinitionParser parseWithErrors: aText asString).
 	completions := stylingVisitor completions ]
 		on: Error
-		do: [ :ex | self halt. ex return ].
+		do: [ :ex | ex return ].
 	^ aText
 ]
 

@@ -10,3 +10,11 @@ GtTokenCoder >> definitionName [
 		ifTrue: [ '' ]
 		ifFalse: [ ast name source ]
 ]
+
+{ #category : #ui }
+GtTokenCoder >> styledName [
+	| text |
+	text := super styledName.
+	GtSmaCCStyler formatTokenDefinition: text.
+	^ text
+]

@@ -8,78 +8,40 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatCode: aText [
-	aText foreground: Color darkGray
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatComment: aText [
-	aText foreground: Color lightGray
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatDirective: aText [
-	aText foreground: Color veryDarkGray
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatDirectiveKeyword: aText [
-	aText bold
-]
-
 { #category : #private }
 GtSmaCCStylingVisitor >> formatInlineDefinition: aNode [
 	
 ]
 
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatKeyword: aText [
-	aText foreground: Color magenta
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatProduction: aText [
-	aText foreground: Color purple
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatProductionDefinition: aText [
-	aText bold.
-	self formatProduction: aText
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatRepeat: aText [
-	aText
-		foreground: Color black;
-		bold
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatToken: aText [
-	aText foreground: Color blue
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatTokenDefinition: aText [
-	aText bold.
-	self formatToken: aText
-]
-
 { #category : #private }
 GtSmaCCStylingVisitor >> formatTokenMethod: aToken [
-	
-]
-
-{ #category : #'private-formatting' }
-GtSmaCCStylingVisitor >> formatVariableName: aText [
-	aText foreground: Color gray
+	| name class stStyler |
+	name := (aToken source copyFrom: 2 to: aToken source size - 1)
+		asSymbol.
+	class := styler scannerClass whichClassIncludesSelector: name.
+	class isNil
+		ifTrue: [ ^ self ].
+	(class includesBehavior: SmaCCScanner)
+		ifFalse: [ ^ self ].
+	stStyler := BrRBTextStyler new.
+	stStyler classOrMetaClass: class.
+	text
+		attributes:
+			{(BrTextExpandButtonAttribute new
+				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
+						beAppend;
+						stencil: [ (GtMethodCoder forMethod: (class lookupSelector: name))
+								expanded: true;
+								asElement ] ])}
+		from: aToken stopPosition
+		to: aToken stopPosition
 ]
 
 { #category : #private }
 GtSmaCCStylingVisitor >> style: anItem with: aSymbol [
-	self perform: aSymbol with: (text from: anItem startPosition to: anItem stopPosition)
+	GtSmaCCStyler
+		perform: aSymbol
+		with: (text from: anItem startPosition to: anItem stopPosition)
 ]
 
 { #category : #accessing }
@@ -135,7 +97,9 @@ GtSmaCCStylingVisitor >> visitDirective: aDirective [
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
 	super visitGrammarDefinition: aGrammarDefinition.
-	aGrammarDefinition comments do: [ :each | self formatComment: (text from: each first to: each last) ]
+	aGrammarDefinition comments
+		do:
+			[ :each | GtSmaCCStyler formatComment: (text from: each first to: each last) ]
 ]
 
 { #category : #visiting }

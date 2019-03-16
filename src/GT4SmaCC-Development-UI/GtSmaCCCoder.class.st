@@ -68,8 +68,11 @@ GtSmaCCCoder >> initialize [
 
 { #category : #ui }
 GtSmaCCCoder >> newCollapsedEditor [
+	| text |
+	text := self styledName.
+	text attributes: self defaultTextAttributes.
 	^ BrTextEditor new
-		text: self definitionName asRopedText;
+		text: text readonly;
 		yourself
 ]
 
@@ -99,4 +102,9 @@ GtSmaCCCoder >> owner: aGrammarCoder [
 { #category : #ui }
 GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
+]
+
+{ #category : #ui }
+GtSmaCCCoder >> styledName [
+	^ self definitionName asRopedText
 ]
