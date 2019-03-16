@@ -9,13 +9,40 @@ Class {
 }
 
 { #category : #private }
+GtSmaCCStylingVisitor >> formatCharacterMethod: aToken [
+	| name |
+	name := (aToken source copyFrom: 2 to: aToken source size - 1)
+		asSymbol.
+	(Character includesSelector: name)
+		ifFalse: [ ^ self ].
+	self formatMethod: (Character lookupSelector: name) for: aToken
+]
+
+{ #category : #private }
 GtSmaCCStylingVisitor >> formatInlineDefinition: aNode [
-	
+	^ false
+]
+
+{ #category : #private }
+GtSmaCCStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
+	| stStyler |
+	stStyler := BrRBTextStyler new.
+	stStyler classOrMetaClass: aCompiledMethod methodClass.
+	text
+		attributes:
+			{(BrTextExpandButtonAttribute new
+				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
+						beAppend;
+						stencil: [ (GtMethodCoder forMethod: aCompiledMethod)
+								expanded: true;
+								asElement ] ])}
+		from: aToken stopPosition
+		to: aToken stopPosition
 ]
 
 { #category : #private }
 GtSmaCCStylingVisitor >> formatTokenMethod: aToken [
-	| name class stStyler |
+	| name class |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1)
 		asSymbol.
 	class := styler scannerClass whichClassIncludesSelector: name.
@@ -23,18 +50,7 @@ GtSmaCCStylingVisitor >> formatTokenMethod: aToken [
 		ifTrue: [ ^ self ].
 	(class includesBehavior: SmaCCScanner)
 		ifFalse: [ ^ self ].
-	stStyler := BrRBTextStyler new.
-	stStyler classOrMetaClass: class.
-	text
-		attributes:
-			{(BrTextExpandButtonAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ (GtMethodCoder forMethod: (class lookupSelector: name))
-								expanded: true;
-								asElement ] ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
+	self formatMethod: (class lookupSelector: name) for: aToken
 ]
 
 { #category : #private }
@@ -136,7 +152,9 @@ GtSmaCCStylingVisitor >> visitSymbol: aSymbol [
 
 { #category : #visiting }
 GtSmaCCStylingVisitor >> visitTokenRegex: aTokenRegex [
-	self style: aTokenRegex with: #formatTokenDefinition:.
+	self style: aTokenRegex with: #formatToken:.
+	(self formatInlineDefinition: aTokenRegex)
+		ifFalse: [ self formatCharacterMethod: aTokenRegex ].
 	super visitTokenRegex: aTokenRegex
 ]
 

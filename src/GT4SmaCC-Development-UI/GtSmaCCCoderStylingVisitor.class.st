@@ -9,7 +9,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
 	| coder |
 	coder := styler grammarCoder coderNamed: aNode name source.
 	coder isNil
-		ifTrue: [ ^ self ].
+		ifTrue: [ ^ false ].
 	text
 		attributes:
 			{(BrTextExpandButtonAttribute new
@@ -20,5 +20,6 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
 							element expand.
 							element ] ])}
 		from: aNode name stopPosition
-		to: aNode name stopPosition
+		to: aNode name stopPosition.
+	^ true
 ]

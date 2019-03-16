@@ -19,15 +19,18 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode [
 	grammar := styler originalGrammar ifNil: [ aNode topParent ].
 	definition := grammar definitionNamed: name.
 	definition isNil
-		ifTrue: [ ^ self ].
+		ifTrue: [ ^ false ].
 	text
 		attributes:
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ self textEditorOn: definition source usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ] ])}
+						stencil: [ self
+								textEditorOn: definition source
+								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ] ])}
 		from: aNode name stopPosition
-		to: aNode name stopPosition
+		to: aNode name stopPosition.
+	^ true
 ]
 
 { #category : #'initialize-release' }
