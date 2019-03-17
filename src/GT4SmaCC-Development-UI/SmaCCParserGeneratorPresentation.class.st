@@ -1221,18 +1221,27 @@ SmaCCParserGeneratorPresentation >> setScannerClass [
 
 { #category : #'private-scanner' }
 SmaCCParserGeneratorPresentation >> simulateUsing: simulator tokenEditor: editor testEditor: testerEditor index: anIndex [
-	editor text clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
-	testerEditor text clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
+	editor text
+		clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
+	testerEditor text
+		clearAttributes: [ :each | each isKindOf: BlTextBackgroundAttribute ].
 	simulator
 		matchesOn: testerEditor text asString
 		do: [ :index :nodes | 
 			nodes isNil
-				ifTrue: [ (testerEditor text from: index to: testerEditor text size) background: Color lightRed ]
+				ifTrue: [ (testerEditor text from: index to: testerEditor text size)
+						background: Color lightRed ]
 				ifFalse: [ (index = anIndex and: [ nodes notEmpty ])
-						ifTrue: [ | children start |
-							start := (nodes asArray first nodeOfType: SmaCCTokenRuleNode) startPosition - 1.
+						ifTrue: [ | start |
+							start := (nodes asArray first nodeOfType: SmaCCTokenRuleNode)
+								startPosition - 1.
 							nodes
-								do: [ :each | each testTokensDo: [ :token | (editor text from: token startPosition - start to: token stopPosition - start) background: Color green ] ] ] ] ].
+								do: [ :each | 
+									each
+										testTokensDo: [ :token | 
+											(editor text
+												from: token startPosition - start
+												to: token stopPosition - start) background: Color green ] ] ] ] ].
 	editor text: editor text.
 	testerEditor text: testerEditor text
 ]

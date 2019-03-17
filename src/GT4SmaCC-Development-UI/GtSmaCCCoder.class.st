@@ -3,11 +3,12 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'owner',
-		'source',
 		'ast',
 		'expanded',
 		'collapsedEditor',
-		'sourceEditor'
+		'sourceEditor',
+		'originalSource',
+		'attributes'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -20,6 +21,15 @@ GtSmaCCCoder class >> on: aNode in: aGrammarCoder [
 		yourself
 ]
 
+{ #category : #actions }
+GtSmaCCCoder >> actions [
+	^ {(GtCoderAction new
+		title: 'Inspect' translated;
+		icon: BrGlamorousIcons playinspect;
+		action: [ :button | self inspectFrom: button ];
+		yourself)}
+]
+
 { #category : #elements }
 GtSmaCCCoder >> asElement [
 	^ GtSmaCCCoderElement onCoder: self
@@ -28,7 +38,35 @@ GtSmaCCCoder >> asElement [
 { #category : #'initialize-release' }
 GtSmaCCCoder >> ast: aNode [
 	ast := aNode.
-	source := aNode source
+	originalSource := aNode source
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> attributeNamed: aSymbol [
+	^ attributes notNil
+		ifTrue: [ attributes at: aSymbol ifAbsent: [  ] ]
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> attributeNamed: aSymbol ifAbsent: aBlock [
+	^ attributes notNil
+		ifTrue: [ attributes at: aSymbol ifAbsent: aBlock ]
+		ifFalse: [ aBlock value ]
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> attributeNamed: aSymbol ifAbsentPut: aBlock [
+	^ self attributes at: aSymbol ifAbsentPut: aBlock
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> attributeNamed: aSymbol put: anObject [
+	^ self attributes at: aSymbol put: anObject
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> attributes [
+	^ attributes ifNil: [ attributes := IdentityDictionary new ]
 ]
 
 { #category : #ui }
@@ -66,6 +104,26 @@ GtSmaCCCoder >> initialize [
 	expanded := false
 ]
 
+{ #category : #actions }
+GtSmaCCCoder >> inspectFrom: anElement [
+	anElement phlow spawnObject: self
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isModified [
+	^ self source ~= originalSource
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isValid [
+	^ [ SmaCCDefinitionParser
+		parse: self source
+		startingAt: self parserStartingState.
+	true ]
+		on: SmaCCParserError
+		do: [ :ex | ex return: false ]
+]
+
 { #category : #ui }
 GtSmaCCCoder >> newCollapsedEditor [
 	| text |
@@ -79,7 +137,7 @@ GtSmaCCCoder >> newCollapsedEditor [
 { #category : #ui }
 GtSmaCCCoder >> newSourceEditor [
 	| text |
-	text := source asRopedText.
+	text := originalSource asRopedText.
 	text attributes: self defaultTextAttributes.
 	^ BrTextEditor new
 		styler: self newStyler;
@@ -99,6 +157,25 @@ GtSmaCCCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> parserStartingState [
+	^ self subclassResponsibility
+]
+
+{ #category : #'accessing-attributes' }
+GtSmaCCCoder >> removeAttributeNamed: aSymbol [
+	attributes isNil
+		ifTrue: [ ^ self ].
+	^ attributes removeKey: aSymbol ifAbsent: [  ]
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> source [
+	^ sourceEditor isNil
+		ifTrue: [ originalSource ]
+		ifFalse: [ sourceEditor text asString ]
+]
+
 { #category : #ui }
 GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
@@ -107,4 +184,16 @@ GtSmaCCCoder >> sourceEditor [
 { #category : #ui }
 GtSmaCCCoder >> styledName [
 	^ self definitionName asRopedText
+]
+
+{ #category : #source }
+GtSmaCCCoder >> updateSource: aSmaCCString [
+	self isModified
+		ifFalse: [ ^ self ].
+	ast isNil
+		ifTrue: [ aSmaCCString append: String cr , self source ]
+		ifFalse: [ aSmaCCString
+				replaceFrom: ast startPosition
+				to: ast stopPosition
+				with: self source ]
 ]

@@ -11,6 +11,11 @@ GtProductionCoder >> definitionName [
 		ifFalse: [ ast name source ]
 ]
 
+{ #category : #private }
+GtProductionCoder >> parserStartingState [
+	^ SmaCCDefinitionParser startingStateForProductionRule
+]
+
 { #category : #ui }
 GtProductionCoder >> styledName [
 	| text |

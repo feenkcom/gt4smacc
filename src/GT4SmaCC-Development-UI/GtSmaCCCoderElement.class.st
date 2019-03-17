@@ -14,6 +14,28 @@ GtSmaCCCoderElement class >> onCoder: aGrammarCoder [
 		yourself
 ]
 
+{ #category : #ui }
+GtSmaCCCoderElement >> actionBar [
+	^ BrToolbar new
+		look: BrToolbarLook new;
+		layout:
+			(BlGridLayout horizontal
+				rowCount: 1;
+				cellSpacing: 3);
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ];
+		addItems:
+			(coder actions
+				collect: [ :each | 
+					BrButton new
+						beSmall;
+						look: BrGlamorousButtonWithIconLook;
+						label: each title;
+						icon: each icon asElement;
+						action: each ])
+]
+
 { #category : #'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
@@ -49,7 +71,7 @@ GtSmaCCCoderElement >> collapsedElement [
 
 { #category : #ui }
 GtSmaCCCoderElement >> contentElement [
-	| element label |
+	| element |
 	element := BlElement new.
 	element layout: BlLinearLayout vertical.
 	element margin: (BlInsets left: 5).
@@ -57,13 +79,8 @@ GtSmaCCCoderElement >> contentElement [
 		constraintsDo: [ :c | 
 			c vertical fitContent.
 			c horizontal matchParent ].
-	label := BrEditorElement new.
-	label
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
-	label editor: coder sourceEditor.
-	element addChild: label.
+	element addChild: self sourceEditor.
+	element addChild: self actionBar.
 	^ element
 ]
 
@@ -124,4 +141,16 @@ GtSmaCCCoderElement >> initialize [
 { #category : #testing }
 GtSmaCCCoderElement >> isExpanded [
 	^ expandableModel isExpanded
+]
+
+{ #category : #ui }
+GtSmaCCCoderElement >> sourceEditor [
+	| editor |
+	editor := BrEditorElement new.
+	editor
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent ].
+	editor editor: coder sourceEditor.
+	^ editor
 ]
