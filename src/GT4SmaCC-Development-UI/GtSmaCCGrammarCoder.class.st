@@ -64,3 +64,16 @@ GtSmaCCGrammarCoder >> scannerClass [
 		on: Error
 		do: [ :ex | ex return ]
 ]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> source [
+	| newSource |
+	newSource := ast completeSource copy.
+	coders do: [ :each | each updateSource: newSource ].
+	^ newSource asString
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> sourceAST [
+	^ SmaCCDefinitionParser parseWithErrors: self source
+]
