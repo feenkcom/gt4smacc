@@ -5,15 +5,31 @@ Class {
 }
 
 { #category : #accessing }
+GtProductionCoder >> completionStrategy [
+	^ owner productionCompletionStrategy
+]
+
+{ #category : #accessing }
 GtProductionCoder >> definitionName [
-	^ ast isNil
+	^ originalAST isNil
 		ifTrue: [ '' ]
-		ifFalse: [ ast name source ]
+		ifFalse: [ originalAST name source ]
+]
+
+{ #category : #testing }
+GtProductionCoder >> isProductionRuleCoder [
+	^ true
 ]
 
 { #category : #private }
 GtProductionCoder >> parserStartingState [
 	^ SmaCCDefinitionParser startingStateForProductionRule
+]
+
+{ #category : #'event handling' }
+GtProductionCoder >> sourceChanged [
+	super sourceChanged.
+	owner updateProductionCompletions
 ]
 
 { #category : #ui }

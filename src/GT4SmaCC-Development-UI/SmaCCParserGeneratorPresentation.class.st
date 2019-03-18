@@ -1150,6 +1150,13 @@ SmaCCParserGeneratorPresentation >> savedDefinition: aString [
 	self definition: aString
 ]
 
+{ #category : #private }
+SmaCCParserGeneratorPresentation >> scannerClass [
+	^ (self scannerClassName
+		ifNotNil: [ Smalltalk at: self scannerClassName asSymbol ifAbsent: [ nil ] ])
+		ifNil: [ self parserClass ifNotNil: [ :cls | cls scannerClass ] ]
+]
+
 { #category : #accessing }
 SmaCCParserGeneratorPresentation >> scannerClassName [
 	^ scannerClassName

@@ -1,14 +1,18 @@
 Class {
 	#name : #GtSmaCCCoder,
 	#superclass : #Object,
+	#traits : 'TGtAnnouncer',
+	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
+		'announcer',
 		'owner',
-		'ast',
 		'expanded',
 		'collapsedEditor',
 		'sourceEditor',
 		'originalSource',
-		'attributes'
+		'attributes',
+		'originalAST',
+		'modifiedAST'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -17,7 +21,7 @@ Class {
 GtSmaCCCoder class >> on: aNode in: aGrammarCoder [
 	^ self new
 		owner: aGrammarCoder;
-		ast: aNode;
+		originalAST: aNode;
 		yourself
 ]
 
@@ -30,15 +34,19 @@ GtSmaCCCoder >> actions [
 		yourself)}
 ]
 
+{ #category : #accessing }
+GtSmaCCCoder >> announcer [
+	^ announcer ifNil: [ announcer := Announcer new ]
+]
+
 { #category : #elements }
 GtSmaCCCoder >> asElement [
 	^ GtSmaCCCoderElement onCoder: self
 ]
 
-{ #category : #'initialize-release' }
-GtSmaCCCoder >> ast: aNode [
-	ast := aNode.
-	originalSource := aNode source
+{ #category : #accessing }
+GtSmaCCCoder >> ast [
+	^ modifiedAST ifNil: [ originalAST ]
 ]
 
 { #category : #'accessing-attributes' }
@@ -69,13 +77,18 @@ GtSmaCCCoder >> attributes [
 	^ attributes ifNil: [ attributes := IdentityDictionary new ]
 ]
 
-{ #category : #ui }
+{ #category : #editor }
 GtSmaCCCoder >> collapsedEditor [
 	^ collapsedEditor
 		ifNil: [ collapsedEditor := self newCollapsedEditor ]
 ]
 
-{ #category : #ui }
+{ #category : #accessing }
+GtSmaCCCoder >> completionStrategy [
+	^ nil
+]
+
+{ #category : #editor }
 GtSmaCCCoder >> defaultTextAttributes [
 	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
 		beNotOverwritableByStyler.
@@ -115,6 +128,16 @@ GtSmaCCCoder >> isModified [
 ]
 
 { #category : #testing }
+GtSmaCCCoder >> isProductionRuleCoder [
+	^ false
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isTokenRuleCoder [
+	^ false
+]
+
+{ #category : #testing }
 GtSmaCCCoder >> isValid [
 	^ [ SmaCCDefinitionParser
 		parse: self source
@@ -124,7 +147,7 @@ GtSmaCCCoder >> isValid [
 		do: [ :ex | ex return: false ]
 ]
 
-{ #category : #ui }
+{ #category : #editor }
 GtSmaCCCoder >> newCollapsedEditor [
 	| text |
 	text := self styledName.
@@ -134,7 +157,7 @@ GtSmaCCCoder >> newCollapsedEditor [
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
 	| text |
 	text := originalSource asRopedText.
@@ -142,14 +165,22 @@ GtSmaCCCoder >> newSourceEditor [
 	^ BrTextEditor new
 		styler: self newStyler;
 		text: text;
+		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];
+		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ];
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : #editor }
 GtSmaCCCoder >> newStyler [
 	^ GtSmaCCStyler new
 		grammarCoder: owner;
 		yourself
+]
+
+{ #category : #'initialize-release' }
+GtSmaCCCoder >> originalAST: aNode [
+	originalAST := aNode.
+	originalSource := aNode source
 ]
 
 { #category : #'initialize-release' }
@@ -176,12 +207,19 @@ GtSmaCCCoder >> source [
 		ifFalse: [ sourceEditor text asString ]
 ]
 
-{ #category : #ui }
+{ #category : #'event handling' }
+GtSmaCCCoder >> sourceChanged [
+	modifiedAST := SmaCCDefinitionParser
+		parseWithErrors: self source
+		startingAt: self parserStartingState
+]
+
+{ #category : #editor }
 GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
 ]
 
-{ #category : #ui }
+{ #category : #editor }
 GtSmaCCCoder >> styledName [
 	^ self definitionName asRopedText
 ]
@@ -190,10 +228,10 @@ GtSmaCCCoder >> styledName [
 GtSmaCCCoder >> updateSource: aSmaCCString [
 	self isModified
 		ifFalse: [ ^ self ].
-	ast isNil
+	originalAST isNil
 		ifTrue: [ aSmaCCString append: String cr , self source ]
 		ifFalse: [ aSmaCCString
-				replaceFrom: ast startPosition
-				to: ast stopPosition
+				replaceFrom: originalAST startPosition
+				to: originalAST stopPosition
 				with: self source ]
 ]

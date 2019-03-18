@@ -1,10 +1,15 @@
 Class {
 	#name : #GtSmaCCGrammarCoder,
 	#superclass : #Object,
+	#traits : 'TGtAnnouncer',
+	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
+		'announcer',
 		'parserClass',
 		'coders',
-		'ast'
+		'ast',
+		'tokenCompletionStrategy',
+		'productionCompletionStrategy'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -22,6 +27,11 @@ GtSmaCCGrammarCoder >> addCoderForRule: aNode [
 		ifTrue: [ coders add: (GtProductionCoder on: aNode in: self) ].
 	aNode isTokenRule
 		ifTrue: [ coders add: (GtTokenCoder on: aNode in: self) ]
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> announcer [
+	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
 { #category : #element }
@@ -44,7 +54,10 @@ GtSmaCCGrammarCoder >> coders [
 { #category : #'initialize-release' }
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
-	coders := OrderedCollection new
+	coders := OrderedCollection new.
+	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
+	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
+		new
 ]
 
 { #category : #'initialize-release' }
@@ -55,7 +68,14 @@ GtSmaCCGrammarCoder >> parserClass: aClass [
 	ast := parserClass definitionAST.
 	ast isNil
 		ifTrue: [ ^ self ].
-	ast rules do: [ :each | self addCoderForRule: each ]
+	ast rules do: [ :each | self addCoderForRule: each ].
+	self updateProductionCompletions.
+	self updateTokenCompletions
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> productionCompletionStrategy [
+	^ productionCompletionStrategy
 ]
 
 { #category : #accessing }
@@ -76,4 +96,36 @@ GtSmaCCGrammarCoder >> source [
 { #category : #accessing }
 GtSmaCCGrammarCoder >> sourceAST [
 	^ SmaCCDefinitionParser parseWithErrors: self source
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> tokenCompletionStrategy [
+	^ tokenCompletionStrategy
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateCompletions: aPrefixTree with: aNode [
+	(GtSmaCCCompletionVisitor new completions: aPrefixTree) accept: aNode
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateProductionCompletions [
+	| completions |
+	completions := GtPrefixTree new.
+	coders
+		do: [ :each | 
+			each isProductionRuleCoder
+				ifTrue: [ self updateCompletions: completions with: each ast ] ].
+	productionCompletionStrategy completions: completions
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateTokenCompletions [
+	| completions |
+	completions := GtPrefixTree new.
+	coders
+		do: [ :each | 
+			each isTokenRuleCoder
+				ifTrue: [ self updateCompletions: completions with: each ast ] ].
+	tokenCompletionStrategy completions: completions
 ]

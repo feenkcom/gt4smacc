@@ -5,10 +5,15 @@ Class {
 }
 
 { #category : #accessing }
+GtTokenCoder >> completionStrategy [
+	^ owner tokenCompletionStrategy
+]
+
+{ #category : #accessing }
 GtTokenCoder >> definitionName [
-	^ ast isNil
+	^ originalAST isNil
 		ifTrue: [ '' ]
-		ifFalse: [ ast name source ]
+		ifFalse: [ originalAST name source ]
 ]
 
 { #category : #ui }
@@ -18,6 +23,11 @@ GtTokenCoder >> gtSimulatorFor: aView [
 		title: 'Simulator';
 		priority: 1;
 		stencil: [ self simulatorElement ]
+]
+
+{ #category : #testing }
+GtTokenCoder >> isTokenRuleCoder [
+	^ true
 ]
 
 { #category : #private }
@@ -85,6 +95,12 @@ GtTokenCoder >> simulatorElement [
 				expand;
 				yourself).
 	^ element
+]
+
+{ #category : #'event handling' }
+GtTokenCoder >> sourceChanged [
+	super sourceChanged.
+	owner updateTokenCompletions
 ]
 
 { #category : #ui }
