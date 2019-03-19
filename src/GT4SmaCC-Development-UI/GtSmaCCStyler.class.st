@@ -3,7 +3,7 @@ Class {
 	#superclass : #BlTextStyler,
 	#instVars : [
 		'startingState',
-		'grammarCoder'
+		'coder'
 	],
 	#category : #'GT4SmaCC-Development-UI-Styler'
 }
@@ -68,16 +68,21 @@ GtSmaCCStyler class >> formatVariableName: aText [
 ]
 
 { #category : #accessing }
-GtSmaCCStyler >> grammarCoder [
-	^ grammarCoder
+GtSmaCCStyler >> coder [
+	^ coder
 ]
 
 { #category : #accessing }
-GtSmaCCStyler >> grammarCoder: aGrammarCoder [
-	grammarCoder := aGrammarCoder
+GtSmaCCStyler >> coder: smaccCoder [
+	coder := smaccCoder
 ]
 
-{ #category : #private }
+{ #category : #accessing }
+GtSmaCCStyler >> grammarCoder [
+	^ coder owner
+]
+
+{ #category : #'initialize-release' }
 GtSmaCCStyler >> initialize [
 	super initialize.
 	startingState := 1
@@ -85,15 +90,14 @@ GtSmaCCStyler >> initialize [
 
 { #category : #private }
 GtSmaCCStyler >> privateStyle: aText [
-	[ | stylingVisitor |
-	stylingVisitor := GtSmaCCCoderStylingVisitor new.
-	stylingVisitor
-		text: aText;
-		styler: self;
-		acceptNode:
-			(SmaCCDefinitionParser
-				parseWithErrors: aText asString
-				startingAt: startingState) ]
+	[ | ast |
+	text := aText.
+	ast := SmaCCDefinitionParser
+		parseWithErrors: aText asString
+		startingAt: startingState.
+	coder highlighter
+		ifNotNil: [ :highlighter | highlighter styleNode: ast using: self ].
+	self syntaxStylingVisitor styleNode: ast using: self ]
 		on: Error
 		do: [ :ex | ex return ].
 	^ aText
@@ -101,7 +105,7 @@ GtSmaCCStyler >> privateStyle: aText [
 
 { #category : #accessing }
 GtSmaCCStyler >> scannerClass [
-	^ grammarCoder scannerClass
+	^ self grammarCoder scannerClass
 ]
 
 { #category : #accessing }
@@ -112,4 +116,14 @@ GtSmaCCStyler >> startingState [
 { #category : #accessing }
 GtSmaCCStyler >> startingState: anInteger [
 	startingState := anInteger
+]
+
+{ #category : #private }
+GtSmaCCStyler >> syntaxStylingVisitor [
+	^ GtSmaCCCoderStylingVisitor new
+]
+
+{ #category : #accessing }
+GtSmaCCStyler >> text [
+	^ text
 ]

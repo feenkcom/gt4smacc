@@ -79,8 +79,10 @@ GtSmaCCCoder >> attributes [
 
 { #category : #editor }
 GtSmaCCCoder >> collapsedEditor [
+	collapsedEditor isNil
+		ifTrue: [ collapsedEditor := self newCollapsedEditor.
+			self updateCollapsedSource ].
 	^ collapsedEditor
-		ifNil: [ collapsedEditor := self newCollapsedEditor ]
 ]
 
 { #category : #accessing }
@@ -109,6 +111,17 @@ GtSmaCCCoder >> expanded [
 { #category : #accessing }
 GtSmaCCCoder >> expanded: aBoolean [
 	expanded := aBoolean
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> highlighter [
+	^ self attributeNamed: #highlighter
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> highlighter: aHighlightingVisitor [
+	self attributeNamed: #highlighter put: aHighlightingVisitor.
+	self styleSource
 ]
 
 { #category : #'initialize-release' }
@@ -149,12 +162,7 @@ GtSmaCCCoder >> isValid [
 
 { #category : #editor }
 GtSmaCCCoder >> newCollapsedEditor [
-	| text |
-	text := self styledName.
-	text attributes: self defaultTextAttributes.
 	^ BrTextEditor new
-		text: text readonly;
-		yourself
 ]
 
 { #category : #editor }
@@ -173,7 +181,7 @@ GtSmaCCCoder >> newSourceEditor [
 { #category : #editor }
 GtSmaCCCoder >> newStyler [
 	^ GtSmaCCStyler new
-		grammarCoder: owner;
+		coder: self;
 		yourself
 ]
 
@@ -181,6 +189,11 @@ GtSmaCCCoder >> newStyler [
 GtSmaCCCoder >> originalAST: aNode [
 	originalAST := aNode.
 	originalSource := aNode source
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> owner [
+	^ owner
 ]
 
 { #category : #'initialize-release' }
@@ -211,7 +224,8 @@ GtSmaCCCoder >> source [
 GtSmaCCCoder >> sourceChanged [
 	modifiedAST := SmaCCDefinitionParser
 		parseWithErrors: self source
-		startingAt: self parserStartingState
+		startingAt: self parserStartingState.
+	self updateCollapsedSource
 ]
 
 { #category : #editor }
@@ -219,9 +233,30 @@ GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> styleSource [
+	[ | ast name offset |
+	ast := self ast.
+	name := ast name.
+	offset := ast startPosition - 1.
+	self sourceEditor
+		styleTextAndAfterDo: [ self collapsedEditor
+				text:
+					(self sourceEditor text
+						copyFrom: name startPosition - offset
+						to: name stopPosition - offset) readonly ] ]
+		on: Error
+		do: [ :ex | ex return ]
+]
+
 { #category : #editor }
 GtSmaCCCoder >> styledName [
 	^ self definitionName asRopedText
+]
+
+{ #category : #private }
+GtSmaCCCoder >> updateCollapsedSource [
+	self styleSource
 ]
 
 { #category : #source }

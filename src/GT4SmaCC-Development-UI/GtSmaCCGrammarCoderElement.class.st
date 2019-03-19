@@ -22,7 +22,11 @@ GtSmaCCGrammarCoderElement >> buildElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	self addChild: self listElement as: #list
+	self
+		addChild:
+			(GtSmaCCDefinitionListElement new
+				coders: grammarCoder coders;
+				yourself)
 ]
 
 { #category : #'initialize-release' }
@@ -37,6 +41,6 @@ GtSmaCCGrammarCoderElement >> listElement [
 	list := BrSimpleList new.
 	list vFitContent.
 	list stencil: [ :each :index | each asElement ].
-	list items: grammarCoder coders.
+	list items: (grammarCoder coders collect: #yourself).
 	^ list asScrollableElement
 ]

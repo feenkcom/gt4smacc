@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCGrammarStylingVisitor,
-	#superclass : #GtSmaCCStylingVisitor,
+	#superclass : #GtSmaCCSyntaxStylingVisitor,
 	#instVars : [
 		'completions'
 	],
@@ -20,7 +20,7 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode [
 	definition := grammar definitionNamed: name.
 	definition isNil
 		ifTrue: [ ^ false ].
-	text
+	self text
 		attributes:
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new

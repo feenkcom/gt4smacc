@@ -60,6 +60,7 @@ GtSmaCCCoderElement >> collapsedElement [
 			c vertical fitContent.
 			c horizontal matchParent ].
 	label := BrEditorElement new.
+	label padding: (BlInsets all: 2).
 	label
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
@@ -147,6 +148,7 @@ GtSmaCCCoderElement >> isExpanded [
 GtSmaCCCoderElement >> sourceEditor [
 	| element |
 	element := BrEditorElement new.
+	element padding: (BlInsets all: 2).
 	element
 		constraintsDo: [ :c | 
 			c horizontal matchParent.

@@ -54,11 +54,11 @@ GtSmaCCGrammarStyler >> originalGrammar: anObject [
 { #category : #private }
 GtSmaCCGrammarStyler >> privateStyle: aText [
 	[ | stylingVisitor |
+	text := aText.
 	stylingVisitor := GtSmaCCGrammarStylingVisitor new.
 	stylingVisitor
-		text: aText;
-		styler: self;
-		acceptNode: (SmaCCDefinitionParser parseWithErrors: aText asString).
+		styleNode: (SmaCCDefinitionParser parseWithErrors: aText asString)
+		using: self.
 	completions := stylingVisitor completions ]
 		on: Error
 		do: [ :ex | ex return ].
@@ -73,4 +73,9 @@ GtSmaCCGrammarStyler >> scannerClass [
 { #category : #accessing }
 GtSmaCCGrammarStyler >> scannerClass: anObject [
 	scannerClass := anObject
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarStyler >> text [
+	^ text
 ]
