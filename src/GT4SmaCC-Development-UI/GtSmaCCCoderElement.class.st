@@ -145,12 +145,19 @@ GtSmaCCCoderElement >> isExpanded [
 
 { #category : #ui }
 GtSmaCCCoderElement >> sourceEditor [
-	| editor |
-	editor := BrEditorElement new.
-	editor
+	| element |
+	element := BrEditorElement new.
+	element
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
-	editor editor: coder sourceEditor.
-	^ editor
+	element editor: coder sourceEditor.
+	coder completionStrategy
+		ifNotNil: [ :strategy | 
+			| completionController |
+			completionController := GtCompletionController
+				on: element
+				strategy: strategy.
+			completionController install ].
+	^ element
 ]
