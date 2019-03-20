@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCCoderStylingVisitor,
-	#superclass : #GtSmaCCStylingVisitor,
+	#superclass : #GtSmaCCSyntaxStylingVisitor,
 	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
@@ -10,7 +10,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
 	coder := styler grammarCoder coderNamed: aNode name source.
 	coder isNil
 		ifTrue: [ ^ false ].
-	text
+	self text
 		attributes:
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new

@@ -41,9 +41,11 @@ GtSmaCCGrammarCoder >> asElement [
 
 { #category : #accessing }
 GtSmaCCGrammarCoder >> coderNamed: aString [
-	^ coders
-		detect: [ :each | each definitionName = aString ]
-		ifNone: [  ]
+	coders
+		do: [ :each | 
+			each definitionName = aString
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
 
 { #category : #accessing }
@@ -54,7 +56,7 @@ GtSmaCCGrammarCoder >> coders [
 { #category : #'initialize-release' }
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
-	coders := OrderedCollection new.
+	coders := GtSmaCCDefinitionGroupResult new.
 	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
 	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
 		new
