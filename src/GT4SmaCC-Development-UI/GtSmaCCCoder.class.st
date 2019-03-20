@@ -12,7 +12,7 @@ Class {
 		'originalSource',
 		'attributes',
 		'originalAST',
-		'modifiedAST'
+		'ast'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -34,6 +34,14 @@ GtSmaCCCoder >> actions [
 		yourself)}
 ]
 
+{ #category : #actions }
+GtSmaCCCoder >> addShortcutsTo: editorElement [
+	self shortcuts
+		do: [ :each | 
+			editorElement
+				addShortcut: (each copy action: [ each action cull: editorElement ]) ]
+]
+
 { #category : #accessing }
 GtSmaCCCoder >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
@@ -46,7 +54,14 @@ GtSmaCCCoder >> asElement [
 
 { #category : #accessing }
 GtSmaCCCoder >> ast [
-	^ modifiedAST ifNil: [ originalAST ]
+	^ ast ifNil: [ originalAST ]
+]
+
+{ #category : #private }
+GtSmaCCCoder >> astFor: aString [
+	^ SmaCCDefinitionParser
+		parseWithErrors: aString
+		startingAt: self parserStartingState
 ]
 
 { #category : #'accessing-attributes' }
@@ -75,6 +90,19 @@ GtSmaCCCoder >> attributeNamed: aSymbol put: anObject [
 { #category : #'accessing-attributes' }
 GtSmaCCCoder >> attributes [
 	^ attributes ifNil: [ attributes := IdentityDictionary new ]
+]
+
+{ #category : #actions }
+GtSmaCCCoder >> browseReferences: anElement [
+	| filter |
+	filter := self referencesFilterAtCursor.
+	filter isNil
+		ifTrue: [ ^ self ].
+	anElement
+		fireEvent:
+			(GtPhlowObjectToSpawn new
+				object: (filter applyInScope: owner coders);
+				sourceElement: anElement)
 ]
 
 { #category : #editor }
@@ -185,10 +213,27 @@ GtSmaCCCoder >> newStyler [
 		yourself
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> nodeForSelectionDo: aBlock [
+	| node interval |
+	interval := self selectedSourceInterval.
+	interval isNil
+		ifTrue: [ ^ self ].
+	node := nil.
+	self ast
+		withAllNodesDo: [ :each | 
+			(each startPosition <= interval first
+				and: [ each stopPosition >= interval last ])
+				ifTrue: [ node := each ] ].
+	node notNil
+		ifTrue: [ aBlock cull: node cull: interval ]
+]
+
 { #category : #'initialize-release' }
 GtSmaCCCoder >> originalAST: aNode [
 	originalAST := aNode.
-	originalSource := aNode source
+	originalSource := aNode source.
+	ast := self astFor: originalSource
 ]
 
 { #category : #accessing }
@@ -206,11 +251,46 @@ GtSmaCCCoder >> parserStartingState [
 	^ self subclassResponsibility
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> referencesFilterAtCursor [
+	self
+		nodeForSelectionDo: [ :node :interval | 
+			((node isKindOf: SmaCCSymbolNode)
+				or: [ (node isKindOf: SmaCCTokenRegexNode)
+						or: [ (node isKindOf: SmaCCProductionRuleNode)
+								or: [ node isKindOf: SmaCCTokenRuleNode ] ] ])
+				ifTrue: [ (interval first >= node name startPosition
+						and: [ interval last <= node name stopPosition ])
+						ifTrue: [ ^ self referencesFilterFor: node name source ] ] ].
+	^ nil
+]
+
+{ #category : #private }
+GtSmaCCCoder >> referencesFilterFor: aString [
+	^ GtSmaCCDefinitionReferencesFilter name: aString
+]
+
 { #category : #'accessing-attributes' }
 GtSmaCCCoder >> removeAttributeNamed: aSymbol [
 	attributes isNil
 		ifTrue: [ ^ self ].
 	^ attributes removeKey: aSymbol ifAbsent: [  ]
+]
+
+{ #category : #private }
+GtSmaCCCoder >> selectedSourceInterval [
+	self sourceEditor selection
+		do: [ :each | ^ each from + 1 to: each to ].
+	self sourceEditor cursors
+		do: [ :each | ^ each position to: each position ].
+	^ nil
+]
+
+{ #category : #private }
+GtSmaCCCoder >> shortcuts [
+	^ {(BlShortcut new
+		combination: BlKeyCombination primaryN;
+		action: [ :editorElement | self browseReferences: editorElement ])}
 ]
 
 { #category : #accessing }
@@ -222,9 +302,7 @@ GtSmaCCCoder >> source [
 
 { #category : #'event handling' }
 GtSmaCCCoder >> sourceChanged [
-	modifiedAST := SmaCCDefinitionParser
-		parseWithErrors: self source
-		startingAt: self parserStartingState.
+	ast := self astFor: self source.
 	self updateCollapsedSource
 ]
 
@@ -235,16 +313,14 @@ GtSmaCCCoder >> sourceEditor [
 
 { #category : #private }
 GtSmaCCCoder >> styleSource [
-	[ | ast name offset |
-	ast := self ast.
-	name := ast name.
-	offset := ast startPosition - 1.
+	[ | name |
+	name := self ast name.
 	self sourceEditor
 		styleTextAndAfterDo: [ self collapsedEditor
 				text:
 					(self sourceEditor text
-						copyFrom: name startPosition - offset
-						to: name stopPosition - offset) readonly ] ]
+						copyFrom: name startPosition
+						to: name stopPosition) readonly ] ]
 		on: Error
 		do: [ :ex | ex return ]
 ]

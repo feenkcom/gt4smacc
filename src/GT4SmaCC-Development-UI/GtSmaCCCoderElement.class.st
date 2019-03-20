@@ -154,6 +154,7 @@ GtSmaCCCoderElement >> sourceEditor [
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element editor: coder sourceEditor.
+	coder addShortcutsTo: element.
 	coder completionStrategy
 		ifNotNil: [ :strategy | 
 			| completionController |
