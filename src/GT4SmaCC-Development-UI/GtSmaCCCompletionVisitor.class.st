@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'completions'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-Completion'
 }
 
 { #category : #accessing }

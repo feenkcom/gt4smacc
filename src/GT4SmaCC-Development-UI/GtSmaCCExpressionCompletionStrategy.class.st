@@ -5,7 +5,7 @@ Class {
 		'codeCompletionStrategy',
 		'token'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-Completion'
 }
 
 { #category : #'instance creation' }

@@ -5,33 +5,43 @@ Class {
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
 		'announcer',
+		'grammarItem',
 		'owner',
 		'expanded',
 		'collapsedEditor',
 		'sourceEditor',
-		'originalSource',
-		'attributes',
-		'originalAST',
-		'ast'
+		'attributes'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
+{ #category : #accessing }
+GtSmaCCCoder class >> defaultTextAttributes [
+	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
+		beNotOverwritableByStyler.
+	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
+	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
+]
+
 { #category : #'instance creation' }
-GtSmaCCCoder class >> on: aNode in: aGrammarCoder [
+GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
+	aGrammarItem isDirective
+		ifTrue: [ ^ nil ].
 	^ self new
 		owner: aGrammarCoder;
-		originalAST: aNode;
+		grammarItem: aGrammarItem;
 		yourself
 ]
 
 { #category : #actions }
 GtSmaCCCoder >> actions [
-	^ {(GtCoderAction new
-		title: 'Inspect' translated;
-		icon: BrGlamorousIcons playinspect;
-		action: [ :button | self inspectFrom: button ];
-		yourself)}
+	^ grammarItem isTokenRule
+		ifTrue: [ {(GtCoderAction new
+				title: 'Simulate' translated;
+				icon: BrGlamorousIcons debug;
+				action: [ :button | self viewSimulator: button ];
+				yourself)} ]
+		ifFalse: [ #() ]
 ]
 
 { #category : #actions }
@@ -54,14 +64,7 @@ GtSmaCCCoder >> asElement [
 
 { #category : #accessing }
 GtSmaCCCoder >> ast [
-	^ ast ifNil: [ originalAST ]
-]
-
-{ #category : #private }
-GtSmaCCCoder >> astFor: aString [
-	^ SmaCCDefinitionParser
-		parseWithErrors: aString
-		startingAt: self parserStartingState
+	^ grammarItem ast
 ]
 
 { #category : #'accessing-attributes' }
@@ -101,7 +104,7 @@ GtSmaCCCoder >> browseReferences: anElement [
 	anElement
 		fireEvent:
 			(GtPhlowObjectToSpawn new
-				object: (filter applyInScope: owner coders);
+				object: (filter applyInScope: owner group) asElement;
 				sourceElement: anElement)
 ]
 
@@ -109,26 +112,22 @@ GtSmaCCCoder >> browseReferences: anElement [
 GtSmaCCCoder >> collapsedEditor [
 	collapsedEditor isNil
 		ifTrue: [ collapsedEditor := self newCollapsedEditor.
-			self updateCollapsedSource ].
+			self styleSource ].
 	^ collapsedEditor
 ]
 
 { #category : #accessing }
 GtSmaCCCoder >> completionStrategy [
+	grammarItem isProductionRule
+		ifTrue: [ ^ owner productionCompletionStrategy ].
+	grammarItem isTokenRule
+		ifTrue: [ ^ owner tokenCompletionStrategy ].
 	^ nil
 ]
 
 { #category : #editor }
 GtSmaCCCoder >> defaultTextAttributes [
-	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
-		beNotOverwritableByStyler.
-	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
-]
-
-{ #category : #accessing }
-GtSmaCCCoder >> definitionName [
-	self subclassResponsibility
+	^ self class defaultTextAttributes
 ]
 
 { #category : #accessing }
@@ -139,6 +138,16 @@ GtSmaCCCoder >> expanded [
 { #category : #accessing }
 GtSmaCCCoder >> expanded: aBoolean [
 	expanded := aBoolean
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> grammarItem [
+	^ grammarItem
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> grammarItem: aGrammarItem [
+	grammarItem := aGrammarItem
 ]
 
 { #category : #accessing }
@@ -158,34 +167,19 @@ GtSmaCCCoder >> initialize [
 	expanded := false
 ]
 
-{ #category : #actions }
-GtSmaCCCoder >> inspectFrom: anElement [
-	anElement phlow spawnObject: self
-]
-
 { #category : #testing }
 GtSmaCCCoder >> isModified [
-	^ self source ~= originalSource
-]
-
-{ #category : #testing }
-GtSmaCCCoder >> isProductionRuleCoder [
-	^ false
-]
-
-{ #category : #testing }
-GtSmaCCCoder >> isTokenRuleCoder [
-	^ false
+	^ grammarItem isModified
 ]
 
 { #category : #testing }
 GtSmaCCCoder >> isValid [
-	^ [ SmaCCDefinitionParser
-		parse: self source
-		startingAt: self parserStartingState.
-	true ]
-		on: SmaCCParserError
-		do: [ :ex | ex return: false ]
+	^ grammarItem isValid
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> name [
+	^ grammarItem name
 ]
 
 { #category : #editor }
@@ -196,7 +190,7 @@ GtSmaCCCoder >> newCollapsedEditor [
 { #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
 	| text |
-	text := originalSource asRopedText.
+	text := grammarItem source asRopedText.
 	text attributes: self defaultTextAttributes.
 	^ BrTextEditor new
 		styler: self newStyler;
@@ -229,13 +223,6 @@ GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 		ifTrue: [ aBlock cull: node cull: interval ]
 ]
 
-{ #category : #'initialize-release' }
-GtSmaCCCoder >> originalAST: aNode [
-	originalAST := aNode.
-	originalSource := aNode source.
-	ast := self astFor: originalSource
-]
-
 { #category : #accessing }
 GtSmaCCCoder >> owner [
 	^ owner
@@ -244,11 +231,6 @@ GtSmaCCCoder >> owner [
 { #category : #'initialize-release' }
 GtSmaCCCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
-]
-
-{ #category : #private }
-GtSmaCCCoder >> parserStartingState [
-	^ self subclassResponsibility
 ]
 
 { #category : #private }
@@ -295,15 +277,14 @@ GtSmaCCCoder >> shortcuts [
 
 { #category : #accessing }
 GtSmaCCCoder >> source [
-	^ sourceEditor isNil
-		ifTrue: [ originalSource ]
-		ifFalse: [ sourceEditor text asString ]
+	^ grammarItem source
 ]
 
 { #category : #'event handling' }
 GtSmaCCCoder >> sourceChanged [
-	ast := self astFor: self source.
-	self updateCollapsedSource
+	grammarItem source: self sourceEditor text asString.
+	self styleSource.
+	owner updateCompletions
 ]
 
 { #category : #editor }
@@ -325,24 +306,15 @@ GtSmaCCCoder >> styleSource [
 		do: [ :ex | ex return ]
 ]
 
-{ #category : #editor }
-GtSmaCCCoder >> styledName [
-	^ self definitionName asRopedText
-]
-
 { #category : #private }
 GtSmaCCCoder >> updateCollapsedSource [
 	self styleSource
 ]
 
-{ #category : #source }
-GtSmaCCCoder >> updateSource: aSmaCCString [
-	self isModified
-		ifFalse: [ ^ self ].
-	originalAST isNil
-		ifTrue: [ aSmaCCString append: String cr , self source ]
-		ifFalse: [ aSmaCCString
-				replaceFrom: originalAST startPosition
-				to: originalAST stopPosition
-				with: self source ]
+{ #category : #actions }
+GtSmaCCCoder >> viewSimulator: anElement [
+	| simulator ui |
+	simulator := GtSmaCCTokenSimulator on: grammarItem.
+	ui := GtSmaCCTokenSimulatorElement onSimulator: simulator.
+	anElement phlow spawnObject: ui
 ]

@@ -6,8 +6,11 @@ Class {
 
 { #category : #private }
 GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
-	| coder |
-	coder := styler grammarCoder coderNamed: aNode name source.
+	| item coder |
+	item := styler grammarCoder ruleNamed: aNode name source.
+	item isNil
+		ifTrue: [ ^ false ].
+	coder := GtSmaCCCoder on: item in: styler grammarCoder.
 	coder isNil
 		ifTrue: [ ^ false ].
 	self text

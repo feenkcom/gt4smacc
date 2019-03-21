@@ -5,28 +5,24 @@ Class {
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
 		'announcer',
-		'parserClass',
-		'coders',
-		'ast',
+		'grammar',
 		'tokenCompletionStrategy',
-		'productionCompletionStrategy'
+		'productionCompletionStrategy',
+		'group'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #'instance creation' }
-GtSmaCCGrammarCoder class >> onParser: aClass [
+GtSmaCCGrammarCoder class >> onGrammar: aGrammar [
 	^ self new
-		parserClass: aClass;
+		grammar: aGrammar;
 		yourself
 ]
 
-{ #category : #private }
-GtSmaCCGrammarCoder >> addCoderForRule: aNode [
-	aNode isProductionRule
-		ifTrue: [ coders add: (GtProductionCoder on: aNode in: self) ].
-	aNode isTokenRule
-		ifTrue: [ coders add: (GtTokenCoder on: aNode in: self) ]
+{ #category : #'instance creation' }
+GtSmaCCGrammarCoder class >> onParser: parserClass [
+	^ self onGrammar: (GtSmaCCGrammar onParser: parserClass)
 ]
 
 { #category : #accessing }
@@ -40,39 +36,30 @@ GtSmaCCGrammarCoder >> asElement [
 ]
 
 { #category : #accessing }
-GtSmaCCGrammarCoder >> coderNamed: aString [
-	coders
-		do: [ :each | 
-			each definitionName = aString
-				ifTrue: [ ^ each ] ].
-	^ nil
+GtSmaCCGrammarCoder >> grammar [
+	^ grammar
+]
+
+{ #category : #'initialize-release' }
+GtSmaCCGrammarCoder >> grammar: aGrammar [
+	grammar := aGrammar.
+	grammar rules do: [ :each | group add: each ].
+	self updateTokenCompletions.
+	self updateProductionCompletions
 ]
 
 { #category : #accessing }
-GtSmaCCGrammarCoder >> coders [
-	^ coders
+GtSmaCCGrammarCoder >> group [
+	^ group
 ]
 
 { #category : #'initialize-release' }
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
-	coders := GtSmaCCDefinitionGroupResult new.
+	group := GtSmaCCDefinitionGroupResult onCoder: self.
 	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
 	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
 		new
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCGrammarCoder >> parserClass: aClass [
-	parserClass := aClass.
-	parserClass isNil
-		ifTrue: [ ^ self ].
-	ast := parserClass definitionAST.
-	ast isNil
-		ifTrue: [ ^ self ].
-	ast rules do: [ :each | self addCoderForRule: each ].
-	self updateProductionCompletions.
-	self updateTokenCompletions
 ]
 
 { #category : #accessing }
@@ -81,28 +68,34 @@ GtSmaCCGrammarCoder >> productionCompletionStrategy [
 ]
 
 { #category : #accessing }
+GtSmaCCGrammarCoder >> ruleNamed: aString [
+	^ grammar ruleNamed: aString
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> rulesNamed: aString [
+	^ grammar rulesNamed: aString
+]
+
+{ #category : #accessing }
 GtSmaCCGrammarCoder >> scannerClass [
-	^ [ parserClass scannerClass ]
-		on: Error
-		do: [ :ex | ex return ]
+	^ grammar scannerClass
 ]
 
 { #category : #accessing }
 GtSmaCCGrammarCoder >> source [
-	| newSource |
-	newSource := ast completeSource copy.
-	coders do: [ :each | each updateSource: newSource ].
-	^ newSource asString
-]
-
-{ #category : #accessing }
-GtSmaCCGrammarCoder >> sourceAST [
-	^ SmaCCDefinitionParser parseWithErrors: self source
+	^ grammar source
 ]
 
 { #category : #accessing }
 GtSmaCCGrammarCoder >> tokenCompletionStrategy [
 	^ tokenCompletionStrategy
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateCompletions [
+	self updateProductionCompletions.
+	self updateTokenCompletions
 ]
 
 { #category : #private }
@@ -114,9 +107,9 @@ GtSmaCCGrammarCoder >> updateCompletions: aPrefixTree with: aNode [
 GtSmaCCGrammarCoder >> updateProductionCompletions [
 	| completions |
 	completions := GtPrefixTree new.
-	coders
+	group
 		do: [ :each | 
-			each isProductionRuleCoder
+			each isProductionRule
 				ifTrue: [ self updateCompletions: completions with: each ast ] ].
 	productionCompletionStrategy completions: completions
 ]
@@ -125,9 +118,9 @@ GtSmaCCGrammarCoder >> updateProductionCompletions [
 GtSmaCCGrammarCoder >> updateTokenCompletions [
 	| completions |
 	completions := GtPrefixTree new.
-	coders
+	group
 		do: [ :each | 
-			each isTokenRuleCoder
+			each isTokenRule
 				ifTrue: [ self updateCompletions: completions with: each ast ] ].
 	tokenCompletionStrategy completions: completions
 ]

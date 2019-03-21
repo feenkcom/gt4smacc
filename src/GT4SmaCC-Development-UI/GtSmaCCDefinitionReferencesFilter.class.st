@@ -21,7 +21,7 @@ GtSmaCCDefinitionReferencesFilter >> highlighter [
 
 { #category : #testing }
 GtSmaCCDefinitionReferencesFilter >> matches: anObject [
-	(anObject isKindOf: GtSmaCCCoder)
+	(anObject isKindOf: GtSmaCCModel)
 		ifFalse: [ ^ false ].
 	anObject ast
 		withAllNodesDo: [ :each | 
