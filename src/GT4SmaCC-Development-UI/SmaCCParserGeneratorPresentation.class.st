@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'parserClassName',
 		'scannerClassName',
+		'packageName',
 		'allowUnicode',
 		'codeGeneratorType',
 		'savedDefinition',
@@ -214,6 +215,16 @@ SmaCCParserGeneratorPresentation >> buildMenuItemsOn: presentation [
 							(parserClassName isNil
 								ifTrue: [ '...' ]
 								ifFalse: [ ' (' , parserClassName , ')...' ]);
+				yourself).
+			(SmaCCGLMAction new
+				category: 'Options';
+				action: [ :each | self setPackage ];
+				title:
+					'Package'
+						,
+							(packageName isNil
+								ifTrue: [ '...' ]
+								ifFalse: [ ' (' , packageName , ')...' ]);
 				yourself).
 			(SmaCCGLMAction new
 				isMenu: true;
@@ -528,6 +539,11 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 	| grammar stream oldCharacterSize parserCompiler messageCollection |
 	(self scannerClassName isEmpty or: [ self parserClassName isEmpty ])
 		ifTrue: [ ^ UIManager default alert: 'Both classes are not specified' ].
+	((Smalltalk includesKey: self parserClassName)
+		or: [ packageName notNil ])
+		ifFalse: [ self setPackage.
+			packageName isNil
+				ifTrue: [ ^ self ] ].
 	messageCollection := OrderedCollection new.
 	Cursor wait
 		showWhile: [ oldCharacterSize := SmaCCGrammar maximumCharacterValue.
@@ -541,7 +557,9 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 			parserCompiler := self compiler.
 			parserCompiler
 				codeGenerator: self codeGeneratorClass new;
-				buildDefinition: self definition;
+				buildDefinition: self definition.
+			parserCompiler codeGenerator defaultCategory: packageName.
+			parserCompiler
 				scannerClass: self scannerClassName;
 				parserClass: self parserClassName.
 			grammar := parserCompiler grammar.
@@ -1038,7 +1056,7 @@ SmaCCParserGeneratorPresentation >> parserClass [
 
 { #category : #accessing }
 SmaCCParserGeneratorPresentation >> parserClassName [
-	^ parserClassName
+	^ parserClassName ifNil: [ '' ]
 ]
 
 { #category : #accessing }
@@ -1159,7 +1177,7 @@ SmaCCParserGeneratorPresentation >> scannerClass [
 
 { #category : #accessing }
 SmaCCParserGeneratorPresentation >> scannerClassName [
-	^ scannerClassName
+	^ scannerClassName ifNil: [ '' ]
 ]
 
 { #category : #accessing }
@@ -1202,6 +1220,17 @@ SmaCCParserGeneratorPresentation >> setLALR1 [
 { #category : #actions }
 SmaCCParserGeneratorPresentation >> setLR1 [
 	type := #LR1
+]
+
+{ #category : #actions }
+SmaCCParserGeneratorPresentation >> setPackage [
+	| name |
+	name := UIManager default
+		enterOrRequestFrom: RPackage organizer packageNames asSortedCollection
+		title: 'Select package:'.
+	(name isNil or: [ name isEmpty ])
+		ifTrue: [ ^ self ].
+	packageName := name
 ]
 
 { #category : #actions }
