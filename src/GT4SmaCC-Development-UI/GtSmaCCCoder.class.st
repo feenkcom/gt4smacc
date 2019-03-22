@@ -147,7 +147,14 @@ GtSmaCCCoder >> grammarItem [
 
 { #category : #accessing }
 GtSmaCCCoder >> grammarItem: aGrammarItem [
-	grammarItem := aGrammarItem
+	grammarItem notNil
+		ifTrue: [ grammarItem announcer unsubscribe: self ].
+	grammarItem := aGrammarItem.
+	grammarItem notNil
+		ifTrue: [ grammarItem announcer weak
+				subscribe: GtSmaCCGrammarItemChanged
+				send: #itemChanged:
+				to: self ]
 ]
 
 { #category : #accessing }
@@ -177,6 +184,13 @@ GtSmaCCCoder >> isValid [
 	^ grammarItem isValid
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> itemChanged: anAnnouncement [
+	grammarItem source ~= self sourceEditor text asString
+		ifTrue: [ self sourceEditor text: self sourceText.
+			self styleSource ]
+]
+
 { #category : #accessing }
 GtSmaCCCoder >> name [
 	^ grammarItem name
@@ -189,12 +203,9 @@ GtSmaCCCoder >> newCollapsedEditor [
 
 { #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
-	| text |
-	text := grammarItem source asRopedText.
-	text attributes: self defaultTextAttributes.
 	^ BrTextEditor new
 		styler: self newStyler;
-		text: text;
+		text: self sourceText;
 		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];
 		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ];
 		yourself
@@ -295,6 +306,14 @@ GtSmaCCCoder >> sourceChanged [
 { #category : #editor }
 GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
+]
+
+{ #category : #editor }
+GtSmaCCCoder >> sourceText [
+	| text |
+	text := grammarItem source asRopedText.
+	text attributes: self defaultTextAttributes.
+	^ text
 ]
 
 { #category : #private }
