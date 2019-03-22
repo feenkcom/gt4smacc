@@ -88,7 +88,7 @@ GtSmaCCDefinitionListElement >> updateFilter: aString [
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateList [
 	| highlighter coders |
-	highlighter := group filter highlighter.
+	highlighter := group highlighter.
 	coders := OrderedCollection withAll: group coders.
 	coders do: [ :each | each highlighter: highlighter ].
 	self list items: coders

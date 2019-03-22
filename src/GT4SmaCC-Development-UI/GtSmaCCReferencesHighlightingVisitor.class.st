@@ -14,6 +14,11 @@ GtSmaCCReferencesHighlightingVisitor class >> name: aString [
 		yourself
 ]
 
+{ #category : #'initialize-release' }
+GtSmaCCReferencesHighlightingVisitor >> name: aString [
+	name := aString
+]
+
 { #category : #visiting }
 GtSmaCCReferencesHighlightingVisitor >> visitSymbol: aSymbol [
 	aSymbol name source = name
