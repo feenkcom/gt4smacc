@@ -237,19 +237,24 @@ GtSmaCCCoder >> owner: aGrammarCoder [
 GtSmaCCCoder >> referencesFilterAtCursor [
 	self
 		nodeForSelectionDo: [ :node :interval | 
+			(node isKindOf: SmaCCClassProductionExpressionNode)
+				ifTrue: [ (interval first >= node left startPosition
+						and: [ interval last <= node right stopPosition ])
+						ifTrue: [ ^ GtSmaCCNodeReferencesFilter name: node nodeName ] ].
+			(node isKindOf: SmaCCSymbolNode)
+				ifTrue: [ (node variableNameToken notNil
+						and: [ interval first >= node variableNameToken startPosition
+								and: [ interval last <= node variableNameToken stopPosition ] ])
+						ifTrue: [ ^ GtSmaCCVariableReferencesFilter
+								name: node variableNameToken source ] ].
 			((node isKindOf: SmaCCSymbolNode)
 				or: [ (node isKindOf: SmaCCTokenRegexNode)
 						or: [ (node isKindOf: SmaCCProductionRuleNode)
 								or: [ node isKindOf: SmaCCTokenRuleNode ] ] ])
 				ifTrue: [ (interval first >= node name startPosition
 						and: [ interval last <= node name stopPosition ])
-						ifTrue: [ ^ self referencesFilterFor: node name source ] ] ].
+						ifTrue: [ ^ GtSmaCCDefinitionReferencesFilter name: node name source ] ] ].
 	^ nil
-]
-
-{ #category : #private }
-GtSmaCCCoder >> referencesFilterFor: aString [
-	^ GtSmaCCDefinitionReferencesFilter name: aString
 ]
 
 { #category : #'accessing-attributes' }

@@ -18,10 +18,3 @@ GtSmaCCReferencesHighlightingVisitor class >> name: aString [
 GtSmaCCReferencesHighlightingVisitor >> name: aString [
 	name := aString
 ]
-
-{ #category : #visiting }
-GtSmaCCReferencesHighlightingVisitor >> visitSymbol: aSymbol [
-	aSymbol name source = name
-		ifTrue: [ self highlight: aSymbol name ].
-	^ super visitSymbol: aSymbol
-]

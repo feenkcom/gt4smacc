@@ -5,6 +5,18 @@ Class {
 }
 
 { #category : #filtering }
+GtSmaCCCoderExamples >> astNodeReferencesFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCNodeReferencesFilter
+		name: 'ClassProductionExpression'.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered isEmpty not.
+	^ filtered
+]
+
+{ #category : #filtering }
 GtSmaCCCoderExamples >> filterScope [
 	<gtExample>
 	| grammar scope |
@@ -180,5 +192,16 @@ GtSmaCCCoderExamples >> tokenReferencesFilter [
 	scope := self filterScope.
 	filtered := filter applyInScope: scope.
 	self assert: filtered size > 1.
+	^ filtered
+]
+
+{ #category : #filtering }
+GtSmaCCCoderExamples >> variableReferencesFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCVariableReferencesFilter name: '''rule'''.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered isEmpty not.
 	^ filtered
 ]

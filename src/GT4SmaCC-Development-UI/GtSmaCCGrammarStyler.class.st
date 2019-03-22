@@ -67,7 +67,7 @@ GtSmaCCGrammarStyler >> privateStyle: aText [
 
 { #category : #accessing }
 GtSmaCCGrammarStyler >> scannerClass [
-	^ scannerClass
+	^ scannerClass ifNil: [ SmaCCScanner ]
 ]
 
 { #category : #accessing }
