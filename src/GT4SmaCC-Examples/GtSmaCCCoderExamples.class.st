@@ -78,6 +78,53 @@ GtSmaCCCoderExamples >> implementorsFilter [
 ]
 
 { #category : #model }
+GtSmaCCCoderExamples >> jsGrammar [
+	<gtExample>
+	| grammar class |
+	class := Smalltalk at: #JSParser ifAbsent: [ ^ nil ].
+	grammar := GtSmaCCGrammar onParser: class.
+	self assert: grammar rules notEmpty.
+	^ grammar
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> jsIdentifier [
+	<gtExample>
+	| grammar |
+	grammar := self jsGrammar.
+	grammar isNil
+		ifTrue: [ ^ nil ].
+	^ grammar ruleNamed: '<identifier>'
+]
+
+{ #category : #simulation }
+GtSmaCCCoderExamples >> jsIdentifierSimulator [
+	<gtExample>
+	| identifier simulator |
+	identifier := self jsIdentifier.
+	identifier isNil
+		ifTrue: [ ^ nil ].
+	simulator := GtSmaCCTokenSimulator on: identifier.
+	simulator
+		subscribe: GtSmaCCSimulationAccept
+		do:
+			[ :ann | self assert: (ann index = 0 or: [ ann nodes notEmpty ]) ].
+	simulator simulateOn: '\u'.
+	^ simulator
+]
+
+{ #category : #ui }
+GtSmaCCCoderExamples >> jsIdentifierSimulatorUI [
+	<gtExample>
+	| identifier simulator |
+	identifier := self jsIdentifier.
+	identifier isNil
+		ifTrue: [ ^ nil ].
+	simulator := GtSmaCCTokenSimulator on: identifier.
+	^ GtSmaCCTokenSimulatorElement onSimulator: simulator
+]
+
+{ #category : #model }
 GtSmaCCCoderExamples >> productionRule [
 	<gtExample>
 	| grammar rule |
@@ -160,8 +207,56 @@ GtSmaCCCoderExamples >> semicolonTokenCoder [
 	^ coder
 ]
 
-{ #category : #ui }
+{ #category : #simulation }
+GtSmaCCCoderExamples >> simulateHex [
+	<gtExample>
+	| grammar rule simulator nodes |
+	grammar := GtSmaCCGrammar forDefinition: '<a> : <hex>; <hex> : [0-9a-fA-F];'.
+	rule := grammar ruleNamed: '<a>'.
+	simulator := GtSmaCCTokenSimulator on: rule.
+	nodes := IdentitySet new.
+	simulator
+		subscribe: GtSmaCCSimulationAccept
+		do: [ :ann | 
+			ann nodes
+				do: [ :each | nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ].
+	simulator simulateOn: 'a'.
+	self assert: nodes size = 2.
+	^ simulator
+]
+
+{ #category : #simulation }
 GtSmaCCCoderExamples >> simulateRight [
+	<gtExample>
+	| grammar rule simulator errorCount acceptCount input |
+	grammar := self smaccDefinitionGrammar.
+	rule := grammar ruleNamed: '<right>'.
+	simulator := GtSmaCCTokenSimulator on: rule.
+	input := 'rihht'.
+	errorCount := 0.
+	simulator
+		subscribe: GtSmaCCSimulationError
+		do: [ :ann | 
+			ann input = input
+				ifTrue: [ errorCount := errorCount + 1.
+					self assert: ann index = 3 ] ].
+	acceptCount := 0.
+	simulator
+		subscribe: GtSmaCCSimulationAccept
+		do: [ :ann | 
+			acceptCount := acceptCount + 1.
+			self assert: ann index < 3.
+			(ann input = input and: [ ann index > 0 ])
+				ifTrue: [ self assert: ann nodes size = 1.
+					self
+						assert: ann nodes anyOne source first = (input at: ann index) ] ].
+	simulator simulateOn: input.
+	self assert: acceptCount = 3.
+	^ simulator
+]
+
+{ #category : #ui }
+GtSmaCCCoderExamples >> simulateRightUI [
 	<gtExample>
 	| grammar rule simulator |
 	grammar := self smaccDefinitionGrammar.

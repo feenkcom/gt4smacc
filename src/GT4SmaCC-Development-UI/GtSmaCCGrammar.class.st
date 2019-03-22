@@ -11,6 +11,13 @@ Class {
 }
 
 { #category : #'instance creation' }
+GtSmaCCGrammar class >> forDefinition: aString [
+	^ self new
+		source: aString;
+		yourself
+]
+
+{ #category : #'instance creation' }
 GtSmaCCGrammar class >> onParser: aClass [
 	^ self new
 		parserClass: aClass;
@@ -124,4 +131,12 @@ GtSmaCCGrammar >> source [
 	newSource := originalAST completeSource copy.
 	rules do: [ :each | each updateSource: newSource ].
 	^ newSource asString
+]
+
+{ #category : #'initialize-release' }
+GtSmaCCGrammar >> source: aString [
+	originalAST := SmaCCDefinitionParser parseWithErrors: aString.
+	originalAST isNil
+		ifTrue: [ ^ self ].
+	originalAST rules do: [ :each | self addGrammarItem: each ]
 ]

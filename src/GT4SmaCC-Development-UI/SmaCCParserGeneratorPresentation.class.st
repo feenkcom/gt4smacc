@@ -1268,16 +1268,17 @@ SmaCCParserGeneratorPresentation >> simulateUsing: simulator tokenEditor: editor
 				ifTrue: [ (testerEditor text from: index to: testerEditor text size)
 						background: Color lightRed ]
 				ifFalse: [ (index = anIndex and: [ nodes notEmpty ])
-						ifTrue: [ | start |
-							start := (nodes asArray first nodeOfType: SmaCCTokenRuleNode)
-								startPosition - 1.
-							nodes
-								do: [ :each | 
-									each
-										testTokensDo: [ :token | 
-											(editor text
-												from: token startPosition - start
-												to: token stopPosition - start) background: Color green ] ] ] ] ].
+						ifTrue: [ nodes
+								do: [ :node | 
+									| start rule |
+									rule := node nodeOfType: SmaCCTokenRuleNode.
+									rule source = editor text asString
+										ifTrue: [ start := rule startPosition - 1.
+											node
+												testTokensDo: [ :token | 
+													(editor text
+														from: token startPosition - start
+														to: token stopPosition - start) background: Color green ] ] ] ] ] ].
 	editor text: editor text.
 	testerEditor text: testerEditor text
 ]
