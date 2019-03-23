@@ -8,7 +8,6 @@ Class {
 		'allowUnicode',
 		'codeGeneratorType',
 		'savedDefinition',
-		'type',
 		'viewItemSets',
 		'viewSymbols',
 		'tabGroup',
@@ -238,34 +237,6 @@ SmaCCParserGeneratorPresentation >> buildMenuItemsOn: presentation [
 								ifTrue: [ #checkBoxOn ]
 								ifFalse: [ #checkBoxOff ]));
 				title: 'Allow Unicode Characters';
-				shouldShowTitle: true;
-				yourself).
-			(SmaCCGLMAction new
-				isMenu: true;
-				isButton: false;
-				category: 'Options';
-				action: [ :each | self setLALR1 ];
-				icon:
-					(self
-						iconNamed:
-							(self isLALR1
-								ifTrue: [ #checkBoxOn ]
-								ifFalse: [ #checkBoxOff ]));
-				title: 'LALR(1)';
-				shouldShowTitle: true;
-				yourself).
-			(SmaCCGLMAction new
-				isMenu: true;
-				isButton: false;
-				category: 'Options';
-				action: [ :each | self setLR1 ];
-				icon:
-					(self
-						iconNamed:
-							(self isLR1
-								ifTrue: [ #checkBoxOn ]
-								ifFalse: [ #checkBoxOff ]));
-				title: 'LR(1)';
 				shouldShowTitle: true;
 				yourself).
 			(SmaCCGLMAction new
@@ -531,7 +502,7 @@ SmaCCParserGeneratorPresentation >> codeGeneratorClasses [
 SmaCCParserGeneratorPresentation >> compile [
 	self isAnnotationTabSelected
 		ifTrue: [ self saveAnnotatedSource ].
-	^ self compile: type
+	^ self compile: #LALR1
 ]
 
 { #category : #private }
@@ -799,7 +770,6 @@ SmaCCParserGeneratorPresentation >> initialize [
 	super initialize.
 	savedDefinition := ''.
 	allowUnicode := false.
-	type := #LALR1.
 	codeGeneratorType := #Smalltalk.
 	viewSymbols := true.
 	viewItemSets := false.
@@ -875,16 +845,6 @@ SmaCCParserGeneratorPresentation >> inlinedDefinitionOf: rule [
 { #category : #testing }
 SmaCCParserGeneratorPresentation >> isAnnotationTabSelected [
 	^ (self pageLabel: lastTabPage) = self annotationsLabel
-]
-
-{ #category : #testing }
-SmaCCParserGeneratorPresentation >> isLALR1 [
-	^ type = #LALR1
-]
-
-{ #category : #testing }
-SmaCCParserGeneratorPresentation >> isLR1 [
-	^ type = #LR1
 ]
 
 { #category : #testing }
@@ -1213,16 +1173,6 @@ SmaCCParserGeneratorPresentation >> setCodeGenerator: aSymbol [
 ]
 
 { #category : #actions }
-SmaCCParserGeneratorPresentation >> setLALR1 [
-	type := #LALR1
-]
-
-{ #category : #actions }
-SmaCCParserGeneratorPresentation >> setLR1 [
-	type := #LR1
-]
-
-{ #category : #actions }
 SmaCCParserGeneratorPresentation >> setPackage [
 	| name |
 	name := UIManager default
@@ -1395,11 +1345,6 @@ SmaCCParserGeneratorPresentation >> textWidget [
 	label = self testLabel
 		ifTrue: [ ^ testEditor ].
 	^ nil
-]
-
-{ #category : #actions }
-SmaCCParserGeneratorPresentation >> type [
-	^ type
 ]
 
 { #category : #private }
