@@ -13,9 +13,9 @@ GtSmaCCGrammarStylingVisitor >> completions [
 ]
 
 { #category : #private }
-GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode [
+GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	| name definition grammar |
-	name := aNode name source.
+	name := aToken source.
 	grammar := styler originalGrammar ifNil: [ aNode topParent ].
 	definition := grammar definitionNamed: name.
 	definition isNil
@@ -28,8 +28,8 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode [
 						stencil: [ self
 								textEditorOn: definition source
 								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ] ])}
-		from: aNode name stopPosition
-		to: aNode name stopPosition.
+		from: aToken stopPosition
+		to: aToken stopPosition.
 	^ true
 ]
 

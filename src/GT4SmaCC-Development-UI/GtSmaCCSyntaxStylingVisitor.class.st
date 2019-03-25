@@ -15,7 +15,7 @@ GtSmaCCSyntaxStylingVisitor >> formatCharacterMethod: aToken [
 ]
 
 { #category : #private }
-GtSmaCCSyntaxStylingVisitor >> formatInlineDefinition: aNode [
+GtSmaCCSyntaxStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	^ false
 ]
 
@@ -58,7 +58,7 @@ GtSmaCCSyntaxStylingVisitor >> style: anItem with: aSymbol [
 
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitClassProductionExpression: aClassProductionExpression [
-	self style: aClassProductionExpression with: #formatCode:.
+	self style: aClassProductionExpression with: #formatAST:.
 	super visitClassProductionExpression: aClassProductionExpression
 ]
 
@@ -96,6 +96,23 @@ GtSmaCCSyntaxStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
 ]
 
 { #category : #visiting }
+GtSmaCCSyntaxStylingVisitor >> visitIdDirective: anIdDirective [
+	super visitIdDirective: anIdDirective.
+	anIdDirective names
+		do: [ :each | 
+			each source first = $<
+				ifTrue: [ self style: each with: #formatToken:.
+					self formatInlineDefinition: anIdDirective token: each ] ]
+]
+
+{ #category : #visiting }
+GtSmaCCSyntaxStylingVisitor >> visitIgnoreVariableDirective: anIgnoreVariableDirective [
+	super visitIgnoreVariableDirective: anIgnoreVariableDirective.
+	anIgnoreVariableDirective names
+		do: [ :each | self style: each with: #formatVariableName: ]
+]
+
+{ #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitKeywordSymbol: aKeywordSymbol [
 	self style: aKeywordSymbol name with: #formatKeyword:.
 	super visitKeywordSymbol: aKeywordSymbol
@@ -110,7 +127,9 @@ GtSmaCCSyntaxStylingVisitor >> visitProductionRule: aProductionRule [
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitProductionSymbol: aProductionSymbol [
 	self style: aProductionSymbol name with: #formatProduction:.
-	self formatInlineDefinition: aProductionSymbol.
+	self
+		formatInlineDefinition: aProductionSymbol
+		token: aProductionSymbol name.
 	super visitProductionSymbol: aProductionSymbol
 ]
 
@@ -118,6 +137,14 @@ GtSmaCCSyntaxStylingVisitor >> visitProductionSymbol: aProductionSymbol [
 GtSmaCCSyntaxStylingVisitor >> visitRepeatRegex: aRepeatRegex [
 	self style: aRepeatRegex count with: #formatRepeat:.
 	super visitRepeatRegex: aRepeatRegex
+]
+
+{ #category : #visiting }
+GtSmaCCSyntaxStylingVisitor >> visitSuperclassDirective: aSuperclassDirective [
+	super visitSuperclassDirective: aSuperclassDirective.
+	self style: aSuperclassDirective superclass with: #formatAST:.
+	aSuperclassDirective names
+		do: [ :each | self style: each with: #formatAST: ]
 ]
 
 { #category : #visiting }
@@ -130,7 +157,7 @@ GtSmaCCSyntaxStylingVisitor >> visitSymbol: aSymbol [
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
 	self style: aTokenRegex with: #formatToken:.
-	(self formatInlineDefinition: aTokenRegex)
+	(self formatInlineDefinition: aTokenRegex token: aTokenRegex name)
 		ifFalse: [ self formatCharacterMethod: aTokenRegex ].
 	super visitTokenRegex: aTokenRegex
 ]
@@ -145,6 +172,6 @@ GtSmaCCSyntaxStylingVisitor >> visitTokenRule: aTokenRule [
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitTokenSymbol: aTokenSymbol [
 	self style: aTokenSymbol name with: #formatToken:.
-	self formatInlineDefinition: aTokenSymbol.
+	self formatInlineDefinition: aTokenSymbol token: aTokenSymbol name.
 	super visitTokenSymbol: aTokenSymbol
 ]

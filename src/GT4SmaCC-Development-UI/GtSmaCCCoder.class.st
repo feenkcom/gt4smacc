@@ -15,6 +15,20 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
+{ #category : #private }
+GtSmaCCCoder class >> coderClassFor: anItem [
+	anItem isProductionRule
+		ifTrue: [ ^ GtSmaCCProductionCoder ].
+	anItem isTokenRule
+		ifTrue: [ ^ GtSmaCCTokenCoder ].
+	anItem isDirective
+		ifTrue:
+			[ (#(isAssociativeDirective isAttributeDirective isIdDirective isIgnoreDirective isHierarchyDirective)
+				anySatisfy: [ :each | anItem ast perform: each ])
+				ifTrue: [ ^ GtSmaCCDirectiveCoder ] ].
+	^ nil
+]
+
 { #category : #accessing }
 GtSmaCCCoder class >> defaultTextAttributes [
 	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
@@ -25,9 +39,11 @@ GtSmaCCCoder class >> defaultTextAttributes [
 
 { #category : #'instance creation' }
 GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
-	aGrammarItem isDirective
+	| class |
+	class := self coderClassFor: aGrammarItem.
+	class isNil
 		ifTrue: [ ^ nil ].
-	^ self new
+	^ class new
 		owner: aGrammarCoder;
 		grammarItem: aGrammarItem;
 		yourself
@@ -174,6 +190,12 @@ GtSmaCCCoder >> initialize [
 	expanded := false
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> isInterval: interval inside: aNodeOrToken [
+	^ interval first >= aNodeOrToken startPosition
+		and: [ interval last <= aNodeOrToken stopPosition ]
+]
+
 { #category : #testing }
 GtSmaCCCoder >> isModified [
 	^ grammarItem isModified
@@ -227,8 +249,7 @@ GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 	node := nil.
 	self ast
 		withAllNodesDo: [ :each | 
-			(each startPosition <= interval first
-				and: [ each stopPosition >= interval last ])
+			(self isInterval: interval inside: each)
 				ifTrue: [ node := each ] ].
 	node notNil
 		ifTrue: [ aBlock cull: node cull: interval ]
@@ -254,16 +275,14 @@ GtSmaCCCoder >> referencesFilterAtCursor [
 						ifTrue: [ ^ GtSmaCCNodeReferencesFilter name: node nodeName ] ].
 			(node isKindOf: SmaCCSymbolNode)
 				ifTrue: [ (node variableNameToken notNil
-						and: [ interval first >= node variableNameToken startPosition
-								and: [ interval last <= node variableNameToken stopPosition ] ])
+						and: [ self isInterval: interval inside: node variableNameToken ])
 						ifTrue: [ ^ GtSmaCCVariableReferencesFilter
 								name: node variableNameToken source ] ].
 			((node isKindOf: SmaCCSymbolNode)
 				or: [ (node isKindOf: SmaCCTokenRegexNode)
 						or: [ (node isKindOf: SmaCCProductionRuleNode)
 								or: [ node isKindOf: SmaCCTokenRuleNode ] ] ])
-				ifTrue: [ (interval first >= node name startPosition
-						and: [ interval last <= node name stopPosition ])
+				ifTrue: [ (self isInterval: interval inside: node name)
 						ifTrue: [ ^ GtSmaCCDefinitionReferencesFilter name: node name source ] ] ].
 	^ nil
 ]
@@ -318,21 +337,21 @@ GtSmaCCCoder >> sourceText [
 
 { #category : #private }
 GtSmaCCCoder >> styleSource [
-	[ | name |
-	name := self ast name.
-	self sourceEditor
-		styleTextAndAfterDo: [ self collapsedEditor
-				text:
-					(self sourceEditor text
-						copyFrom: name startPosition
-						to: name stopPosition) readonly ] ]
+	[ self sourceEditor
+		styleTextAndAfterDo: [ self updateCollapsedSource ] ]
 		on: Error
 		do: [ :ex | ex return ]
 ]
 
 { #category : #private }
 GtSmaCCCoder >> updateCollapsedSource [
-	self styleSource
+	| name |
+	name := self ast name.
+	self collapsedEditor
+		text:
+			(self sourceEditor text
+				copyFrom: name startPosition
+				to: name stopPosition) readonly
 ]
 
 { #category : #actions }
