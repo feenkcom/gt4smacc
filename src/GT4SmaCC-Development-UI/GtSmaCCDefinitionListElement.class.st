@@ -2,7 +2,7 @@ Class {
 	#name : #GtSmaCCDefinitionListElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'coders'
+		'group'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -16,18 +16,7 @@ GtSmaCCDefinitionListElement >> buildElement [
 			c vertical matchParent ].
 	self addChild: self filterElement as: #filter.
 	self addChild: self listElement.
-	self updateFilter: ''
-]
-
-{ #category : #accessing }
-GtSmaCCDefinitionListElement >> coders [
-	^ coders
-]
-
-{ #category : #accessing }
-GtSmaCCDefinitionListElement >> coders: aDefinitionGroupResult [
-	coders := aDefinitionGroupResult.
-	self buildElement
+	self updateList
 ]
 
 { #category : #ui }
@@ -55,6 +44,17 @@ GtSmaCCDefinitionListElement >> filterElement [
 	^ element
 ]
 
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> group [
+	^ group
+]
+
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> group: aDefinitionGroupResult [
+	group := GtSmaCCNoFilter new applyInScope: aDefinitionGroupResult.
+	self buildElement
+]
+
 { #category : #private }
 GtSmaCCDefinitionListElement >> list [
 	^ self childNamed: #list
@@ -77,15 +77,19 @@ GtSmaCCDefinitionListElement >> listElement [
 
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateFilter: aString [
-	| filtered filter items highlighter |
-	aString isEmpty
-		ifTrue: [ filtered := coders.
-			highlighter := nil ]
-		ifFalse:
-			[ filter := GtSmaCCDefinitionImplementorPatternFilter pattern: aString.
-			filtered := filter applyInScope: coders.
-			highlighter := filter highlighter ].
-	items := OrderedCollection withAll: filtered.
-	items do: [ :each | each highlighter: highlighter ].
-	self list items: items
+	| filter |
+	filter := aString isEmpty
+		ifTrue: [ GtSmaCCNoFilter new ]
+		ifFalse: [ GtSmaCCDefinitionImplementorPatternFilter pattern: aString ].
+	group filter: filter.
+	self updateList
+]
+
+{ #category : #private }
+GtSmaCCDefinitionListElement >> updateList [
+	| highlighter coders |
+	highlighter := group highlighter.
+	coders := OrderedCollection withAll: group coders.
+	coders do: [ :each | each highlighter: highlighter ].
+	self list items: coders
 ]

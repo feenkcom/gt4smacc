@@ -2,8 +2,7 @@ Class {
 	#name : #GtSmaCCGrammarCoderElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'grammarCoder',
-		'coders'
+		'grammarCoder'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -25,7 +24,7 @@ GtSmaCCGrammarCoderElement >> buildElement [
 	self
 		addChild:
 			(GtSmaCCDefinitionListElement new
-				coders: grammarCoder coders;
+				group: grammarCoder group;
 				yourself)
 ]
 
@@ -41,6 +40,6 @@ GtSmaCCGrammarCoderElement >> listElement [
 	list := BrSimpleList new.
 	list vFitContent.
 	list stencil: [ :each :index | each asElement ].
-	list items: (grammarCoder coders collect: #yourself).
+	list items: grammarCoder group coders.
 	^ list asScrollableElement
 ]

@@ -14,9 +14,7 @@ GtSmaCCReferencesHighlightingVisitor class >> name: aString [
 		yourself
 ]
 
-{ #category : #visiting }
-GtSmaCCReferencesHighlightingVisitor >> visitSymbol: aSymbol [
-	aSymbol name source = name
-		ifTrue: [ self highlight: aSymbol name ].
-	^ super visitSymbol: aSymbol
+{ #category : #'initialize-release' }
+GtSmaCCReferencesHighlightingVisitor >> name: aString [
+	name := aString
 ]

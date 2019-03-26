@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : #formatting }
+GtSmaCCStyler class >> formatAST: aText [
+	aText foreground: Color green muchDarker
+]
+
+{ #category : #formatting }
 GtSmaCCStyler class >> formatCode: aText [
 	aText foreground: Color darkGray
 ]

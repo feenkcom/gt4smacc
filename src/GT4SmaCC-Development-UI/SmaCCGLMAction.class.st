@@ -8,7 +8,7 @@ Class {
 	#classVars : [
 		'ShowPrecedenceConflicts'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'initialize-release' }

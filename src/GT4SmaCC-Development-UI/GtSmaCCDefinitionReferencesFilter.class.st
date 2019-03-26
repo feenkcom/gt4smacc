@@ -1,27 +1,17 @@
 Class {
 	#name : #GtSmaCCDefinitionReferencesFilter,
-	#superclass : #GtSmaCCDefinitionsFilter,
-	#instVars : [
-		'name'
-	],
+	#superclass : #GtSmaCCReferencesFilter,
 	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : #'instance creation' }
-GtSmaCCDefinitionReferencesFilter class >> name: aString [
-	^ self new
-		name: aString;
-		yourself
-]
-
 { #category : #accessing }
-GtSmaCCDefinitionReferencesFilter >> highlighter [
-	^ GtSmaCCReferencesHighlightingVisitor name: name
+GtSmaCCDefinitionReferencesFilter >> highlighterClass [
+	^ GtSmaCCDefinitionReferencesHighlightingVisitor
 ]
 
 { #category : #testing }
 GtSmaCCDefinitionReferencesFilter >> matches: anObject [
-	(anObject isKindOf: GtSmaCCCoder)
+	(anObject isKindOf: GtSmaCCModel)
 		ifFalse: [ ^ false ].
 	anObject ast
 		withAllNodesDo: [ :each | 
@@ -30,9 +20,4 @@ GtSmaCCDefinitionReferencesFilter >> matches: anObject [
 				ifTrue: [ each name source = name
 						ifTrue: [ ^ true ] ] ].
 	^ false
-]
-
-{ #category : #accessing }
-GtSmaCCDefinitionReferencesFilter >> name: aString [
-	name := aString
 ]

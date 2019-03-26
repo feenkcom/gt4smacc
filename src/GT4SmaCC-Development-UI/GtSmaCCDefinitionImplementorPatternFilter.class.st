@@ -21,11 +21,14 @@ GtSmaCCDefinitionImplementorPatternFilter >> highlighter [
 
 { #category : #testing }
 GtSmaCCDefinitionImplementorPatternFilter >> matches: anObject [
-	(anObject isKindOf: GtSmaCCCoder)
+	(anObject isKindOf: GtSmaCCModel)
 		ifFalse: [ ^ false ].
-	^ pattern isEmpty
-		or: [ (anObject definitionName asLowercase
-				indexOfSubCollection: pattern asLowercase) > 0 ]
+	pattern isEmpty
+		ifTrue: [ ^ true ].
+	^ anObject name
+		ifNil: [ false ]
+		ifNotNil:
+			[ :name | (name asLowercase indexOfSubCollection: pattern asLowercase) > 0 ]
 ]
 
 { #category : #accessing }

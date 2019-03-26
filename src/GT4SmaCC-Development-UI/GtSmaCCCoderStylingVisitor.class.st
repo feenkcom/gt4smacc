@@ -5,9 +5,12 @@ Class {
 }
 
 { #category : #private }
-GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
-	| coder |
-	coder := styler grammarCoder coderNamed: aNode name source.
+GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
+	| item coder |
+	item := styler grammarCoder ruleNamed: aToken source.
+	item isNil
+		ifTrue: [ ^ false ].
+	coder := GtSmaCCCoder on: item in: styler grammarCoder.
 	coder isNil
 		ifTrue: [ ^ false ].
 	self text
@@ -19,7 +22,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode [
 							element := coder asElement.
 							element expand.
 							element ] ])}
-		from: aNode name stopPosition
-		to: aNode name stopPosition.
+		from: aToken stopPosition
+		to: aToken stopPosition.
 	^ true
 ]

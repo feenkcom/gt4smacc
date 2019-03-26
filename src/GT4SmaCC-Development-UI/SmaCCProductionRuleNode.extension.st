@@ -51,6 +51,24 @@ SmaCCProductionRuleNode >> displayString [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
+SmaCCProductionRuleNode >> nodeName [
+	^ String
+		streamContents: [ :stream | 
+			| nextIsUppercase |
+			nextIsUppercase := true.
+			name source
+				do: [ :each | 
+					each = $_
+						ifTrue: [ nextIsUppercase := true ]
+						ifFalse: [ stream
+								nextPut:
+									(nextIsUppercase
+										ifTrue: [ each asUppercase ]
+										ifFalse: [ each ]).
+							nextIsUppercase := false ] ] ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> ruleReferences [
 	^ self ruleReferencesTo: self name value
 ]

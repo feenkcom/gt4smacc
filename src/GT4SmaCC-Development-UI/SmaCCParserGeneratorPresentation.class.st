@@ -4,10 +4,10 @@ Class {
 	#instVars : [
 		'parserClassName',
 		'scannerClassName',
+		'packageName',
 		'allowUnicode',
 		'codeGeneratorType',
 		'savedDefinition',
-		'type',
 		'viewItemSets',
 		'viewSymbols',
 		'tabGroup',
@@ -24,7 +24,7 @@ Class {
 	#classVars : [
 		'ShowPrecedenceConflicts'
 	],
-	#category : #'GT4SmaCC-Development-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #accessing }
@@ -216,6 +216,16 @@ SmaCCParserGeneratorPresentation >> buildMenuItemsOn: presentation [
 								ifFalse: [ ' (' , parserClassName , ')...' ]);
 				yourself).
 			(SmaCCGLMAction new
+				category: 'Options';
+				action: [ :each | self setPackage ];
+				title:
+					'Package'
+						,
+							(packageName isNil
+								ifTrue: [ '...' ]
+								ifFalse: [ ' (' , packageName , ')...' ]);
+				yourself).
+			(SmaCCGLMAction new
 				isMenu: true;
 				isButton: false;
 				category: 'Options';
@@ -227,34 +237,6 @@ SmaCCParserGeneratorPresentation >> buildMenuItemsOn: presentation [
 								ifTrue: [ #checkBoxOn ]
 								ifFalse: [ #checkBoxOff ]));
 				title: 'Allow Unicode Characters';
-				shouldShowTitle: true;
-				yourself).
-			(SmaCCGLMAction new
-				isMenu: true;
-				isButton: false;
-				category: 'Options';
-				action: [ :each | self setLALR1 ];
-				icon:
-					(self
-						iconNamed:
-							(self isLALR1
-								ifTrue: [ #checkBoxOn ]
-								ifFalse: [ #checkBoxOff ]));
-				title: 'LALR(1)';
-				shouldShowTitle: true;
-				yourself).
-			(SmaCCGLMAction new
-				isMenu: true;
-				isButton: false;
-				category: 'Options';
-				action: [ :each | self setLR1 ];
-				icon:
-					(self
-						iconNamed:
-							(self isLR1
-								ifTrue: [ #checkBoxOn ]
-								ifFalse: [ #checkBoxOff ]));
-				title: 'LR(1)';
 				shouldShowTitle: true;
 				yourself).
 			(SmaCCGLMAction new
@@ -520,7 +502,7 @@ SmaCCParserGeneratorPresentation >> codeGeneratorClasses [
 SmaCCParserGeneratorPresentation >> compile [
 	self isAnnotationTabSelected
 		ifTrue: [ self saveAnnotatedSource ].
-	^ self compile: type
+	^ self compile: #LALR1
 ]
 
 { #category : #private }
@@ -528,6 +510,11 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 	| grammar stream oldCharacterSize parserCompiler messageCollection |
 	(self scannerClassName isEmpty or: [ self parserClassName isEmpty ])
 		ifTrue: [ ^ UIManager default alert: 'Both classes are not specified' ].
+	((Smalltalk includesKey: self parserClassName)
+		or: [ packageName notNil ])
+		ifFalse: [ self setPackage.
+			packageName isNil
+				ifTrue: [ ^ self ] ].
 	messageCollection := OrderedCollection new.
 	Cursor wait
 		showWhile: [ oldCharacterSize := SmaCCGrammar maximumCharacterValue.
@@ -541,7 +528,9 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 			parserCompiler := self compiler.
 			parserCompiler
 				codeGenerator: self codeGeneratorClass new;
-				buildDefinition: self definition;
+				buildDefinition: self definition.
+			parserCompiler codeGenerator defaultCategory: packageName.
+			parserCompiler
 				scannerClass: self scannerClassName;
 				parserClass: self parserClassName.
 			grammar := parserCompiler grammar.
@@ -781,7 +770,6 @@ SmaCCParserGeneratorPresentation >> initialize [
 	super initialize.
 	savedDefinition := ''.
 	allowUnicode := false.
-	type := #LALR1.
 	codeGeneratorType := #Smalltalk.
 	viewSymbols := true.
 	viewItemSets := false.
@@ -857,16 +845,6 @@ SmaCCParserGeneratorPresentation >> inlinedDefinitionOf: rule [
 { #category : #testing }
 SmaCCParserGeneratorPresentation >> isAnnotationTabSelected [
 	^ (self pageLabel: lastTabPage) = self annotationsLabel
-]
-
-{ #category : #testing }
-SmaCCParserGeneratorPresentation >> isLALR1 [
-	^ type = #LALR1
-]
-
-{ #category : #testing }
-SmaCCParserGeneratorPresentation >> isLR1 [
-	^ type = #LR1
 ]
 
 { #category : #testing }
@@ -1038,7 +1016,7 @@ SmaCCParserGeneratorPresentation >> parserClass [
 
 { #category : #accessing }
 SmaCCParserGeneratorPresentation >> parserClassName [
-	^ parserClassName
+	^ parserClassName ifNil: [ '' ]
 ]
 
 { #category : #accessing }
@@ -1159,7 +1137,7 @@ SmaCCParserGeneratorPresentation >> scannerClass [
 
 { #category : #accessing }
 SmaCCParserGeneratorPresentation >> scannerClassName [
-	^ scannerClassName
+	^ scannerClassName ifNil: [ '' ]
 ]
 
 { #category : #accessing }
@@ -1195,13 +1173,14 @@ SmaCCParserGeneratorPresentation >> setCodeGenerator: aSymbol [
 ]
 
 { #category : #actions }
-SmaCCParserGeneratorPresentation >> setLALR1 [
-	type := #LALR1
-]
-
-{ #category : #actions }
-SmaCCParserGeneratorPresentation >> setLR1 [
-	type := #LR1
+SmaCCParserGeneratorPresentation >> setPackage [
+	| name |
+	name := UIManager default
+		enterOrRequestFrom: RPackage organizer packageNames asSortedCollection
+		title: 'Select package:'.
+	(name isNil or: [ name isEmpty ])
+		ifTrue: [ ^ self ].
+	packageName := name
 ]
 
 { #category : #actions }
@@ -1239,16 +1218,17 @@ SmaCCParserGeneratorPresentation >> simulateUsing: simulator tokenEditor: editor
 				ifTrue: [ (testerEditor text from: index to: testerEditor text size)
 						background: Color lightRed ]
 				ifFalse: [ (index = anIndex and: [ nodes notEmpty ])
-						ifTrue: [ | start |
-							start := (nodes asArray first nodeOfType: SmaCCTokenRuleNode)
-								startPosition - 1.
-							nodes
-								do: [ :each | 
-									each
-										testTokensDo: [ :token | 
-											(editor text
-												from: token startPosition - start
-												to: token stopPosition - start) background: Color green ] ] ] ] ].
+						ifTrue: [ nodes
+								do: [ :node | 
+									| start rule |
+									rule := node nodeOfType: SmaCCTokenRuleNode.
+									rule source = editor text asString
+										ifTrue: [ start := rule startPosition - 1.
+											node
+												testTokensDo: [ :token | 
+													(editor text
+														from: token startPosition - start
+														to: token stopPosition - start) background: Color green ] ] ] ] ] ].
 	editor text: editor text.
 	testerEditor text: testerEditor text
 ]
@@ -1365,11 +1345,6 @@ SmaCCParserGeneratorPresentation >> textWidget [
 	label = self testLabel
 		ifTrue: [ ^ testEditor ].
 	^ nil
-]
-
-{ #category : #actions }
-SmaCCParserGeneratorPresentation >> type [
-	^ type
 ]
 
 { #category : #private }
