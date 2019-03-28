@@ -69,7 +69,7 @@ GtSmaCCStyler class >> formatTokenDefinition: aText [
 
 { #category : #formatting }
 GtSmaCCStyler class >> formatVariableName: aText [
-	aText foreground: Color gray
+	aText foreground: Color green darker
 ]
 
 { #category : #accessing }
