@@ -1,5 +1,5 @@
 Class {
-	#name : #GtSmaCCSimulationAccept,
+	#name : #GtSmaCCTokenSimulationAccept,
 	#superclass : #GtSmaCCSimulationAnnoucement,
 	#instVars : [
 		'nodes'
@@ -8,18 +8,18 @@ Class {
 }
 
 { #category : #'instance creation' }
-GtSmaCCSimulationAccept class >> input: aString index: anInteger nodes: aCollection [
+GtSmaCCTokenSimulationAccept class >> input: aString index: anInteger nodes: aCollection [
 	^ (self input: aString index: anInteger)
 		nodes: aCollection;
 		yourself
 ]
 
 { #category : #accessing }
-GtSmaCCSimulationAccept >> nodes [
+GtSmaCCTokenSimulationAccept >> nodes [
 	^ nodes
 ]
 
 { #category : #accessing }
-GtSmaCCSimulationAccept >> nodes: aCollection [
+GtSmaCCTokenSimulationAccept >> nodes: aCollection [
 	nodes := aCollection
 ]

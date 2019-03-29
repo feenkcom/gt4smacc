@@ -51,13 +51,7 @@ GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
 
 { #category : #actions }
 GtSmaCCCoder >> actions [
-	^ grammarItem isTokenRule
-		ifTrue: [ {(GtCoderAction new
-				title: 'Simulate' translated;
-				icon: BrGlamorousIcons debug;
-				action: [ :button | self viewSimulator: button ];
-				yourself)} ]
-		ifFalse: [ #() ]
+	^ #()
 ]
 
 { #category : #actions }
@@ -352,12 +346,4 @@ GtSmaCCCoder >> updateCollapsedSource [
 			(self sourceEditor text
 				copyFrom: name startPosition
 				to: name stopPosition) readonly
-]
-
-{ #category : #actions }
-GtSmaCCCoder >> viewSimulator: anElement [
-	| simulator ui |
-	simulator := GtSmaCCTokenSimulator on: grammarItem.
-	ui := GtSmaCCTokenSimulatorElement onSimulator: simulator.
-	anElement phlow spawnObject: ui
 ]
