@@ -16,6 +16,95 @@ GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	^ filtered
 ]
 
+{ #category : #model }
+GtSmaCCCoderExamples >> csGrammar [
+	<gtExample>
+	| grammar class |
+	class := Smalltalk at: #CSharpParser ifAbsent: [ ^ nil ].
+	grammar := GtSmaCCGrammar onParser: class.
+	self assert: grammar rules notEmpty.
+	^ grammar
+]
+
+{ #category : #'parser simulation' }
+GtSmaCCCoderExamples >> csIfSimulateError [
+	<gtExample>
+	^ self csIfSimulator
+		ifNotNil: [ :simulator | 
+			| result |
+			simulator
+				subscribe: GtSmaCCParserSimulationError
+				do: [ :ann | 
+					self assert: ann stack size = 5.
+					self assert: ann index = 11.
+					result := ann stack ].
+			simulator simulateOn: 'if (a == 3;'.
+			self assert: result notNil.
+			^ result ]
+]
+
+{ #category : #'parser simulation' }
+GtSmaCCCoderExamples >> csIfSimulateIncomplete [
+	<gtExample>
+	^ self csIfSimulator
+		ifNotNil: [ :simulator | 
+			| result |
+			simulator
+				subscribe: GtSmaCCParserSimulationIncompleteInput
+				do: [ :ann | 
+					self assert: ann stack size = 4.
+					result := ann stack ].
+			simulator simulateOn: 'if (a == 3)'.
+			self assert: result notNil.
+			^ result ]
+]
+
+{ #category : #'parser simulation' }
+GtSmaCCCoderExamples >> csIfSimulateResult [
+	<gtExample>
+	^ self csIfSimulator
+		ifNotNil: [ :simulator | 
+			| result |
+			simulator
+				subscribe: GtSmaCCParserSimulationAccept
+				do: [ :ann | 
+					self assert: ann results size = 1.
+					result := ann results first ].
+			simulator simulateOn: 'if (a == 3) return 4;'.
+			self assert: result notNil.
+			^ result ]
+]
+
+{ #category : #'parser simulation' }
+GtSmaCCCoderExamples >> csIfSimulator [
+	<gtExample>
+	| identifier |
+	identifier := self csIfStatement.
+	identifier isNil
+		ifTrue: [ ^ nil ].
+	^ GtSmaCCParserSimulator on: identifier
+]
+
+{ #category : #ui }
+GtSmaCCCoderExamples >> csIfSimulatorUI [
+	<gtExample>
+	| simulator |
+	simulator := self csIfSimulator.
+	simulator isNil
+		ifTrue: [ ^ nil ].
+	^ GtSmaCCParserSimulatorElement onSimulator: simulator
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> csIfStatement [
+	<gtExample>
+	| grammar |
+	grammar := self csGrammar.
+	grammar isNil
+		ifTrue: [ ^ nil ].
+	^ grammar ruleNamed: 'if_statement'
+]
+
 { #category : #filtering }
 GtSmaCCCoderExamples >> filterScope [
 	<gtExample>
@@ -97,7 +186,7 @@ GtSmaCCCoderExamples >> jsIdentifier [
 	^ grammar ruleNamed: '<identifier>'
 ]
 
-{ #category : #simulation }
+{ #category : #'token simulation' }
 GtSmaCCCoderExamples >> jsIdentifierSimulator [
 	<gtExample>
 	| identifier simulator |
@@ -106,7 +195,7 @@ GtSmaCCCoderExamples >> jsIdentifierSimulator [
 		ifTrue: [ ^ nil ].
 	simulator := GtSmaCCTokenSimulator on: identifier.
 	simulator
-		subscribe: GtSmaCCSimulationAccept
+		subscribe: GtSmaCCTokenSimulationAccept
 		do:
 			[ :ann | self assert: (ann index = 0 or: [ ann nodes notEmpty ]) ].
 	simulator simulateOn: '\u'.
@@ -207,7 +296,7 @@ GtSmaCCCoderExamples >> semicolonTokenCoder [
 	^ coder
 ]
 
-{ #category : #simulation }
+{ #category : #'token simulation' }
 GtSmaCCCoderExamples >> simulateHex [
 	<gtExample>
 	| grammar rule simulator nodes |
@@ -216,7 +305,7 @@ GtSmaCCCoderExamples >> simulateHex [
 	simulator := GtSmaCCTokenSimulator on: rule.
 	nodes := IdentitySet new.
 	simulator
-		subscribe: GtSmaCCSimulationAccept
+		subscribe: GtSmaCCTokenSimulationAccept
 		do: [ :ann | 
 			ann nodes
 				do: [ :each | nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ].
@@ -225,7 +314,7 @@ GtSmaCCCoderExamples >> simulateHex [
 	^ simulator
 ]
 
-{ #category : #simulation }
+{ #category : #'token simulation' }
 GtSmaCCCoderExamples >> simulateRight [
 	<gtExample>
 	| grammar rule simulator errorCount acceptCount input |
@@ -235,14 +324,14 @@ GtSmaCCCoderExamples >> simulateRight [
 	input := 'rihht'.
 	errorCount := 0.
 	simulator
-		subscribe: GtSmaCCSimulationError
+		subscribe: GtSmaCCTokenSimulationError
 		do: [ :ann | 
 			ann input = input
 				ifTrue: [ errorCount := errorCount + 1.
 					self assert: ann index = 3 ] ].
 	acceptCount := 0.
 	simulator
-		subscribe: GtSmaCCSimulationAccept
+		subscribe: GtSmaCCTokenSimulationAccept
 		do: [ :ann | 
 			acceptCount := acceptCount + 1.
 			self assert: ann index < 3.

@@ -81,7 +81,7 @@ GtSmaCCTokenSimulatorElement >> inputCursorPosition [
 GtSmaCCTokenSimulatorElement >> listElement [
 	| element group |
 	group := GtSmaCCDefinitionGroupResult onCoder: grammarCoder.
-	self add: simulator tokenRule to: group.
+	self add: simulator rule to: group.
 	element := group asElement.
 	element group coders do: [ :each | each expanded: true ].
 	(element childNamed: #filter) removeFromParent.
@@ -97,10 +97,11 @@ GtSmaCCTokenSimulatorElement >> simulator [
 GtSmaCCTokenSimulatorElement >> simulator: aSimulator [
 	simulator := aSimulator.
 	simulator announcer weak
-		subscribe: GtSmaCCSimulationError send: #styleError: to: self;
-		subscribe: GtSmaCCSimulationAccept send: #styleAccept: to: self.
-	grammarCoder := GtSmaCCGrammarCoder
-		onGrammar: simulator tokenRule grammar.
+		subscribe: GtSmaCCTokenSimulationError send: #styleError: to: self;
+		subscribe: GtSmaCCTokenSimulationAccept
+			send: #styleAccept:
+			to: self.
+	grammarCoder := GtSmaCCGrammarCoder onGrammar: simulator grammar.
 	self buildElement
 ]
 
