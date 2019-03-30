@@ -82,6 +82,20 @@ GtSmaCCParserSimulatorElement >> failed: errorAnnouncement [
 		token: errorAnnouncement token
 ]
 
+{ #category : #private }
+GtSmaCCParserSimulatorElement >> highlightInputFrom: startPosition to: stopPosition [
+	| editor |
+	editor := self testEditor.
+	editor
+		styleTextAndAfterDo: [ | text |
+			text := editor text.
+			text size >= stopPosition
+				ifFalse: [ ^ self ].
+			(text from: startPosition to: stopPosition)
+				attributes: AcceptAttributes.
+			editor text: text ]
+]
+
 { #category : #'event handling' }
 GtSmaCCParserSimulatorElement >> incomplete: incompleteAnnouncement [
 	self testEditor styleText.
@@ -122,9 +136,9 @@ GtSmaCCParserSimulatorElement >> parseTreeElement [
 			parseTreeElement ]
 ]
 
-{ #category : #'event handling' }
-GtSmaCCParserSimulatorElement >> selected: aNode [
-	| value name node |
+{ #category : #private }
+GtSmaCCParserSimulatorElement >> phlowSelection: aNode [
+	| name value node |
 	node := aNode.
 	[ value := node value.
 	name := nil.
@@ -141,6 +155,12 @@ GtSmaCCParserSimulatorElement >> selected: aNode [
 	node notNil ] whileTrue
 ]
 
+{ #category : #'event handling' }
+GtSmaCCParserSimulatorElement >> selected: aNode [
+	self phlowSelection: aNode.
+	self styleSelection: aNode
+]
+
 { #category : #'initialize-release' }
 GtSmaCCParserSimulatorElement >> setupSimulator [
 	simulator announcer weak
@@ -151,4 +171,18 @@ GtSmaCCParserSimulatorElement >> setupSimulator [
 			to: self.
 	grammarCoder := GtSmaCCGrammarCoder onGrammar: simulator grammar.
 	self buildElement
+]
+
+{ #category : #private }
+GtSmaCCParserSimulatorElement >> styleSelection: aNode [
+	| value |
+	self clearAttributesIn: self testEditor.
+	value := aNode value.
+	(value isKindOf: SmaCCToken)
+		ifTrue:
+			[ self highlightInputFrom: value startPosition to: value stopPosition ].
+	(value isKindOf: SmaCCReducedItem)
+		ifTrue: [ value sourceInterval
+				ifNotNil:
+					[ :interval | self highlightInputFrom: interval first to: interval last ] ]
 ]
