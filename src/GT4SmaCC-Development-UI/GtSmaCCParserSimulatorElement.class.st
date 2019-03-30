@@ -93,7 +93,10 @@ GtSmaCCParserSimulatorElement >> labelFor: anObject [
 	(anObject isKindOf: SmaCCReducedItem)
 		ifTrue: [ ^ anObject rhs productionSymbol name ].
 	(anObject isKindOf: SmaCCToken)
-		ifTrue: [ ^ anObject source ].
+		ifTrue: [ anObject isSyntaxError
+				ifTrue: [ ^ 'Scanner Error' asRopedText
+						foreground: BrGlamorousColors errorBorderColor ].
+			^ anObject source ].
 	(anObject isKindOf: Association)
 		ifTrue: [ ^ anObject key ].
 	^ self error: 'Unknown object'
