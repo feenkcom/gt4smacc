@@ -1,13 +1,8 @@
 Class {
 	#name : #GtSmaCCParserSimulatorElement,
-	#superclass : #BlElement,
+	#superclass : #GtSmaCCSimulatorElement,
 	#instVars : [
-		'simulator',
-		'grammarCoder',
 		'parseTreeElement'
-	],
-	#classVars : [
-		'ErrorAttributes'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -33,30 +28,8 @@ GtSmaCCParserSimulatorElement >> accepted: anAcceptAnnouncement [
 ]
 
 { #category : #ui }
-GtSmaCCParserSimulatorElement >> buildElement [
-	self layout: BlLinearLayout vertical.
-	self
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	self
-		addChild:
-			(BrLabel new
-				text: simulator ruleName , ' input:';
-				look: BrGlamorousLabelLook new;
-				padding: (BlInsets all: 5);
-				hFitContent;
-				yourself).
-	self addChild: self testElement as: #testInput.
+GtSmaCCParserSimulatorElement >> buildResultsElement [
 	self addChild: self parseTreeElement as: #parseTree
-]
-
-{ #category : #private }
-GtSmaCCParserSimulatorElement >> clearAttributesIn: editor [
-	| text |
-	text := editor text.
-	text clearAttributes: [ :attr | attr == ErrorAttributes first ].
-	^ editor text: text
 ]
 
 { #category : #private }
@@ -139,20 +112,34 @@ GtSmaCCParserSimulatorElement >> parseTreeElement [
 				stencil: [ :each | 
 					BrColumnCellLabelStencil new
 						text: (self labelFor: each value) asRopedText glamorousRegularFontAndSize ].
+			parseTreeElement
+				when: BrSelectionChanged
+				do:
+					[ :anEvent | parseTreeElement selectedNodeDo: [ :aNode | self selected: aNode ] ].
 			parseTreeElement ]
 ]
 
-{ #category : #private }
-GtSmaCCParserSimulatorElement >> simulateInput [
-	| editor |
-	editor := self testEditor.
-	self clearAttributesIn: editor.
-	simulator simulateOn: editor text asString
+{ #category : #'event handling' }
+GtSmaCCParserSimulatorElement >> selected: aNode [
+	| value name node |
+	node := aNode.
+	[ value := node value.
+	name := nil.
+	(value isKindOf: SmaCCReducedItem)
+		ifTrue: [ name := value rhs productionSymbol name ].
+	(value isKindOf: SmaCCToken)
+		ifTrue: [ name := simulator symbolNameFor: value ids first ].
+	name notNil
+		ifTrue: [ (grammarCoder coderNamed: name)
+				ifNotNil: [ :coder | 
+					coder expanded: true.
+					^ self parseTreeElement phlow selectObject: coder asElement ] ].
+	node := node parent.
+	node notNil ] whileTrue
 ]
 
 { #category : #'initialize-release' }
-GtSmaCCParserSimulatorElement >> simulator: aSimulator [
-	simulator := aSimulator.
+GtSmaCCParserSimulatorElement >> setupSimulator [
 	simulator announcer weak
 		subscribe: GtSmaCCParserSimulationAccept send: #accepted: to: self;
 		subscribe: GtSmaCCParserSimulationError send: #failed: to: self;
@@ -161,31 +148,4 @@ GtSmaCCParserSimulatorElement >> simulator: aSimulator [
 			to: self.
 	grammarCoder := GtSmaCCGrammarCoder onGrammar: simulator grammar.
 	self buildElement
-]
-
-{ #category : #private }
-GtSmaCCParserSimulatorElement >> testEditor [
-	^ (self childNamed: #testInput) editor
-]
-
-{ #category : #ui }
-GtSmaCCParserSimulatorElement >> testElement [
-	| element editor |
-	editor := BrTextEditor new.
-	editor
-		when: BrTextEditorDeletedEvent do: [ :event | self simulateInput ];
-		when: BrTextEditorInsertedEvent do: [ :event | self simulateInput ].
-	editor
-		text: ('' asRopedText attributes: GtSmaCCCoder defaultTextAttributes).
-	element := BrEditorElement new.
-	element
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
-	element
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
-	element margin: (BlInsets all: 5).
-	element padding: (BlInsets all: 3).
-	element editor: editor.
-	^ element
 ]
