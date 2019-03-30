@@ -36,6 +36,12 @@ GtSmaCCGrammarCoder >> asElement [
 ]
 
 { #category : #accessing }
+GtSmaCCGrammarCoder >> coderNamed: aString [
+	^ (self ruleNamed: aString)
+		ifNotNil: [ :item | group coderFor: item ]
+]
+
+{ #category : #accessing }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
 ]

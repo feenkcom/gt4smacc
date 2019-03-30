@@ -29,3 +29,8 @@ GtSmaCCParserSimulator >> simulateOn: aString [
 								stack: ex nodeStack
 								token: ex token ]) ]
 ]
+
+{ #category : #accessing }
+GtSmaCCParserSimulator >> symbolNameFor: anInteger [
+	^ (simulator symbolForId: anInteger) name
+]
