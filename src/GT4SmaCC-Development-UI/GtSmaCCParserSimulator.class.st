@@ -32,5 +32,7 @@ GtSmaCCParserSimulator >> simulateOn: aString [
 
 { #category : #accessing }
 GtSmaCCParserSimulator >> symbolNameFor: anInteger [
+	anInteger = 0
+		ifTrue: [ ^ nil ].
 	^ (simulator symbolForId: anInteger) name
 ]
