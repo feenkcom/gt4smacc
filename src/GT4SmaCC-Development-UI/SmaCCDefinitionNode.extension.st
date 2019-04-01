@@ -116,9 +116,11 @@ SmaCCDefinitionNode >> findItemsToRenameFrom: anInteger [
 	token isNil
 		ifTrue: [ ^ #() ].
 	('''"<' includes: token value first)
-		ifTrue: [ ^ (self allTokensMatching: token) collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ] ].
+		ifTrue: [ ^ (self allTokensMatching: token)
+				collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ] ].
 	(token value first isLetter or: [ token value first = $_ ])
-		ifTrue: [ ^ (self allTokensMatching: token) collect: [ :each | each startPosition to: each stopPosition ] ].
+		ifTrue: [ ^ (self allTokensMatching: token)
+				collect: [ :each | each sourceInterval ] ].
 	^ #()
 ]
 
