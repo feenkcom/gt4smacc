@@ -15,8 +15,7 @@ GtSmaCCTokenCoder >> actions [
 
 { #category : #actions }
 GtSmaCCTokenCoder >> viewTokenSimulator: anElement [
-	| simulator ui |
+	| simulator |
 	simulator := GtSmaCCTokenSimulator on: grammarItem.
-	ui := GtSmaCCTokenSimulatorElement onSimulator: simulator.
-	anElement phlow spawnObject: ui
+	anElement phlow spawnObject: simulator
 ]

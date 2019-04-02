@@ -114,7 +114,7 @@ GtSmaCCCoder >> browseReferences: anElement [
 	anElement
 		fireEvent:
 			(GtPhlowObjectToSpawn new
-				object: (filter applyInScope: owner group) asElement;
+				object: (filter applyInScope: owner group);
 				sourceElement: anElement)
 ]
 

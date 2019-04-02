@@ -4,6 +4,11 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Simulation'
 }
 
+{ #category : #ui }
+GtSmaCCParserSimulator >> asElement [
+	^ GtSmaCCParserSimulatorElement onSimulator: self
+]
+
 { #category : #private }
 GtSmaCCParserSimulator >> buildSimulator [
 	simulator := SmaCCParserSimulator on: self grammar source.
