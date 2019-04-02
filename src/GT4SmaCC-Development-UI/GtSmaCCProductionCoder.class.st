@@ -15,8 +15,7 @@ GtSmaCCProductionCoder >> actions [
 
 { #category : #actions }
 GtSmaCCProductionCoder >> viewParserSimulator: anElement [
-	| simulator ui |
+	| simulator |
 	simulator := GtSmaCCParserSimulator on: grammarItem.
-	ui := GtSmaCCParserSimulatorElement onSimulator: simulator.
-	anElement phlow spawnObject: ui
+	anElement phlow spawnObject: simulator
 ]

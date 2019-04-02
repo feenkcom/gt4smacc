@@ -4,6 +4,11 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Simulation'
 }
 
+{ #category : #ui }
+GtSmaCCTokenSimulator >> asElement [
+	^ GtSmaCCTokenSimulatorElement onSimulator: self
+]
+
 { #category : #private }
 GtSmaCCTokenSimulator >> buildSimulator [
 	| definitionAST |

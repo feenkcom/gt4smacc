@@ -42,6 +42,11 @@ GtSmaCCGrammarCoder >> coderNamed: aString [
 ]
 
 { #category : #accessing }
+GtSmaCCGrammarCoder >> coders [
+	^ group coders
+]
+
+{ #category : #accessing }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
 ]

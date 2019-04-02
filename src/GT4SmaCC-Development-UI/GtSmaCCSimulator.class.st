@@ -23,6 +23,11 @@ GtSmaCCSimulator >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
+{ #category : #ui }
+GtSmaCCSimulator >> asElement [
+	self subclassResponsibility
+]
+
 { #category : #private }
 GtSmaCCSimulator >> buildSimulator [
 	self subclassResponsibility
@@ -31,6 +36,15 @@ GtSmaCCSimulator >> buildSimulator [
 { #category : #accessing }
 GtSmaCCSimulator >> grammar [
 	^ rule grammar
+]
+
+{ #category : #ui }
+GtSmaCCSimulator >> gtLiveFor: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Live';
+		priority: 10;
+		stencil: [ self ]
 ]
 
 { #category : #accessing }

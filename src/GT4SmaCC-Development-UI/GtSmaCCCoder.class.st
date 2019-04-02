@@ -23,7 +23,7 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 		ifTrue: [ ^ GtSmaCCTokenCoder ].
 	anItem isDirective
 		ifTrue:
-			[ (#(isAssociativeDirective isAttributeDirective isIdDirective isIgnoreDirective isHierarchyDirective)
+			[ (#(isAssociativeDirective isAttributeDirective isIdDirective isIgnoreDirective isHierarchyDirective isStartDirective)
 				anySatisfy: [ :each | anItem ast perform: each ])
 				ifTrue: [ ^ GtSmaCCDirectiveCoder ] ].
 	^ nil
@@ -114,7 +114,7 @@ GtSmaCCCoder >> browseReferences: anElement [
 	anElement
 		fireEvent:
 			(GtPhlowObjectToSpawn new
-				object: (filter applyInScope: owner group) asElement;
+				object: (filter applyInScope: owner group);
 				sourceElement: anElement)
 ]
 
@@ -224,6 +224,8 @@ GtSmaCCCoder >> newSourceEditor [
 		text: self sourceText;
 		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];
 		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ];
+		when: BlInfiniteDataSourceChanged
+			do: [ :event | self sourceChanged ];
 		yourself
 ]
 
@@ -288,6 +290,53 @@ GtSmaCCCoder >> removeAttributeNamed: aSymbol [
 	^ attributes removeKey: aSymbol ifAbsent: [  ]
 ]
 
+{ #category : #actions }
+GtSmaCCCoder >> renameItem: anElement [
+	| token |
+	token := self selectedToken.
+	token isNil
+		ifTrue: [ ^ self ].
+	token source first = $<
+		ifTrue: [ self renameTokenNamed: token in: anElement ].
+	token source first isLetter
+		ifTrue: [ self renameProductionNamed: token in: anElement ]
+]
+
+{ #category : #'private-actions' }
+GtSmaCCCoder >> renameProductionNamed: aSmaCCToken in: anElement [
+]
+
+{ #category : #'private-actions' }
+GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
+	| coderMap localIntervals renameAction local |
+	aSmaCCToken size <= 2
+		ifTrue: [ ^ self ].
+	coderMap := Dictionary new.
+	owner coders
+		do: [ :each | 
+			each ast
+				allNodesDo: [ :node |  ]
+				andTokensDo: [ :token | 
+					token = aSmaCCToken
+						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+								add: token ] ] ].
+	local := coderMap keys
+		detect: [ :each | self grammarItem == each grammarItem ]
+		ifNone: [ ^ self ].
+	localIntervals := (coderMap at: local)
+		collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ].
+	coderMap removeKey: local.
+	renameAction := GtCompositeRenameAction
+		locations: localIntervals
+		element: anElement.
+	coderMap
+		keysAndValuesDo: [ :coder :tokens | 
+			renameAction
+				addLocations: (tokens collect: [ :each | each startPosition + 1 ])
+				to: coder sourceEditor ].
+	renameAction install
+]
+
 { #category : #private }
 GtSmaCCCoder >> selectedSourceInterval [
 	self sourceEditor selection
@@ -298,10 +347,28 @@ GtSmaCCCoder >> selectedSourceInterval [
 ]
 
 { #category : #private }
+GtSmaCCCoder >> selectedToken [
+	| token interval |
+	interval := self selectedSourceInterval.
+	interval isNil
+		ifTrue: [ ^ nil ].
+	self ast
+		allNodesDo: [ :each |  ]
+		andTokensDo: [ :each | 
+			(each startPosition <= interval first
+				and: [ each stopPosition >= interval last ])
+				ifTrue: [ token := each ] ].
+	^ token
+]
+
+{ #category : #private }
 GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcut new
 		combination: BlKeyCombination primaryN;
-		action: [ :editorElement | self browseReferences: editorElement ])}
+		action: [ :editorElement | self browseReferences: editorElement ]).
+	(BlShortcut new
+		combination: BlKeyCombination primaryR;
+		action: [ :editorElement | self renameItem: editorElement ])}
 ]
 
 { #category : #accessing }
