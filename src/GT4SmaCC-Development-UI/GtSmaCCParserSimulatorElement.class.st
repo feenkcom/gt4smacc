@@ -33,6 +33,32 @@ GtSmaCCParserSimulatorElement >> buildResultsElement [
 ]
 
 { #category : #private }
+GtSmaCCParserSimulatorElement >> childrenOf: anObject [
+	^ (anObject isKindOf: SmaCCReducedItem)
+		ifTrue: [ anObject items ]
+		ifFalse: [ (anObject isKindOf: Association)
+				ifTrue: [ anObject value ]
+				ifFalse: [ #() ] ]
+]
+
+{ #category : #'event handling' }
+GtSmaCCParserSimulatorElement >> cursorMoved [
+	| position |
+	position := self inputCursorPosition.
+	position = 0
+		ifTrue: [ ^ self ].
+	self parseTreeElement viewModel itemCount = 0
+		ifTrue: [ ^ self ].
+	(self
+		selectNodeAt: position
+		from: (self parseTreeElement viewModel itemAt: 1))
+		ifNotNil: [ :node | 
+			1 to: self parseTreeElement viewModel itemCount do: [ :i | 
+				(self parseTreeElement viewModel itemAt: i) == node
+					ifTrue: [ self parseTreeElement selectOne: i ] ] ]
+]
+
+{ #category : #private }
 GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 	| root |
 	root := aSmaCCToken isNil
@@ -42,12 +68,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 				-> (stack copyWith: aSmaCCToken) ].
 	self parseTreeElement
 		items: {root}
-		children: [ :each | 
-			(each isKindOf: SmaCCReducedItem)
-				ifTrue: [ each items ]
-				ifFalse: [ (each isKindOf: Association)
-						ifTrue: [ each value ]
-						ifFalse: [ #() ] ] ].
+		children: [ :each | self childrenOf: each ].
 	self expandRoot
 ]
 
@@ -55,10 +76,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 GtSmaCCParserSimulatorElement >> displayResult: reducedItem [
 	self parseTreeElement
 		items: {reducedItem}
-		children: [ :each | 
-			(each isKindOf: SmaCCReducedItem)
-				ifTrue: [ each items ]
-				ifFalse: [ #() ] ].
+		children: [ :each | self childrenOf: each ].
 	self expandRoot
 ]
 
@@ -155,10 +173,31 @@ GtSmaCCParserSimulatorElement >> phlowSelection: aNode [
 	node notNil ] whileTrue
 ]
 
+{ #category : #private }
+GtSmaCCParserSimulatorElement >> selectNodeAt: anInteger from: treeNode [
+	(self selectionIntervalFor: treeNode value)
+		ifNotNil: [ :interval | 
+			(interval first <= anInteger and: [ interval last >= anInteger ])
+				ifTrue: [ treeNode expand.
+					treeNode childrenNodes
+						do:
+							[ :each | (self selectNodeAt: anInteger from: each) ifNotNil: [ :node | ^ node ] ].
+					^ treeNode ] ].
+	^ nil
+]
+
 { #category : #'event handling' }
 GtSmaCCParserSimulatorElement >> selected: aNode [
 	self phlowSelection: aNode.
 	self styleSelection: aNode
+]
+
+{ #category : #private }
+GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
+	(anObject isKindOf: Association)
+		ifTrue: [ ^ 1 to: self testEditor text size ].
+	^ (anObject respondsTo: #sourceInterval)
+		ifTrue: [ anObject sourceInterval ]
 ]
 
 { #category : #'initialize-release' }
