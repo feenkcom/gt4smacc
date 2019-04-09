@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCDefinitionListElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'group'
+		'group',
+		'listElement'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -55,24 +56,17 @@ GtSmaCCDefinitionListElement >> group: aDefinitionGroupResult [
 	self buildElement
 ]
 
-{ #category : #private }
-GtSmaCCDefinitionListElement >> list [
-	^ self childNamed: #list
-]
-
 { #category : #ui }
 GtSmaCCDefinitionListElement >> listElement [
-	| list scrollable |
-	list := BrSimpleList new.
-	list vFitContent.
-	list stencil: [ :each :index | each asElement ].
-	scrollable := BlScrollableElement new.
-	scrollable
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	scrollable addChild: list as: #list.
-	^ scrollable
+	^ listElement
+		ifNil: [ | dataSource |
+			dataSource := GtSmaCCGroupCoderDataSource new group: group.
+			listElement := GtSmaCCGroupCoderInfiniteElement new
+				dataSource: dataSource;
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+			listElement ]
 ]
 
 { #category : #private }
@@ -87,9 +81,8 @@ GtSmaCCDefinitionListElement >> updateFilter: aString [
 
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateList [
-	| highlighter coders |
+	| highlighter |
 	highlighter := group highlighter.
-	coders := OrderedCollection withAll: group coders.
-	coders do: [ :each | each highlighter: highlighter ].
-	self list items: coders
+	group coders do: [ :each | each highlighter: highlighter ].
+	listElement dataSource updateCoders
 ]
