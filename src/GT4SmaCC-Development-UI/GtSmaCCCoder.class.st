@@ -378,7 +378,11 @@ GtSmaCCCoder >> source [
 
 { #category : #'event handling' }
 GtSmaCCCoder >> sourceChanged [
-	grammarItem source: self sourceEditor text asString.
+	| source |
+	source := self sourceEditor text asString.
+	grammarItem source = source
+		ifTrue: [ ^ self ].
+	grammarItem source: source.
 	self styleSource.
 	owner updateCompletions
 ]
