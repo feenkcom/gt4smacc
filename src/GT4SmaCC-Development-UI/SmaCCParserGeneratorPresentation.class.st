@@ -64,7 +64,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key r;
+						key: BlKeyboardKey r;
 						build);
 				action: [ self renameSymbolOn: element ]);
 		addShortcut:
@@ -72,7 +72,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key u;
+						key: BlKeyboardKey u;
 						build);
 				action: [ self moveDefinitionUp ]);
 		addShortcut:
@@ -80,7 +80,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key d;
+						key: BlKeyboardKey d;
 						build);
 				action: [ self moveDefinitionDown ]);
 		addShortcut:
@@ -88,7 +88,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key e;
+						key: BlKeyboardKey e;
 						build);
 				action: [ self extractSourceIn: element ]);
 		addShortcut:
@@ -96,7 +96,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key i;
+						key: BlKeyboardKey i;
 						build);
 				action: [ self inlineSource ]);
 		addShortcut:
@@ -104,7 +104,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key g;
+						key: BlKeyboardKey g;
 						build);
 				action: [ self gotoDefinitionIn: element ])
 ]
@@ -117,7 +117,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key d;
+						key: BlKeyboardKey d;
 						build);
 				action: [ self debugParse ]);
 		addShortcut:
@@ -125,7 +125,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key e;
+						key: BlKeyboardKey e;
 						build);
 				action: [ self parse ]);
 		addShortcut:
@@ -133,7 +133,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key i;
+						key: BlKeyboardKey i;
 						build);
 				action: [ self parseAndInspect ])
 ]
