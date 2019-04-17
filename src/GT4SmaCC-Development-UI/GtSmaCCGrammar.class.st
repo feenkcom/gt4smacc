@@ -49,6 +49,13 @@ GtSmaCCGrammar >> ast [
 	^ SmaCCDefinitionParser parseWithErrors: self source
 ]
 
+{ #category : #actions }
+GtSmaCCGrammar >> compileParser [
+	SmaCCGrammarCompiler new
+		buildDefinition: self source;
+		compileInto: scannerClassName andParser: parserClassName
+]
+
 { #category : #'initialize-release' }
 GtSmaCCGrammar >> initialize [
 	super initialize.
@@ -58,6 +65,11 @@ GtSmaCCGrammar >> initialize [
 { #category : #testing }
 GtSmaCCGrammar >> isModified [
 	^ rules anySatisfy: [ :each | each isModified ]
+]
+
+{ #category : #testing }
+GtSmaCCGrammar >> isValid [
+	^ rules allSatisfy: [ :each | each isValid ]
 ]
 
 { #category : #accessing }

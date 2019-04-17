@@ -28,3 +28,8 @@ GtSmaCCModel >> isProductionRule [
 GtSmaCCModel >> isTokenRule [
 	^ false
 ]
+
+{ #category : #testing }
+GtSmaCCModel >> isValid [
+	^ true
+]
