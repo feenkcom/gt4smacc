@@ -16,6 +16,8 @@ GtSmaCCTokenCoder >> actions [
 { #category : #actions }
 GtSmaCCTokenCoder >> viewTokenSimulator: anElement [
 	| simulator |
+	self isValid
+		ifFalse: [ ^ self ].
 	simulator := GtSmaCCTokenSimulator on: grammarItem.
 	anElement phlow spawnObject: simulator
 ]

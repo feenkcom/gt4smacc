@@ -45,6 +45,14 @@ GtSmaCCDefinitionListElement >> filterElement [
 	^ element
 ]
 
+{ #category : #private }
+GtSmaCCDefinitionListElement >> filterErrors [
+	| filter |
+	filter := GtSmaCCDefinitionErrorFilter new.
+	group filter: filter.
+	self updateList
+]
+
 { #category : #accessing }
 GtSmaCCDefinitionListElement >> group [
 	^ group

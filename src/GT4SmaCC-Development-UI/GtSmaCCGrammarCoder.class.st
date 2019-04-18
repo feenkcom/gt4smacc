@@ -46,6 +46,11 @@ GtSmaCCGrammarCoder >> coders [
 	^ group coders
 ]
 
+{ #category : #actions }
+GtSmaCCGrammarCoder >> compileParser [
+	grammar compileParser
+]
+
 { #category : #accessing }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
@@ -71,6 +76,11 @@ GtSmaCCGrammarCoder >> initialize [
 	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
 	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
 		new
+]
+
+{ #category : #testing }
+GtSmaCCGrammarCoder >> isValid [
+	^ grammar isValid
 ]
 
 { #category : #accessing }

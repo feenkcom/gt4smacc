@@ -5,7 +5,6 @@ Class {
 		'parserClassName',
 		'scannerClassName',
 		'packageName',
-		'allowUnicode',
 		'codeGeneratorType',
 		'savedDefinition',
 		'viewItemSets',
@@ -64,7 +63,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key r;
+						key: BlKeyboardKey r;
 						build);
 				action: [ self renameSymbolOn: element ]);
 		addShortcut:
@@ -72,7 +71,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key u;
+						key: BlKeyboardKey u;
 						build);
 				action: [ self moveDefinitionUp ]);
 		addShortcut:
@@ -80,7 +79,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key d;
+						key: BlKeyboardKey d;
 						build);
 				action: [ self moveDefinitionDown ]);
 		addShortcut:
@@ -88,7 +87,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key e;
+						key: BlKeyboardKey e;
 						build);
 				action: [ self extractSourceIn: element ]);
 		addShortcut:
@@ -96,7 +95,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key i;
+						key: BlKeyboardKey i;
 						build);
 				action: [ self inlineSource ]);
 		addShortcut:
@@ -104,7 +103,7 @@ SmaCCParserGeneratorPresentation >> addSourceShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key g;
+						key: BlKeyboardKey g;
 						build);
 				action: [ self gotoDefinitionIn: element ])
 ]
@@ -117,7 +116,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key d;
+						key: BlKeyboardKey d;
 						build);
 				action: [ self debugParse ]);
 		addShortcut:
@@ -125,7 +124,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key e;
+						key: BlKeyboardKey e;
 						build);
 				action: [ self parse ]);
 		addShortcut:
@@ -133,7 +132,7 @@ SmaCCParserGeneratorPresentation >> addTestShortcutsOn: element [
 				combination:
 					(BlKeyCombination builder
 						meta;
-						key: Key i;
+						key: BlKeyboardKey i;
 						build);
 				action: [ self parseAndInspect ])
 ]
@@ -224,20 +223,6 @@ SmaCCParserGeneratorPresentation >> buildMenuItemsOn: presentation [
 							(packageName isNil
 								ifTrue: [ '...' ]
 								ifFalse: [ ' (' , packageName , ')...' ]);
-				yourself).
-			(SmaCCGLMAction new
-				isMenu: true;
-				isButton: false;
-				category: 'Options';
-				action: [ :each | self useUnicode ];
-				icon:
-					(self
-						iconNamed:
-							(self isUnicode
-								ifTrue: [ #checkBoxOn ]
-								ifFalse: [ #checkBoxOff ]));
-				title: 'Allow Unicode Characters';
-				shouldShowTitle: true;
 				yourself).
 			(SmaCCGLMAction new
 				isMenu: true;
@@ -518,12 +503,7 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 	messageCollection := OrderedCollection new.
 	Cursor wait
 		showWhile: [ oldCharacterSize := SmaCCGrammar maximumCharacterValue.
-			[ SmaCCGrammar
-				maximumCharacterValue:
-					(allowUnicode
-						ifTrue: [ 16rE01EF ]
-						ifFalse: [ 255 ]).
-			self verifyParser
+			[ self verifyParser
 				ifFalse: [ ^ self ].
 			parserCompiler := self compiler.
 			parserCompiler
@@ -544,8 +524,12 @@ SmaCCParserGeneratorPresentation >> compile: aSymbol [
 				ifTrue: [ self itemSets: parserCompiler itemSetsComment ] ]
 				on: SmaCCCompilationNotification
 				do: [ :ex | 
-					(ShowPrecedenceConflicts or: [ ('*precedence*' match: ex messageText) not ])
-						ifTrue: [ messageCollection add: ex messageText , (String with: Character cr with: Character cr) , ex tag ].
+					(ShowPrecedenceConflicts
+						or: [ ('*precedence*' match: ex messageText) not ])
+						ifTrue: [ messageCollection
+								add:
+									ex messageText , (String with: Character cr with: Character cr)
+										, ex tag ].
 					ex pass ].
 			messageCollection asSortedCollection
 				do: [ :each | 
@@ -769,7 +753,6 @@ SmaCCParserGeneratorPresentation >> gotoDefinitionIn: anElement [
 SmaCCParserGeneratorPresentation >> initialize [
 	super initialize.
 	savedDefinition := ''.
-	allowUnicode := false.
 	codeGeneratorType := #Smalltalk.
 	viewSymbols := true.
 	viewItemSets := false.
@@ -855,11 +838,6 @@ SmaCCParserGeneratorPresentation >> isModified [
 { #category : #testing }
 SmaCCParserGeneratorPresentation >> isSourceTabSelected [
 	^ (self pageLabel: lastTabPage) = self sourceLabel
-]
-
-{ #category : #testing }
-SmaCCParserGeneratorPresentation >> isUnicode [
-	^ allowUnicode
 ]
 
 { #category : #testing }
@@ -1363,11 +1341,6 @@ SmaCCParserGeneratorPresentation >> updateDefinitionFor: parserClass [
 		ifTrue: [ parserClass gtStyler
 				ifNotNil: [ :styler | testEditor styler: styler ] ].
 	self switchToSource
-]
-
-{ #category : #actions }
-SmaCCParserGeneratorPresentation >> useUnicode [
-	allowUnicode := allowUnicode not
 ]
 
 { #category : #private }
