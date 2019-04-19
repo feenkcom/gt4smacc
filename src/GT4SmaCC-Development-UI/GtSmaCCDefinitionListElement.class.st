@@ -15,8 +15,14 @@ GtSmaCCDefinitionListElement >> buildElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	self padding: (BlInsets all: 10).
-	self margin: (BlInsets all: 10).
+	self
+		padding:
+			(BlInsets
+				top: 0
+				left: 10
+				bottom: 10
+				right: 10).
+	self margin: (BlInsets all: 0).
 	self addChild: self filterElement as: #filter.
 	self addChild: self listElement.
 	self updateList
