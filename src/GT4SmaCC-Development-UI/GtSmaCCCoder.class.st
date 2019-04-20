@@ -140,6 +140,13 @@ GtSmaCCCoder >> defaultTextAttributes [
 	^ self class defaultTextAttributes
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCCoder >> executeTransformation: aSmaCCTransformation [
+	[ aSmaCCTransformation execute ]
+		on: GtSmaCCTransformationError
+		do: [ :ex | self inform: ex messageText ]
+]
+
 { #category : #accessing }
 GtSmaCCCoder >> expanded [
 	^ expanded
@@ -234,6 +241,12 @@ GtSmaCCCoder >> newStyler [
 	^ GtSmaCCStyler new
 		coder: self;
 		yourself
+]
+
+{ #category : #private }
+GtSmaCCCoder >> nodeAtCursor [
+	self nodeForSelectionDo: [ :each | ^ each ].
+	^ nil
 ]
 
 { #category : #private }

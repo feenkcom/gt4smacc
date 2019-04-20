@@ -81,6 +81,11 @@ GtSmaCCGrammar >> glrDirective [
 		ifNone: [  ]
 ]
 
+{ #category : #accessing }
+GtSmaCCGrammar >> grammar [
+	^ self
+]
+
 { #category : #private }
 GtSmaCCGrammar >> hasCaseInsensitiveDirective [
 	^ self caseInsensitiveDirective notNil
