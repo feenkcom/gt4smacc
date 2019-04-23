@@ -79,6 +79,36 @@ GtSmaCCGrammarCoder >> initialize [
 ]
 
 { #category : #testing }
+GtSmaCCGrammarCoder >> isCaseInsensitive [
+	^ grammar isCaseInsensitive
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> isCaseInsensitive: aBoolean [
+	grammar isCaseInsensitive: aBoolean
+]
+
+{ #category : #testing }
+GtSmaCCGrammarCoder >> isGLR [
+	^ grammar isGLR
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> isGLR: aBoolean [
+	grammar isGLR: aBoolean
+]
+
+{ #category : #testing }
+GtSmaCCGrammarCoder >> isUnicode [
+	^ grammar isUnicode
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> isUnicode: aBoolean [
+	grammar isUnicode: aBoolean
+]
+
+{ #category : #testing }
 GtSmaCCGrammarCoder >> isValid [
 	^ grammar isValid
 ]

@@ -5,7 +5,10 @@ Class {
 		'parserClassName',
 		'scannerClassName',
 		'rules',
-		'originalAST'
+		'originalAST',
+		'glr',
+		'caseInsensitive',
+		'unicode'
 	],
 	#category : #'GT4SmaCC-Development-UI-Model'
 }
@@ -49,6 +52,13 @@ GtSmaCCGrammar >> ast [
 	^ SmaCCDefinitionParser parseWithErrors: self source
 ]
 
+{ #category : #private }
+GtSmaCCGrammar >> caseInsensitiveDirective [
+	^ rules
+		detect: [ :each | each isDirective and: [ each isCaseInsensitive ] ]
+		ifNone: [  ]
+]
+
 { #category : #actions }
 GtSmaCCGrammar >> compileParser [
 	SmaCCGrammarCompiler new
@@ -56,15 +66,86 @@ GtSmaCCGrammar >> compileParser [
 		compileInto: scannerClassName andParser: parserClassName
 ]
 
+{ #category : #private }
+GtSmaCCGrammar >> firstIndex [
+	rules
+		do:
+			[ :each | each originalAST ifNotNil: [ :tree | ^ tree startPosition ] ].
+	^ 1
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> glrDirective [
+	^ rules
+		detect: [ :each | each isDirective and: [ each isGLR ] ]
+		ifNone: [  ]
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> grammar [
+	^ self
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> hasCaseInsensitiveDirective [
+	^ self caseInsensitiveDirective notNil
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> hasGLRDirective [
+	^ self glrDirective notNil
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> hasUnicodeDirective [
+	^ self unicodeDirective notNil
+]
+
 { #category : #'initialize-release' }
 GtSmaCCGrammar >> initialize [
 	super initialize.
-	rules := OrderedCollection new
+	rules := OrderedCollection new.
+	glr := false.
+	caseInsensitive := false.
+	unicode := false
+]
+
+{ #category : #testing }
+GtSmaCCGrammar >> isCaseInsensitive [
+	^ caseInsensitive
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> isCaseInsensitive: aBoolean [
+	caseInsensitive := aBoolean
+]
+
+{ #category : #testing }
+GtSmaCCGrammar >> isGLR [
+	^ glr
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> isGLR: aBoolean [
+	glr := aBoolean
 ]
 
 { #category : #testing }
 GtSmaCCGrammar >> isModified [
-	^ rules anySatisfy: [ :each | each isModified ]
+	^ (rules anySatisfy: [ :each | each isModified ])
+		or: [ glr ~= self hasGLRDirective
+				or: [ unicode ~= self hasUnicodeDirective
+						or: [ caseInsensitive ~= self hasCaseInsensitiveDirective ] ] ]
+]
+
+{ #category : #testing }
+GtSmaCCGrammar >> isUnicode [
+	^ unicode
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> isUnicode: aBoolean [
+	unicode := aBoolean
 ]
 
 { #category : #testing }
@@ -86,7 +167,10 @@ GtSmaCCGrammar >> parserClass: aClass [
 	originalAST := aClass definitionAST.
 	originalAST isNil
 		ifTrue: [ ^ self ].
-	originalAST rules do: [ :each | self addGrammarItem: each ]
+	originalAST rules do: [ :each | self addGrammarItem: each ].
+	glr := self hasGLRDirective.
+	unicode := self hasUnicodeDirective.
+	caseInsensitive := self hasCaseInsensitiveDirective
 ]
 
 { #category : #accessing }
@@ -141,6 +225,21 @@ GtSmaCCGrammar >> source [
 	self isModified
 		ifFalse: [ ^ originalAST completeSource asString ].
 	newSource := originalAST completeSource copy.
+	self
+		updateFlag: 'ignorecase'
+		to: caseInsensitive
+		directive: self caseInsensitiveDirective
+		in: newSource.
+	self
+		updateFlag: 'unicode'
+		to: unicode
+		directive: self unicodeDirective
+		in: newSource.
+	self
+		updateFlag: 'glr'
+		to: glr
+		directive: self glrDirective
+		in: newSource.
 	rules do: [ :each | each updateSource: newSource ].
 	^ newSource asString
 ]
@@ -151,4 +250,24 @@ GtSmaCCGrammar >> source: aString [
 	originalAST isNil
 		ifTrue: [ ^ self ].
 	originalAST rules do: [ :each | self addGrammarItem: each ]
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> unicodeDirective [
+	^ rules
+		detect: [ :each | each isDirective and: [ each isUnicode ] ]
+		ifNone: [  ]
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> updateFlag: aString to: aBoolean directive: aRule in: aSmaCCString [
+	aBoolean
+		ifTrue: [ aRule isNil
+				ifTrue: [ aSmaCCString
+						insert: '%' , aString , ';' , String cr , String cr
+						at: self firstIndex ] ]
+		ifFalse: [ aRule notNil
+				ifTrue: [ aSmaCCString
+						deleteFrom: aRule originalAST startPosition
+						to: aRule originalAST stopPosition ] ]
 ]

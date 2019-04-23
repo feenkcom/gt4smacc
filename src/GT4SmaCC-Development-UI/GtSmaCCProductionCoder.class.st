@@ -13,6 +13,40 @@ GtSmaCCProductionCoder >> actions [
 		yourself)}
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCProductionCoder >> inlineAllReferencesTo: aProductionRuleNode [
+]
+
+{ #category : #actions }
+GtSmaCCProductionCoder >> inlineSource [
+	| node interval |
+	node := self nodeAtCursor.
+	node isNil
+		ifTrue: [ ^ self ].
+	(node isKindOf: SmaCCProductionSymbolNode)
+		ifTrue: [ ^ self
+				executeTransformation: (GtSmaCCInlineRefactoring inline: node in: grammarItem) ].
+	((node isKindOf: SmaCCProductionRuleNode)
+		and: [ (interval := self selectedSourceInterval) notNil
+				and: [ interval first >= node name startPosition
+						and: [ interval last <= node name stopPosition ] ] ])
+		ifTrue: [ ^ self
+				executeTransformation: (GtSmaCCInlineAllRefactoring inlineAll: grammarItem) ]
+]
+
+{ #category : #private }
+GtSmaCCProductionCoder >> shortcuts [
+	^ super shortcuts
+		,
+			{(BlShortcut new
+				combination:
+					(BlKeyCombination builder
+						meta;
+						key: BlKeyboardKey i;
+						build);
+				action: [ :editorElement | self inlineSource ])}
+]
+
 { #category : #actions }
 GtSmaCCProductionCoder >> viewParserSimulator: anElement [
 	| simulator |

@@ -14,6 +14,11 @@ GtSmaCCModel >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
+{ #category : #accessing }
+GtSmaCCModel >> grammar [
+	self subclassResponsibility
+]
+
 { #category : #testing }
 GtSmaCCModel >> isDirective [
 	^ false
@@ -32,4 +37,9 @@ GtSmaCCModel >> isTokenRule [
 { #category : #testing }
 GtSmaCCModel >> isValid [
 	^ true
+]
+
+{ #category : #accessing }
+GtSmaCCModel >> ruleNamed: aString [
+	^ self grammar ruleNamed: aString
 ]
