@@ -13,8 +13,3 @@ GtSmaCCDefinitionsFilter class >> resultType [
 GtSmaCCDefinitionsFilter >> highlighter [
 	^ nil
 ]
-
-{ #category : #accessing }
-GtSmaCCDefinitionsFilter >> resultType [
-	^ GtSmaCCDefinitionGroupResult
-]

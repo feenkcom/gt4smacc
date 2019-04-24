@@ -11,7 +11,7 @@ GtSmaCCNodeReferencesFilter >> highlighterClass [
 
 { #category : #testing }
 GtSmaCCNodeReferencesFilter >> matches: anObject [
-	(anObject isKindOf: GtSmaCCModel)
+	(anObject isKindOf: GtSmaCCGrammarItem)
 		ifFalse: [ ^ false ].
 	anObject ast
 		withAllNodesOfType: SmaCCClassProductionExpressionNode

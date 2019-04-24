@@ -5,7 +5,7 @@ Class {
 		'coderMap',
 		'grammarCoder'
 	],
-	#category : #'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #'instance creation' }
@@ -53,7 +53,7 @@ GtSmaCCDefinitionGroupResult >> grammarCoder: aGrammarCoder [
 ]
 
 { #category : #ui }
-GtSmaCCDefinitionGroupResult >> gtLiveFor: aView [
+GtSmaCCDefinitionGroupResult >> gtItemsFor: aView [
 	<gtView>
 	^ aView explicit 
 		title: 'Live';
