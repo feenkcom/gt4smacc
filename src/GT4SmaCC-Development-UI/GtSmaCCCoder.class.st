@@ -114,7 +114,7 @@ GtSmaCCCoder >> browseReferences: anElement [
 	anElement
 		fireEvent:
 			(GtPhlowObjectToSpawn new
-				object: (filter applyInScope: owner group);
+				object: (GtSmaCCGrammarFilter on: self owner) & filter;
 				sourceElement: anElement)
 ]
 
@@ -155,6 +155,11 @@ GtSmaCCCoder >> expanded [
 { #category : #accessing }
 GtSmaCCCoder >> expanded: aBoolean [
 	expanded := aBoolean
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> grammar [
+	^ self grammarItem grammar
 ]
 
 { #category : #accessing }

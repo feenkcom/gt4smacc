@@ -6,5 +6,6 @@ Class {
 
 { #category : #testing }
 GtSmaCCDefinitionErrorFilter >> matches: anObject [
-	^ (anObject isKindOf: GtSmaCCModel) and: [ anObject isValid not ]
+	^ (anObject isKindOf: GtSmaCCGrammarItem)
+		and: [ anObject isValid not ]
 ]

@@ -21,7 +21,7 @@ GtSmaCCDefinitionImplementorPatternFilter >> highlighter [
 
 { #category : #testing }
 GtSmaCCDefinitionImplementorPatternFilter >> matches: anObject [
-	(anObject isKindOf: GtSmaCCModel)
+	(anObject isKindOf: GtSmaCCGrammarItem)
 		ifFalse: [ ^ false ].
 	pattern isEmpty
 		ifTrue: [ ^ true ].
