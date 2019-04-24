@@ -70,6 +70,10 @@ GtSmaCCGrammarCoderElement >> buildElement [
 { #category : #'initialize-release' }
 GtSmaCCGrammarCoderElement >> coder: aGrammarCoder [
 	grammarCoder := aGrammarCoder.
+	grammarCoder weak
+		when: GtSmaCCCoderAnnouncement
+		send: #updateList
+		to: self.
 	self buildElement
 ]
 
@@ -166,4 +170,12 @@ GtSmaCCGrammarCoderElement >> toggleButton: aString activated: aSymbol [
 			do:
 				[ :anEvent | grammarCoder perform: (aSymbol , ':') asSymbol with: false ].
 	^ toggle
+]
+
+{ #category : #ui }
+GtSmaCCGrammarCoderElement >> updateList [
+	self
+		childNamed: #list
+		ifFound: [ :element | element updateFilters ]
+		ifNone: [  ]
 ]

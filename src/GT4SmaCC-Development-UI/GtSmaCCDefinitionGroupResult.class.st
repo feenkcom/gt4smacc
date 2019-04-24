@@ -27,6 +27,8 @@ GtSmaCCDefinitionGroupResult >> asElement [
 
 { #category : #accessing }
 GtSmaCCDefinitionGroupResult >> coderFor: aGrammarItem [
+	aGrammarItem isDeleted
+		ifTrue: [ ^ nil ].
 	^ (coderMap ifNil: [ coderMap := IdentityDictionary new ])
 		at: aGrammarItem
 		ifAbsentPut: [ GtSmaCCCoder on: aGrammarItem in: self grammarCoder ]

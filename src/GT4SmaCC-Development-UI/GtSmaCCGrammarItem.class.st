@@ -5,7 +5,8 @@ Class {
 		'grammar',
 		'originalAST',
 		'source',
-		'ast'
+		'ast',
+		'isDeleted'
 	],
 	#category : #'GT4SmaCC-Development-UI-Model'
 }
@@ -26,6 +27,12 @@ GtSmaCCGrammarItem >> ast [
 				startingAt: self parserStartingState ]
 ]
 
+{ #category : #actions }
+GtSmaCCGrammarItem >> delete [
+	isDeleted := true.
+	self announce: (GtSmaCCGrammarItemChanged forItem: self)
+]
+
 { #category : #accessing }
 GtSmaCCGrammarItem >> grammar [
 	^ grammar
@@ -36,13 +43,32 @@ GtSmaCCGrammarItem >> grammar: aGrammar [
 	grammar := aGrammar
 ]
 
+{ #category : #'initialize-release' }
+GtSmaCCGrammarItem >> initialize [
+	super initialize.
+	isDeleted := false
+]
+
+{ #category : #testing }
+GtSmaCCGrammarItem >> isDeleted [
+	^ isDeleted
+]
+
 { #category : #testing }
 GtSmaCCGrammarItem >> isModified [
-	^ source ~= self originalSource
+	^ source ~= self originalSource or: [ isDeleted ]
+]
+
+{ #category : #testing }
+GtSmaCCGrammarItem >> isReferenced [
+	self grammar allReferencesTo: self name do: [ :node | ^ true ].
+	^ false
 ]
 
 { #category : #testing }
 GtSmaCCGrammarItem >> isValid [
+	isDeleted
+		ifTrue: [ ^ true ].
 	^ [ SmaCCDefinitionParser
 		parse: self source
 		startingAt: self parserStartingState.
@@ -97,10 +123,15 @@ GtSmaCCGrammarItem >> source: aString [
 GtSmaCCGrammarItem >> updateSource: aSmaCCString [
 	self isModified
 		ifFalse: [ ^ self ].
-	originalAST isNil
-		ifTrue: [ aSmaCCString append: String cr , self source ]
-		ifFalse: [ aSmaCCString
-				replaceFrom: originalAST startPosition
-				to: originalAST stopPosition
-				with: self source ]
+	isDeleted
+		ifTrue: [ aSmaCCString
+				deleteWhitespaceAfterIndex: originalAST stopPosition;
+				deleteFrom: originalAST startPosition
+					to: originalAST stopPosition ]
+		ifFalse: [ originalAST isNil
+				ifTrue: [ aSmaCCString append: String cr , self source ]
+				ifFalse: [ aSmaCCString
+						replaceFrom: originalAST startPosition
+						to: originalAST stopPosition
+						with: self source ] ]
 ]

@@ -140,6 +140,12 @@ GtSmaCCCoder >> defaultTextAttributes [
 	^ self class defaultTextAttributes
 ]
 
+{ #category : #actions }
+GtSmaCCCoder >> deleteRule [
+	self
+		executeTransformation: (GtSmaCCDeleteRefactoring delete: grammarItem)
+]
+
 { #category : #'private-actions' }
 GtSmaCCCoder >> executeTransformation: aSmaCCTransformation [
 	[ aSmaCCTransformation execute ]
@@ -173,7 +179,7 @@ GtSmaCCCoder >> grammarItem: aGrammarItem [
 		ifTrue: [ grammarItem announcer unsubscribe: self ].
 	grammarItem := aGrammarItem.
 	grammarItem notNil
-		ifTrue: [ grammarItem announcer weak
+		ifTrue: [ grammarItem weak
 				subscribe: GtSmaCCGrammarItemChanged
 				send: #itemChanged:
 				to: self ]
@@ -205,6 +211,11 @@ GtSmaCCCoder >> isInterval: interval inside: aNodeOrToken [
 { #category : #testing }
 GtSmaCCCoder >> isModified [
 	^ grammarItem isModified
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isReferenced [
+	^ grammarItem isReferenced
 ]
 
 { #category : #testing }

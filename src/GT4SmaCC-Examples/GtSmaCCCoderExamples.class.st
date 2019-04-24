@@ -105,6 +105,42 @@ GtSmaCCCoderExamples >> csIfStatement [
 	^ grammar ruleNamed: 'if_statement'
 ]
 
+{ #category : #model }
+GtSmaCCCoderExamples >> exampleDelete [
+	<gtExample>
+	| grammar |
+	grammar := self exampleGrammar.
+	(grammar ruleNamed: 'NotReferenced') delete.
+	self
+		assert: (grammar source indexOfSubCollection: 'NotReferenced') = 0.
+	(grammar ruleNamed: '<notReferenced>') delete.
+	self
+		assert: (grammar source indexOfSubCollection: '<notReferenced>') = 0.
+	^ grammar
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> exampleGrammar [
+	<gtExample>
+	| grammar |
+	grammar := GtSmaCCGrammar
+		forDefinition:
+			'<whitespace> : \s+; 
+			<notReferenced> : a+; 
+			<a> : a+; 
+			Start : A;
+			A : <a>;
+			NotReferenced : A;'.
+	self assert: (grammar ruleNamed: '<whitespace>') isReferenced.
+	self assert: (grammar ruleNamed: '<notReferenced>') isReferenced not.
+	self assert: (grammar ruleNamed: 'NotReferenced') isReferenced not.
+	self assert: (grammar ruleNamed: '<a>') isReferenced.
+	self assert: (grammar ruleNamed: 'A') isReferenced.
+	self assert: grammar startingProductions size = 1.
+	self assert: grammar startingProductions first name = 'Start'.
+	^ grammar
+]
+
 { #category : #filtering }
 GtSmaCCCoderExamples >> filterScope [
 	<gtExample>
@@ -361,6 +397,22 @@ GtSmaCCCoderExamples >> smaccDefinitionGrammar [
 	grammar := GtSmaCCGrammar onParser: self smaccGrammarClass.
 	self assert: grammar rules notEmpty.
 	^ grammar
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> smaccDefinitionGrammarStartingProductions [
+	<gtExample>
+	| grammar startingProductions names |
+	grammar := self smaccDefinitionGrammar.
+	startingProductions := grammar startingProductions.
+	self assert: startingProductions first name = 'File'.
+	names := startingProductions collect: #name.
+	self assert: (names includes: 'ProductionRule').
+	self assert: (names includes: 'RegexRule').
+	self assert: (names includes: 'DirectiveLine').
+	self
+		assert: (startingProductions allSatisfy: [ :each | each isReferenced ]).
+	^ startingProductions
 ]
 
 { #category : #private }

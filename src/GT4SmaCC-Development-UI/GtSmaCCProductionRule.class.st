@@ -31,6 +31,16 @@ GtSmaCCProductionRule >> isProductionRule [
 	^ true
 ]
 
+{ #category : #accessing }
+GtSmaCCProductionRule >> isReferenced [
+	^ super isReferenced or: [ self isStartingProduction ]
+]
+
+{ #category : #accessing }
+GtSmaCCProductionRule >> isStartingProduction [
+	^ self grammar startingProductions includes: self
+]
+
 { #category : #private }
 GtSmaCCProductionRule >> parserStartingState [
 	^ SmaCCDefinitionParser startingStateForProductionRule

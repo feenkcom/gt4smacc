@@ -13,6 +13,11 @@ GtSmaCCTransformation >> checkPreconditions [
 ]
 
 { #category : #execution }
+GtSmaCCTransformation >> error: aString [
+	GtSmaCCTransformationError signal: aString
+]
+
+{ #category : #execution }
 GtSmaCCTransformation >> execute [
 	self checkPreconditions.
 	self transform

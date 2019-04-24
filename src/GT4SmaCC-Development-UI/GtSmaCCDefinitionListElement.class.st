@@ -67,6 +67,7 @@ GtSmaCCDefinitionListElement >> listElement [
 		ifNil: [ | dataSource |
 			dataSource := GtSmaCCGroupCoderDataSource new group: group.
 			listElement := GtSmaCCGroupCoderInfiniteElement new
+				clipChildren: false;
 				dataSource: dataSource;
 				constraintsDo: [ :c | 
 					c horizontal matchParent.

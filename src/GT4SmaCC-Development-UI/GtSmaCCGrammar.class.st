@@ -27,6 +27,38 @@ GtSmaCCGrammar class >> onParser: aClass [
 		yourself
 ]
 
+{ #category : #iterating }
+GtSmaCCGrammar >> activeDirectivesDo: aBlock [
+	self
+		activeRulesDo: [ :each | 
+			each isDirective
+				ifTrue: [ aBlock value: each ] ]
+]
+
+{ #category : #iterating }
+GtSmaCCGrammar >> activeProductionsDo: aBlock [
+	self
+		activeRulesDo: [ :each | 
+			each isProductionRule
+				ifTrue: [ aBlock value: each ] ]
+]
+
+{ #category : #iterating }
+GtSmaCCGrammar >> activeRulesDo: aBlock [
+	rules
+		do: [ :each | 
+			each isDeleted
+				ifFalse: [ aBlock value: each ] ]
+]
+
+{ #category : #iterating }
+GtSmaCCGrammar >> activeTokensDo: aBlock [
+	self
+		activeRulesDo: [ :each | 
+			each isTokenRule
+				ifTrue: [ aBlock value: each ] ]
+]
+
 { #category : #private }
 GtSmaCCGrammar >> addGrammarItem: aNode [
 	| item |
@@ -39,7 +71,20 @@ GtSmaCCGrammar >> addGrammarItem: aNode [
 	item isNil
 		ifTrue: [ ^ self ].
 	rules add: item.
+	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
+]
+
+{ #category : #iterating }
+GtSmaCCGrammar >> allReferencesTo: aString do: aBlock [
+	self
+		activeRulesDo: [ :rule | 
+			rule ast
+				allNodesDo: [ :each | 
+					((each isKindOf: SmaCCSymbolNode)
+						or: [ each isKindOf: SmaCCTokenRegexNode ])
+						ifTrue: [ each name source = aString
+								ifTrue: [ aBlock value: each ] ] ] ]
 ]
 
 { #category : #accessing }
@@ -54,9 +99,11 @@ GtSmaCCGrammar >> ast [
 
 { #category : #private }
 GtSmaCCGrammar >> caseInsensitiveDirective [
-	^ rules
-		detect: [ :each | each isDirective and: [ each isCaseInsensitive ] ]
-		ifNone: [  ]
+	self
+		activeDirectivesDo: [ :each | 
+			each isCaseInsensitive
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
 
 { #category : #actions }
@@ -76,14 +123,24 @@ GtSmaCCGrammar >> firstIndex [
 
 { #category : #private }
 GtSmaCCGrammar >> glrDirective [
-	^ rules
-		detect: [ :each | each isDirective and: [ each isGLR ] ]
-		ifNone: [  ]
+	self
+		activeDirectivesDo: [ :each | 
+			each isGLR
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
 
 { #category : #accessing }
 GtSmaCCGrammar >> grammar [
 	^ self
+]
+
+{ #category : #inspector }
+GtSmaCCGrammar >> gtLiveFor: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Live';
+		stencil: [ (GtSmaCCGrammarCoder onGrammar: self) asElement ]
 ]
 
 { #category : #private }
@@ -185,7 +242,11 @@ GtSmaCCGrammar >> parserClassName: anObject [
 
 { #category : #accessing }
 GtSmaCCGrammar >> ruleNamed: aString [
-	^ rules detect: [ :each | each name = aString ] ifNone: [  ]
+	self
+		activeRulesDo: [ :each | 
+			each name = aString
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
 
 { #category : #accessing }
@@ -195,7 +256,13 @@ GtSmaCCGrammar >> rules [
 
 { #category : #accessing }
 GtSmaCCGrammar >> rulesNamed: aString [
-	^ rules select: [ :each | each name = aString ]
+	| items |
+	items := OrderedCollection new.
+	self
+		activeRulesDo: [ :each | 
+			each name = aString
+				ifTrue: [ items add: each ] ].
+	^ items
 ]
 
 { #category : #accessing }
@@ -253,10 +320,36 @@ GtSmaCCGrammar >> source: aString [
 ]
 
 { #category : #private }
+GtSmaCCGrammar >> startDirectivesDo: aBlock [
+	self
+		activeDirectivesDo: [ :each | 
+			each ast isStartDirective
+				ifTrue: [ aBlock value: each ] ]
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> startingProductions [
+	| startingNames productions first |
+	startingNames := Set new.
+	self
+		startDirectivesDo: [ :each | startingNames addAll: (each ast symbols collect: #source) ].
+	productions := OrderedCollection new.
+	first := true.
+	self
+		activeProductionsDo: [ :each | 
+			(first or: [ startingNames includes: each name ])
+				ifTrue: [ productions add: each ].
+			first := false ].
+	^ productions
+]
+
+{ #category : #private }
 GtSmaCCGrammar >> unicodeDirective [
-	^ rules
-		detect: [ :each | each isDirective and: [ each isUnicode ] ]
-		ifNone: [  ]
+	self
+		activeDirectivesDo: [ :each | 
+			each isUnicode
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
 
 { #category : #private }

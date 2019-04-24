@@ -34,7 +34,7 @@ GtSmaCCTokenSimulatorElement >> cursorMoved [
 
 { #category : #'initialize-release' }
 GtSmaCCTokenSimulatorElement >> setupSimulator [
-	simulator announcer weak
+	simulator weak
 		subscribe: GtSmaCCTokenSimulationError send: #styleError: to: self;
 		subscribe: GtSmaCCTokenSimulationAccept
 			send: #styleAccept:

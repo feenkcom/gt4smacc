@@ -17,8 +17,8 @@ GtSmaCCInlineAllRefactoring class >> inlineAll: productionRule [
 { #category : #execution }
 GtSmaCCInlineAllRefactoring >> checkPreconditions [
 	productionRule hasOnlyDefaultReduceExpressions
-		ifFalse: [ GtSmaCCTransformationError
-				signal:
+		ifFalse: [ self
+				error:
 					'Cannot inline definition when it defines an AST node or has a code expression' ]
 ]
 

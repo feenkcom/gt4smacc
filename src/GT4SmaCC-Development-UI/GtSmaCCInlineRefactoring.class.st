@@ -21,14 +21,13 @@ GtSmaCCInlineRefactoring class >> inline: aProductionSymbolNode in: smaccProduct
 GtSmaCCInlineRefactoring >> checkPreconditions [
 	rule := grammar ruleNamed: symbolNode name value.
 	rule isNil
-		ifTrue: [ GtSmaCCTransformationError signal: 'Cannot find definition' ].
+		ifTrue: [ self error: 'Cannot find definition' ].
 	symbolNode variableNameToken notNil
 		ifTrue: [ rule hasOnlySingleItemProductions
-				ifFalse: [ GtSmaCCTransformationError
-						signal: 'Cannot inline symbol when it has a variable name' ] ].
+				ifFalse: [ self error: 'Cannot inline symbol when it has a variable name' ] ].
 	rule hasOnlyDefaultReduceExpressions
-		ifFalse: [ GtSmaCCTransformationError
-				signal:
+		ifFalse: [ self
+				error:
 					'Cannot inline definition when it defines an AST node or has a code expression' ]
 ]
 
