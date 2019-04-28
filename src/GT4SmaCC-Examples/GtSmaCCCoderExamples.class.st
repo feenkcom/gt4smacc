@@ -5,6 +5,17 @@ Class {
 }
 
 { #category : #filtering }
+GtSmaCCCoderExamples >> astFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasASTExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
+	^ filtered
+]
+
+{ #category : #filtering }
 GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	<gtExample>
 	| filter scope filtered |
@@ -13,6 +24,17 @@ GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	scope := self filterScope.
 	filtered := filter applyInScope: scope.
 	self assert: filtered isEmpty not.
+	^ filtered
+]
+
+{ #category : #filtering }
+GtSmaCCCoderExamples >> codeExpressionFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasCodeExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
 	^ filtered
 ]
 
@@ -103,6 +125,17 @@ GtSmaCCCoderExamples >> csIfStatement [
 	grammar isNil
 		ifTrue: [ ^ nil ].
 	^ grammar ruleNamed: 'if_statement'
+]
+
+{ #category : #filtering }
+GtSmaCCCoderExamples >> defaultExpressionFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasDefaultExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
+	^ filtered
 ]
 
 { #category : #model }

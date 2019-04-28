@@ -105,6 +105,22 @@ GtSmaCCCoder >> attributes [
 	^ attributes ifNil: [ attributes := IdentityDictionary new ]
 ]
 
+{ #category : #accessing }
+GtSmaCCCoder >> badgeTypes [
+	^ #()
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> badges [
+	| items |
+	items := OrderedCollection new.
+	self badgeTypes
+		do: [ :each | 
+			(grammarItem perform: each last)
+				ifTrue: [ items add: each first ] ].
+	^ items
+]
+
 { #category : #actions }
 GtSmaCCCoder >> browseReferences: anElement [
 	| filter |

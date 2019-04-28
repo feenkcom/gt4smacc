@@ -3,10 +3,24 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'group',
-		'listElement'
+		'listElement',
+		'badgeTypes'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
+
+{ #category : #filtering }
+GtSmaCCDefinitionListElement >> addBadgeFilter: aSymbol [
+	badgeTypes add: aSymbol.
+	self updateFilters
+]
+
+{ #category : #filtering }
+GtSmaCCDefinitionListElement >> badgeFilter [
+	^ badgeTypes
+		inject: GtSmaCCNoFilter new
+		into: [ :sum :each | sum & (GtSmaCCSelectorFilter selector: each) ]
+]
 
 { #category : #ui }
 GtSmaCCDefinitionListElement >> buildElement [
@@ -61,11 +75,24 @@ GtSmaCCDefinitionListElement >> group: aDefinitionGroupResult [
 	self buildElement
 ]
 
+{ #category : #testing }
+GtSmaCCDefinitionListElement >> includesBadge: aSymbol [
+	^ badgeTypes includes: aSymbol
+]
+
+{ #category : #'initialize-release' }
+GtSmaCCDefinitionListElement >> initialize [
+	super initialize.
+	badgeTypes := Set new
+]
+
 { #category : #ui }
 GtSmaCCDefinitionListElement >> listElement [
 	^ listElement
 		ifNil: [ | dataSource |
 			dataSource := GtSmaCCGroupCoderDataSource new group: group.
+			dataSource
+				lookBlock: [ GtSmaCCBadgesLook new definitionList: self ].
 			listElement := GtSmaCCGroupCoderInfiniteElement new
 				clipChildren: false;
 				dataSource: dataSource;
@@ -75,7 +102,13 @@ GtSmaCCDefinitionListElement >> listElement [
 			listElement ]
 ]
 
-{ #category : #private }
+{ #category : #filtering }
+GtSmaCCDefinitionListElement >> removeBadgeFilter: aSymbol [
+	badgeTypes remove: aSymbol ifAbsent: [  ].
+	self updateFilters
+]
+
+{ #category : #filtering }
 GtSmaCCDefinitionListElement >> ruleTypeFilter [
 	^ (self
 		childNamed: #toggles
@@ -98,7 +131,7 @@ GtSmaCCDefinitionListElement >> ruleTypes [
 	^ #('Production' 'Token' 'Directive')
 ]
 
-{ #category : #private }
+{ #category : #filtering }
 GtSmaCCDefinitionListElement >> searchFilter [
 	| string |
 	string := self
@@ -181,7 +214,7 @@ GtSmaCCDefinitionListElement >> typeFilterElement [
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateFilters [
 	| filter |
-	filter := self searchFilter & self ruleTypeFilter.
+	filter := self searchFilter & self ruleTypeFilter & self badgeFilter.
 	group filter: filter.
 	self updateList
 ]

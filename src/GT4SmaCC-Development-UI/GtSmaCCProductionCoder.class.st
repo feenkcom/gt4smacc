@@ -13,6 +13,13 @@ GtSmaCCProductionCoder >> actions [
 		yourself)}
 ]
 
+{ #category : #accessing }
+GtSmaCCProductionCoder >> badgeTypes [
+	^ super badgeTypes
+		,
+			#(#('AST' hasASTExpression) #('Code' hasCodeExpression) #('Default' hasDefaultExpression))
+]
+
 { #category : #'private-actions' }
 GtSmaCCProductionCoder >> inlineAllReferencesTo: aProductionRuleNode [
 ]

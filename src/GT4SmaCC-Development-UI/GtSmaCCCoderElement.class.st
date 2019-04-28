@@ -36,6 +36,11 @@ GtSmaCCCoderElement >> actionBar [
 						action: each ])
 ]
 
+{ #category : #accessing }
+GtSmaCCCoderElement >> coder [
+	^ coder
+]
+
 { #category : #'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
