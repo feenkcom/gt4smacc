@@ -10,6 +10,33 @@ Class {
 }
 
 { #category : #instances }
+GtSmaCCParserStyler class >> cppStyler: aParserClass [
+	<smaccStyler: #CPPParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCTokenStylerRule
+				tokenName: '";"'
+				styleBlock: [ :styler | 
+					styler
+						foreground: Color black;
+						bold ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #CPPLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCErrorNode
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 	<smaccStyler: #CSharpParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -59,7 +86,7 @@ GtSmaCCParserStyler class >> javaStyler: aParserClass [
 			(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCTokenStylerRule
-				tokenName: '";""'
+				tokenName: '";"'
 				styleBlock: [ :styler | 
 					styler
 						foreground: Color black;
