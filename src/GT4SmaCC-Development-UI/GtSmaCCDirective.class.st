@@ -26,6 +26,11 @@ GtSmaCCDirective >> isGLR [
 ]
 
 { #category : #testing }
+GtSmaCCDirective >> isReferenced [
+	^ true
+]
+
+{ #category : #testing }
 GtSmaCCDirective >> isUnicode [
 	| tree |
 	tree := self ast.

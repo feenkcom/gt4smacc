@@ -15,6 +15,11 @@ GtSmaCCGrammarItemChanged class >> forItem: aGrammarItem [
 ]
 
 { #category : #accessing }
+GtSmaCCGrammarItemChanged >> grammar [
+	^ item grammar
+]
+
+{ #category : #accessing }
 GtSmaCCGrammarItemChanged >> item [
 	^ item
 ]

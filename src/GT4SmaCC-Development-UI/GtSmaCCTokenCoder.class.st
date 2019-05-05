@@ -13,6 +13,11 @@ GtSmaCCTokenCoder >> actions [
 		yourself)}
 ]
 
+{ #category : #accessing }
+GtSmaCCTokenCoder >> badgeTypes [
+	^ super badgeTypes , #(#('Method' isScannerMethod))
+]
+
 { #category : #actions }
 GtSmaCCTokenCoder >> viewTokenSimulator: anElement [
 	| simulator |

@@ -3,14 +3,19 @@ Class {
 	#superclass : #BlInfiniteDataSource,
 	#instVars : [
 		'group',
-		'elementsByCoder'
+		'elementsByCoder',
+		'lookBlock'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #ui }
 GtSmaCCGroupCoderDataSource >> buildElementForCoder: aCoder [
-	^ aCoder asElement
+	| element |
+	element := aCoder asElement.
+	lookBlock notNil
+		ifTrue: [ element addLook: lookBlock value ].
+	^ element
 ]
 
 { #category : #'initialize-release' }
@@ -28,6 +33,11 @@ GtSmaCCGroupCoderDataSource >> initialize [
 { #category : #accessing }
 GtSmaCCGroupCoderDataSource >> itemCount [
 	^ group coders size
+]
+
+{ #category : #accessing }
+GtSmaCCGroupCoderDataSource >> lookBlock: aBlock [
+	lookBlock := aBlock
 ]
 
 { #category : #'instance creation' }

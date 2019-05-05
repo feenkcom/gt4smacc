@@ -36,9 +36,18 @@ GtSmaCCCoderElement >> actionBar [
 						action: each ])
 ]
 
+{ #category : #accessing }
+GtSmaCCCoderElement >> coder [
+	^ coder
+]
+
 { #category : #'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
+	coder owner weak
+		when: GtSmaCCCoderAnnouncement
+		send: #updateDeleteButton
+		to: self.
 	self header: [ self collapsedElement ].
 	self content: [ self contentElement ].
 	self margin: (BlInsets all: 4).
@@ -46,7 +55,8 @@ GtSmaCCCoderElement >> coder: aCoder [
 		when: BrExpansionChanged
 		do: [ :event | coder expanded: self isExpanded ].
 	coder expanded
-		ifTrue: [ self expand ]
+		ifTrue: [ self expand ].
+	self updateDeleteButton
 ]
 
 { #category : #ui }
@@ -85,13 +95,33 @@ GtSmaCCCoderElement >> contentElement [
 	^ element
 ]
 
+{ #category : #ui }
+GtSmaCCCoderElement >> deleteElement [
+	^ GtInspectorRoundButtonStencil new asElement
+		icon: GtInspectorPlusIconStencil close asElement;
+		constraintsDo: [ :c | 
+			c ignoreByLayout.
+			c
+				margin:
+					(BlInsets
+						top: -10
+						left: 0
+						bottom: 0
+						right: -10).
+			c ignored horizontal alignRight.
+			c ignored vertical alignTop ];
+		action: [ :e | coder deleteRule ]
+]
+
 { #category : #'initialize-release' }
 GtSmaCCCoderElement >> initialize [
 	| resizer |
 	super initialize.
 	self
 		vFitContent;
-		hMatchParent.
+		hMatchParent;
+		clipChildren: false.
+	self addChild: self deleteElement as: #deleteButton.
 	resizer := BrResizer new
 		beBottom;
 		look: BrGlamorousResizerLook new;
@@ -163,4 +193,17 @@ GtSmaCCCoderElement >> sourceEditor [
 				strategy: strategy.
 			completionController install ].
 	^ element
+]
+
+{ #category : #private }
+GtSmaCCCoderElement >> updateDeleteButton [
+	self
+		childNamed: #deleteButton
+		ifFound: [ :button | 
+			button
+				visibility:
+					(coder isReferenced
+						ifTrue: [ BlVisibility hidden ]
+						ifFalse: [ BlVisibility visible ]) ]
+		ifNone: [  ]
 ]

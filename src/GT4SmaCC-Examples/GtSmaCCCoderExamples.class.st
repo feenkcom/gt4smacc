@@ -5,6 +5,17 @@ Class {
 }
 
 { #category : #filtering }
+GtSmaCCCoderExamples >> astFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasASTExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
+	^ filtered
+]
+
+{ #category : #filtering }
 GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	<gtExample>
 	| filter scope filtered |
@@ -13,6 +24,17 @@ GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	scope := self filterScope.
 	filtered := filter applyInScope: scope.
 	self assert: filtered isEmpty not.
+	^ filtered
+]
+
+{ #category : #filtering }
+GtSmaCCCoderExamples >> codeExpressionFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasCodeExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
 	^ filtered
 ]
 
@@ -103,6 +125,53 @@ GtSmaCCCoderExamples >> csIfStatement [
 	grammar isNil
 		ifTrue: [ ^ nil ].
 	^ grammar ruleNamed: 'if_statement'
+]
+
+{ #category : #filtering }
+GtSmaCCCoderExamples >> defaultExpressionFilter [
+	<gtExample>
+	| filter scope filtered |
+	filter := GtSmaCCSelectorFilter selector: #hasDefaultExpression.
+	scope := self filterScope.
+	filtered := filter applyInScope: scope.
+	self assert: filtered size > 1.
+	^ filtered
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> exampleDelete [
+	<gtExample>
+	| grammar |
+	grammar := self exampleGrammar.
+	(grammar ruleNamed: 'NotReferenced') delete.
+	self
+		assert: (grammar source indexOfSubCollection: 'NotReferenced') = 0.
+	(grammar ruleNamed: '<notReferenced>') delete.
+	self
+		assert: (grammar source indexOfSubCollection: '<notReferenced>') = 0.
+	^ grammar
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> exampleGrammar [
+	<gtExample>
+	| grammar |
+	grammar := GtSmaCCGrammar
+		forDefinition:
+			'<whitespace> : \s+; 
+			<notReferenced> : a+; 
+			<a> : a+; 
+			Start : A;
+			A : <a>;
+			NotReferenced : A;'.
+	self assert: (grammar ruleNamed: '<whitespace>') isReferenced.
+	self assert: (grammar ruleNamed: '<notReferenced>') isReferenced not.
+	self assert: (grammar ruleNamed: 'NotReferenced') isReferenced not.
+	self assert: (grammar ruleNamed: '<a>') isReferenced.
+	self assert: (grammar ruleNamed: 'A') isReferenced.
+	self assert: grammar startingProductions size = 1.
+	self assert: grammar startingProductions first name = 'Start'.
+	^ grammar
 ]
 
 { #category : #filtering }
@@ -361,6 +430,22 @@ GtSmaCCCoderExamples >> smaccDefinitionGrammar [
 	grammar := GtSmaCCGrammar onParser: self smaccGrammarClass.
 	self assert: grammar rules notEmpty.
 	^ grammar
+]
+
+{ #category : #model }
+GtSmaCCCoderExamples >> smaccDefinitionGrammarStartingProductions [
+	<gtExample>
+	| grammar startingProductions names |
+	grammar := self smaccDefinitionGrammar.
+	startingProductions := grammar startingProductions.
+	self assert: startingProductions first name = 'File'.
+	names := startingProductions collect: #name.
+	self assert: (names includes: 'ProductionRule').
+	self assert: (names includes: 'RegexRule').
+	self assert: (names includes: 'DirectiveLine').
+	self
+		assert: (startingProductions allSatisfy: [ :each | each isReferenced ]).
+	^ startingProductions
 ]
 
 { #category : #private }

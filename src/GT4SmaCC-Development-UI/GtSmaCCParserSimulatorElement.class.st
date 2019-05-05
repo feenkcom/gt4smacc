@@ -202,7 +202,7 @@ GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
 
 { #category : #'initialize-release' }
 GtSmaCCParserSimulatorElement >> setupSimulator [
-	simulator announcer weak
+	simulator weak
 		subscribe: GtSmaCCParserSimulationAccept send: #accepted: to: self;
 		subscribe: GtSmaCCParserSimulationError send: #failed: to: self;
 		subscribe: GtSmaCCParserSimulationIncompleteInput

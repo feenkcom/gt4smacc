@@ -60,8 +60,16 @@ GtSmaCCGrammarCoder >> grammar [
 GtSmaCCGrammarCoder >> grammar: aGrammar [
 	grammar := aGrammar.
 	grammar rules do: [ :each | group add: each ].
-	self updateTokenCompletions.
-	self updateProductionCompletions
+	grammar weak
+		when: GtSmaCCGrammarAnnouncement
+		send: #grammarChanged:
+		to: self.
+	self updateCompletions
+]
+
+{ #category : #events }
+GtSmaCCGrammarCoder >> grammarChanged: grammarAnnouncement [
+	self announce: (GtSmaCCCoderAnnouncement new coder: self)
 ]
 
 { #category : #accessing }

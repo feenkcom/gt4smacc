@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #testing }
-GtSmaCCProductionRule >> hasASTNode [
+GtSmaCCProductionRule >> hasASTExpression [
 	^ self ast expressions
 		anySatisfy: [ :each | each class = SmaCCClassProductionExpressionNode ]
 ]
@@ -17,8 +17,14 @@ GtSmaCCProductionRule >> hasCodeExpression [
 ]
 
 { #category : #testing }
+GtSmaCCProductionRule >> hasDefaultExpression [
+	^ self ast expressions
+		anySatisfy: [ :each | each class = SmaCCProductionExpressionNode ]
+]
+
+{ #category : #testing }
 GtSmaCCProductionRule >> hasOnlyDefaultReduceExpressions [
-	^ (self hasASTNode or: [ self hasCodeExpression ]) not
+	^ (self hasASTExpression or: [ self hasCodeExpression ]) not
 ]
 
 { #category : #testing }
@@ -29,6 +35,16 @@ GtSmaCCProductionRule >> hasOnlySingleItemProductions [
 { #category : #testing }
 GtSmaCCProductionRule >> isProductionRule [
 	^ true
+]
+
+{ #category : #accessing }
+GtSmaCCProductionRule >> isReferenced [
+	^ super isReferenced or: [ self isStartingProduction ]
+]
+
+{ #category : #accessing }
+GtSmaCCProductionRule >> isStartingProduction [
+	^ self grammar startingProductions includes: self
 ]
 
 { #category : #private }
