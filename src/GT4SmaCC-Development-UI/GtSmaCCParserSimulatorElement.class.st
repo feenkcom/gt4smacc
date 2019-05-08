@@ -137,16 +137,12 @@ GtSmaCCParserSimulatorElement >> labelFor: anObject [
 { #category : #ui }
 GtSmaCCParserSimulatorElement >> parseTreeElement [
 	^ parseTreeElement
-		ifNil: [ parseTreeElement := BrColumnedTree new.
-			parseTreeElement
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
+		ifNil: [
+			parseTreeElement := BrSimpleTree new.
+			parseTreeElement matchParent.
 			parseTreeElement items: #() children: [ :each |  ].
-			parseTreeElement column
-				stencil: [ :each | 
-					BrColumnCellLabelStencil new
-						text: (self labelFor: each value) asRopedText glamorousRegularFontAndSize ].
+			parseTreeElement stencil: (BrSimpleTreeRowStencilBuilder new
+				text: [ :each | (self labelFor: each value) asRopedText glamorousRegularFontAndSize ]).
 			parseTreeElement
 				when: BrSelectionChanged
 				do:
