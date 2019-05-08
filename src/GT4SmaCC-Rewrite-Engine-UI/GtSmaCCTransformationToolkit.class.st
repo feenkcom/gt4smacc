@@ -343,7 +343,7 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 				look: BrMaterialTabLabelledLook;
 				viewModel: each ].
 	^ BlElement new
-		effect: (BlDropShadowEffect color: Color black width: 5 offset: 0 @ 0);
+		effect: (BlDropShadowEffect color: Color black width: 3 offset: 0 @ 0);
 		margin: (BlInsets all: 10);
 		background: Color white;
 		padding: (BlInsets all: 5);
@@ -389,7 +389,7 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 				look: BrMaterialTabLabelledLook;
 				viewModel: each ].
 	^ BlElement new
-		effect: (BlDropShadowEffect color: Color black width: 5 offset: 0 @ 0);
+		effect: (BlDropShadowEffect color: Color black width: 3 offset: 0 @ 0);
 		margin: (BlInsets all: 10);
 		background: Color white;
 		padding: (BlInsets all: 5);

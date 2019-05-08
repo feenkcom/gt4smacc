@@ -22,7 +22,7 @@ GtSmaCCRewriteElement >> contentElement [
 { #category : #private }
 GtSmaCCRewriteElement >> editorElementFor: anEditor [
 	^ BrEditorElement new
-		effect: (BlDropShadowEffect color: Color black width: 5 offset: 0 @ 0);
+		effect: (BlDropShadowEffect color: Color black width: 3 offset: 0 @ 0);
 		background: Color white;
 		margin: (BlInsets all: 10);
 		padding:
