@@ -209,10 +209,7 @@ GtSmaCCParserStyler >> parserClass: aSmaCCParserClass [
 { #category : #private }
 GtSmaCCParserStyler >> privateStyle: aText [
 	[ text := aText.
-	self ast
-		withAllNodesDo: [ :node | self styleNode: node ]
-		andTokensDo: [ :token | self styleToken: token ]
-		includesErrors: true ]
+	self styleAST: self ast ]
 		on: Error
 		do: [ :ex | ex return ].
 	^ aText
@@ -226,6 +223,21 @@ GtSmaCCParserStyler >> startingState [
 { #category : #accessing }
 GtSmaCCParserStyler >> startingState: anInteger [
 	startingState := anInteger
+]
+
+{ #category : #styling }
+GtSmaCCParserStyler >> style: aText using: anAST [
+	text := aText.
+	self styleAST: anAST.
+	^ text
+]
+
+{ #category : #private }
+GtSmaCCParserStyler >> styleAST: anAST [
+	anAST
+		withAllNodesDo: [ :node | self styleNode: node ]
+		andTokensDo: [ :token | self styleToken: token ]
+		includesErrors: true
 ]
 
 { #category : #private }
