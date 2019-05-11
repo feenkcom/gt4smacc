@@ -8,7 +8,9 @@ Class {
 		'grammar',
 		'tokenCompletionStrategy',
 		'productionCompletionStrategy',
-		'group'
+		'group',
+		'stylingProcess',
+		'stylingQueue'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -51,6 +53,12 @@ GtSmaCCGrammarCoder >> compileParser [
 	grammar compileParser
 ]
 
+{ #category : #private }
+GtSmaCCGrammarCoder >> deferStyle: aCoder [
+	stylingQueue flushAllSuchThat: [ :each | each == aCoder ].
+	stylingQueue nextPut: aCoder
+]
+
 { #category : #accessing }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
@@ -83,7 +91,9 @@ GtSmaCCGrammarCoder >> initialize [
 	group := GtSmaCCDefinitionGroupResult onCoder: self.
 	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
 	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
-		new
+		new.
+	stylingQueue := SharedQueue new.
+	self startStyler
 ]
 
 { #category : #testing }
@@ -144,6 +154,12 @@ GtSmaCCGrammarCoder >> scannerClass [
 { #category : #accessing }
 GtSmaCCGrammarCoder >> source [
 	^ grammar source
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> startStyler [
+	stylingProcess := [ [ stylingQueue next styleNow ] repeat ]
+		forkAt: Processor userBackgroundPriority
 ]
 
 { #category : #accessing }

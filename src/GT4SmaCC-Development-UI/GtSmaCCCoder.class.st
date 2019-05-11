@@ -446,11 +446,19 @@ GtSmaCCCoder >> sourceText [
 ]
 
 { #category : #private }
-GtSmaCCCoder >> styleSource [
-	[ self sourceEditor
-		styleTextAndAfterDo: [ self updateCollapsedSource ] ]
+GtSmaCCCoder >> styleNow [
+	[ self sourceEditor styler
+		style: self sourceEditor text nextGeneration.
+	self updateCollapsedSource ]
 		on: Error
 		do: [ :ex | ex return ]
+]
+
+{ #category : #private }
+GtSmaCCCoder >> styleSource [
+	owner notNil
+		ifTrue: [ owner deferStyle: self ]
+		ifFalse: [ self styleNow ]
 ]
 
 { #category : #private }
