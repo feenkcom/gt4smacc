@@ -297,6 +297,7 @@ GtSmaCCCoderExamples >> productionRule [
 { #category : #coders }
 GtSmaCCCoderExamples >> productionRuleCoder [
 	<gtExample>
+	<noTest>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
 	rule := grammarCoder ruleNamed: self productionRuleName.
@@ -310,6 +311,7 @@ GtSmaCCCoderExamples >> productionRuleCoder [
 { #category : #ui }
 GtSmaCCCoderExamples >> productionRuleElement [
 	<gtExample>
+	<noTest>
 	^ self productionRuleCoder asElement
 ]
 
@@ -333,6 +335,7 @@ GtSmaCCCoderExamples >> referencesFilter [
 { #category : #ui }
 GtSmaCCCoderExamples >> semicolonCoderElement [
 	<gtExample>
+	<noTest>
 	^ self semicolonTokenCoder asElement
 ]
 
@@ -356,6 +359,7 @@ GtSmaCCCoderExamples >> semicolonToken [
 { #category : #coders }
 GtSmaCCCoderExamples >> semicolonTokenCoder [
 	<gtExample>
+	<noTest>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
 	rule := grammarCoder ruleNamed: self semicolonName.
