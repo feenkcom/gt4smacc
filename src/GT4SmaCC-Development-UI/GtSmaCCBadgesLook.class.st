@@ -54,11 +54,10 @@ GtSmaCCBadgesLook >> initialize [
 			c vertical fitContent.
 			c frame horizontal alignRight.
 			c frame vertical alignTop ].
-	changes
-		add:
-			(#(widget badges)
-				asBrLookChildAddAsChangeWithValue: [ badgeList
-						removeChildren;
-						addChildren: self badgeToggles;
-						yourself ])
+	self
+		addChangeAddChildAs: #(widget badges)
+		with: [ badgeList
+				removeChildren;
+				addChildren: self badgeToggles;
+				yourself ]
 ]
