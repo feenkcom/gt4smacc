@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCBadgesLook,
 	#superclass : #BrLook,
 	#instVars : [
-		'definitionList'
+		'definitionList',
+		'badgeList'
 	],
 	#category : #'GT4SmaCC-Development-UI-Looks'
 }
@@ -42,9 +43,8 @@ GtSmaCCBadgesLook >> definitionList: anObject [
 ]
 
 { #category : #initialization }
-GtSmaCCBadgesLook >> initializeLook [
-	| badgeList |
-	super initializeLook.
+GtSmaCCBadgesLook >> initialize [
+	super initialize.
 	badgeList := BlElement new.
 	badgeList layout: BlLinearLayout horizontal.
 	badgeList margin: (BlInsets all: 0).
@@ -54,6 +54,11 @@ GtSmaCCBadgesLook >> initializeLook [
 			c vertical fitContent.
 			c frame horizontal alignRight.
 			c frame vertical alignTop ].
-	badgeList addChildren: self badgeToggles.
-	widget addChild: badgeList as: #badges
+	changes
+		add:
+			(#(widget badges)
+				asBrLookChildAddAsChangeWithValue: [ badgeList
+						removeChildren;
+						addChildren: self badgeToggles;
+						yourself ])
 ]
