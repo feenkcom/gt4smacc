@@ -55,7 +55,7 @@ GtSmaCCBadgesLook >> initialize [
 			c frame horizontal alignRight.
 			c frame vertical alignTop ].
 	self
-		addChangeAddChildAs: #(widget badges)
+		addChangeAddChildAs: #(badges)
 		with: [ badgeList
 				removeChildren;
 				addChildren: self badgeToggles;
