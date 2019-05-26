@@ -41,10 +41,7 @@ GtSmaCCDropDownList >> initialize [
 			c vertical fitContent ].
 	self toggle: self toggleStencil.
 	self popup: self popupStencil.
-	self
-		look:
-			(BrDropdownLook new
-				outskirtsEmbellisher: [ :e | e look: BrDropdownOutskirtsLook new ])
+	self look: BrGlamorousDropdownLook new
 ]
 
 { #category : #accessing }
