@@ -86,33 +86,17 @@ SmaCCParseNode >> gtSourceFor: aView [
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtTreeFor: aView [
 	<gtView>
-	^ aView explicit
+	^ aView columnedTree
 		priority: 20;
 		title: 'Tree';
-		stencil: [ | tree |
-			tree := BrColumnedTree new.
-			tree
-				items:
-					{{'self'.
-					#node.
-					self}}
-				children: [ :each | self gtChildrenOf: each ].
-			tree
-				when: BrSelectionChanged
-				do: [ :anEvent | 
-					tree
-						selectedNodeDo: [ :aNode | tree phlow selectObject: aNode value last ] ].
-			tree column
-				title: 'Variable';
-				stencil: [ :each | BrColumnCellLabelStencil new text: each value first ].
-			tree column
-				title: 'Type';
-				stencil: [ :each | 
-					BrColumnCellLabelStencil new
-						text:
-							((each value at: 2) = #node
-								ifTrue: [ each value last class name ]
-								ifFalse: [ '' ]) ].
-			(tree viewModel itemAt: 1) expand.
-			tree ]
+		items: [
+			{{'self'.
+			#node.
+			self}} ];
+		children: [ :each | self gtChildrenOf: each ];
+		column: 'Variable' format: [:each | each value first ];
+		column: 'Type' format: [:each |
+			((each value at: 2) = #node
+					ifTrue: [ each value last class name ]
+					ifFalse: [ '' ]) ]
 ]
