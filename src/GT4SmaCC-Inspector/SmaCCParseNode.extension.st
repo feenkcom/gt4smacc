@@ -5,57 +5,32 @@ SmaCCParseNode >> gtAttributesFor: aView [
 	<gtView>
 	(attributes notNil and: [ attributes notEmpty ])
 		ifFalse: [ ^ aView empty ].
-	^ aView explicit
+	^ aView columnedList
 		priority: 40;
 		title: 'Attributes';
-		stencil: [ | list |
-			list := BrColumnedList new.
-			list items: attributes keys asSortedCollection.
-			list
-				when: BrSelectionChanged
-				do: [ :event | 
-					event selection
-						do: [ :each | 
-							list phlow
-								selectObject: (self attributeNamed: (list items at: each from)) ] ].
-			list column
-				title: 'Name';
-				stencil: [ :each | BrColumnCellLabelStencil new text: each ].
-			list column
-				title: 'Value';
-				stencil: [ :each | 
-					BrColumnCellLabelStencil new
-						text: (self attributeNamed: each) printString ].
-			list ]
+		items: [ attributes keys asSortedCollection ];
+		column: 'Name' format: [:each | each ];
+		column: 'Value' format: [ :each | (self attributeNamed: each) printString ];
+		send: [:each | self attributeNamed: each ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtParentsFor: aView [
 	<gtView>
-	^ aView explicit
+	^ aView tree
 		priority: 30;
 		title: 'Parents';
-		stencil: [ | tree index |
-			tree := BrSimpleTree new.
-			tree
-				items: {self}
-				children: [ :each | 
+		items: [ {self} ];
+		children: [ :each | 
 					each parent isNil
 						ifTrue: [ #() ]
-						ifFalse: [ {each parent} ] ].
-			index := 1.
+						ifFalse: [ {each parent} ] ];
+"			index := 1.
 			[ index <= tree viewModel itemCount ]
 				whileTrue: [ (tree viewModel itemAt: index) expand.
-					index := index + 1 ].
-			tree
-				stencil:
-					(BrSimpleTreeRowStencilBuilder new
-						text: [ :each | each class name asRopedText glamorousRegularFontAndSize ]).
-			tree
-				when: BrSelectionChanged
-				do:
-					[ :anEvent | tree selectedNodeDo: [ :aNode | tree phlow selectObject: aNode value ] ].
-			tree ]
+					index := index + 1 ]."
+		itemFormat: [ :each | each class name asRopedText glamorousRegularFontAndSize ];
+		send: [:each | each value ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
