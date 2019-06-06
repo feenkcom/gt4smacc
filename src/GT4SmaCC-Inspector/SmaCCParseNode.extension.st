@@ -64,14 +64,17 @@ SmaCCParseNode >> gtTreeFor: aView [
 	^ aView columnedTree
 		priority: 20;
 		title: 'Tree';
-		items: [
-			{{'self'.
+		items: [ {{'self'.
 			#node.
 			self}} ];
 		children: [ :each | self gtChildrenOf: each ];
-		column: 'Variable' format: [:each | each value first ];
-		column: 'Type' format: [:each |
-			((each value at: 2) = #node
-					ifTrue: [ each value last class name ]
-					ifFalse: [ '' ]) ]
+		column: 'Variable' format: [ :each | each value first ];
+		column: 'Type'
+			format: [ :each | 
+			(each value at: 2) = #node
+				ifTrue: [ each value last class name ]
+				ifFalse: [ '' ] ];
+		send: [ :each | 
+			each notNil
+				ifTrue: [ each last ] ]
 ]
