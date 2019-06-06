@@ -24,6 +24,8 @@ GtSmaCCTokenStylerRule >> initializeForParser: parserClass [
 
 { #category : #asserting }
 GtSmaCCTokenStylerRule >> shouldApplyToToken: aSmaCCToken [
+	aSmaCCToken ids isEmpty
+		ifTrue: [ ^ false ].
 	^ id = aSmaCCToken ids first
 ]
 
