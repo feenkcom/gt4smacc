@@ -49,7 +49,7 @@ GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 			(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCTokenStylerRule
-				tokenName: '";""'
+				tokenName: '";"'
 				styleBlock: [ :styler | 
 					styler
 						foreground: Color black;
@@ -60,6 +60,33 @@ GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 			(GtSmaCCNodeStylerRule
 				nodeClassName: #CSAttributeNode
 				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCErrorNode
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
+GtSmaCCParserStyler class >> delphiStyler: aParserClass [
+	<smaccStyler: #DelphiParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCTokenStylerRule
+				tokenName: '<semicolon>'
+				styleBlock: [ :styler | 
+					styler
+						foreground: Color black;
+						bold ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #DelphiLiteralExpressionNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
 			(GtSmaCCNodeVariableStylerRule
 				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
