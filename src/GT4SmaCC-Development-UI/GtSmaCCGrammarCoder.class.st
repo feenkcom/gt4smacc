@@ -89,9 +89,8 @@ GtSmaCCGrammarCoder >> group [
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
 	group := GtSmaCCDefinitionGroupResult onCoder: self.
-	tokenCompletionStrategy := GtWeightedStringsCompletionStrategy new.
-	productionCompletionStrategy := GtWeightedStringsCompletionStrategy
-		new.
+	tokenCompletionStrategy := GtSmaCCCompletionStrategy new.
+	productionCompletionStrategy := GtSmaCCCompletionStrategy new.
 	stylingQueue := SharedQueue new.
 	self startStyler
 ]
