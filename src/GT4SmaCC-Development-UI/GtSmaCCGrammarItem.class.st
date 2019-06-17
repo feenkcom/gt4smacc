@@ -79,7 +79,14 @@ GtSmaCCGrammarItem >> isValid [
 
 { #category : #accessing }
 GtSmaCCGrammarItem >> name [
-	^ self ast ifNotNil: [ :node | node name source ]
+	^ self ast
+		ifNotNil: [ :node | 
+			node isErrorNode
+				ifTrue: [ self originalAST
+						ifNotNil: [ :orig | 
+							orig isErrorNode
+								ifFalse: [ orig name source ] ] ]
+				ifFalse: [ node name source ] ]
 ]
 
 { #category : #accessing }

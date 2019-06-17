@@ -24,7 +24,9 @@ GtSmaCCTokenRule >> isTokenRule [
 
 { #category : #accessing }
 GtSmaCCTokenRule >> methodName [
-	^ (self name copyFrom: 2 to: self name size - 1) asSymbol
+	^ self name
+		ifNil: [ #'' ]
+		ifNotNil: [ :name | (name copyFrom: 2 to: name size - 1) asSymbol ]
 ]
 
 { #category : #private }
