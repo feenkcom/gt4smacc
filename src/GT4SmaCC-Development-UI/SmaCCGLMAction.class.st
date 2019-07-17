@@ -5,9 +5,6 @@ Class {
 		'isButton',
 		'isMenu'
 	],
-	#classVars : [
-		'ShowPrecedenceConflicts'
-	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
 

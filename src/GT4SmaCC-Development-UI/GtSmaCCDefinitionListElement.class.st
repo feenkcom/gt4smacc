@@ -140,7 +140,7 @@ GtSmaCCDefinitionListElement >> searchFilter [
 		ifNone: [ '' ].
 	^ string isEmpty
 		ifTrue: [ GtSmaCCNoFilter new ]
-		ifFalse: [ GtSmaCCDefinitionImplementorPatternFilter pattern: string ]
+		ifFalse: [ GtSmaCCSourcePatternFilter pattern: string ]
 ]
 
 { #category : #ui }
