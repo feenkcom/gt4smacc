@@ -5,13 +5,19 @@ Class {
 }
 
 { #category : #private }
-GtSmaCCSyntaxStylingVisitor >> formatCharacterMethod: aToken [
+GtSmaCCSyntaxStylingVisitor >> characterSelectorFor: aToken [
 	| name |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1)
 		asSymbol.
-	(Character includesSelector: name)
-		ifFalse: [ ^ self ].
-	self formatMethod: (Character lookupSelector: name) for: aToken
+	^ (Character includesSelector: name)
+		ifTrue: [ name ]
+]
+
+{ #category : #private }
+GtSmaCCSyntaxStylingVisitor >> formatCharacterMethod: aToken [
+	(self characterSelectorFor: aToken)
+		ifNotNil:
+			[ :selector | self formatMethod: (Character lookupSelector: selector) for: aToken ]
 ]
 
 { #category : #private }

@@ -61,6 +61,11 @@ GtSmaCCGrammar >> activeTokensDo: aBlock [
 
 { #category : #private }
 GtSmaCCGrammar >> addGrammarItem: aNode [
+	self addGrammarItem: aNode afterIndex: rules size
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> addGrammarItem: aNode afterIndex: anInteger [
 	| item |
 	aNode isDirective
 		ifTrue: [ item := GtSmaCCDirective on: self ast: aNode ].
@@ -70,9 +75,27 @@ GtSmaCCGrammar >> addGrammarItem: aNode [
 		ifTrue: [ item := GtSmaCCProductionRule on: self ast: aNode ].
 	item isNil
 		ifTrue: [ ^ self ].
-	rules add: item.
+	rules add: item afterIndex: anInteger.
 	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addProductionNamed: aString [
+	| node |
+	node := SmaCCDefinitionParser
+		parse: (self productionRuleStringNamed: aString)
+		startingAt: SmaCCDefinitionParser startingStateForProductionRule.
+	self addGrammarItem: node
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addTokenNamed: aString [
+	| node |
+	node := SmaCCDefinitionParser
+		parseWithErrors: (self tokenDefinitionStringNamed: aString)
+		startingAt: SmaCCDefinitionParser startingStateForRegexRule.
+	self addGrammarItem: node
 ]
 
 { #category : #iterating }
@@ -240,6 +263,20 @@ GtSmaCCGrammar >> parserClassName: anObject [
 	parserClassName := anObject
 ]
 
+{ #category : #private }
+GtSmaCCGrammar >> productionRuleStringNamed: aString [
+	^ String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: aString;
+				cr;
+				tab;
+				nextPut: $:;
+				cr;
+				tab;
+				nextPut: $; ]
+]
+
 { #category : #accessing }
 GtSmaCCGrammar >> ruleNamed: aString [
 	self
@@ -341,6 +378,20 @@ GtSmaCCGrammar >> startingProductions [
 				ifTrue: [ productions add: each ].
 			first := false ].
 	^ productions
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> tokenDefinitionStringNamed: aString [
+	^ String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: aString;
+				cr;
+				tab;
+				nextPutAll: ': a';
+				cr;
+				tab;
+				nextPut: $; ]
 ]
 
 { #category : #private }

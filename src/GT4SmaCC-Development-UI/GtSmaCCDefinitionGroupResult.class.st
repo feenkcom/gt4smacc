@@ -76,3 +76,9 @@ GtSmaCCDefinitionGroupResult >> highlighter [
 GtSmaCCDefinitionGroupResult >> itemsDo: aBlock [
 	self do: aBlock
 ]
+
+{ #category : #updating }
+GtSmaCCDefinitionGroupResult >> updateItemsFrom: aCollection [
+	items := OrderedCollection withAll: aCollection.
+	filtered := true
+]
