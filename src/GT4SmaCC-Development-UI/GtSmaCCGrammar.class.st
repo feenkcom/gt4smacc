@@ -82,20 +82,39 @@ GtSmaCCGrammar >> addGrammarItem: aNode afterIndex: anInteger [
 
 { #category : #actions }
 GtSmaCCGrammar >> addProductionNamed: aString [
+	self addProductionNamed: aString for: nil
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addProductionNamed: aString for: aGrammarItem [
 	| node |
 	node := SmaCCDefinitionParser
 		parse: (self productionRuleStringNamed: aString)
 		startingAt: SmaCCDefinitionParser startingStateForProductionRule.
-	self addGrammarItem: node
+	self
+		addGrammarItem: node
+		afterIndex: (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ])
 ]
 
 { #category : #actions }
 GtSmaCCGrammar >> addTokenNamed: aString [
+	self addTokenNamed: aString for: nil
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addTokenNamed: aString for: aGrammarItem [
 	| node |
 	node := SmaCCDefinitionParser
 		parseWithErrors: (self tokenDefinitionStringNamed: aString)
 		startingAt: SmaCCDefinitionParser startingStateForRegexRule.
-	self addGrammarItem: node
+	self
+		addGrammarItem: node
+		afterIndex:
+			(aGrammarItem isTokenRule
+				ifTrue: [ (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ]) - 1 ]
+				ifFalse: [ (rules size to: 1 by: -1)
+						detect: [ :i | (rules at: i) isTokenRule or: [ (rules at: i) isDirective ] ]
+						ifNone: [ 0 ] ])
 ]
 
 { #category : #iterating }

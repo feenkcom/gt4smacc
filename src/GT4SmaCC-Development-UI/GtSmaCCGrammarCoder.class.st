@@ -56,8 +56,8 @@ GtSmaCCGrammarCoder >> compileParser [
 { #category : #actions }
 GtSmaCCGrammarCoder >> createRuleNamed: aString from: aCoder [
 	aString first = $<
-		ifTrue: [ grammar addTokenNamed: aString ]
-		ifFalse: [ grammar addProductionNamed: aString ]
+		ifTrue: [ grammar addTokenNamed: aString for: aCoder grammarItem ]
+		ifFalse: [ grammar addProductionNamed: aString for: aCoder grammarItem ]
 ]
 
 { #category : #private }
