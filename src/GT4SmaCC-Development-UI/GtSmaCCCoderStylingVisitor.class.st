@@ -34,12 +34,11 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	| item coder |
 	item := styler grammarCoder ruleNamed: aToken source.
 	item isNil
-		ifTrue: [ (self isForCharacter: aToken)
-				ifFalse: [ self createDefinitionButtonFor: aToken ].
-			^ false ].
+		ifTrue: [ self style: aToken with: #formatMissing:.
+			^ self createDefinitionButtonFor: aToken ].
 	coder := GtSmaCCCoder on: item in: styler grammarCoder.
 	coder isNil
-		ifTrue: [ ^ false ].
+		ifTrue: [ ^ self ].
 	self text
 		attributes:
 			{(BrTextExpandButtonAttribute new
@@ -50,8 +49,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 							element expand.
 							element ] ])}
 		from: aToken stopPosition
-		to: aToken stopPosition.
-	^ true
+		to: aToken stopPosition
 ]
 
 { #category : #testing }
