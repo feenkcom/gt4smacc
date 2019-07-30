@@ -19,6 +19,14 @@ GtSmaCCGrammarItem class >> on: aGrammar ast: aNode [
 		yourself
 ]
 
+{ #category : #'instance creation' }
+GtSmaCCGrammarItem class >> on: aGrammar source: aString [
+	^ self new
+		grammar: aGrammar;
+		source: aString;
+		yourself
+]
+
 { #category : #accessing }
 GtSmaCCGrammarItem >> ast [
 	^ ast
@@ -74,7 +82,7 @@ GtSmaCCGrammarItem >> isValid [
 		startingAt: self parserStartingState.
 	true ]
 		on: SmaCCParserError
-		do: [ :ex | ex return: false ]
+		do: [ :ex |self halt. ex return: false ]
 ]
 
 { #category : #accessing }
@@ -127,18 +135,24 @@ GtSmaCCGrammarItem >> source: aString [
 ]
 
 { #category : #private }
-GtSmaCCGrammarItem >> updateSource: aSmaCCString [
+GtSmaCCGrammarItem >> updateSource: aSmaCCString at: anIndex [
 	self isModified
-		ifFalse: [ ^ self ].
-	isDeleted
-		ifTrue: [ aSmaCCString
-				deleteWhitespaceAfterIndex: originalAST stopPosition;
-				deleteFrom: originalAST startPosition
-					to: originalAST stopPosition ]
-		ifFalse: [ originalAST isNil
-				ifTrue: [ aSmaCCString append: String cr , self source ]
-				ifFalse: [ aSmaCCString
-						replaceFrom: originalAST startPosition
-						to: originalAST stopPosition
-						with: self source ] ]
+		ifTrue: [ isDeleted
+				ifTrue: [ originalAST isNil
+						ifTrue: [ ^ anIndex ].
+					aSmaCCString
+						deleteWhitespaceAfterIndex: originalAST stopPosition;
+						deleteFrom: originalAST startPosition
+							to: originalAST stopPosition ]
+				ifFalse: [ originalAST isNil
+						ifTrue: [ | newSource |
+							newSource := String cr , self source.
+							^ (aSmaCCString
+								insert: newSource
+								at: (aSmaCCString nextIndex: anIndex)) + newSource size - 1 ]
+						ifFalse: [ aSmaCCString
+								replaceFrom: originalAST startPosition
+								to: originalAST stopPosition
+								with: self source ] ] ].
+	^ originalAST stopPosition
 ]

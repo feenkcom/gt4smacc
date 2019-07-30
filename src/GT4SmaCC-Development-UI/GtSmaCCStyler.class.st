@@ -39,6 +39,11 @@ GtSmaCCStyler class >> formatKeyword: aText [
 ]
 
 { #category : #formatting }
+GtSmaCCStyler class >> formatMissing: aText [
+	aText foreground: Color red
+]
+
+{ #category : #formatting }
 GtSmaCCStyler class >> formatProduction: aText [
 	aText foreground: Color purple
 ]

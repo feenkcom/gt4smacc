@@ -53,6 +53,13 @@ GtSmaCCGrammarCoder >> compileParser [
 	grammar compileParser
 ]
 
+{ #category : #actions }
+GtSmaCCGrammarCoder >> createRuleNamed: aString from: aCoder [
+	aString first = $<
+		ifTrue: [ grammar addTokenNamed: aString for: aCoder grammarItem ]
+		ifFalse: [ grammar addProductionNamed: aString for: aCoder grammarItem ]
+]
+
 { #category : #private }
 GtSmaCCGrammarCoder >> deferStyle: aCoder [
 	stylingQueue flushAllSuchThat: [ :each | each == aCoder ].
@@ -67,7 +74,7 @@ GtSmaCCGrammarCoder >> grammar [
 { #category : #'initialize-release' }
 GtSmaCCGrammarCoder >> grammar: aGrammar [
 	grammar := aGrammar.
-	grammar rules do: [ :each | group add: each ].
+	self updateRuleList.
 	grammar weak
 		when: GtSmaCCGrammarAnnouncement
 		send: #grammarChanged:
@@ -77,6 +84,8 @@ GtSmaCCGrammarCoder >> grammar: aGrammar [
 
 { #category : #events }
 GtSmaCCGrammarCoder >> grammarChanged: grammarAnnouncement [
+	(GtSmaCCGrammarRulesChanged handlesAnnouncement: grammarAnnouncement)
+		ifTrue: [ self updateRuleList ].
 	self announce: (GtSmaCCCoderAnnouncement new coder: self)
 ]
 
@@ -186,6 +195,11 @@ GtSmaCCGrammarCoder >> updateProductionCompletions [
 			each isProductionRule
 				ifTrue: [ self updateCompletions: completions with: each ast ] ].
 	productionCompletionStrategy completions: completions
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateRuleList [
+	group updateItemsFrom: grammar rules
 ]
 
 { #category : #private }

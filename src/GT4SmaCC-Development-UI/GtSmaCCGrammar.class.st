@@ -60,7 +60,34 @@ GtSmaCCGrammar >> activeTokensDo: aBlock [
 ]
 
 { #category : #private }
-GtSmaCCGrammar >> addGrammarItem: aNode [
+GtSmaCCGrammar >> addGrammarItem: item afterIndex: anInteger [
+	rules add: item afterIndex: anInteger.
+	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
+	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addProductionNamed: aString [
+	self addProductionNamed: aString for: nil
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addProductionNamed: aString for: aGrammarItem [
+	self
+		addGrammarItem:
+			(GtSmaCCProductionRule
+				on: self
+				source: (self productionRuleStringNamed: aString))
+		afterIndex: (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ])
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> addRuleNode: aNode [
+	self addRuleNode: aNode afterIndex: rules size
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> addRuleNode: aNode afterIndex: anInteger [
 	| item |
 	aNode isDirective
 		ifTrue: [ item := GtSmaCCDirective on: self ast: aNode ].
@@ -70,9 +97,27 @@ GtSmaCCGrammar >> addGrammarItem: aNode [
 		ifTrue: [ item := GtSmaCCProductionRule on: self ast: aNode ].
 	item isNil
 		ifTrue: [ ^ self ].
-	rules add: item.
-	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
-	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
+	self addGrammarItem: item afterIndex: anInteger
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addTokenNamed: aString [
+	self addTokenNamed: aString for: nil
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addTokenNamed: aString for: aGrammarItem [
+	self
+		addGrammarItem:
+			(GtSmaCCTokenRule
+				on: self
+				source: (self tokenDefinitionStringNamed: aString))
+		afterIndex:
+			(aGrammarItem isTokenRule
+				ifTrue: [ (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ]) - 1 ]
+				ifFalse: [ (rules size to: 1 by: -1)
+						detect: [ :i | (rules at: i) isTokenRule or: [ (rules at: i) isDirective ] ]
+						ifNone: [ 0 ] ])
 ]
 
 { #category : #iterating }
@@ -224,7 +269,7 @@ GtSmaCCGrammar >> parserClass: aClass [
 	originalAST := aClass definitionAST.
 	originalAST isNil
 		ifTrue: [ ^ self ].
-	originalAST rules do: [ :each | self addGrammarItem: each ].
+	originalAST rules do: [ :each | self addRuleNode: each ].
 	glr := self hasGLRDirective.
 	unicode := self hasUnicodeDirective.
 	caseInsensitive := self hasCaseInsensitiveDirective
@@ -238,6 +283,20 @@ GtSmaCCGrammar >> parserClassName [
 { #category : #accessing }
 GtSmaCCGrammar >> parserClassName: anObject [
 	parserClassName := anObject
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> productionRuleStringNamed: aString [
+	^ String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: aString;
+				cr;
+				tab;
+				nextPut: $:;
+				cr;
+				tab;
+				nextPut: $; ]
 ]
 
 { #category : #accessing }
@@ -307,7 +366,9 @@ GtSmaCCGrammar >> source [
 		to: glr
 		directive: self glrDirective
 		in: newSource.
-	rules do: [ :each | each updateSource: newSource ].
+	rules
+		inject: 0
+		into: [ :sum :each | each updateSource: newSource at: sum ].
 	^ newSource asString
 ]
 
@@ -316,7 +377,7 @@ GtSmaCCGrammar >> source: aString [
 	originalAST := SmaCCDefinitionParser parseWithErrors: aString.
 	originalAST isNil
 		ifTrue: [ ^ self ].
-	originalAST rules do: [ :each | self addGrammarItem: each ]
+	originalAST rules do: [ :each | self addRuleNode: each ]
 ]
 
 { #category : #private }
@@ -341,6 +402,20 @@ GtSmaCCGrammar >> startingProductions [
 				ifTrue: [ productions add: each ].
 			first := false ].
 	^ productions
+]
+
+{ #category : #private }
+GtSmaCCGrammar >> tokenDefinitionStringNamed: aString [
+	^ String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: aString;
+				cr;
+				tab;
+				nextPutAll: ': a';
+				cr;
+				tab;
+				nextPut: $; ]
 ]
 
 { #category : #private }

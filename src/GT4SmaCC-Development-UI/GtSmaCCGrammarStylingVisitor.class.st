@@ -19,7 +19,7 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	grammar := styler originalGrammar ifNil: [ aNode topParent ].
 	definition := grammar definitionNamed: name.
 	definition isNil
-		ifTrue: [ ^ false ].
+		ifTrue: [ ^ self style: aToken with: #formatMissing: ].
 	self text
 		attributes:
 			{(BrTextExpandButtonAttribute new
@@ -29,8 +29,7 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 								textEditorOn: definition source
 								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ] ])}
 		from: aToken stopPosition
-		to: aToken stopPosition.
-	^ true
+		to: aToken stopPosition
 ]
 
 { #category : #'initialize-release' }

@@ -5,18 +5,17 @@ Class {
 }
 
 { #category : #private }
-GtSmaCCSyntaxStylingVisitor >> formatCharacterMethod: aToken [
+GtSmaCCSyntaxStylingVisitor >> characterSelectorFor: aToken [
 	| name |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1)
 		asSymbol.
-	(Character includesSelector: name)
-		ifFalse: [ ^ self ].
-	self formatMethod: (Character lookupSelector: name) for: aToken
+	^ (Character includesSelector: name)
+		ifTrue: [ name ]
 ]
 
 { #category : #private }
 GtSmaCCSyntaxStylingVisitor >> formatInlineDefinition: aNode token: aToken [
-	^ false
+	self subclassResponsibility
 ]
 
 { #category : #private }
@@ -157,8 +156,12 @@ GtSmaCCSyntaxStylingVisitor >> visitSymbol: aSymbol [
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
 	self style: aTokenRegex with: #formatToken:.
-	(self formatInlineDefinition: aTokenRegex token: aTokenRegex name)
-		ifFalse: [ self formatCharacterMethod: aTokenRegex ].
+	(self characterSelectorFor: aTokenRegex name)
+		ifNotNil: [ :selector | 
+			self
+				formatMethod: (Character lookupSelector: selector)
+				for: aTokenRegex ]
+		ifNil: [ self formatInlineDefinition: aTokenRegex token: aTokenRegex name ].
 	super visitTokenRegex: aTokenRegex
 ]
 
