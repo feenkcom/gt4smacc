@@ -94,7 +94,6 @@ GtSmaCCDefinitionListElement >> listElement [
 			dataSource
 				lookBlock: [ GtSmaCCBadgesLook new definitionList: self ].
 			listElement := GtSmaCCGroupCoderInfiniteElement new
-				clipChildren: false;
 				dataSource: dataSource;
 				constraintsDo: [ :c | 
 					c horizontal matchParent.

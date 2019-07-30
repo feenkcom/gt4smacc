@@ -191,6 +191,7 @@ GtSmaCCCoderElement >> sourceEditor [
 			completionController := GtCompletionController
 				on: element
 				strategy: strategy.
+			completionController closeOnEmptyCompletion: false.
 			completionController install ].
 	^ element
 ]
