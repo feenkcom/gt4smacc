@@ -84,9 +84,12 @@ GtSmaCCGrammarCoder >> grammar: aGrammar [
 
 { #category : #events }
 GtSmaCCGrammarCoder >> grammarChanged: grammarAnnouncement [
+	| announcementClass |
 	(GtSmaCCGrammarRulesChanged handlesAnnouncement: grammarAnnouncement)
-		ifTrue: [ self updateRuleList ].
-	self announce: (GtSmaCCCoderAnnouncement new coder: self)
+		ifTrue: [ self updateRuleList.
+			announcementClass := GtSmaCCCoderRulesChangedAnnouncement ]
+		ifFalse: [ announcementClass := GtSmaCCCoderAnnouncement ].
+	self announce: (announcementClass forCoder: self)
 ]
 
 { #category : #accessing }

@@ -7,6 +7,13 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
+{ #category : #'instance creation' }
+GtSmaCCCoderAnnouncement class >> forCoder: aCoder [
+	^ self new
+		coder: aCoder;
+		yourself
+]
+
 { #category : #accessing }
 GtSmaCCCoderAnnouncement >> coder [
 	^ coder

@@ -71,7 +71,7 @@ GtSmaCCGrammarCoderElement >> buildElement [
 GtSmaCCGrammarCoderElement >> coder: aGrammarCoder [
 	grammarCoder := aGrammarCoder.
 	grammarCoder weak
-		when: GtSmaCCCoderAnnouncement
+		when: GtSmaCCCoderRulesChangedAnnouncement
 		send: #updateList
 		to: self.
 	self buildElement
