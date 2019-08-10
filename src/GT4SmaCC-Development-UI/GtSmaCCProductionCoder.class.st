@@ -20,6 +20,18 @@ GtSmaCCProductionCoder >> badgeTypes [
 			#(#('AST' hasASTExpression) #('Code' hasCodeExpression) #('Default' hasDefaultExpression))
 ]
 
+{ #category : #accessing }
+GtSmaCCProductionCoder >> collapsedText [
+	| text |
+	text := self name asRopedText.
+	GtSmaCCStyler formatProductionDefinition: text.
+	^ text
+]
+
+{ #category : #actions }
+GtSmaCCProductionCoder >> extractSource [
+]
+
 { #category : #'private-actions' }
 GtSmaCCProductionCoder >> inlineAllReferencesTo: aProductionRuleNode [
 ]
@@ -51,6 +63,7 @@ GtSmaCCProductionCoder >> shortcuts [
 						meta;
 						key: BlKeyboardKey i;
 						build);
+				repeatable: false;
 				action: [ :editorElement | self inlineSource ])}
 ]
 

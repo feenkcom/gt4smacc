@@ -18,6 +18,14 @@ GtSmaCCTokenCoder >> badgeTypes [
 	^ super badgeTypes , #(#('Method' isScannerMethod))
 ]
 
+{ #category : #accessing }
+GtSmaCCTokenCoder >> collapsedText [
+	| text |
+	text := self name asRopedText.
+	GtSmaCCStyler formatTokenDefinition: text.
+	^ text
+]
+
 { #category : #actions }
 GtSmaCCTokenCoder >> viewTokenSimulator: anElement [
 	| simulator |

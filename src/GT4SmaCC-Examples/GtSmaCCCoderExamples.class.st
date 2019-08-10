@@ -301,7 +301,6 @@ GtSmaCCCoderExamples >> productionRuleCoder [
 	grammarCoder := self grammarCoder.
 	rule := grammarCoder ruleNamed: self productionRuleName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
-	coder styleNow.
 	self assert: coder sourceEditor text asString = rule source.
 	self
 		assert: coder collapsedEditor text asString = self productionRuleName.
@@ -361,7 +360,6 @@ GtSmaCCCoderExamples >> semicolonTokenCoder [
 	grammarCoder := self grammarCoder.
 	rule := grammarCoder ruleNamed: self semicolonName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
-	coder styleNow.
 	self assert: coder sourceEditor text asString = rule source.
 	self assert: coder collapsedEditor text asString = self semicolonName.
 	^ coder

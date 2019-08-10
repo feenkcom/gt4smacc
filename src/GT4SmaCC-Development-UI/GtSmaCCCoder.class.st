@@ -138,16 +138,21 @@ GtSmaCCCoder >> browseReferences: anElement [
 GtSmaCCCoder >> collapsedEditor [
 	collapsedEditor isNil
 		ifTrue: [ collapsedEditor := self newCollapsedEditor.
-			self styleSource ].
+			self updateCollapsedSource ].
 	^ collapsedEditor
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> collapsedText [
+	^ self name asRopedText
 ]
 
 { #category : #accessing }
 GtSmaCCCoder >> completionStrategy [
 	grammarItem isProductionRule
-		ifTrue: [ ^ owner productionCompletionStrategy ].
+		ifTrue: [ ^ self productionCompletionStrategy ].
 	grammarItem isTokenRule
-		ifTrue: [ ^ owner tokenCompletionStrategy ].
+		ifTrue: [ ^ self tokenCompletionStrategy ].
 	^ nil
 ]
 
@@ -160,6 +165,18 @@ GtSmaCCCoder >> defaultTextAttributes [
 GtSmaCCCoder >> deleteRule [
 	self
 		executeTransformation: (GtSmaCCDeleteRefactoring delete: grammarItem)
+]
+
+{ #category : #private }
+GtSmaCCCoder >> disableCodeCompletion [
+	self productionCompletionStrategy disable.
+	self tokenCompletionStrategy disable
+]
+
+{ #category : #private }
+GtSmaCCCoder >> enableCodeCompletion [
+	self productionCompletionStrategy enable.
+	self tokenCompletionStrategy enable
 ]
 
 { #category : #'private-actions' }
@@ -243,7 +260,7 @@ GtSmaCCCoder >> isValid [
 GtSmaCCCoder >> itemChanged: anAnnouncement [
 	grammarItem source ~= self sourceEditor text asString
 		ifTrue: [ self sourceEditor text: self sourceText.
-			self styleSource ]
+			self updateCollapsedSource ]
 ]
 
 { #category : #accessing }
@@ -259,8 +276,8 @@ GtSmaCCCoder >> newCollapsedEditor [
 { #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
 	^ BrTextEditor new
-		styler: self newStyler;
 		text: self sourceText;
+		styler: self newStyler;
 		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];
 		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ];
 		when: BlInfiniteDataSourceChanged
@@ -304,6 +321,11 @@ GtSmaCCCoder >> owner [
 { #category : #'initialize-release' }
 GtSmaCCCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
+]
+
+{ #category : #private }
+GtSmaCCCoder >> productionCompletionStrategy [
+	^ owner productionCompletionStrategy
 ]
 
 { #category : #private }
@@ -379,6 +401,12 @@ GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
 			renameAction
 				addLocations: (tokens collect: [ :each | each startPosition + 1 ])
 				to: coder sourceEditor ].
+	self disableCodeCompletion.
+	renameAction
+		when: GtRenameActionAnnoucement
+		do: [ :ann | 
+			ann eventType = #uninstall
+				ifTrue: [ self enableCodeCompletion ] ].
 	renameAction install
 ]
 
@@ -410,9 +438,11 @@ GtSmaCCCoder >> selectedToken [
 GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcut new
 		combination: BlKeyCombination primaryN;
+		repeatable: false;
 		action: [ :editorElement | self browseReferences: editorElement ]).
 	(BlShortcut new
 		combination: BlKeyCombination primaryR;
+		repeatable: false;
 		action: [ :editorElement | self renameItem: editorElement ])}
 ]
 
@@ -428,7 +458,6 @@ GtSmaCCCoder >> sourceChanged [
 	grammarItem source = source
 		ifTrue: [ ^ self ].
 	grammarItem source: source.
-	self styleSource.
 	owner updateCompletions
 ]
 
@@ -446,28 +475,19 @@ GtSmaCCCoder >> sourceText [
 ]
 
 { #category : #private }
-GtSmaCCCoder >> styleNow [
-	[ self sourceEditor styler
-		style: self sourceEditor text nextGeneration
-		afterDo: [ self updateCollapsedSource ] ]
-		on: Error
-		do: [ :ex | ex return ]
+GtSmaCCCoder >> styleSource [
+	self sourceEditor styleText
 ]
 
 { #category : #private }
-GtSmaCCCoder >> styleSource [
-	owner notNil
-		ifTrue: [ owner deferStyle: self ]
-		ifFalse: [ self styleNow ]
+GtSmaCCCoder >> tokenCompletionStrategy [
+	^ owner tokenCompletionStrategy
 ]
 
 { #category : #private }
 GtSmaCCCoder >> updateCollapsedSource [
-	| name |
-	name := self ast name.
-	self collapsedEditor
-		text:
-			(self sourceEditor text
-				copyFrom: name startPosition
-				to: name stopPosition) readonly
+	| text |
+	text := self collapsedText.
+	text attributes: self defaultTextAttributes.
+	self collapsedEditor text: text readonly
 ]

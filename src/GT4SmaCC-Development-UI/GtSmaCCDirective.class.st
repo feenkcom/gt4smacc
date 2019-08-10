@@ -4,6 +4,17 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
+{ #category : #accessing }
+GtSmaCCDirective >> directiveName [
+	| node |
+	node := self ast isErrorNode
+		ifTrue: [ self originalAST ]
+		ifFalse: [ self ast ].
+	node isNil
+		ifTrue: [ ^ '' ].
+	^ node directiveNameToken value
+]
+
 { #category : #testing }
 GtSmaCCDirective >> isCaseInsensitive [
 	| tree |

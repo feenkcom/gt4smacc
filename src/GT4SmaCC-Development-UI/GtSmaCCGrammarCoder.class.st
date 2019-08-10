@@ -9,8 +9,7 @@ Class {
 		'tokenCompletionStrategy',
 		'productionCompletionStrategy',
 		'group',
-		'stylingProcess',
-		'stylingQueue'
+		'completionsProcess'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -60,12 +59,6 @@ GtSmaCCGrammarCoder >> createRuleNamed: aString from: aCoder [
 		ifFalse: [ grammar addProductionNamed: aString for: aCoder grammarItem ]
 ]
 
-{ #category : #private }
-GtSmaCCGrammarCoder >> deferStyle: aCoder [
-	stylingQueue flushAllSuchThat: [ :each | each == aCoder ].
-	stylingQueue nextPut: aCoder
-]
-
 { #category : #accessing }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
@@ -102,9 +95,7 @@ GtSmaCCGrammarCoder >> initialize [
 	super initialize.
 	group := GtSmaCCDefinitionGroupResult onCoder: self.
 	tokenCompletionStrategy := GtSmaCCCompletionStrategy new.
-	productionCompletionStrategy := GtSmaCCCompletionStrategy new.
-	stylingQueue := SharedQueue new.
-	self startStyler
+	productionCompletionStrategy := GtSmaCCCompletionStrategy new
 ]
 
 { #category : #testing }
@@ -167,12 +158,6 @@ GtSmaCCGrammarCoder >> source [
 	^ grammar source
 ]
 
-{ #category : #private }
-GtSmaCCGrammarCoder >> startStyler [
-	stylingProcess := [ [ stylingQueue next styleNow ] repeat ]
-		forkAt: Processor userBackgroundPriority
-]
-
 { #category : #accessing }
 GtSmaCCGrammarCoder >> tokenCompletionStrategy [
 	^ tokenCompletionStrategy
@@ -180,8 +165,12 @@ GtSmaCCGrammarCoder >> tokenCompletionStrategy [
 
 { #category : #private }
 GtSmaCCGrammarCoder >> updateCompletions [
+	completionsProcess notNil
+		ifTrue: [ completionsProcess terminate ].
+	completionsProcess := [ (Delay forMilliseconds: 50) wait.
 	self updateProductionCompletions.
-	self updateTokenCompletions
+	self updateTokenCompletions.
+	completionsProcess := nil ] forkAt: Processor userBackgroundPriority
 ]
 
 { #category : #private }
