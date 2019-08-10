@@ -122,13 +122,15 @@ GtSmaCCGrammarElement >> sourceElement [
 
 { #category : #private }
 GtSmaCCGrammarElement >> updateEditor [
-	| styler |
+	| styler text |
 	styler := GtSmaCCGrammarStyler
 		for:
 			([ grammar scannerClass ]
 				on: Error
 				do: [ :ex | ex return: SmaCCScanner ]).
+	text := grammar source asRopedText.
+	text attributes: GtSmaCCCoder defaultTextAttributes.
 	self sourceEditor
-		text: grammar source asRopedText;
+		text: text;
 		styler: styler
 ]
