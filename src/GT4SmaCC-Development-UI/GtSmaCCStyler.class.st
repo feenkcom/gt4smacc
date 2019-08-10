@@ -95,6 +95,7 @@ GtSmaCCStyler >> grammarCoder [
 { #category : #'initialize-release' }
 GtSmaCCStyler >> initialize [
 	super initialize.
+	task := BlTextStylerSyncTask new styler: self.
 	startingState := 1
 ]
 

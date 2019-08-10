@@ -1,6 +1,19 @@
 Extension { #name : #SmaCCParser }
 
 { #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> buildSmaCCGrammarSourceTabIn: tabGroup for: classCoder [
+	<gtClassView: 6>
+	self definitionString isEmpty
+		ifTrue: [ ^ self ].
+	tabGroup
+		addTab:
+			(BrTab new
+				look: BrGlamorousTabLook new;
+				label: 'Source';
+				stencil: [ GtSmaCCGrammarElement onGrammar: (GtSmaCCGrammar onParser: self) ])
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> buildSmaCCGrammarTabIn: tabGroup for: classCoder [
 	<gtClassView: 5>
 	self definitionString isEmpty

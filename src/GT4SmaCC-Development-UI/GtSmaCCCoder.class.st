@@ -448,8 +448,8 @@ GtSmaCCCoder >> sourceText [
 { #category : #private }
 GtSmaCCCoder >> styleNow [
 	[ self sourceEditor styler
-		style: self sourceEditor text nextGeneration.
-	self updateCollapsedSource ]
+		style: self sourceEditor text nextGeneration
+		afterDo: [ self updateCollapsedSource ] ]
 		on: Error
 		do: [ :ex | ex return ]
 ]
