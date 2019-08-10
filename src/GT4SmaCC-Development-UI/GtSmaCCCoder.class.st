@@ -134,6 +134,46 @@ GtSmaCCCoder >> browseReferences: anElement [
 				sourceElement: anElement)
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCCoder >> coderRenamePositionsForProduction: aSmaCCToken [
+	| coderMap |
+	coderMap := Dictionary new.
+	owner coders
+		do: [ :each | 
+			each isProductionRule
+				ifTrue: [ | nodeBlock |
+					nodeBlock := [ :node | 
+					node name = aSmaCCToken
+						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+								add: node name sourceInterval ] ].
+					each ast allNodesOfType: SmaCCProductionRuleNode do: nodeBlock.
+					each ast allNodesOfType: SmaCCProductionSymbolNode do: nodeBlock ].
+			each isDirective
+				ifTrue: [ ((each ast isKindOf: SmaCCAssociativeDirectiveNode)
+						or: [ each ast isKindOf: SmaCCStartDirectiveNode ])
+						ifTrue: [ each ast symbols
+								do: [ :token | 
+									token = aSmaCCToken
+										ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+												add: token sourceInterval ] ] ] ] ].
+	^ coderMap
+]
+
+{ #category : #'private-actions' }
+GtSmaCCCoder >> coderRenamePositionsForToken: aSmaCCToken [
+	| coderMap |
+	coderMap := Dictionary new.
+	owner coders
+		do: [ :each | 
+			each ast
+				allNodesDo: [ :node |  ]
+				andTokensDo: [ :token | 
+					token = aSmaCCToken
+						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+								add: (token startPosition + 1 to: token stopPosition - 1) ] ] ].
+	^ coderMap
+]
+
 { #category : #editor }
 GtSmaCCCoder >> collapsedEditor [
 	collapsedEditor isNil
@@ -235,6 +275,36 @@ GtSmaCCCoder >> initialize [
 	expanded := false
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
+	| renameAction localIntervals local |
+	local := coderIntervalMap keys
+		detect: [ :each | self grammarItem == each grammarItem ]
+		ifNone: [ ^ self ].
+	localIntervals := coderIntervalMap at: local.
+	coderIntervalMap removeKey: local.
+	renameAction := GtCompositeRenameAction
+		locations: localIntervals
+		element: anElement.
+	coderIntervalMap
+		keysAndValuesDo: [ :coder :tokens | 
+			renameAction
+				addLocations: (tokens collect: [ :each | each first ])
+				to: coder sourceEditor ].
+	self disableCodeCompletion.
+	renameAction
+		when: GtRenameActionAnnoucement
+		do: [ :ann | 
+			ann eventType = #uninstall
+				ifTrue: [ self enableCodeCompletion ] ].
+	renameAction install
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isDirective [
+	^ grammarItem isDirective
+]
+
 { #category : #private }
 GtSmaCCCoder >> isInterval: interval inside: aNodeOrToken [
 	^ interval first >= aNodeOrToken startPosition
@@ -247,8 +317,18 @@ GtSmaCCCoder >> isModified [
 ]
 
 { #category : #testing }
+GtSmaCCCoder >> isProductionRule [
+	^ grammarItem isProductionRule
+]
+
+{ #category : #testing }
 GtSmaCCCoder >> isReferenced [
 	^ grammarItem isReferenced
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isTokenRule [
+	^ grammarItem isTokenRule
 ]
 
 { #category : #testing }
@@ -363,7 +443,7 @@ GtSmaCCCoder >> renameItem: anElement [
 	token := self selectedToken.
 	token isNil
 		ifTrue: [ ^ self ].
-	token source first = $<
+	(token source first = $< and: [ token size > 2 ])
 		ifTrue: [ self renameTokenNamed: token in: anElement ].
 	token source first isLetter
 		ifTrue: [ self renameProductionNamed: token in: anElement ]
@@ -371,43 +451,16 @@ GtSmaCCCoder >> renameItem: anElement [
 
 { #category : #'private-actions' }
 GtSmaCCCoder >> renameProductionNamed: aSmaCCToken in: anElement [
+	| coderIntervalMap |
+	coderIntervalMap := self coderRenamePositionsForProduction: aSmaCCToken.
+	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
 { #category : #'private-actions' }
 GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
-	| coderMap localIntervals renameAction local |
-	aSmaCCToken size <= 2
-		ifTrue: [ ^ self ].
-	coderMap := Dictionary new.
-	owner coders
-		do: [ :each | 
-			each ast
-				allNodesDo: [ :node |  ]
-				andTokensDo: [ :token | 
-					token = aSmaCCToken
-						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
-								add: token ] ] ].
-	local := coderMap keys
-		detect: [ :each | self grammarItem == each grammarItem ]
-		ifNone: [ ^ self ].
-	localIntervals := (coderMap at: local)
-		collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ].
-	coderMap removeKey: local.
-	renameAction := GtCompositeRenameAction
-		locations: localIntervals
-		element: anElement.
-	coderMap
-		keysAndValuesDo: [ :coder :tokens | 
-			renameAction
-				addLocations: (tokens collect: [ :each | each startPosition + 1 ])
-				to: coder sourceEditor ].
-	self disableCodeCompletion.
-	renameAction
-		when: GtRenameActionAnnoucement
-		do: [ :ann | 
-			ann eventType = #uninstall
-				ifTrue: [ self enableCodeCompletion ] ].
-	renameAction install
+	| coderIntervalMap |
+	coderIntervalMap := self coderRenamePositionsForToken: aSmaCCToken.
+	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
 { #category : #private }
