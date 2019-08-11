@@ -73,12 +73,14 @@ GtSmaCCGrammar >> addProductionNamed: aString [
 
 { #category : #actions }
 GtSmaCCGrammar >> addProductionNamed: aString for: aGrammarItem [
+	| rule |
+	rule := GtSmaCCProductionRule
+		on: self
+		source: (self productionRuleStringNamed: aString).
 	self
-		addGrammarItem:
-			(GtSmaCCProductionRule
-				on: self
-				source: (self productionRuleStringNamed: aString))
-		afterIndex: (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ])
+		addGrammarItem: rule
+		afterIndex: (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ]).
+	^ rule
 ]
 
 { #category : #private }
@@ -107,17 +109,19 @@ GtSmaCCGrammar >> addTokenNamed: aString [
 
 { #category : #actions }
 GtSmaCCGrammar >> addTokenNamed: aString for: aGrammarItem [
+	| rule |
+	rule := GtSmaCCTokenRule
+		on: self
+		source: (self tokenDefinitionStringNamed: aString).
 	self
-		addGrammarItem:
-			(GtSmaCCTokenRule
-				on: self
-				source: (self tokenDefinitionStringNamed: aString))
+		addGrammarItem: rule
 		afterIndex:
 			(aGrammarItem isTokenRule
 				ifTrue: [ (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ]) - 1 ]
 				ifFalse: [ (rules size to: 1 by: -1)
 						detect: [ :i | (rules at: i) isTokenRule or: [ (rules at: i) isDirective ] ]
-						ifNone: [ 0 ] ])
+						ifNone: [ 0 ] ]).
+	^ rule
 ]
 
 { #category : #iterating }

@@ -393,6 +393,33 @@ GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 		ifTrue: [ aBlock cull: node cull: interval ]
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> nodesForInterval: interval in: aNode [
+	| nodes |
+	nodes := OrderedCollection new.
+	aNode
+		nodesDo: [ :each | 
+			(each startPosition >= interval first
+				and: [ each stopPosition <= interval last ])
+				ifTrue: [ nodes add: each ]
+				ifFalse: [ (each startPosition <= interval first
+						and: [ each stopPosition >= interval last ])
+						ifTrue: [ ^ self nodesForInterval: interval in: each ]
+						ifFalse: [ (each startPosition > interval last
+								or: [ each stopPosition < interval first ])
+								ifFalse: [ ^ #() ] ] ] ].
+	^ nodes
+]
+
+{ #category : #private }
+GtSmaCCCoder >> nodesForSelection [
+	| interval |
+	interval := self selectedSourceInterval.
+	interval isNil
+		ifTrue: [ ^ #() ].
+	^ self nodesForInterval: interval in: self ast
+]
+
 { #category : #accessing }
 GtSmaCCCoder >> owner [
 	^ owner
