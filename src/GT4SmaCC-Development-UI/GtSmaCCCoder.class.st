@@ -134,20 +134,65 @@ GtSmaCCCoder >> browseReferences: anElement [
 				sourceElement: anElement)
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCCoder >> coderRenamePositionsForProduction: aSmaCCToken [
+	| coderMap |
+	coderMap := Dictionary new.
+	owner coders
+		do: [ :each | 
+			each isProductionRule
+				ifTrue: [ | nodeBlock |
+					nodeBlock := [ :node | 
+					node name = aSmaCCToken
+						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+								add: node name sourceInterval ] ].
+					each ast allNodesOfType: SmaCCProductionRuleNode do: nodeBlock.
+					each ast allNodesOfType: SmaCCProductionSymbolNode do: nodeBlock ].
+			each isDirective
+				ifTrue: [ ((each ast isKindOf: SmaCCAssociativeDirectiveNode)
+						or: [ each ast isKindOf: SmaCCStartDirectiveNode ])
+						ifTrue: [ each ast symbols
+								do: [ :token | 
+									token = aSmaCCToken
+										ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+												add: token sourceInterval ] ] ] ] ].
+	^ coderMap
+]
+
+{ #category : #'private-actions' }
+GtSmaCCCoder >> coderRenamePositionsForToken: aSmaCCToken [
+	| coderMap |
+	coderMap := Dictionary new.
+	owner coders
+		do: [ :each | 
+			each ast
+				allNodesDo: [ :node |  ]
+				andTokensDo: [ :token | 
+					token = aSmaCCToken
+						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
+								add: (token startPosition + 1 to: token stopPosition - 1) ] ] ].
+	^ coderMap
+]
+
 { #category : #editor }
 GtSmaCCCoder >> collapsedEditor [
 	collapsedEditor isNil
 		ifTrue: [ collapsedEditor := self newCollapsedEditor.
-			self styleSource ].
+			self updateCollapsedSource ].
 	^ collapsedEditor
+]
+
+{ #category : #accessing }
+GtSmaCCCoder >> collapsedText [
+	^ self name asRopedText
 ]
 
 { #category : #accessing }
 GtSmaCCCoder >> completionStrategy [
 	grammarItem isProductionRule
-		ifTrue: [ ^ owner productionCompletionStrategy ].
+		ifTrue: [ ^ self productionCompletionStrategy ].
 	grammarItem isTokenRule
-		ifTrue: [ ^ owner tokenCompletionStrategy ].
+		ifTrue: [ ^ self tokenCompletionStrategy ].
 	^ nil
 ]
 
@@ -160,6 +205,18 @@ GtSmaCCCoder >> defaultTextAttributes [
 GtSmaCCCoder >> deleteRule [
 	self
 		executeTransformation: (GtSmaCCDeleteRefactoring delete: grammarItem)
+]
+
+{ #category : #private }
+GtSmaCCCoder >> disableCodeCompletion [
+	self productionCompletionStrategy disable.
+	self tokenCompletionStrategy disable
+]
+
+{ #category : #private }
+GtSmaCCCoder >> enableCodeCompletion [
+	self productionCompletionStrategy enable.
+	self tokenCompletionStrategy enable
 ]
 
 { #category : #'private-actions' }
@@ -218,6 +275,36 @@ GtSmaCCCoder >> initialize [
 	expanded := false
 ]
 
+{ #category : #'private-actions' }
+GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
+	| renameAction localIntervals local |
+	local := coderIntervalMap keys
+		detect: [ :each | self grammarItem == each grammarItem ]
+		ifNone: [ ^ self ].
+	localIntervals := coderIntervalMap at: local.
+	coderIntervalMap removeKey: local.
+	renameAction := GtCompositeRenameAction
+		locations: localIntervals
+		element: anElement.
+	coderIntervalMap
+		keysAndValuesDo: [ :coder :tokens | 
+			renameAction
+				addLocations: (tokens collect: [ :each | each first ])
+				to: coder sourceEditor ].
+	self disableCodeCompletion.
+	renameAction
+		when: GtRenameActionAnnoucement
+		do: [ :ann | 
+			ann eventType = #uninstall
+				ifTrue: [ self enableCodeCompletion ] ].
+	renameAction install
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isDirective [
+	^ grammarItem isDirective
+]
+
 { #category : #private }
 GtSmaCCCoder >> isInterval: interval inside: aNodeOrToken [
 	^ interval first >= aNodeOrToken startPosition
@@ -230,8 +317,18 @@ GtSmaCCCoder >> isModified [
 ]
 
 { #category : #testing }
+GtSmaCCCoder >> isProductionRule [
+	^ grammarItem isProductionRule
+]
+
+{ #category : #testing }
 GtSmaCCCoder >> isReferenced [
 	^ grammarItem isReferenced
+]
+
+{ #category : #testing }
+GtSmaCCCoder >> isTokenRule [
+	^ grammarItem isTokenRule
 ]
 
 { #category : #testing }
@@ -243,7 +340,7 @@ GtSmaCCCoder >> isValid [
 GtSmaCCCoder >> itemChanged: anAnnouncement [
 	grammarItem source ~= self sourceEditor text asString
 		ifTrue: [ self sourceEditor text: self sourceText.
-			self styleSource ]
+			self updateCollapsedSource ]
 ]
 
 { #category : #accessing }
@@ -259,8 +356,8 @@ GtSmaCCCoder >> newCollapsedEditor [
 { #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
 	^ BrTextEditor new
-		styler: self newStyler;
 		text: self sourceText;
+		styler: self newStyler;
 		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];
 		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ];
 		when: BlInfiniteDataSourceChanged
@@ -296,6 +393,33 @@ GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 		ifTrue: [ aBlock cull: node cull: interval ]
 ]
 
+{ #category : #private }
+GtSmaCCCoder >> nodesForInterval: interval in: aNode [
+	| nodes |
+	nodes := OrderedCollection new.
+	aNode
+		nodesDo: [ :each | 
+			(each startPosition >= interval first
+				and: [ each stopPosition <= interval last ])
+				ifTrue: [ nodes add: each ]
+				ifFalse: [ (each startPosition <= interval first
+						and: [ each stopPosition >= interval last ])
+						ifTrue: [ ^ self nodesForInterval: interval in: each ]
+						ifFalse: [ (each startPosition > interval last
+								or: [ each stopPosition < interval first ])
+								ifFalse: [ ^ #() ] ] ] ].
+	^ nodes
+]
+
+{ #category : #private }
+GtSmaCCCoder >> nodesForSelection [
+	| interval |
+	interval := self selectedSourceInterval.
+	interval isNil
+		ifTrue: [ ^ #() ].
+	^ self nodesForInterval: interval in: self ast
+]
+
 { #category : #accessing }
 GtSmaCCCoder >> owner [
 	^ owner
@@ -304,6 +428,11 @@ GtSmaCCCoder >> owner [
 { #category : #'initialize-release' }
 GtSmaCCCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
+]
+
+{ #category : #private }
+GtSmaCCCoder >> productionCompletionStrategy [
+	^ owner productionCompletionStrategy
 ]
 
 { #category : #private }
@@ -341,7 +470,7 @@ GtSmaCCCoder >> renameItem: anElement [
 	token := self selectedToken.
 	token isNil
 		ifTrue: [ ^ self ].
-	token source first = $<
+	(token source first = $< and: [ token size > 2 ])
 		ifTrue: [ self renameTokenNamed: token in: anElement ].
 	token source first isLetter
 		ifTrue: [ self renameProductionNamed: token in: anElement ]
@@ -349,37 +478,16 @@ GtSmaCCCoder >> renameItem: anElement [
 
 { #category : #'private-actions' }
 GtSmaCCCoder >> renameProductionNamed: aSmaCCToken in: anElement [
+	| coderIntervalMap |
+	coderIntervalMap := self coderRenamePositionsForProduction: aSmaCCToken.
+	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
 { #category : #'private-actions' }
 GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
-	| coderMap localIntervals renameAction local |
-	aSmaCCToken size <= 2
-		ifTrue: [ ^ self ].
-	coderMap := Dictionary new.
-	owner coders
-		do: [ :each | 
-			each ast
-				allNodesDo: [ :node |  ]
-				andTokensDo: [ :token | 
-					token = aSmaCCToken
-						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
-								add: token ] ] ].
-	local := coderMap keys
-		detect: [ :each | self grammarItem == each grammarItem ]
-		ifNone: [ ^ self ].
-	localIntervals := (coderMap at: local)
-		collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ].
-	coderMap removeKey: local.
-	renameAction := GtCompositeRenameAction
-		locations: localIntervals
-		element: anElement.
-	coderMap
-		keysAndValuesDo: [ :coder :tokens | 
-			renameAction
-				addLocations: (tokens collect: [ :each | each startPosition + 1 ])
-				to: coder sourceEditor ].
-	renameAction install
+	| coderIntervalMap |
+	coderIntervalMap := self coderRenamePositionsForToken: aSmaCCToken.
+	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
 { #category : #private }
@@ -410,9 +518,11 @@ GtSmaCCCoder >> selectedToken [
 GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcut new
 		combination: BlKeyCombination primaryN;
+		repeatable: false;
 		action: [ :editorElement | self browseReferences: editorElement ]).
 	(BlShortcut new
 		combination: BlKeyCombination primaryR;
+		repeatable: false;
 		action: [ :editorElement | self renameItem: editorElement ])}
 ]
 
@@ -428,7 +538,6 @@ GtSmaCCCoder >> sourceChanged [
 	grammarItem source = source
 		ifTrue: [ ^ self ].
 	grammarItem source: source.
-	self styleSource.
 	owner updateCompletions
 ]
 
@@ -446,28 +555,19 @@ GtSmaCCCoder >> sourceText [
 ]
 
 { #category : #private }
-GtSmaCCCoder >> styleNow [
-	[ self sourceEditor styler
-		style: self sourceEditor text nextGeneration
-		afterDo: [ self updateCollapsedSource ] ]
-		on: Error
-		do: [ :ex | ex return ]
+GtSmaCCCoder >> styleSource [
+	self sourceEditor styleText
 ]
 
 { #category : #private }
-GtSmaCCCoder >> styleSource [
-	owner notNil
-		ifTrue: [ owner deferStyle: self ]
-		ifFalse: [ self styleNow ]
+GtSmaCCCoder >> tokenCompletionStrategy [
+	^ owner tokenCompletionStrategy
 ]
 
 { #category : #private }
 GtSmaCCCoder >> updateCollapsedSource [
-	| name |
-	name := self ast name.
-	self collapsedEditor
-		text:
-			(self sourceEditor text
-				copyFrom: name startPosition
-				to: name stopPosition) readonly
+	| text |
+	text := self collapsedText.
+	text attributes: self defaultTextAttributes.
+	self collapsedEditor text: text readonly
 ]

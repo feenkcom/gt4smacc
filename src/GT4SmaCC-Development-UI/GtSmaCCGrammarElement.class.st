@@ -106,7 +106,7 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element look: BrGlamorousCodeEditorLook new + BrShadowLook new.
+	element look: BrGlamorousCodeEditorLook new.
 	completionStrategy := GtWeightedStringsCompletionStrategy new.
 	completionController := GtCompletionController
 		on: element
@@ -122,13 +122,15 @@ GtSmaCCGrammarElement >> sourceElement [
 
 { #category : #private }
 GtSmaCCGrammarElement >> updateEditor [
-	| styler |
+	| styler text |
 	styler := GtSmaCCGrammarStyler
 		for:
 			([ grammar scannerClass ]
 				on: Error
 				do: [ :ex | ex return: SmaCCScanner ]).
+	text := grammar source asRopedText.
+	text attributes: GtSmaCCCoder defaultTextAttributes.
 	self sourceEditor
-		text: grammar source asRopedText;
+		text: text;
 		styler: styler
 ]

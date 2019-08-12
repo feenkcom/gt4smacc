@@ -5,6 +5,21 @@ Class {
 }
 
 { #category : #private }
+GtSmaCCDirectiveCoder >> collapsedText [
+	| text |
+	text := ('%' , self directiveName) asRopedText.
+	GtSmaCCStyler
+		formatDirective: text;
+		formatDirectiveKeyword: text.
+	^ text
+]
+
+{ #category : #private }
+GtSmaCCDirectiveCoder >> directiveName [
+	^ grammarItem directiveName
+]
+
+{ #category : #private }
 GtSmaCCDirectiveCoder >> referencesFilterAtCursor [
 	| ast interval |
 	ast := self ast.
@@ -34,13 +49,4 @@ GtSmaCCDirectiveCoder >> referencesFilterAtCursor [
 					(self isInterval: interval inside: each)
 						ifTrue: [ ^ GtSmaCCDefinitionReferencesFilter name: each source ] ] ].
 	^ nil
-]
-
-{ #category : #private }
-GtSmaCCDirectiveCoder >> updateCollapsedSource [
-	self collapsedEditor
-		text:
-			(self sourceEditor text
-				copyFrom: 1
-				to: self ast directiveNameToken stopPosition) readonly
 ]

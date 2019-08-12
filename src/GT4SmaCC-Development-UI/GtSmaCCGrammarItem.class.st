@@ -82,7 +82,7 @@ GtSmaCCGrammarItem >> isValid [
 		startingAt: self parserStartingState.
 	true ]
 		on: SmaCCParserError
-		do: [ :ex |self halt. ex return: false ]
+		do: [ :ex | ex return: false ]
 ]
 
 { #category : #accessing }
