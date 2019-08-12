@@ -203,6 +203,7 @@ GtSmaCCCoderExamples >> grammarCoder [
 	| coder grammar |
 	grammar := self smaccDefinitionGrammar.
 	coder := GtSmaCCGrammarCoder onGrammar: grammar.
+	coder updateCompletionsNow.
 	self assert: coder source = self smaccGrammarClass definitionString.
 	self assert: coder group size = grammar rules size.
 	self
@@ -299,6 +300,7 @@ GtSmaCCCoderExamples >> productionRuleCoder [
 	<gtExample>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
+	grammarCoder updateCompletionsNow.
 	rule := grammarCoder ruleNamed: self productionRuleName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
 	self assert: coder sourceEditor text asString = rule source.
@@ -358,6 +360,7 @@ GtSmaCCCoderExamples >> semicolonTokenCoder [
 	<gtExample>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
+	grammarCoder updateCompletionsNow.
 	rule := grammarCoder ruleNamed: self semicolonName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
 	self assert: coder sourceEditor text asString = rule source.
