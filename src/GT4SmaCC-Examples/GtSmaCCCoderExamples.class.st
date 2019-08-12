@@ -199,11 +199,11 @@ GtSmaCCCoderExamples >> glrDirective [
 
 { #category : #coders }
 GtSmaCCCoderExamples >> grammarCoder [
-	<noTest>
 	<gtExample>
 	| coder grammar |
 	grammar := self smaccDefinitionGrammar.
 	coder := GtSmaCCGrammarCoder onGrammar: grammar.
+	coder updateCompletionsNow.
 	self assert: coder source = self smaccGrammarClass definitionString.
 	self assert: coder group size = grammar rules size.
 	self
@@ -221,7 +221,6 @@ GtSmaCCCoderExamples >> grammarCoder [
 
 { #category : #ui }
 GtSmaCCCoderExamples >> grammarElement [
-	<noTest>
 	<gtExample>
 	^ self grammarCoder asElement
 ]
@@ -299,9 +298,9 @@ GtSmaCCCoderExamples >> productionRule [
 { #category : #coders }
 GtSmaCCCoderExamples >> productionRuleCoder [
 	<gtExample>
-	<noTest>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
+	grammarCoder updateCompletionsNow.
 	rule := grammarCoder ruleNamed: self productionRuleName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
 	self assert: coder sourceEditor text asString = rule source.
@@ -312,7 +311,6 @@ GtSmaCCCoderExamples >> productionRuleCoder [
 
 { #category : #ui }
 GtSmaCCCoderExamples >> productionRuleElement [
-	<noTest>
 	<gtExample>
 	^ self productionRuleCoder asElement
 ]
@@ -336,7 +334,6 @@ GtSmaCCCoderExamples >> referencesFilter [
 
 { #category : #ui }
 GtSmaCCCoderExamples >> semicolonCoderElement [
-	<noTest>
 	<gtExample>
 	^ self semicolonTokenCoder asElement
 ]
@@ -360,10 +357,10 @@ GtSmaCCCoderExamples >> semicolonToken [
 
 { #category : #coders }
 GtSmaCCCoderExamples >> semicolonTokenCoder [
-	<noTest>
 	<gtExample>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
+	grammarCoder updateCompletionsNow.
 	rule := grammarCoder ruleNamed: self semicolonName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
 	self assert: coder sourceEditor text asString = rule source.

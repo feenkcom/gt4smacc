@@ -37,6 +37,11 @@ GtSmaCCCoder class >> defaultTextAttributes [
 	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
 ]
 
+{ #category : #testing }
+GtSmaCCCoder class >> hasCoderFor: anItem [
+	^ (self coderClassFor: anItem) notNil
+]
+
 { #category : #'instance creation' }
 GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
 	| class |
@@ -141,13 +146,18 @@ GtSmaCCCoder >> coderRenamePositionsForProduction: aSmaCCToken [
 	owner coders
 		do: [ :each | 
 			each isProductionRule
-				ifTrue: [ | nodeBlock |
-					nodeBlock := [ :node | 
-					node name = aSmaCCToken
+				ifTrue: [ | tokenBlock |
+					tokenBlock := [ :token | 
+					token = aSmaCCToken
 						ifTrue: [ (coderMap at: each ifAbsentPut: [ OrderedCollection new ])
-								add: node name sourceInterval ] ].
-					each ast allNodesOfType: SmaCCProductionRuleNode do: nodeBlock.
-					each ast allNodesOfType: SmaCCProductionSymbolNode do: nodeBlock ].
+								add: token sourceInterval ] ].
+					tokenBlock value: each ast name.
+					each ast
+						allNodesOfType: SmaCCProductionRuleNode
+						do: [ :node | tokenBlock value: node name ].
+					each ast
+						allNodesOfType: SmaCCProductionSymbolNode
+						do: [ :node | tokenBlock value: node name ] ].
 			each isDirective
 				ifTrue: [ ((each ast isKindOf: SmaCCAssociativeDirectiveNode)
 						or: [ each ast isKindOf: SmaCCStartDirectiveNode ])

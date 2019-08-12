@@ -168,14 +168,19 @@ GtSmaCCGrammarCoder >> updateCompletions [
 	completionsProcess notNil
 		ifTrue: [ completionsProcess terminate ].
 	completionsProcess := [ (Delay forMilliseconds: 50) wait.
-	self updateProductionCompletions.
-	self updateTokenCompletions.
+	self updateCompletionsNow.
 	completionsProcess := nil ] forkAt: Processor userBackgroundPriority
 ]
 
 { #category : #private }
 GtSmaCCGrammarCoder >> updateCompletions: aPrefixTree with: aNode [
 	(GtSmaCCCompletionVisitor new completions: aPrefixTree) accept: aNode
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateCompletionsNow [
+	self updateProductionCompletions.
+	self updateTokenCompletions
 ]
 
 { #category : #private }
