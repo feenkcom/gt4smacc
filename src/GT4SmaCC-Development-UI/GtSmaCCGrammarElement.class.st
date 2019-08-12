@@ -106,7 +106,7 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element look: BrGlamorousCodeEditorLook new + BrShadowLook new.
+	element look: BrGlamorousCodeEditorLook new.
 	completionStrategy := GtWeightedStringsCompletionStrategy new.
 	completionController := GtCompletionController
 		on: element
