@@ -31,20 +31,20 @@ GtSmaCCCoderStylingVisitor >> createDefinitionButtonFor: aToken [
 
 { #category : #private }
 GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
-	| item coder |
+	| item |
 	item := styler grammarCoder ruleNamed: aToken source.
 	item isNil
 		ifTrue: [ self style: aToken with: #formatMissing:.
 			^ self createDefinitionButtonFor: aToken ].
-	coder := GtSmaCCCoder on: item in: styler grammarCoder.
-	coder isNil
-		ifTrue: [ ^ self ].
+	(GtSmaCCCoder hasCoderFor: item)
+		ifFalse: [ ^ self ].
 	self text
 		attributes:
 			{(BrTextExpandButtonAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ | element |
+						stencil: [ | element coder |
+							coder := GtSmaCCCoder on: item in: styler grammarCoder.
 							element := coder asElement.
 							element expand.
 							element ] ])}

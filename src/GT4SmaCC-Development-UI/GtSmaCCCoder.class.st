@@ -37,6 +37,11 @@ GtSmaCCCoder class >> defaultTextAttributes [
 	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
 ]
 
+{ #category : #testing }
+GtSmaCCCoder class >> hasCoderFor: anItem [
+	^ (self coderClassFor: anItem) notNil
+]
+
 { #category : #'instance creation' }
 GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
 	| class |
