@@ -31,7 +31,7 @@ GtSmaCCGrammarItem class >> on: aGrammar source: aString [
 GtSmaCCGrammarItem >> ast [
 	^ ast
 		ifNil: [ ast := SmaCCDefinitionParser
-				parseWithErrors: source
+				parseWithErrors: (source ifNil: [''])
 				startingAt: self parserStartingState ]
 ]
 
@@ -127,11 +127,20 @@ GtSmaCCGrammarItem >> source [
 
 { #category : #accessing }
 GtSmaCCGrammarItem >> source: aString [
+	| previousName newName |
 	source = aString
 		ifTrue: [ ^ self ].
+	previousName := self name.
 	source := aString.
 	ast := nil.
-	self announce: (GtSmaCCGrammarItemChanged forItem: self)
+	newName := self name.
+	self
+		announce:
+			(previousName = newName
+				ifTrue: [ GtSmaCCGrammarItemChanged forItem: self ]
+				ifFalse: [ (GtSmaCCGrammarItemRenamed forItem: self)
+						previousName: previousName;
+						newName: newName ])
 ]
 
 { #category : #private }

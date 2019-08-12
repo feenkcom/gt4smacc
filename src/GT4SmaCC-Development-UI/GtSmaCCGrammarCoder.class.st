@@ -199,6 +199,17 @@ GtSmaCCGrammarCoder >> updateRuleList [
 	group updateItemsFrom: grammar rules
 ]
 
+{ #category : #events }
+GtSmaCCGrammarCoder >> updateStylingForRenameFrom: oldName to: newName [
+	self coders
+		do: [ :each | 
+			| source |
+			source := each source.
+			((source includesSubstring: oldName)
+				or: [ source includesSubstring: newName ])
+				ifTrue: [ each styleSource ] ]
+]
+
 { #category : #private }
 GtSmaCCGrammarCoder >> updateTokenCompletions [
 	| completions |
