@@ -44,10 +44,10 @@ GtSmaCCCoderElement >> coder [
 { #category : #'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
-"	coder owner weak
+	coder owner weak
 		when: GtSmaCCCoderAnnouncement
 		send: #updateDeleteButton
-		to: self."
+		to: self.
 	self header: [ self collapsedElement ].
 	self content: [ self contentElement ].
 	self margin: (BlInsets all: 4).

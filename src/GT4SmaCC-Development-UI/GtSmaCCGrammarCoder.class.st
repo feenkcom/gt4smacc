@@ -205,8 +205,8 @@ GtSmaCCGrammarCoder >> updateStylingForRenameFrom: oldName to: newName [
 		do: [ :each | 
 			| source |
 			source := each source.
-			((source includesSubstring: oldName)
-				or: [ source includesSubstring: newName ])
+			((oldName notNil and: [ source includesSubstring: oldName ])
+				or: [ newName notNil and: [ source includesSubstring: newName ] ])
 				ifTrue: [ each styleSource ] ]
 ]
 
