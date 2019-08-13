@@ -349,7 +349,11 @@ GtSmaCCCoder >> isValid [
 { #category : #private }
 GtSmaCCCoder >> itemChanged: anAnnouncement [
 	grammarItem source ~= self sourceEditor text asString
-		ifTrue: [ self sourceEditor text: self sourceText.
+		ifTrue: [ self sourceEditor text: self sourceText ].
+	anAnnouncement isRename
+		ifTrue: [ owner
+				updateStylingForRenameFrom: anAnnouncement previousName
+				to: anAnnouncement newName.
 			self updateCollapsedSource ]
 ]
 

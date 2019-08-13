@@ -8,3 +8,8 @@ Class {
 GtSmaCCGrammarAnnouncement >> grammar [
 	self subclassResponsibility
 ]
+
+{ #category : #testing }
+GtSmaCCGrammarAnnouncement >> isRename [
+	^ false
+]
