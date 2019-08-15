@@ -5,7 +5,9 @@ Class {
 		'scannerPropertiesList',
 		'parserStackList',
 		'stateActionsList',
-		'sourceEditor'
+		'sourceEditor',
+		'parserTab',
+		'scannerTab'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -43,6 +45,13 @@ GtSmaCCDebuggerElement class >> sessionClass [
 	^ SmaCCParserDebugSession
 ]
 
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> acceptAttributes [
+	^ {(BlTextUnderlineAttribute new
+		paint: BrGlamorousColors successBackgroundColor;
+		width: 3)}
+]
+
 { #category : #callbacks }
 GtSmaCCDebuggerElement >> actOnDebugSessionChanged [
 	self buildUI
@@ -64,7 +73,7 @@ GtSmaCCDebuggerElement >> buildDetails [
 
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildDetailsInspector [
-	| parserTab scannerTab tabGroup |
+	| tabGroup |
 	parserTab := BrTabModel new
 		add: (BrLabelModel text: 'Parser');
 		stencil: [ self buildParserElement ].
@@ -328,6 +337,16 @@ GtSmaCCDebuggerElement >> buildUI [
 	self addChild: (self buildTabGroupForElement: detailsElement)
 ]
 
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> clearAttributes [
+	sourceEditor isNil
+		ifTrue: [ ^ self ].
+	sourceEditor text
+		clearAttributes: [ :attr | attr class = BlTextUnderlineAttribute ].
+	sourceEditor invalidateAll.
+	sourceEditor updateAll
+]
+
 { #category : #accessing }
 GtSmaCCDebuggerElement >> currentContext [
 	^ self interruptedContext
@@ -337,10 +356,20 @@ GtSmaCCDebuggerElement >> currentContext [
 GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 	sourceEditor isNil
 		ifTrue: [ ^ 1 to: 0 ].
-	sourceEditor selection do: [ :each | ^ each interval ].
+	sourceEditor selection
+		do: [ :each | ^ each interval first + 1 to: each interval last ].
 	sourceEditor cursors
-		do: [ :each | ^ each position to: each position ].
+		do: [ :each | ^ each position + 1 to: each position + 1 ].
 	^ 1 to: 0
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> highlightFrom: start to: end with: attributes [
+	(sourceEditor isNil or: [ end < start ])
+		ifTrue: [ ^ self ].
+	(sourceEditor text from: start to: end) attributes: attributes.
+	sourceEditor invalidateAll.
+	sourceEditor updateAll
 ]
 
 { #category : #'initialize-release' }
@@ -353,6 +382,13 @@ GtSmaCCDebuggerElement >> initialize [
 			c vertical matchParent ]
 ]
 
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> moveCursor [
+	sourceEditor isNil
+		ifTrue: [ ^ self ].
+	sourceEditor moveCursorTo: self session scanner position
+]
+
 { #category : #private }
 GtSmaCCDebuggerElement >> parserDebuggingActionsPragmas [
 	^ #(gtSmaCCDebuggingParserAction)
@@ -360,19 +396,22 @@ GtSmaCCDebuggerElement >> parserDebuggingActionsPragmas [
 
 { #category : #private }
 GtSmaCCDebuggerElement >> scannerDebuggingActionsPragmas [
-	^ #(gtSmaCCDebuggingInputAction)
+	^ #(gtSmaCCDebuggingInputAction gtSmaCCDebuggingScannerAction)
 ]
 
 { #category : #private }
 GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	| interval |
+	sourceEditor isNil
+		ifTrue: [ ^ self ].
+	self clearAttributes.
 	interval := self session tokenIntervalFor: anObject.
 	interval isNil
 		ifTrue: [ ^ self ].
-	sourceEditor selecter
-		overwrite;
-		from: interval first - 1 to: interval last;
-		select
+	self
+		highlightFrom: interval first
+		to: interval last
+		with: self acceptAttributes
 ]
 
 { #category : #'private-updating' }
@@ -387,5 +426,32 @@ GtSmaCCDebuggerElement >> updateContents [
 	stateActionsList notNil
 		ifTrue: [ stateActionsList items: self session potentialStateActions ].
 	scannerPropertiesList notNil
-		ifTrue: [ scannerPropertiesList items: self session scannerProperties ]
+		ifTrue: [ scannerPropertiesList items: self session scannerProperties ].
+	self clearAttributes.
+	self session isScanning
+		ifTrue: [ self updateScanner ]
+		ifFalse: [ self updateParser ]
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateParser [
+	parserTab select.
+	parserStackList selection
+		do: [ :each | 
+			each isEmpty
+				ifFalse: [ ^ self selectSourceFor: (parserStackList items at: each from) last ] ]
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateScanner [
+	| scanner start end success attributes |
+	scannerTab select.
+	scanner := self session scanner.
+	success := scanner matchActions notNil.
+	success
+		ifFalse: [ ^ self ].
+	start := scanner debugStart.
+	end := scanner debugEnd.
+	attributes := self acceptAttributes.
+	self highlightFrom: start + 1 to: end with: attributes
 ]
