@@ -172,7 +172,7 @@ GtSmaCCDebuggerElement >> buildParserStack [
 		do: [ :event | 
 			event
 				selectedDo:
-					[ :each | self selectSourceFor: (parserStackList items at: each first) last ] ].
+					[ :each | self selectedStackItem: (parserStackList items at: each first) last ] ].
 	parserStackList column
 		title: 'Symbol';
 		stencil: [ :each | 
@@ -412,6 +412,14 @@ GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 		highlightFrom: interval first
 		to: interval last
 		with: self acceptAttributes
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> selectedStackItem: value [
+	value = ''
+		ifTrue: [ ^ self ].
+	self selectSourceFor: value.
+	self phlow selectObject: value
 ]
 
 { #category : #'private-updating' }

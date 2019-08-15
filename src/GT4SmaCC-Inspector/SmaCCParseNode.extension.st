@@ -36,6 +36,8 @@ SmaCCParseNode >> gtParentsFor: aView [
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtSourceFor: aView [
 	<gtView>
+	self topParent completeSource isNil
+		ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		priority: 10;
 		title: 'Source';
