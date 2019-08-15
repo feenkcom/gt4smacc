@@ -38,12 +38,11 @@ SmaCCParser class >> debug: aString from: anElement [
 		startedAt: process suspendedContext.
 	[ SmaCCParserDebugSession handlesContext: debuggingSession context ]
 		whileFalse: [ debuggingSession stepInto ].
-	debugger := GtMoldableDebuggerElement new.
-	debugger initializeForSession: debuggingSession.
+	debugger := GtMoldableDebuggerElement on: debuggingSession.
 	space := BlSpace new.
 	space title: self name.
 	space extent: 1200 @ 600.
-	space addChild: debugger.
+	space addChild: debugger inInspector.
 	space withHalos.
 	space withSpotter.
 	space show
