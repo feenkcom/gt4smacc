@@ -41,7 +41,7 @@ SmaCCParser class >> buildTestTabIn: tabGroup for: classCoder [
 
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> debug: aString from: anElement [
-	| process context debugger space debuggingSession |
+	| process context debuggingSession |
 	context := [ self parse: aString ] asContext.
 	process := Process
 		forContext: context
@@ -51,14 +51,7 @@ SmaCCParser class >> debug: aString from: anElement [
 		startedAt: process suspendedContext.
 	[ SmaCCParserDebugSession handlesContext: debuggingSession context ]
 		whileFalse: [ debuggingSession stepInto ].
-	debugger := GtMoldableDebuggerElement on: debuggingSession.
-	space := BlSpace new.
-	space title: self name.
-	space extent: 1200 @ 600.
-	space addChild: debugger inInspector.
-	space withHalos.
-	space withSpotter.
-	space show
+	process debug
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
