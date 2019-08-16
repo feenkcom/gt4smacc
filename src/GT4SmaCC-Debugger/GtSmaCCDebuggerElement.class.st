@@ -17,7 +17,7 @@ Class {
 
 { #category : #accessing }
 GtSmaCCDebuggerElement class >> availableAutomatically [
-	^ availableAutomatically ifNil: [ false ]
+	^ availableAutomatically ifNil: [ true ]
 ]
 
 { #category : #accessing }
