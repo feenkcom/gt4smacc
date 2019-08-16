@@ -124,6 +124,18 @@ GtSmaCCGrammar >> addTokenNamed: aString for: aGrammarItem [
 	^ rule
 ]
 
+{ #category : #accessing }
+GtSmaCCGrammar >> allItemNames [
+	| names |
+	names := Set new.
+	self
+		activeProductionsDo: [ :each | 
+			each ast
+				allNodesOfType: SmaCCSymbolNode
+				do: [ :node | names add: node name value ] ].
+	^ names
+]
+
 { #category : #iterating }
 GtSmaCCGrammar >> allReferencesTo: aString do: aBlock [
 	self

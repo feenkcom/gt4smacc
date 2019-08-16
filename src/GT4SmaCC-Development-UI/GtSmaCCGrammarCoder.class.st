@@ -9,7 +9,8 @@ Class {
 		'tokenCompletionStrategy',
 		'productionCompletionStrategy',
 		'group',
-		'completionsProcess'
+		'completionsProcess',
+		'variableGroup'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
@@ -34,6 +35,11 @@ GtSmaCCGrammarCoder >> announcer [
 { #category : #element }
 GtSmaCCGrammarCoder >> asElement [
 	^ GtSmaCCGrammarCoderElement onCoder: self
+]
+
+{ #category : #element }
+GtSmaCCGrammarCoder >> asVariableElement [
+	^ GtSmaCCGrammarVariableCoderElement onCoder: self
 ]
 
 { #category : #accessing }
@@ -72,7 +78,7 @@ GtSmaCCGrammarCoder >> grammar: aGrammar [
 		when: GtSmaCCGrammarAnnouncement
 		send: #grammarChanged:
 		to: self.
-	self updateCompletions
+	self updateItems
 ]
 
 { #category : #events }
@@ -94,6 +100,7 @@ GtSmaCCGrammarCoder >> group [
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
 	group := GtSmaCCDefinitionGroupResult onCoder: self.
+	variableGroup := GtSmaCCVariableGroupResult onCoder: self.
 	tokenCompletionStrategy := GtSmaCCCompletionStrategy new.
 	productionCompletionStrategy := GtSmaCCCompletionStrategy new
 ]
@@ -165,11 +172,8 @@ GtSmaCCGrammarCoder >> tokenCompletionStrategy [
 
 { #category : #private }
 GtSmaCCGrammarCoder >> updateCompletions [
-	completionsProcess notNil
-		ifTrue: [ completionsProcess terminate ].
-	completionsProcess := [ (Delay forMilliseconds: 50) wait.
-	self updateCompletionsNow.
-	completionsProcess := nil ] forkAt: Processor userBackgroundPriority
+	self updateProductionCompletions.
+	self updateTokenCompletions
 ]
 
 { #category : #private }
@@ -178,9 +182,13 @@ GtSmaCCGrammarCoder >> updateCompletions: aPrefixTree with: aNode [
 ]
 
 { #category : #private }
-GtSmaCCGrammarCoder >> updateCompletionsNow [
-	self updateProductionCompletions.
-	self updateTokenCompletions
+GtSmaCCGrammarCoder >> updateItems [
+	completionsProcess notNil
+		ifTrue: [ completionsProcess terminate ].
+	completionsProcess := [ (Delay forMilliseconds: 50) wait.
+	self updateVariableItems.
+	self updateCompletions.
+	completionsProcess := nil ] forkAt: Processor userBackgroundPriority
 ]
 
 { #category : #private }
@@ -219,4 +227,19 @@ GtSmaCCGrammarCoder >> updateTokenCompletions [
 			each isTokenRule
 				ifTrue: [ self updateCompletions: completions with: each ast ] ].
 	tokenCompletionStrategy completions: completions
+]
+
+{ #category : #private }
+GtSmaCCGrammarCoder >> updateVariableItems [
+	variableGroup updateItems: grammar allItemNames
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> variableCoderNamed: aString [
+	^ variableGroup coderFor: aString
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> variableGroup [
+	^ variableGroup
 ]

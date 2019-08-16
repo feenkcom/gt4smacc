@@ -16,14 +16,21 @@ SmaCCParser class >> buildSmaCCGrammarSourceTabIn: tabGroup for: classCoder [
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> buildSmaCCGrammarTabIn: tabGroup for: classCoder [
 	<gtClassView: 5>
+	| coder |
 	self definitionString isEmpty
 		ifTrue: [ ^ self ].
+	coder := GtSmaCCGrammarCoder onParser: self.
 	tabGroup
 		addTab:
 			(BrTab new
 				look: BrGlamorousTabLook new;
 				label: 'Grammar';
-				stencil: [ (GtSmaCCGrammarCoder onParser: self) asElement ])
+				stencil: [ coder asElement ]);
+		addTab:
+			(BrTab new
+				look: BrGlamorousTabLook new;
+				label: 'Annotate';
+				stencil: [ coder asVariableElement ])
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
