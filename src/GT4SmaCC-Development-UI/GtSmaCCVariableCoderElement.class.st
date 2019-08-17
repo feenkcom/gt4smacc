@@ -125,7 +125,7 @@ GtSmaCCVariableCoderElement >> labelElement [
 	| label |
 	label := BrLabel new.
 	label padding: (BlInsets all: 2).
-	label look: BrGlamorousLabelLook.
+	label look: BrGlamorousLabelLook new glamorousCodeFontAndSize.
 	label
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
