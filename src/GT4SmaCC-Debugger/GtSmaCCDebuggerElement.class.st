@@ -67,7 +67,7 @@ GtSmaCCDebuggerElement >> buildDetails [
 			c horizontal matchParent.
 			c vertical matchParent ].
 	element addChild: self buildDetailsInspector.
-	element addChild: self buildSource.
+	element addChild: self buildSource as: #source.
 	^ element
 ]
 
@@ -400,6 +400,16 @@ GtSmaCCDebuggerElement >> scannerDebuggingActionsPragmas [
 ]
 
 { #category : #private }
+GtSmaCCDebuggerElement >> scrollTo: anInteger [
+	self
+		childNamed: #source
+		ifFound: [ :element | 
+			element
+				scrollToPosition: (sourceEditor text asString lineNumberCorrespondingToIndex: anInteger) ]
+		ifNone: [  ]
+]
+
+{ #category : #private }
 GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	| interval |
 	sourceEditor isNil
@@ -411,7 +421,8 @@ GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	self
 		highlightFrom: interval first
 		to: interval last
-		with: self acceptAttributes
+		with: self acceptAttributes.
+	self scrollTo: interval first
 ]
 
 { #category : #'private-updating' }

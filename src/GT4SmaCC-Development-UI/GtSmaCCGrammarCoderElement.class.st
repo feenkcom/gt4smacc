@@ -1,101 +1,20 @@
 Class {
 	#name : #GtSmaCCGrammarCoderElement,
-	#superclass : #BlElement,
-	#instVars : [
-		'grammarCoder'
-	],
+	#superclass : #GtSmaCCListCoderElement,
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'instance creation' }
-GtSmaCCGrammarCoderElement class >> onCoder: aGrammarCoder [
-	^ self new
-		coder: aGrammarCoder;
-		yourself
-]
-
 { #category : #ui }
-GtSmaCCGrammarCoderElement >> actionBar [
-	^ BrToolbar new
-		look: BrToolbarLook new;
-		padding:
-			(BlInsets
-				top: 0
-				left: 10
-				bottom: 5
-				right: 10);
-		layout:
-			(BlGridLayout horizontal
-				rowCount: 1;
-				cellSpacing: 3);
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
-		addItems:
-			(self actions
-				collect: [ :each | 
-					BrButton new
-						beSmall;
-						look: BrGlamorousButtonWithIconLook;
-						label: each title;
-						icon: each icon asElement;
-						action: each ])
-]
-
-{ #category : #ui }
-GtSmaCCGrammarCoderElement >> actions [
-	^ {(GtCoderAction new
-		title: 'Accept' translated;
-		icon: BrGlamorousIcons accept;
-		action: [ :button | self compileParser ];
-		yourself)}
-]
-
-{ #category : #ui }
-GtSmaCCGrammarCoderElement >> buildElement [
-	self layout: BlLinearLayout vertical.
-	self
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	self
-		addChild:
-			(GtSmaCCDefinitionListElement new
-				group: grammarCoder group;
-				yourself)
-			as: #list;
-		addChild: self compilationBar
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCGrammarCoderElement >> coder: aGrammarCoder [
-	grammarCoder := aGrammarCoder.
-	grammarCoder weak
-		when: GtSmaCCCoderRulesChangedAnnouncement
-		send: #updateList
-		to: self.
-	self buildElement
+GtSmaCCGrammarCoderElement >> coderListElementClass [
+	^ GtSmaCCCoderListElement
 ]
 
 { #category : #ui }
 GtSmaCCGrammarCoderElement >> compilationBar [
 	| element |
-	element := BlElement new.
-	element layout: BlLinearLayout horizontal.
-	element
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
-	element addChild: self actionBar.
+	element := super compilationBar.
 	element addChild: self flagsElement.
 	^ element
-]
-
-{ #category : #actions }
-GtSmaCCGrammarCoderElement >> compileParser [
-	grammarCoder isValid
-		ifFalse: [ ^ self showErrors ].
-	grammarCoder compileParser
 ]
 
 { #category : #ui }
@@ -122,13 +41,8 @@ GtSmaCCGrammarCoderElement >> flagsElement [
 ]
 
 { #category : #ui }
-GtSmaCCGrammarCoderElement >> listElement [
-	| list |
-	list := BrSimpleList new.
-	list vFitContent.
-	list stencil: [ :each :index | each asElement ].
-	list items: grammarCoder group coders.
-	^ list asScrollableElement
+GtSmaCCGrammarCoderElement >> group [
+	^ grammarCoder group
 ]
 
 { #category : #private }
@@ -170,12 +84,4 @@ GtSmaCCGrammarCoderElement >> toggleButton: aString activated: aSymbol [
 			do:
 				[ :anEvent | grammarCoder perform: (aSymbol , ':') asSymbol with: false ].
 	^ toggle
-]
-
-{ #category : #ui }
-GtSmaCCGrammarCoderElement >> updateList [
-	self
-		childNamed: #list
-		ifFound: [ :element | element updateFilters ]
-		ifNone: [  ]
 ]

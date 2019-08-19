@@ -17,7 +17,7 @@ GtSmaCCDefinitionGroupResult class >> onCoder: aGrammarCoder [
 
 { #category : #elements }
 GtSmaCCDefinitionGroupResult >> asElement [
-	^ GtSmaCCDefinitionListElement new
+	^ GtSmaCCCoderListElement new
 		group: self;
 		childNamed: #toggles
 			ifFound: [ :element | element removeFromParent ]

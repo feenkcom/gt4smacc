@@ -552,7 +552,7 @@ GtSmaCCCoder >> sourceChanged [
 	grammarItem source = source
 		ifTrue: [ ^ self ].
 	grammarItem source: source.
-	owner updateCompletions
+	owner updateItems
 ]
 
 { #category : #editor }
