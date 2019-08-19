@@ -75,14 +75,16 @@ GtSmaCCDebuggerElement >> buildDetails [
 GtSmaCCDebuggerElement >> buildDetailsInspector [
 	^ BrTabGroup new
 		look: BrGlamorousTabGroupLook new;
-		addTab: (BrTab new
-			look: BrGlamorousTabLook new;
-			label: 'Parser';
-			stencil: [ self buildParserElement ]);
-		addTab: (BrTab new
-			look: BrGlamorousTabLook new;
-			label: 'Scanner';
-			stencil: [ self buildScannerElement ])
+		addTab:
+			(parserTab := BrTab new
+				look: BrGlamorousTabLook new;
+				label: 'Parser';
+				stencil: [ self buildParserElement ]);
+		addTab:
+			(scannerTab := BrTab new
+				look: BrGlamorousTabLook new;
+				label: 'Scanner';
+				stencil: [ self buildScannerElement ])
 ]
 
 { #category : #'building widgets' }
@@ -441,7 +443,7 @@ GtSmaCCDebuggerElement >> updateContents [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateParser [
-	parserTab select.
+	self enqueueTask: (BlTaskAction new action: [ parserTab select ]).
 	parserStackList selection
 		do: [ :each | 
 			each isEmpty
@@ -451,7 +453,7 @@ GtSmaCCDebuggerElement >> updateParser [
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateScanner [
 	| scanner start end success attributes |
-	scannerTab select.
+	self enqueueTask: (BlTaskAction new action: [ scannerTab select ]).
 	scanner := self session scanner.
 	success := scanner matchActions notNil.
 	success
