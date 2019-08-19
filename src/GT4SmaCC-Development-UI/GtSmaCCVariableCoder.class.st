@@ -145,7 +145,7 @@ GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	(ruleText from: position - node name value size + 1 to: position)
 		attributes:
 			{(BlTextUnderlineAttribute new
-				paint: BrGlamorousColors textHighlightColor;
+				paint: Color veryLightGray;
 				width: 3)}.
 	(ruleText from: position to: position)
 		attributes:
