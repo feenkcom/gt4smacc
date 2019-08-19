@@ -318,41 +318,29 @@ GtSmaCCTransformationToolkit >> previewInputFilename [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputSourceElement [
-	| sourceTab tabGroup |
-	sourceTab := BrTabModel new
-		add: (BrLabelModel text: self previewInputFilename);
-		stencil: [ | editorElement |
-			editorElement := self
-				editorFor: previewResult inputSource
-				parser: model inputParserClass.
-			self
-				whenCursorEventsIn: editorElement editor
-				do: [ :intervals | 
-					self
-						updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
-			BlElement new
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
-				addChild: editorElement asScrollableElement as: #inputSource;
-				yourself ].
-	tabGroup := BrTabGroupModel with: {sourceTab}.
-	tabGroup tabs
-		do: [ :each | 
-			BlElement new
-				look: BrMaterialTabLabelledLook;
-				viewModel: each ].
-	^ BlElement new
-		effect: (BlDropShadowEffect color: Color black width: 3 offset: 0 @ 0);
-		margin: (BlInsets all: 10);
+	^ BrTabGroup new
+		look: BrGlamorousTabGroupLook + BrShadowLook;
 		background: Color white;
 		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ];
-		look: BrMaterialTabGroupLook;
-		viewModel: tabGroup;
-		yourself
+		addTab: (BrTab new
+			look: BrGlamorousTabLook new;
+			label: self previewInputFilename;
+			stencil: [
+				| editorElement |
+				editorElement := self
+					editorFor: previewResult inputSource
+					parser: model inputParserClass.
+				self
+					whenCursorEventsIn: editorElement editor
+					do: [ :intervals | 
+						self
+							updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
+				BlElement new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical matchParent ];
+					addChild: editorElement asScrollableElement as: #inputSource;
+					yourself ])
 ]
 
 { #category : #'ui-preview' }
@@ -364,41 +352,29 @@ GtSmaCCTransformationToolkit >> previewOutputFilename [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputSourceElement [
-	| sourceTab tabGroup |
-	sourceTab := BrTabModel new
-		add: (BrLabelModel text: self previewOutputFilename);
-		stencil: [ | editorElement |
-			editorElement := self
-				editorFor: previewResult outputSource
-				parser: model validationParserClass.
-			self
-				whenCursorEventsIn: editorElement editor
-				do: [ :intervals | 
-					self
-						updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
-			BlElement new
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
-				addChild: editorElement asScrollableElement as: #outputSource;
-				yourself ].
-	tabGroup := BrTabGroupModel with: {sourceTab}.
-	tabGroup tabs
-		do: [ :each | 
-			BlElement new
-				look: BrMaterialTabLabelledLook;
-				viewModel: each ].
-	^ BlElement new
-		effect: (BlDropShadowEffect color: Color black width: 3 offset: 0 @ 0);
-		margin: (BlInsets all: 10);
+	^ BrTabGroup new
+		look: BrGlamorousTabGroupLook + BrShadowLook;
 		background: Color white;
 		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ];
-		look: BrMaterialTabGroupLook;
-		viewModel: tabGroup;
-		yourself
+		addTab: (BrTab new
+			look: BrGlamorousTabLook new;
+			label: self previewOutputFilename;
+			stencil: [
+				| editorElement |
+				editorElement := self
+					editorFor: previewResult outputSource
+					parser: model validationParserClass.
+				self
+					whenCursorEventsIn: editorElement editor
+					do: [ :intervals | 
+						self
+							updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
+				BlElement new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical matchParent ];
+					addChild: editorElement asScrollableElement as: #outputSource;
+					yourself ])
 ]
 
 { #category : #'ui-preview' }
@@ -590,31 +566,25 @@ GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
 
 { #category : #ui }
 GtSmaCCTransformationToolkit >> windowElement [
-	| configurationTab transformationsTab previewTab tabGroup |
-	configurationTab := BrTabModel new
-		add: (BrLabelModel text: 'Configuration');
-		stencil: [ self configurationElement ].
-	transformationsTab := BrTabModel new
-		add: (BrLabelModel text: 'Transformations');
-		stencil: [ self transformationsElement ].
-	previewTab := BrTabModel new
-		add: (BrLabelModel text: 'Preview');
-		stencil: [ self previewElement ].
-	tabGroup := BrTabGroupModel
-		with:
-			{configurationTab.
-			transformationsTab.
-			previewTab}.
-	tabGroup tabs
-		do: [ :each | 
-			BlElement new
-				look: BrMaterialTabLabelledLook;
-				viewModel: each ].
-	^ (windowElement := BlElement new)
-		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ];
-		look: BrMaterialTabGroupLook;
-		viewModel: tabGroup
+	windowElement := BrTabGroup new.
+	windowElement look: BrGlamorousTabGroupLook.
+	windowElement addTab: (
+		BrTab new
+			look: BrGlamorousTabLook;
+			label:  'Configuration';
+			stencil: [ self configurationElement ]).
+
+	windowElement addTab: (
+		BrTab new
+			look: BrGlamorousTabLook;
+			label:  'Transformations';
+			stencil: [ self transformationsElement ]).
+
+	windowElement addTab: (
+		BrTab new
+			look: BrGlamorousTabLook;
+			label:  'Preview';
+			stencil: [ self previewElement ]).
+
+	^ windowElement
 ]

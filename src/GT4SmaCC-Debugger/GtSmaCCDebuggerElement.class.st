@@ -73,29 +73,16 @@ GtSmaCCDebuggerElement >> buildDetails [
 
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildDetailsInspector [
-	| tabGroup |
-	parserTab := BrTabModel new
-		add: (BrLabelModel text: 'Parser');
-		stencil: [ self buildParserElement ].
-	scannerTab := BrTabModel new
-		add: (BrLabelModel text: 'Scanner');
-		stencil: [ self buildScannerElement ].
-	tabGroup := BrTabGroupModel
-		with:
-			{parserTab.
-			scannerTab}.
-	tabGroup tabs
-		do: [ :each | 
-			BlElement new
-				look: BrMaterialTabLabelledLook;
-				viewModel: each ].
-	^ BlElement new
-		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ];
-		look: BrMaterialTabGroupLook;
-		viewModel: tabGroup
+	^ BrTabGroup new
+		look: BrGlamorousTabGroupLook new;
+		addTab: (BrTab new
+			look: BrGlamorousTabLook new;
+			label: 'Parser';
+			stencil: [ self buildParserElement ]);
+		addTab: (BrTab new
+			look: BrGlamorousTabLook new;
+			label: 'Scanner';
+			stencil: [ self buildScannerElement ])
 ]
 
 { #category : #'building widgets' }
