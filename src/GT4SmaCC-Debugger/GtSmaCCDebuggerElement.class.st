@@ -283,7 +283,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	| tab tabGroup |
 	tab := BrTab new.
 	tab
-		look: BrGlamorousTabLook new invisibleBar;
+		look: BrGlamorousTabWithoutBarLook;
 		label: self session name;
 		stencil: [ BrValuableStencil from: anElement ];
 		padding:
