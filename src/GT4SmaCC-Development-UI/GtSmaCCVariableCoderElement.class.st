@@ -61,6 +61,28 @@ GtSmaCCVariableCoderElement >> contentElement [
 	^ element
 ]
 
+{ #category : #private }
+GtSmaCCVariableCoderElement >> editType [
+	^ self ownerElement editType
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> editorsDo: aBlock [
+	self
+		allChildrenBreadthFirstDo: [ :each | 
+			(each userData at: #variableNameAttribute ifAbsent: [ nil ]) notNil
+				ifTrue: [ aBlock value: each ] ]
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> focusedEditor [
+	self
+		editorsDo: [ :each | 
+			each focused
+				ifTrue: [ ^ each ] ].
+	^ nil
+]
+
 { #category : #'initialize-release' }
 GtSmaCCVariableCoderElement >> initialize [
 	| resizer |
@@ -112,7 +134,23 @@ GtSmaCCVariableCoderElement >> initialize [
 						primary;
 						return;
 						build);
-				action: [ self toggle ])
+				action: [ self toggle ]);
+		addShortcut:
+			(BlShortcut new
+				combination:
+					(BlCompulsoryCombination new
+						withAll:
+							{BlKeyCombination builder primary build.
+							(BlSingleKeyCombination key: BlKeyboardKey t)});
+				action: [ :each | self toggleNextRenaming ]);
+		addShortcut:
+			(BlShortcut new
+				combination:
+					(BlCompulsoryCombination new
+						withAll:
+							{BlKeyCombination builder primary shift build.
+							(BlSingleKeyCombination key: BlKeyboardKey t)});
+				action: [ :each | self togglePreviousRenaming ])
 ]
 
 { #category : #testing }
@@ -134,7 +172,21 @@ GtSmaCCVariableCoderElement >> labelElement [
 	^ label
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
+GtSmaCCVariableCoderElement >> loseFocusFrom: anEditorElement [
+	self editorsDo: [ :each | each background: Color white ]
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> ownerElement [
+	self
+		allParentsDo: [ :each | 
+			(each isKindOf: GtSmaCCGrammarVariableCoderElement)
+				ifTrue: [ ^ each ] ].
+	^ nil
+]
+
+{ #category : #ui }
 GtSmaCCVariableCoderElement >> referenceElements [
 	^ coder referencesText
 		collect: [ :each | 
@@ -158,4 +210,63 @@ GtSmaCCVariableCoderElement >> referenceElements [
 						text: each readonly;
 						yourself).
 			editorElement ]
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> toggleNextRenaming [
+	self ownerElement toggleNextRenaming.
+	self updateEditorBackgrounds
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> togglePreviousRenaming [
+	self ownerElement togglePreviousRenaming.
+	self updateEditorBackgrounds
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> updateEditorBackgrounds [
+	| focused |
+	focused := self focusedEditor.
+	focused isNil
+		ifTrue: [ ^ self ].
+	self updateFocusTo: focused
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> updateFocusTo: anEditorElement [
+	| testBlock |
+	testBlock := self editType = #single
+		ifTrue: [ [ :each | each == anEditorElement ] ]
+		ifFalse: [ self editType = #all
+				ifTrue: [ [ :each | true ] ]
+				ifFalse:
+					[ [ :each | each editor text asString = anEditorElement editor text asString ] ] ].
+	self
+		editorsDo: [ :each | 
+			(testBlock value: each)
+				ifTrue: [ each background: (Color veryLightGray alpha: 0.5) ]
+				ifFalse: [ each background: Color white ] ]
+]
+
+{ #category : #private }
+GtSmaCCVariableCoderElement >> updateNameTo: newName from: initialName in: element [
+	| testBlock |
+	testBlock := self editType = #single
+		ifTrue: [ [ :each | each == element ] ]
+		ifFalse: [ self editType = #all
+				ifTrue: [ [ :each | true ] ]
+				ifFalse:
+					[ [ :each | (each userData at: #variableNameAttribute) initialName = initialName ] ] ].
+	self
+		editorsDo: [ :each | 
+			(testBlock value: each)
+				ifTrue: [ | attr |
+					attr := each userData at: #variableNameAttribute.
+					(attr coder nameVariableAt: attr index as: newName)
+						ifNotNil: [ :name | attr initialName: name ].
+					each editor text asString ~= attr initialName
+						ifTrue: [ each editor
+								text: attr initialName asRopedText glamorousCodeFontAndSize ] ] ].
+	self updateEditorBackgrounds
 ]

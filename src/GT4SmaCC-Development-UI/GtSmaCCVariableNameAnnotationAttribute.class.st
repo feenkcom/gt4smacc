@@ -23,11 +23,15 @@ GtSmaCCVariableNameAnnotationAttribute class >> for: aCoder at: anIndex named: a
 GtSmaCCVariableNameAnnotationAttribute >> affect: aBrText in: anEditorElement [
 	| editorElement editor text |
 	editorElement := BrEditorElement new.
+	editorElement userData
+		at: #variableCoderElement
+			put: (self variableCoderElementFor: anEditorElement);
+		at: #variableNameAttribute put: self.
 	editorElement border: (BlBorder paint: Color veryLightGray width: 1).
 	editorElement
 		margin:
 			(BlInsets
-				top:  -3
+				top: -3
 				left: 5
 				bottom: 3
 				right: 5).
@@ -42,10 +46,20 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aBrText in: anEditorElement [
 		text: text;
 		yourself.
 	editorElement editor: editor.
+	editor
+		when: BrTextEditorInsertedEvent
+			do: [ :event | self updateVariableName: editorElement ];
+		when: BrTextEditorDeletedEvent
+			do: [ :event | self updateVariableName: editorElement ].
 	editorElement
-		addEventFilterOn: BlBlurEvent
-		do: [ :event | self updateVariableName: editor ].
+		addEventFilterOn: BlBaseFocusEvent
+		do: [ :event | self updateFocus: event ].
 	^ editorElement
+]
+
+{ #category : #accessing }
+GtSmaCCVariableNameAnnotationAttribute >> coder [
+	^ coder
 ]
 
 { #category : #'initialize-release' }
@@ -53,31 +67,63 @@ GtSmaCCVariableNameAnnotationAttribute >> coder: anObject [
 	coder := anObject
 ]
 
+{ #category : #accessing }
+GtSmaCCVariableNameAnnotationAttribute >> index [
+	^ index
+]
+
 { #category : #'initialize-release' }
 GtSmaCCVariableNameAnnotationAttribute >> index: anObject [
 	index := anObject
 ]
 
+{ #category : #accessing }
+GtSmaCCVariableNameAnnotationAttribute >> initialName [
+	^ initialName
+]
+
 { #category : #'initialize-release' }
-GtSmaCCVariableNameAnnotationAttribute >> initialName: anObject [
-	initialName := anObject
+GtSmaCCVariableNameAnnotationAttribute >> initialName: aString [
+	initialName := aString
 ]
 
 { #category : #private }
 GtSmaCCVariableNameAnnotationAttribute >> initialNameText [
 	| text |
 	text := initialName asRopedText.
-	text attributes: GtSmaCCCoder defaultTextAttributes.
+	text glamorousCodeFontAndSize.
 	^ text
 ]
 
 { #category : #private }
-GtSmaCCVariableNameAnnotationAttribute >> updateVariableName: textEditor [
-	| name |
-	name := textEditor text asString trim.
+GtSmaCCVariableNameAnnotationAttribute >> updateFocus: event [
+	| coderElement |
+	coderElement := event target userData
+		at: #variableCoderElement
+		ifAbsent: [ ^ self ].
+	event target focused
+		ifTrue: [ coderElement updateFocusTo: event target ]
+		ifFalse: [ coderElement loseFocusFrom: event target ]
+]
+
+{ #category : #private }
+GtSmaCCVariableNameAnnotationAttribute >> updateVariableName: editorElement [
+	| name textEditor coderElement |
+	textEditor := editorElement editor.
+	name := textEditor text asString.
 	initialName = name
 		ifTrue: [ ^ self ].
-	initialName := (coder nameVariableAt: index as: name)
-		ifNil: [ initialName ].
-	textEditor text: self initialNameText
+	coderElement := editorElement userData
+		at: #variableCoderElement
+		ifAbsent: [ ^ self ].
+	coderElement updateNameTo: name from: initialName in: editorElement
+]
+
+{ #category : #private }
+GtSmaCCVariableNameAnnotationAttribute >> variableCoderElementFor: anElement [
+	anElement
+		allParentsDo: [ :each | 
+			(each isKindOf: GtSmaCCVariableCoderElement)
+				ifTrue: [ ^ each ] ].
+	^ nil
 ]
