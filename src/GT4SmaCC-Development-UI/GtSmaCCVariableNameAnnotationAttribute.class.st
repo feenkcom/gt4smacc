@@ -123,7 +123,7 @@ GtSmaCCVariableNameAnnotationAttribute >> updateVariableName: editorElement [
 GtSmaCCVariableNameAnnotationAttribute >> variableCoderElementFor: anElement [
 	anElement
 		allParentsDo: [ :each | 
-			(each isKindOf: GtSmaCCGrammarVariableCoderElement)
+			(each isKindOf: GtSmaCCVariableCoderElement)
 				ifTrue: [ ^ each ] ].
 	^ nil
 ]
