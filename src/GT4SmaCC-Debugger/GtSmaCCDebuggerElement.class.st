@@ -7,7 +7,9 @@ Class {
 		'stateActionsList',
 		'sourceEditor',
 		'parserTab',
-		'scannerTab'
+		'scannerTab',
+		'contextTab',
+		'contextElement'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -33,6 +35,11 @@ GtSmaCCDebuggerElement class >> defaultTitle [
 { #category : #testing }
 GtSmaCCDebuggerElement class >> handlesContext: aContext [
 	^ SmaCCParserDebugSession handlesContext: aContext
+]
+
+{ #category : #'class initialization' }
+GtSmaCCDebuggerElement class >> initialize [
+	self register
 ]
 
 { #category : #'tools registry' }
@@ -66,7 +73,7 @@ GtSmaCCDebuggerElement >> buildDetails [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element addChild: self buildDetailsInspector.
+	element addChild: self buildDetailsInspector as: #tabs.
 	element addChild: self buildSource as: #source.
 	^ element
 ]
@@ -336,6 +343,13 @@ GtSmaCCDebuggerElement >> clearAttributes [
 	sourceEditor updateAll
 ]
 
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> contextCoder [
+	contextElement isNil
+		ifTrue: [ ^ nil ].
+	^ ((contextElement childNamed: #coderElement) childAt: 1) coder
+]
+
 { #category : #accessing }
 GtSmaCCDebuggerElement >> currentContext [
 	^ self interruptedContext
@@ -383,6 +397,23 @@ GtSmaCCDebuggerElement >> parserDebuggingActionsPragmas [
 	^ #(gtSmaCCDebuggingParserAction)
 ]
 
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> removeContext [
+	| tab |
+	contextTab isNil
+		ifTrue: [ ^ self ].
+	tab := contextTab.
+	contextTab := nil.
+	contextElement := nil.
+	self
+		enqueueTask:
+			(BlTaskAction new
+				action: [ self tabs removeTab: tab.
+					self session isScanning
+						ifTrue: [ scannerTab select ]
+						ifFalse: [ parserTab select ] ])
+]
+
 { #category : #private }
 GtSmaCCDebuggerElement >> scannerDebuggingActionsPragmas [
 	^ #(gtSmaCCDebuggingInputAction gtSmaCCDebuggingScannerAction)
@@ -423,18 +454,36 @@ GtSmaCCDebuggerElement >> selectedStackItem: value [
 ]
 
 { #category : #'private-updating' }
+GtSmaCCDebuggerElement >> showContext [
+	(contextElement notNil
+		and: [ self contextCoder context ~~ self session context ])
+		ifTrue: [ ^ self updateContextCoderElement ].
+	contextTab isNil
+		ifFalse: [ ^ self updateContextCoderSelection ].
+	self tabs
+		addTab:
+			((contextTab := BrTab new)
+				look: BrGlamorousTabLook new;
+				label: 'Context';
+				stencil: [ contextElement := BlElement new.
+					contextElement
+						constraintsDo: [ :c | 
+							c horizontal matchParent.
+							c vertical matchParent ].
+					self updateContextCoderElement.
+					contextElement ])
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> tabs [
+	^ self childNamed: #tabs
+]
+
+{ #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateContents [
-	parserStackList notNil
-		ifTrue: [ | items |
-			items := self session parserStack.
-			parserStackList items: items.
-			((1 to: items size)
-				detect: [ :i | (items at: i) last ~= '' ]
-				ifNone: [  ]) ifNotNil: [ :i | parserStackList selectOne: i ] ].
-	stateActionsList notNil
-		ifTrue: [ stateActionsList items: self session potentialStateActions ].
-	scannerPropertiesList notNil
-		ifTrue: [ scannerPropertiesList items: self session scannerProperties ].
+	self updateParserStack.
+	self updateParserStates.
+	self updateScannerProperties.
 	self clearAttributes.
 	self session isScanning
 		ifTrue: [ self updateScanner ]
@@ -442,8 +491,44 @@ GtSmaCCDebuggerElement >> updateContents [
 ]
 
 { #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateContextCoderElement [
+	| coder |
+	contextElement isNil
+		ifTrue: [ ^ self ].
+	contextElement
+		childNamed: #coderElement
+		ifFound: [ :element | contextElement removeChild: element ]
+		ifNone: [  ].
+	coder := GtMethodContextCoder
+		forContext: self session context
+		session: self session.
+	coder expanded: true.
+	coder announcer
+		when: GtCoderRefreshStackAnnouncement
+		send: #updateContents
+		to: self.
+	contextElement
+		addChild: coder asElement asScrollableElement
+		as: #coderElement
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateContextCoderSelection [
+	self contextCoder
+		ifNotNil: [ :coder | 
+			coder updateSelection.
+			coder sourceEditor
+				invalidateAll;
+				updateAll ]
+]
+
+{ #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateParser [
-	self enqueueTask: (BlTaskAction new action: [ parserTab select ]).
+	(scannerTab notNil and: [ scannerTab viewModel isSelected ])
+		ifTrue: [ self enqueueTask: (BlTaskAction new action: [ parserTab select ]) ].
+	self session isInsideReductionAction
+		ifTrue: [ self showContext ]
+		ifFalse: [ self removeContext ].
 	parserStackList selection
 		do: [ :each | 
 			each isEmpty
@@ -451,9 +536,28 @@ GtSmaCCDebuggerElement >> updateParser [
 ]
 
 { #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateParserStack [
+	parserStackList notNil
+		ifTrue: [ | items |
+			items := self session parserStack.
+			parserStackList items: items.
+			((1 to: items size)
+				detect: [ :i | (items at: i) last ~= '' ]
+				ifNone: [  ]) ifNotNil: [ :i | parserStackList selectOne: i ] ]
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateParserStates [
+	stateActionsList notNil
+		ifTrue: [ stateActionsList items: self session potentialStateActions ]
+]
+
+{ #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateScanner [
 	| scanner start end success attributes |
-	self enqueueTask: (BlTaskAction new action: [ scannerTab select ]).
+	self showContext.
+	(parserTab notNil and: [ parserTab viewModel isSelected ])
+		ifTrue: [ self enqueueTask: (BlTaskAction new action: [ scannerTab select ]) ].
 	scanner := self session scanner.
 	success := scanner matchActions notNil.
 	success
@@ -462,4 +566,10 @@ GtSmaCCDebuggerElement >> updateScanner [
 	end := scanner debugEnd.
 	attributes := self acceptAttributes.
 	self highlightFrom: start + 1 to: end with: attributes
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateScannerProperties [
+	scannerPropertiesList notNil
+		ifTrue: [ scannerPropertiesList items: self session scannerProperties ]
 ]
