@@ -5,12 +5,12 @@ Class {
 		'scannerPropertiesList',
 		'parserStackList',
 		'stateActionsList',
-		'glrStatesList',
 		'sourceEditor',
 		'parserTab',
 		'scannerTab',
 		'contextTab',
-		'contextElement'
+		'contextElement',
+		'glrLabel'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -97,19 +97,12 @@ GtSmaCCDebuggerElement >> buildDetailsInspector [
 
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildGLRStates [
-	glrStatesList := BrSimpleList new.
-	glrStatesList
-		stencil: [ :each | 
-			| text |
-			text := each displayString asRopedText.
-			(self session glrParserStates at: each ifAbsent: [  ])
-				== self session parser currentGLRState
-				ifTrue: [ text bold ].
-			BlTextElement new
-				text: text;
-				constraintsDo: [ :c | c horizontal matchParent ];
-				margin: (BlInsets all: 3) ].
-	^ glrStatesList
+	^ glrLabel := BrLabel new
+		look: BrGlamorousLabelLook new;
+		padding: (BlInsets all: 5);
+		text: self glrStateText;
+		hMatchParent;
+		yourself
 ]
 
 { #category : #'building widgets' }
@@ -174,10 +167,17 @@ GtSmaCCDebuggerElement >> buildParserElement [
 			c vertical matchParent ].
 	element addChild: self buildParserStack.
 	element addChild: self buildParserActions.
-	(self session parser isKindOf: SmaCCGLRParser)
-		ifTrue: [ element addChild: self buildGLRStates ].
 	self updateContents.
-	^ element
+	(self session parser isKindOf: SmaCCGLRParser)
+		ifFalse: [ ^ element ].
+	^ BlElement new
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
+		addChild: element;
+		addChild: self buildGLRStates;
+		yourself
 ]
 
 { #category : #'building widgets' }
@@ -386,6 +386,19 @@ GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 	^ 1 to: 0
 ]
 
+{ #category : #'building widgets' }
+GtSmaCCDebuggerElement >> glrStateText [
+	| text index states |
+	states := self session glrParserStates.
+	index := states
+		identityIndexOf: self session parser currentGLRState
+		ifAbsent: [ 1 ].
+	text := ('GLR State: ' , index printString , ' of '
+		, states size printString) asRopedText.
+	text bold.
+	^ text
+]
+
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> highlightFrom: start to: end with: attributes [
 	(sourceEditor isNil or: [ end < start ])
@@ -545,11 +558,9 @@ GtSmaCCDebuggerElement >> updateContextCoderSelection [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateGLRStates [
-	| states |
-	glrStatesList isNil
+	glrLabel isNil
 		ifTrue: [ ^ self ].
-	states := self session glrParserStates.
-	glrStatesList items: (1 to: states size)
+	glrLabel text: self glrStateText
 ]
 
 { #category : #'private-updating' }
