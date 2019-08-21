@@ -5,6 +5,7 @@ Class {
 		'scannerPropertiesList',
 		'parserStackList',
 		'stateActionsList',
+		'glrStatesList',
 		'sourceEditor',
 		'parserTab',
 		'scannerTab',
@@ -95,6 +96,23 @@ GtSmaCCDebuggerElement >> buildDetailsInspector [
 ]
 
 { #category : #'building widgets' }
+GtSmaCCDebuggerElement >> buildGLRStates [
+	glrStatesList := BrSimpleList new.
+	glrStatesList
+		stencil: [ :each | 
+			| text |
+			text := each displayString asRopedText.
+			(self session glrParserStates at: each ifAbsent: [  ])
+				== self session parser currentGLRState
+				ifTrue: [ text bold ].
+			BlTextElement new
+				text: text;
+				constraintsDo: [ :c | c horizontal matchParent ];
+				margin: (BlInsets all: 3) ].
+	^ glrStatesList
+]
+
+{ #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildParserActions [
 	stateActionsList := BrColumnedList new.
 	stateActionsList column
@@ -156,6 +174,8 @@ GtSmaCCDebuggerElement >> buildParserElement [
 			c vertical matchParent ].
 	element addChild: self buildParserStack.
 	element addChild: self buildParserActions.
+	(self session parser isKindOf: SmaCCGLRParser)
+		ifTrue: [ element addChild: self buildGLRStates ].
 	self updateContents.
 	^ element
 ]
@@ -483,6 +503,7 @@ GtSmaCCDebuggerElement >> tabs [
 GtSmaCCDebuggerElement >> updateContents [
 	self updateParserStack.
 	self updateParserStates.
+	self updateGLRStates.
 	self updateScannerProperties.
 	self clearAttributes.
 	self session isScanning
@@ -520,6 +541,15 @@ GtSmaCCDebuggerElement >> updateContextCoderSelection [
 			coder sourceEditor
 				invalidateAll;
 				updateAll ]
+]
+
+{ #category : #'private-updating' }
+GtSmaCCDebuggerElement >> updateGLRStates [
+	| states |
+	glrStatesList isNil
+		ifTrue: [ ^ self ].
+	states := self session glrParserStates.
+	glrStatesList items: (1 to: states size)
 ]
 
 { #category : #'private-updating' }
