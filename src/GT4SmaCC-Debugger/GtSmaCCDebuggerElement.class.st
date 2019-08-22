@@ -329,7 +329,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	tabGroup
 		look:
 			(BrGlamorousTabGroupLook new
-				headerBackground: BrGlamorousColors defaultButtonBorderColor);
+				headerBackground: BrGlamorousColors defaultHeaderBackgroundColor);
 		addTab: tab;
 		constraintsDo: [ :c | 
 			c vertical matchParent.
