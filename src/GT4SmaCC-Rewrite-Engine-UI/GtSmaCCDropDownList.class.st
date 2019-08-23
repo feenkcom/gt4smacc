@@ -17,7 +17,7 @@ GtSmaCCDropDownList >> buttonLabel [
 { #category : #private }
 GtSmaCCDropDownList >> dropDownButton [
 	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook;
+		look: BrGlamorousButtonWithLabelLook + BrGlamorousDropdownToggleLook;
 		padding:
 			(BlInsets
 				top: 3
@@ -34,14 +34,10 @@ GtSmaCCDropDownList >> initialize [
 	super initialize.
 	items := #().
 	labelBlock := [ :each | each displayString ].
-	self layout: BlLinearLayout horizontal.
-	self
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ].
+	
+	self look: BrGlamorousDropdownLook new.
 	self toggle: self toggleStencil.
-	self popup: self popupStencil.
-	self look: BrGlamorousDropdownLook new
+	self popup: self popupStencil
 ]
 
 { #category : #accessing }
