@@ -20,7 +20,7 @@ Class {
 
 { #category : #accessing }
 GtSmaCCDebuggerElement class >> availableAutomatically [
-	^ availableAutomatically ifNil: [ true ]
+	^ availableAutomatically ifNil: [ false ]
 ]
 
 { #category : #accessing }
@@ -45,7 +45,7 @@ GtSmaCCDebuggerElement class >> initialize [
 
 { #category : #'tools registry' }
 GtSmaCCDebuggerElement class >> registerToolsOn: registry [
-	registry registerDebugger: self withRank: 10.
+	registry registerDebugger: self withRank: 1100.
 ]
 
 { #category : #accessing }
