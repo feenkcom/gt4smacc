@@ -96,7 +96,6 @@ GtSmaCCStyler >> grammarCoder [
 GtSmaCCStyler >> initialize [
 	super initialize.
 	startingState := 1.
-	delay := 0 seconds
 ]
 
 { #category : #private }
