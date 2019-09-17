@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCGrammarElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'grammar'
+		'grammar',
+		'completionStrategy'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -98,7 +99,7 @@ GtSmaCCGrammarElement >> sourceEditor [
 
 { #category : #ui }
 GtSmaCCGrammarElement >> sourceEditorElement [
-	| completionStrategy completionController element |
+	| completionController element |
 	element := BrEditor new.
 	element background: Color white.
 	element padding: (BlInsets all: 10).
@@ -111,6 +112,7 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 	completionController := GtCompletionController
 		on: element
 		strategy: completionStrategy.
+	completionController closeOnEmptyCompletion: false.
 	completionController install.
 	^ element
 ]
@@ -128,6 +130,9 @@ GtSmaCCGrammarElement >> updateEditor [
 			([ grammar scannerClass ]
 				on: Error
 				do: [ :ex | ex return: SmaCCScanner ]).
+	styler
+		when: BlTextStyledEvent
+		do: [ :event | completionStrategy completions: styler completions ].
 	text := grammar source asRopedText.
 	text attributes: GtSmaCCCoder defaultTextAttributes.
 	self sourceEditor
