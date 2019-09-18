@@ -177,13 +177,15 @@ GtSmaCCCoderElement >> isExpanded [
 { #category : #ui }
 GtSmaCCCoderElement >> sourceEditor [
 	| element |
-	element := BrEditorElement new.
+	element := BrEditor new.
 	element padding: (BlInsets all: 2).
 	element
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element editor: coder sourceEditor.
+	element styler: element editor styler.
+	element editor styleText.
 	coder addShortcutsTo: element.
 	coder completionStrategy
 		ifNotNil: [ :strategy | 
