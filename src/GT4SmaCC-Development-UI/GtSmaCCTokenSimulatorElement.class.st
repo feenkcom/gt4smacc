@@ -35,10 +35,8 @@ GtSmaCCTokenSimulatorElement >> cursorMoved [
 { #category : #'initialize-release' }
 GtSmaCCTokenSimulatorElement >> setupSimulator [
 	simulator weak
-		subscribe: GtSmaCCTokenSimulationError send: #styleError: to: self;
-		subscribe: GtSmaCCTokenSimulationAccept
-			send: #styleAccept:
-			to: self.
+		when: GtSmaCCTokenSimulationError send: #styleError: to: self;
+		when: GtSmaCCTokenSimulationAccept send: #styleAccept: to: self.
 	grammarCoder := GtSmaCCGrammarCoder onGrammar: simulator grammar.
 	self buildElement
 ]

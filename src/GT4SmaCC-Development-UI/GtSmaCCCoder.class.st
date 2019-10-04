@@ -263,7 +263,7 @@ GtSmaCCCoder >> grammarItem: aGrammarItem [
 	grammarItem := aGrammarItem.
 	grammarItem notNil
 		ifTrue: [ grammarItem weak
-				subscribe: GtSmaCCGrammarItemChanged
+				when: GtSmaCCGrammarItemChanged
 				send: #itemChanged:
 				to: self ]
 ]
