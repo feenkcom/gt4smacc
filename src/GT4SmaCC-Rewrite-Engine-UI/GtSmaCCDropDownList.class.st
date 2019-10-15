@@ -1,23 +1,35 @@
 Class {
 	#name : #GtSmaCCDropDownList,
-	#superclass : #BrDropdown,
+	#superclass : #BrButton,
 	#instVars : [
-		'labelBlock',
 		'selectedItem',
-		'items'
+		'items',
+		'withDropdownLook'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #private }
-GtSmaCCDropDownList >> buttonLabel [
-	^ self labelFor: self selectedItem
-]
-
-{ #category : #private }
-GtSmaCCDropDownList >> dropDownButton [
-	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook + BrGlamorousDropdownToggleLook;
+{ #category : #'initialize-release' }
+GtSmaCCDropDownList >> initialize [
+	super initialize.
+	items := #().
+	self
+		look:
+			BrGlamorousButtonWithLabelLook
+				+
+					(withDropdownLook := BrGlamorousWithDropdownLook
+						handle: [ BrButton new
+								look: BrGlamorousButtonWithLabelLook - BrGlamorousButtonExteriorLook;
+								padding:
+									(BlInsets
+										top: 3
+										left: 5
+										bottom: 3
+										right: 5);
+								constraintsDo: [ :c | c minWidth: 150 ];
+								label: (self labelFor: self selectedItem);
+								yourself ]
+						content: [ self popupList ]);
 		padding:
 			(BlInsets
 				top: 3
@@ -25,19 +37,7 @@ GtSmaCCDropDownList >> dropDownButton [
 				bottom: 3
 				right: 5);
 		constraintsDo: [ :c | c minWidth: 150 ];
-		label: self buttonLabel;
-		yourself
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCDropDownList >> initialize [
-	super initialize.
-	items := #().
-	labelBlock := [ :each | each displayString ].
-	
-	self look: BrGlamorousDropdownLook new.
-	self toggle: self toggleStencil.
-	self popup: self popupStencil
+		label: (self labelFor: self selectedItem)
 ]
 
 { #category : #accessing }
@@ -47,23 +47,12 @@ GtSmaCCDropDownList >> items [
 
 { #category : #accessing }
 GtSmaCCDropDownList >> items: aCollection [
-	items := aCollection.
-	self popup: self popupStencil
-]
-
-{ #category : #accessing }
-GtSmaCCDropDownList >> labelBlock [
-	^ labelBlock
-]
-
-{ #category : #accessing }
-GtSmaCCDropDownList >> labelBlock: aBlock [
-	labelBlock := aBlock
+	items := aCollection
 ]
 
 { #category : #private }
 GtSmaCCDropDownList >> labelFor: anObject [
-	^ anObject ifNil: [ '' ] ifNotNil: labelBlock
+	^ anObject ifNil: [ '' ] ifNotNil: #displayString
 ]
 
 { #category : #private }
@@ -84,18 +73,13 @@ GtSmaCCDropDownList >> popupList [
 					anEvent consumed: true.
 					self selectedItem: each.
 					list selectOne: index.
-					self collapse ];
+					withDropdownLook hide ];
 				yourself ].
 	list
 		when: BrSelectionChanged
 		do: [ :event | self dispatchEvent: event ].
 	list items: self items.
 	^ list
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCDropDownList >> popupStencil [
-	^ [ self popupList ]
 ]
 
 { #category : #accessing }
@@ -106,10 +90,5 @@ GtSmaCCDropDownList >> selectedItem [
 { #category : #accessing }
 GtSmaCCDropDownList >> selectedItem: anObject [
 	selectedItem := anObject.
-	self toggle: self toggleStencil
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCDropDownList >> toggleStencil [
-	^ [ self dropDownButton action: [ self toggle ] ]
+	self label: (self labelFor: selectedItem)
 ]

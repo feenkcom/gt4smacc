@@ -30,7 +30,6 @@ GtSmaCCRewriteFileElement >> headerElement [
 GtSmaCCRewriteFileElement >> parserDropDown [
 	^ GtSmaCCDropDownList new
 		selectedItem: rewrite parserClass;
-		labelBlock: [ :each | each displayString ];
 		items:
 			(SmaCCParser allSubclasses
 				asSortedCollection: [ :a :b | a name < b name ]);
