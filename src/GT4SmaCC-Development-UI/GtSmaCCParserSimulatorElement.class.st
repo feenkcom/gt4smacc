@@ -203,9 +203,9 @@ GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
 { #category : #'initialize-release' }
 GtSmaCCParserSimulatorElement >> setupSimulator [
 	simulator weak
-		subscribe: GtSmaCCParserSimulationAccept send: #accepted: to: self;
-		subscribe: GtSmaCCParserSimulationError send: #failed: to: self;
-		subscribe: GtSmaCCParserSimulationIncompleteInput
+		when: GtSmaCCParserSimulationAccept send: #accepted: to: self;
+		when: GtSmaCCParserSimulationError send: #failed: to: self;
+		when: GtSmaCCParserSimulationIncompleteInput
 			send: #incomplete:
 			to: self.
 	grammarCoder := GtSmaCCGrammarCoder onGrammar: simulator grammar.
