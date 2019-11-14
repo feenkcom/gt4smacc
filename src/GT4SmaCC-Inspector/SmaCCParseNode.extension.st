@@ -42,7 +42,7 @@ SmaCCParseNode >> gtSourceFor: aView [
 		priority: 10;
 		title: 'Source';
 		stencil: [ | source editor |
-			source := self topParent completeSource asString asRopedText.
+			source := BlRopedRawText string: self topParent completeSource asString.
 			self parserClass
 				ifNotNil: [ :class | 
 					class gtStyler
