@@ -20,7 +20,7 @@ GtSmaCCVariableNameAnnotationAttribute class >> for: aCoder at: anIndex named: a
 ]
 
 { #category : #accessing }
-GtSmaCCVariableNameAnnotationAttribute >> affect: aBrText in: anEditorElement [
+GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in: anEditorElement [
 	| editorElement editor text |
 	editorElement := BrEditorElement new.
 	editorElement userData
