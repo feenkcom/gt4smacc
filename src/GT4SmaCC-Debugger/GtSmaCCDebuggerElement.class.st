@@ -359,8 +359,7 @@ GtSmaCCDebuggerElement >> clearAttributes [
 		ifTrue: [ ^ self ].
 	sourceEditor text
 		clearAttributes: [ :attr | attr class = BlTextUnderlineAttribute ].
-	sourceEditor invalidateAll.
-	sourceEditor updateAll
+	sourceEditor updater all update
 ]
 
 { #category : #'private-updating' }
@@ -404,8 +403,7 @@ GtSmaCCDebuggerElement >> highlightFrom: start to: end with: attributes [
 	(sourceEditor isNil or: [ end < start ])
 		ifTrue: [ ^ self ].
 	(sourceEditor text from: start to: end) attributes: attributes.
-	sourceEditor invalidateAll.
-	sourceEditor updateAll
+	sourceEditor updater all update
 ]
 
 { #category : #'initialize-release' }
@@ -551,9 +549,7 @@ GtSmaCCDebuggerElement >> updateContextCoderSelection [
 	self contextCoder
 		ifNotNil: [ :coder | 
 			coder updateSelection.
-			coder sourceEditor
-				invalidateAll;
-				updateAll ]
+			coder sourceEditor updater all update ]
 ]
 
 { #category : #'private-updating' }

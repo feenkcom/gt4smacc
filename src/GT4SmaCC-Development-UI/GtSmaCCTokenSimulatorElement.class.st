@@ -66,9 +66,7 @@ GtSmaCCTokenSimulatorElement >> styleAccept: acceptAnnouncement [
 								testTokensDo: [ :token | 
 									(text from: token startPosition - start to: token stopPosition - start)
 										attributes: AcceptAttributes ] ].
-					coder sourceEditor
-						invalidateAll;
-						updateAll ] ]
+					coder sourceEditor updater all update ] ]
 ]
 
 { #category : #private }

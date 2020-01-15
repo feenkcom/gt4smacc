@@ -53,10 +53,7 @@ GtSmaCCGrammarElement >> displayError: aString at: anIndex [
 	| index |
 	index := (anIndex - 1 max: 1) min: self sourceEditor text size.
 	(self sourceEditor text from: index to: index)
-		attributes: {(GtSourceCoderErrorAttribute for: aString)}.
-	self sourceEditor
-		invalidate: index to: index;
-		update: index to: index.
+		attributes: { (GtSourceCoderErrorAttribute for: aString) }.
 	self sourceEditor moveCursorTo: index
 ]
 
