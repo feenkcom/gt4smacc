@@ -475,9 +475,7 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 				from: annotation nodeInterval first
 				to: annotation nodeInterval last)
 				attributes: {GtSmaCCTransformedAttribute new}.
-			element editor
-				invalidateAll;
-				updateAll.
+			element editor updater all update.
 			element
 				scrollToPosition:
 					(self
@@ -494,9 +492,7 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 					firstIndex := firstIndex min: each first.
 					(element editor text from: each first to: each last)
 						attributes: {GtSmaCCTransformedAttribute new} ].
-			element editor
-				invalidateAll;
-				updateAll.
+			element editor updater all update.
 			firstIndex < SmallInteger maxVal
 				ifTrue: [ element
 						scrollToPosition:
