@@ -71,13 +71,11 @@ GtSmaCCTokenSimulatorElement >> styleAccept: acceptAnnouncement [
 
 { #category : #private }
 GtSmaCCTokenSimulatorElement >> styleError: errorAnnouncement [
-	| editor |
+	| editor text |
 	editor := self testEditor.
 	self clearAttributesIn: editor.
-	editor
-		styleTextAndAfterDo: [ | text |
-			text := editor text.
-			text size >= errorAnnouncement index
-				ifTrue: [ (text from: errorAnnouncement index to: text size)
-						attributes: ErrorAttributes ] ]
+	text := editor text.
+	text size >= errorAnnouncement index
+		ifTrue: [ (text from: errorAnnouncement index to: text size)
+				attributes: ErrorAttributes ]
 ]
