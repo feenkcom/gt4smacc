@@ -31,9 +31,10 @@ SmaCCParseNode >> gtExploreFor: aView [
 				constraintsDo: [ :c | 
 					c vertical matchParent.
 					c horizontal matchParent ].
-			editor := self gtSourceEditor.
+			editor := self gtSourceEditor look: BrShadowLook; background: Color white; margin: (BlInsets all: 10).
 			element addChild: editor.
-			(self gtTreeFor: GtPhlowView empty) asElementDo: [ :e | tree := e ].
+			(self gtTreeFor: GtPhlowView empty) asElementDo: [ :e | 
+				tree := e look: BrShadowLook; background: Color white; margin: (BlInsets all: 10).].
 			element addChild: tree.
 			self gtHookEditor: editor toTree: tree children last.
 			element ]
