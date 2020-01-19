@@ -17,9 +17,9 @@ SmaCCParseNode >> gtAttributesFor: aView [
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtExploreFor: aView [
 	<gtView>
-	parent notNil
-		ifTrue: [ ^ self topParent gtExploreFor: aView ].
-	self completeSource isNil
+	| topParent |
+	topParent := self topParent.
+	topParent completeSource isNil
 		ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		priority: 5;
@@ -31,58 +31,46 @@ SmaCCParseNode >> gtExploreFor: aView [
 				constraintsDo: [ :c | 
 					c vertical matchParent.
 					c horizontal matchParent ].
-			editor := self gtSourceEditor.
+			editor := self
+				gtSourceEditorWithHighlight: BrGlamorousColors lightBorderColor.
 			element addChild: editor.
-			(self gtTreeFor: GtPhlowView empty) asElementDo: [ :e | tree := e ].
+			(topParent gtTreeFor: GtPhlowView empty)
+				asElementDo: [ :e | tree := e ].
 			element addChild: tree.
-			self gtHookEditor: editor toTree: tree children last.
+			topParent gtHookEditor: editor toTree: tree children last.
 			element ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
-SmaCCParseNode >> gtHighlightFrom: start to: stop in: anEditor [
-	| text |
-	(start isNil or: [ stop isNil or: [ start = 0 or: [ stop = 0 ] ] ])
-		ifTrue: [ ^ self ].
-	text := anEditor text.
-	text
-		clearAttributes: [ :attr | attr isKindOf: BlTextUnderlineAttribute ].
-	(text from: start to: stop)
-		attributes:
-			{(BlTextUnderlineAttribute new
-				beNotOverwritableByStyler;
-				paint: BrGlamorousColors primaryBorderColor)}.
-	anEditor text: text.
-	self gtScrollToPosition: start inEditor: anEditor
-]
-
-{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
-	| updating |
-	updating := false.
+	| highlighter highlightAttribute |
+	highlighter := GtTextNodeHighlighter
+		on: anEditor
+		source: self topParent completeSource asString.
+	highlightAttribute := BlTextUnderlineAttribute new
+		beNotOverwritableByStyler;
+		paint: BrGlamorousColors primaryBorderColor.
 	aTree
 		when: BrSelectionChanged
 		do: [ :anEvent | 
-			updating
-				ifFalse: [ updating := true.
-					[ aTree
-						selectedNodeDo: [ :aNode | 
-							| item |
-							item := aNode value last.
-							((item isKindOf: SmaCCParseNode)
-								or: [ item isKindOf: SmaCCToken ])
-								ifTrue: [ self
-										gtHighlightFrom: item startPosition
-										to: item stopPosition
-										in: anEditor ] ] ]
-						ensure: [ updating := false ] ] ].
+			aTree
+				selectedNodeDo: [ :aNode | 
+					| item |
+					item := aNode value last.
+					((item isKindOf: SmaCCParseNode)
+						or: [ item isKindOf: SmaCCToken ])
+						ifTrue: [ anEditor editor text
+								clearAttributes: [ :attr | attr == highlightAttribute ].
+							highlighter highlight: item with: highlightAttribute ] ] ].
 	anEditor editor
 		when: BrTextEditorCursorMovedEvent
 		do: [ :event | 
 			| position |
 			anEditor cursors do: [ :each | position := each position ].
 			position notNil
-				ifTrue: [ self gtSelectItemIn: aTree at: position ] ]
+				ifTrue: [ self
+						gtSelectItemIn: aTree
+						at: (highlighter stringPositionFor: position) ] ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -93,21 +81,20 @@ SmaCCParseNode >> gtParentsFor: aView [
 		title: 'Parents';
 		items: [ {self} ];
 		children: [ :each | 
-					each parent isNil
-						ifTrue: [ #() ]
-						ifFalse: [ {each parent} ] ];
-"			index := 1.
-			[ index <= tree viewModel itemCount ]
-				whileTrue: [ (tree viewModel itemAt: index) expand.
-					index := index + 1 ]."
+			each parent isNil
+				ifTrue: [ #() ]
+				ifFalse: [ {each parent} ] ];
+		expandAll;
 		itemFormat: [ :each | each class name asRopedText glamorousRegularFontAndSize ];
-		send: [:each | each value ]
+		send: [ :each | each value ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtScrollToPosition: index inEditor: editor [
 	editor
-		scrollToPosition: (editor text asString lineNumberCorrespondingToIndex: index)
+		scrollToPosition:
+			(self topParent completeSource asString
+				lineNumberCorrespondingToIndex: index)
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -133,8 +120,8 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
-SmaCCParseNode >> gtSourceEditor [
-	| source |
+SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
+	| source editor |
 	source := BlRopedRawText
 		string: self topParent completeSource asString.
 	self parserClass
@@ -145,10 +132,12 @@ SmaCCParseNode >> gtSourceEditor [
 		attributes:
 			{(BlTextUnderlineAttribute new
 				beNotOverwritableByStyler;
-				paint: BrGlamorousColors primaryBorderColor)}.
-	^ BrEditor new
+				paint: BrGlamorousColors lightBorderColor)}.
+	editor := BrEditor new
 		text: source;
-		look: BrGlamorousCodeEditorLook new
+		look: BrGlamorousCodeEditorLook new.
+	self gtScrollToPosition: self startPosition inEditor: editor.
+	^ editor
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -159,10 +148,8 @@ SmaCCParseNode >> gtSourceFor: aView [
 	^ aView explicit
 		priority: 10;
 		title: 'Source';
-		stencil: [ | editor |
-			editor := self gtSourceEditor.
-			self gtScrollToPosition: self startPosition inEditor: editor.
-			editor ]
+		stencil: [ self
+				gtSourceEditorWithHighlight: BrGlamorousColors primaryBorderColor ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
