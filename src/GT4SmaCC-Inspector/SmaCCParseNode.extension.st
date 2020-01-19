@@ -69,7 +69,8 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 						or: [ item isKindOf: SmaCCToken ])
 						ifTrue: [ anEditor editor text
 								clearAttributes: [ :attr | attr == highlightAttribute ].
-							highlighter highlight: item with: highlightAttribute ] ] ].
+							highlighter highlight: item with: highlightAttribute.
+							self gtScrollToPosition: item startPosition inEditor: anEditor ] ] ].
 	anEditor editor
 		when: BrTextEditorCursorMovedEvent
 		do: [ :event | 
@@ -124,7 +125,8 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 								and: each value last stopPosition ] ] ]
 		ifNone: [ nil ].
 	nextNode notNil ] whileTrue.
-	aTree selectOne: treeNode globalIndexInTree
+	aTree selectOne: treeNode globalIndexInTree.
+	aTree children first scrollToPosition: treeNode globalIndexInTree
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
