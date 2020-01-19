@@ -87,14 +87,12 @@ GtSmaCCParserSimulatorElement >> expandRoot [
 
 { #category : #'event handling' }
 GtSmaCCParserSimulatorElement >> failed: errorAnnouncement [
-	| editor |
+	| editor text |
 	editor := self testEditor.
-	editor
-		styleTextAndAfterDo: [ | text |
-			text := editor text.
-			text size >= errorAnnouncement index
-				ifTrue: [ (text from: errorAnnouncement index to: text size)
-						attributes: ErrorAttributes ] ].
+	text := editor text.
+	text size >= errorAnnouncement index
+		ifTrue: [ (text from: errorAnnouncement index to: text size)
+				attributes: ErrorAttributes ].
 	self
 		displayError: errorAnnouncement stack
 		token: errorAnnouncement token
@@ -102,16 +100,14 @@ GtSmaCCParserSimulatorElement >> failed: errorAnnouncement [
 
 { #category : #private }
 GtSmaCCParserSimulatorElement >> highlightInputFrom: startPosition to: stopPosition [
-	| editor |
+	| editor text |
 	editor := self testEditor.
-	editor
-		styleTextAndAfterDo: [ | text |
-			text := editor text.
-			text size >= stopPosition
-				ifFalse: [ ^ self ].
-			(text from: startPosition to: stopPosition)
-				attributes: AcceptAttributes.
-			editor text: text ]
+	text := editor text.
+	text size >= stopPosition
+		ifFalse: [ ^ self ].
+	(text from: startPosition to: stopPosition)
+		attributes: AcceptAttributes.
+	editor text: text
 ]
 
 { #category : #'event handling' }
