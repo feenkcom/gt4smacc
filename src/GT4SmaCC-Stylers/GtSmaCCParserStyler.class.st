@@ -1,10 +1,8 @@
 Class {
 	#name : #GtSmaCCParserStyler,
-	#superclass : #BlTextStyler,
+	#superclass : #GtSmaCCASTStyler,
 	#instVars : [
-		'stylerRules',
-		'parserClass',
-		'startingState'
+		'stylerRules'
 	],
 	#category : #'GT4SmaCC-Stylers'
 }
@@ -91,13 +89,6 @@ GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
 				styleBlock: [ :styler | styler foreground: Color red ])}
-]
-
-{ #category : #'instance creation' }
-GtSmaCCParserStyler class >> forParser: aSmaCCParserClass [
-	^ self new
-		parserClass: aSmaCCParserClass;
-		yourself
 ]
 
 { #category : #instances }
@@ -214,49 +205,6 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 GtSmaCCParserStyler >> addStylerRule: aStylerRule [
 	self stylerRules add: aStylerRule.
 	aStylerRule initializeForParser: parserClass
-]
-
-{ #category : #private }
-GtSmaCCParserStyler >> ast [
-	^ parserClass
-		parseWithErrors: text asString
-		startingAt: self startingState
-]
-
-{ #category : #accessing }
-GtSmaCCParserStyler >> parserClass [
-	^ parserClass
-]
-
-{ #category : #accessing }
-GtSmaCCParserStyler >> parserClass: aSmaCCParserClass [
-	parserClass := aSmaCCParserClass
-]
-
-{ #category : #private }
-GtSmaCCParserStyler >> privateStyle: aText [
-	[ text := aText.
-	self styleAST: self ast ]
-		on: Error
-		do: [ :ex | ex return ].
-	^ aText
-]
-
-{ #category : #accessing }
-GtSmaCCParserStyler >> startingState [
-	^ startingState ifNil: [ parserClass defaultStartingState ]
-]
-
-{ #category : #accessing }
-GtSmaCCParserStyler >> startingState: anInteger [
-	startingState := anInteger
-]
-
-{ #category : #styling }
-GtSmaCCParserStyler >> style: aText using: anAST [
-	text := aText.
-	self styleAST: anAST.
-	^ text
 ]
 
 { #category : #private }

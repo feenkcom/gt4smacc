@@ -37,8 +37,10 @@ GtSmaCCStylerRule >> shouldApplyToToken: aSmaCCToken [
 GtSmaCCStylerRule >> style: anObject on: aText [
 	[ (anObject isKindOf: Collection)
 		ifTrue: [ anObject do: [ :each | self style: each on: aText ] ]
-		ifFalse: [ ((anObject isKindOf: SmaCCToken) or: [ anObject isKindOf: SmaCCParseNode ])
-				ifTrue: [ (aText from: anObject startPosition to: anObject stopPosition) stylerDo: styleBlock ] ] ]
+		ifFalse: [ ((anObject isKindOf: SmaCCToken)
+				or: [ anObject isKindOf: SmaCCParseNode ])
+				ifTrue: [ (aText from: anObject startPosition to: anObject stopPosition)
+						stylerDo: [ :styler | styleBlock cull: styler cull: anObject cull: aText ] ] ] ]
 		on: Error
 		do: [ :ex | ex return ]
 ]
