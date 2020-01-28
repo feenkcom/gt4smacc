@@ -13,6 +13,6 @@ FileReference >> gtStyledCodeFor: aView [
 		title: 'Code';
 		priority: 10;
 		styler: styler;
-		look: (BrGlamorousCodeEditorLook new styler: styler);
+		look: BrGlamorousCodeEditorLook new;
 		text: [ self contents asRopedText ]
 ]
