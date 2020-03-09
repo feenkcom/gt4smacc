@@ -28,13 +28,11 @@ GtSmaCCRewriteAccordion >> defaultTextAttributes [
 { #category : #ui }
 GtSmaCCRewriteAccordion >> headerElement [
 	^ BrButton new
+		alignCenterLeft;
 		padding: (BlInsets all: 5);
-		look:
-			BrLayoutLook linearHorizontal vFitContent hMatchParent
-				+
-					(BrGlamorousTextLabelLook new
-						weight: 550;
-						yourself);
+		vFitContent;
+		hMatchParent;
+		look: (BrGlamorousLabelLook new weight: 550);
 		label: rewrite displayString;
 		background: (Color veryLightGray alpha: 0.6);
 		action: [ self toggle ]

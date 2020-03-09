@@ -18,15 +18,8 @@ GtSmaCCGrammarElement class >> onGrammar: aGrammar [
 { #category : #ui }
 GtSmaCCGrammarElement >> actionBar [
 	^ BrToolbar new
-		look: BrToolbarLook new;
+		look: BrGlamorousToolbarLook new;
 		padding: (BlInsets all: 5);
-		layout:
-			(BlGridLayout horizontal
-				rowCount: 1;
-				cellSpacing: 3);
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
 		addItem:
 			(BrButton new
 				beSmall;

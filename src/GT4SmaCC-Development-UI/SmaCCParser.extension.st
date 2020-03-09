@@ -95,14 +95,7 @@ SmaCCParser class >> gtTestElement [
 	self gtStyler ifNotNil: [ :styler | editor styler: styler ].
 	editorElement editor: editor.
 	actionBar := BrToolbar new
-		look: BrToolbarLook new;
-		layout:
-			(BlGridLayout horizontal
-				rowCount: 1;
-				cellSpacing: 3);
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
+		look: BrGlamorousToolbarLook new;
 		addItem:
 			(BrButton new
 				beSmall;

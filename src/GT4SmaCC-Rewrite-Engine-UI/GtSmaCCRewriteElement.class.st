@@ -12,8 +12,9 @@ Class {
 
 { #category : #ui }
 GtSmaCCRewriteElement >> contentElement [
-	^ BlElement new
-		look: BrLayoutLook linearVertical vFitContent hMatchParent;
+	^ BrHorizontalPane new
+		vFitContent;
+		hMatchParent;
 		addChild: self matchElement;
 		addChild: self transformationElement;
 		yourself
@@ -73,9 +74,9 @@ GtSmaCCRewriteElement >> matchChanged [
 
 { #category : #'match ui' }
 GtSmaCCRewriteElement >> matchElement [
-	matchElement := BlElement new.
-	matchElement
-		look: BrLayoutLook linearVertical vFitContent hMatchParent.
+	matchElement := BrHorizontalPane new
+		vFitContent;
+		hMatchParent.
 	self updateMatch.
 	^ matchElement
 ]
@@ -95,8 +96,9 @@ GtSmaCCRewriteElement >> matchHeaderElement [
 			do: [ :anEvent | rewrite match: SmaCCRewriteTreeMatch new ];
 		yourself.
 	patternLabel := self labelFor: 'Pattern'.
-	^ BlElement new
-		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
+	^ BrHorizontalPane new
+		vFitContent;
+		hMatchParent;
 		background: (Color veryLightGray alpha: 0.2);
 		addChild: typeLabel;
 		addChild: toggle;
@@ -193,9 +195,9 @@ GtSmaCCRewriteElement >> transformationChanged [
 
 { #category : #'transformation ui' }
 GtSmaCCRewriteElement >> transformationElement [
-	transformationElement := BlElement new.
-	transformationElement
-		look: BrLayoutLook linearVertical vFitContent hMatchParent.
+	transformationElement := BrHorizontalPane new
+		vFitContent;
+		hMatchParent.
 	self updateTransformation.
 	^ transformationElement
 ]
@@ -217,10 +219,10 @@ GtSmaCCRewriteElement >> transformationHeaderElement [
 				[ :anEvent | rewrite transformation: SmaCCRewriteStringTransformation new ];
 		yourself.
 	stringLabel := self labelFor: 'String'.
-	^ BlElement new
-		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
+	^ BrHorizontalPane new
+		vFitContent;
+		hMatchParent;
 		background: (Color veryLightGray alpha: 0.2);
-		look: BrLayoutLook linearHorizontal vFitContent hMatchParent;
 		addChild: codeLabel;
 		addChild: toggle;
 		addChild: stringLabel;
@@ -280,8 +282,7 @@ GtSmaCCRewriteElement >> updateTypeMatch [
 	matchEditor text: rewrite match code asRopedText.
 	matchEditor text attributes: self defaultTextAttributes.
 	matchEditor styler: self sourceStyler.
-	element := BlElement new.
-	element look: BrLayoutLook linearHorizontal vFitContent hMatchParent.
+	element := BrHorizontalPane new vFitContent hMatchParent.
 	editorElement := self editorElementFor: matchEditor.
 	editorElement constraintsDo: [ :c | c vertical matchParent ].
 	element addChild: editorElement.
