@@ -17,20 +17,13 @@ GtSmaCCListCoderElement class >> onCoder: aGrammarCoder [
 { #category : #ui }
 GtSmaCCListCoderElement >> actionBar [
 	^ BrToolbar new
-		look: BrToolbarLook new;
+		look: BrGlamorousToolbarLook new;
 		padding:
 			(BlInsets
 				top: 0
 				left: 10
 				bottom: 5
 				right: 10);
-		layout:
-			(BlGridLayout horizontal
-				rowCount: 1;
-				cellSpacing: 3);
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
 		addItems:
 			(self actions
 				collect: [ :each | 

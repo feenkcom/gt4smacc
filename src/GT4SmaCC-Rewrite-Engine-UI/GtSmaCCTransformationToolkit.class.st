@@ -79,14 +79,8 @@ GtSmaCCTransformationToolkit >> configurationElement [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationToolbar [
 	^ BrToolbar new
-		look: BrToolbarLook new;
-		layout:
-			(BlGridLayout horizontal
-				rowCount: 1;
-				cellSpacing: 3);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ];
+		look: BrGlamorousToolbarLook new;
+		hMatchParent;
 		addItems: self configurationToolbarItems
 ]
 
