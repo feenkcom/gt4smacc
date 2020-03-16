@@ -1,52 +1,6 @@
 Extension { #name : #SmaCCParser }
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> buildSmaCCGrammarSourceTabIn: tabGroup for: classCoder [
-	<gtClassView: 6>
-	self definitionString isEmpty
-		ifTrue: [ ^ self ].
-	tabGroup
-		addTab:
-			(BrTab new
-				look: BrGlamorousTabLook new;
-				label: 'Source';
-				stencil: [ GtSmaCCGrammarElement onGrammar: (GtSmaCCGrammar onParser: self) ])
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> buildSmaCCGrammarTabIn: tabGroup for: classCoder [
-	<gtClassView: 5>
-	| coder |
-	self definitionString isEmpty
-		ifTrue: [ ^ self ].
-	coder := GtSmaCCGrammarCoder onParser: self.
-	tabGroup
-		addTab:
-			(BrTab new
-				look: BrGlamorousTabLook new;
-				label: 'Grammar';
-				stencil: [ coder asElement ]);
-		addTab:
-			(BrTab new
-				look: BrGlamorousTabLook new;
-				label: 'Annotate';
-				stencil: [ coder asVariableElement ])
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> buildTestTabIn: tabGroup for: classCoder [
-	<gtClassView: 7>
-	self definitionString isEmpty
-		ifTrue: [ ^ self ].
-	tabGroup
-		addTab:
-			(BrTab new
-				look: BrGlamorousTabLook new;
-				label: 'Test';
-				stencil: [ self gtTestElement ])
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> debug: aString from: anElement [
 	| process context debuggingSession |
 	context := [ self parse: aString ] asContext.
@@ -62,14 +16,51 @@ SmaCCParser class >> debug: aString from: anElement [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> gtCoderFor: aView [
-	<gtView>
+SmaCCParser class >> gtAnnotationsFor: aView context: aDictionary [
+	<gtClassView>
+	| coder |
 	self definitionString isEmpty
 		ifTrue: [ ^ aView empty ].
+	coder := aDictionary
+		at: #coder
+		ifAbsentPut: [ GtSmaCCGrammarCoder onParser: self ].
+	^ aView explicit
+		title: 'Annotations';
+		priority: 2;
+		stencil: [ coder asVariableElement ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> gtGrammarFor: aView [
+	<gtView>
+	^ self gtGrammarFor: aView context: Dictionary new
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
+	<gtClassView>
+	| coder |
+	self definitionString isEmpty
+		ifTrue: [ ^ aView empty ].
+	coder := aDictionary
+		at: #coder
+		ifAbsentPut: [ GtSmaCCGrammarCoder onParser: self ].
 	^ aView explicit
 		title: 'Grammar';
 		priority: 1;
-		stencil: [ (GtSmaCCGrammarCoder onParser: self) asElement ]
+		stencil: [ coder asElement ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> gtSourceFor: aView [
+	<gtView>
+	<gtClassView>
+	self definitionString isEmpty
+		ifTrue: [ ^ aView empty ].
+	^ aView explicit
+		title: 'Source';
+		priority: 6;
+		stencil: [ GtSmaCCGrammarElement onGrammar: (GtSmaCCGrammar onParser: self) ]
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
@@ -121,10 +112,11 @@ SmaCCParser class >> gtTestElement [
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtTestFor: aView [
 	<gtView>
+	<gtClassView>
 	self definitionString isEmpty
 		ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'Test';
-		priority: 1;
+		priority: 7;
 		stencil: [ self gtTestElement ]
 ]
