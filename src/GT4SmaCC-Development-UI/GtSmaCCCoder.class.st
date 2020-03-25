@@ -533,11 +533,11 @@ GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcut new
 		combination: BlKeyCombination primaryN;
 		repeatable: false;
-		action: [ :editorElement | self browseReferences: editorElement ]).
+		action: [ :anEvent | self browseReferences: anEvent currentTarget ]).
 	(BlShortcut new
 		combination: BlKeyCombination primaryR;
 		repeatable: false;
-		action: [ :editorElement | self renameItem: editorElement ])}
+		action: [ :anEvent | self renameItem: anEvent currentTarget ])}
 ]
 
 { #category : #accessing }

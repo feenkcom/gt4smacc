@@ -101,7 +101,7 @@ GtSmaCCProductionCoder >> shortcuts [
 						key: BlKeyboardKey i;
 						build);
 				repeatable: false;
-				action: [ :editorElement | self inlineSource ]).
+				action: [ self inlineSource ]).
 			(BlShortcut new
 				combination:
 					(BlKeyCombination builder
@@ -109,7 +109,7 @@ GtSmaCCProductionCoder >> shortcuts [
 						key: BlKeyboardKey e;
 						build);
 				repeatable: false;
-				action: [ :editorElement | self extractSource: editorElement ])}
+				action: [ :anEvent | self extractSource: anEvent currentTarget ])}
 ]
 
 { #category : #actions }
