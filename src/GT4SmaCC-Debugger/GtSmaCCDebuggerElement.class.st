@@ -569,7 +569,7 @@ GtSmaCCDebuggerElement >> updateParser [
 	parserStackList selection
 		do: [ :each | 
 			each isEmpty
-				ifFalse: [ ^ self selectSourceFor: (parserStackList items at: each from) last ] ]
+				ifFalse: [ ^ self selectSourceFor: (parserStackList items at: each to) last ] ]
 ]
 
 { #category : #'private-updating' }

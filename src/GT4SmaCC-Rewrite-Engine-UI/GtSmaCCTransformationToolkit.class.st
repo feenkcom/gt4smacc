@@ -422,7 +422,7 @@ GtSmaCCTransformationToolkit >> selectedFile [
 	filesList selection
 		do: [ :each | 
 			each isNotEmpty
-				ifTrue: [ ^ filesList items at: each from ] ].
+				ifTrue: [ ^ filesList items at: each to ] ].
 	^ nil
 ]
 
