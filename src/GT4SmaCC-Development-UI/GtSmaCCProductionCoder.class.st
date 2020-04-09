@@ -8,7 +8,7 @@ Class {
 GtSmaCCProductionCoder >> actions [
 	^ {(GtCoderAction new
 		title: 'Simulate' translated;
-		icon: BrGlamorousIcons debug;
+		icon: BrGlamorousVectorIcons debug;
 		action: [ :button | self viewParserSimulator: button ];
 		yourself)}
 ]

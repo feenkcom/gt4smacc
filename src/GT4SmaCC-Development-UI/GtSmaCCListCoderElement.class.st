@@ -39,7 +39,7 @@ GtSmaCCListCoderElement >> actionBar [
 GtSmaCCListCoderElement >> actions [
 	^ {(GtCoderAction new
 		title: 'Accept' translated;
-		icon: BrGlamorousIcons accept;
+		icon: BrGlamorousVectorIcons accept;
 		action: [ :button | self compileParser ];
 		yourself)}
 ]

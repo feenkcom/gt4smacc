@@ -25,7 +25,7 @@ GtSmaCCGrammarElement >> actionBar [
 				beSmall;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Save';
-				icon: BrGlamorousIcons accept asElement;
+				icon: BrGlamorousVectorIcons accept;
 				action: [ :element | self save ])
 ]
 
