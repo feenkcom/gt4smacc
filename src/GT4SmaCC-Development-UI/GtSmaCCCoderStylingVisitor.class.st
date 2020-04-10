@@ -14,7 +14,7 @@ GtSmaCCCoderStylingVisitor >> createDefinitionButtonFor: aToken [
 						background: Color white;
 						look: BrIconLook + BrGlamorousFocusableShadowLook new;
 						geometry: BlEllipse new;
-						icon: BrGlamorousIcons add;
+						icon: BrGlamorousVectorIcons add;
 						layout: BlLinearLayout horizontal alignCenter;
 						size: 16 @ 16;
 						when: BlMouseEnterEvent

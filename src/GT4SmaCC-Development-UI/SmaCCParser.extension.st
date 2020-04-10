@@ -92,7 +92,7 @@ SmaCCParser class >> gtTestElement [
 				beSmall;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Inspect';
-				icon: BrGlamorousIcons inspect asElement;
+				icon: BrGlamorousVectorIcons inspect;
 				action: [ :button | 
 					[ button phlow spawnObject: (self parse: editor text asString) ]
 						on: SmaCCParserError
@@ -102,7 +102,7 @@ SmaCCParser class >> gtTestElement [
 				beSmall;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Debug';
-				icon: BrGlamorousIcons debug asElement;
+				icon: BrGlamorousVectorIcons debug;
 				action: [ :button | self debug: editor text asString from: button ]).
 	element addChild: editorElement.
 	element addChild: actionBar.
