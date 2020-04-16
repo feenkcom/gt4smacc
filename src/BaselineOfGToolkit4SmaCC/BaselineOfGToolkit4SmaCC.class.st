@@ -12,16 +12,16 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 				spec repository: 'github://j-brant/SmaCC:755f592cdabfb7876203a84d7e558d3ecbeec90c/src' ].
 		spec 
 			package: 'GT4SmaCC-Inspector' with: [
-				spec requires: #(#SmaCC ). ];
+				spec requires: #('SmaCC' ). ];
 			package: 'GT4SmaCC-Development-UI' with: [
-				spec requires: #(#SmaCC ). ];
+				spec requires: #('SmaCC' ). ];
 			package: 'GT4SmaCC-Debugger' with: [
-				spec requires: #(#'GT4SmaCC-Development-UI' ). ];
+				spec requires: #('GT4SmaCC-Development-UI' ). ];
 			package: 'GT4SmaCC-Stylers' with: [
-				spec requires: #(#SmaCC ). ];
+				spec requires: #('SmaCC' ). ];
 			package: 'GT4SmaCC-Examples' with: [
-				spec requires: #(#SmaCC ). ];
+				spec requires: #('SmaCC' ). ];
 			package: 'GT4SmaCC-Rewrite-Engine-UI' with: [
-				spec requires: #(#SmaCC ). ]. ].
+				spec requires: #('SmaCC' ). ]. ].
 
 ]
