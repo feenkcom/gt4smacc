@@ -299,7 +299,7 @@ GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 	coderIntervalMap
 		keysAndValuesDo: [ :coder :tokens | 
 			renameAction
-				addLocations: (tokens collect: [ :each | each first ])
+				addLocations: (tokens collect: [ :each | each sourceInterval ])
 				to: coder sourceEditor ].
 	self disableCodeCompletion.
 	renameAction
