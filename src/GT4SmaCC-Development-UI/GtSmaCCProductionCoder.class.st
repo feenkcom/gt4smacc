@@ -109,7 +109,7 @@ GtSmaCCProductionCoder >> shortcuts [
 						key: BlKeyboardKey e;
 						build);
 				repeatable: false;
-				action: [ :anEvent | self extractSource: anEvent currentTarget ])}
+				action: [ :element | self extractSource: element ])}
 ]
 
 { #category : #actions }
