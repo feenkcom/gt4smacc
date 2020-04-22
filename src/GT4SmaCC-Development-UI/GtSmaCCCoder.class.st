@@ -297,9 +297,9 @@ GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 		locations: localIntervals
 		element: anElement.
 	coderIntervalMap
-		keysAndValuesDo: [ :coder :tokens | 
+		keysAndValuesDo: [ :coder :intervals | 
 			renameAction
-				addLocations: (tokens collect: [ :each | each sourceInterval ])
+				addLocations: intervals
 				to: coder sourceEditor ].
 	self disableCodeCompletion.
 	renameAction
@@ -533,11 +533,11 @@ GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcut new
 		combination: BlKeyCombination primaryN;
 		repeatable: false;
-		action: [ :anEvent | self browseReferences: anEvent currentTarget ]).
+		action: [ :element | self browseReferences: element ]).
 	(BlShortcut new
 		combination: BlKeyCombination primaryR;
 		repeatable: false;
-		action: [ :anEvent | self renameItem: anEvent currentTarget ])}
+		action: [ :element | self renameItem: element ])}
 ]
 
 { #category : #accessing }
