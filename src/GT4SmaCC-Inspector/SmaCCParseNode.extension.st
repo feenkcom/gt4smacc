@@ -163,6 +163,28 @@ SmaCCParseNode >> gtSourceFor: aView [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> gtSpotterNodeFor: aStep [
+	<gtSearch>
+	| source |
+	source := self topParent completeSource.
+	aStep listProcessor
+		priority: 10;
+		title: 'Nodes';
+		allCandidates: [ | nodes |
+			nodes := OrderedCollection with: self.
+			self allNodesDo: [ :each | nodes add: each ].
+			nodes ];
+		itemName: [ :node | 
+			[ | start stop |
+			start := node startPosition.
+			stop := node stopPosition.
+			(source copyFrom: start to: (stop min: start + 100)) asString ]
+				on: Error
+				do: [ :ex | ex return: node class name ] ];
+		filter: GtSmaCCASTFilter
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtTreeFor: aView [
 	<gtView>
 	^ aView columnedTree
