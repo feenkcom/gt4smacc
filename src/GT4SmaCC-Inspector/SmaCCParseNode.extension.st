@@ -55,9 +55,9 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 	highlighter := GtTextNodeHighlighter
 		on: anEditor
 		source: self topParent completeSource asString.
-	highlightAttribute := BlTextUnderlineAttribute new
+	highlightAttribute := BlTextHighlightAttribute new
 		beNotOverwritableByStyler;
-		paint: BrGlamorousColors primaryBorderColor.
+		paint: BrGlamorousColors neutralBackgroundColor.
 	aTree
 		when: BrSelectionChanged
 		do: [ :anEvent | 
@@ -160,6 +160,28 @@ SmaCCParseNode >> gtSourceFor: aView [
 		title: 'Source';
 		stencil: [ self
 				gtSourceEditorWithHighlight: BrGlamorousColors primaryBorderColor ]
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> gtSpotterNodeFor: aStep [
+	<gtSearch>
+	| source |
+	source := self topParent completeSource.
+	aStep listProcessor
+		priority: 10;
+		title: 'Nodes';
+		allCandidates: [ | nodes |
+			nodes := OrderedCollection with: self.
+			self allNodesDo: [ :each | nodes add: each ].
+			nodes ];
+		itemName: [ :node | 
+			[ | start stop |
+			start := node startPosition.
+			stop := node stopPosition.
+			(source copyFrom: start to: (stop min: start + 100)) asString ]
+				on: Error
+				do: [ :ex | ex return: node class name ] ];
+		filter: GtSmaCCASTFilter
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
