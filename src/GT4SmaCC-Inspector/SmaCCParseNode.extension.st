@@ -31,8 +31,7 @@ SmaCCParseNode >> gtExploreFor: aView [
 				constraintsDo: [ :c | 
 					c vertical matchParent.
 					c horizontal matchParent ].
-			editor := self
-				gtSourceEditorWithHighlight: BrGlamorousColors lightBorderColor.
+			editor := self gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
 			editor
 				look: BrShadowLook;
 				background: Color white;
@@ -55,9 +54,10 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 	highlighter := GtTextNodeHighlighter
 		on: anEditor
 		source: self topParent completeSource asString.
-	highlightAttribute := BlTextHighlightAttribute new
+	highlightAttribute := BlTextUnderlineAttribute new
 		beNotOverwritableByStyler;
-		paint: BrGlamorousColors neutralBackgroundColor.
+		paint: BrGlamorousColors textHighlightColor;
+		width: 3.
 	aTree
 		when: BrSelectionChanged
 		do: [ :anEvent | 
@@ -140,9 +140,9 @@ SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 				ifNotNil: [ :styler | styler style: source using: self topParent ] ].
 	(source from: self startPosition to: self stopPosition)
 		attributes:
-			{(BlTextUnderlineAttribute new
+			{(BlTextHighlightAttribute new
 				beNotOverwritableByStyler;
-				paint: BrGlamorousColors lightBorderColor)}.
+				paint: aColor)}.
 	editor := BrEditor new
 		text: source;
 		look: BrGlamorousCodeEditorLook new.
@@ -158,8 +158,8 @@ SmaCCParseNode >> gtSourceFor: aView [
 	^ aView explicit
 		priority: 10;
 		title: 'Source';
-		stencil: [ self
-				gtSourceEditorWithHighlight: BrGlamorousColors primaryBorderColor ]
+		stencil: [ 
+			self gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -172,7 +172,7 @@ SmaCCParseNode >> gtTreeFor: aView [
 			#node.
 			self}} ];
 		children: [ :each | self gtChildrenOf: each ];
-		column: 'Variable' format: [ :each | each value first ];
+		column: 'Node' format: [ :each | each value first ];
 		column: 'Type'
 			format: [ :each | 
 			(each value at: 2) = #node
