@@ -20,14 +20,7 @@ GtSmaCCASTFilter >> doApplyFilterWithQuery [
 						ifFalse: [ unorderedMatchedItems add: node.
 							self addItem: node.
 							unorderedMatchedItems size = self itemsLimit
-								ifTrue: [ GTLimitArrived signal ] ] ] ].
-	self
-		filteredItems:
-			(unorderedMatchedItems
-				asSortedCollection: [ :a :b | 
-					a startPosition < b startPosition
-						or: [ a startPosition = b startPosition
-								and: [ a stopPosition > b stopPosition ] ] ])
+								ifTrue: [ GTLimitArrived signal ] ] ] ]
 ]
 
 { #category : #private }
