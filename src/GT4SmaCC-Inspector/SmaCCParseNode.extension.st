@@ -83,6 +83,13 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> gtIsPosition: anInteger inNode: aNode [
+	(aNode startPosition isNil or: [ aNode stopPosition isNil ])
+		ifTrue: [ ^ false ].
+	^ anInteger between: aNode startPosition and: aNode stopPosition
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtParentsFor: aView [
 	<gtView>
 	^ aView tree
@@ -117,12 +124,9 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 		detect: [ :each | 
 			(#(#nodes #tokens) includes: each value second)
 				ifTrue: [ each value last
-						anySatisfy:
-							[ :item | position between: item startPosition and: item stopPosition ] ]
+						anySatisfy: [ :item | self gtIsPosition: position inNode: item ] ]
 				ifFalse: [ (#(node token) includes: each value second)
-						and: [ position
-								between: each value last startPosition
-								and: each value last stopPosition ] ] ]
+						and: [ self gtIsPosition: position inNode: each value last ] ] ]
 		ifNone: [ nil ].
 	nextNode notNil ] whileTrue.
 	aTree selectOne: treeNode globalIndexInTree.
