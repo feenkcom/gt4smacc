@@ -130,13 +130,8 @@ GtSmaCCCoder >> badges [
 GtSmaCCCoder >> browseReferences: anElement [
 	| filter |
 	filter := self referencesFilterAtCursor.
-	filter isNil
-		ifTrue: [ ^ self ].
-	anElement
-		fireEvent:
-			(GtPhlowObjectToSpawn new
-				object: (GtSmaCCGrammarFilter on: self owner) & filter;
-				sourceElement: anElement)
+	filter ifNil: [ ^ self ].
+	anElement phlow spawnObject: (GtSmaCCGrammarFilter on: self owner) & filter
 ]
 
 { #category : #'private-actions' }
