@@ -419,10 +419,7 @@ GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> selectedFile [
-	filesList selection
-		do: [ :each | 
-			each isNotEmpty
-				ifTrue: [ ^ filesList items at: each to ] ].
+	filesList selectedIndices do: [ :i | ^ filesList items at: i ].
 	^ nil
 ]
 
@@ -496,7 +493,7 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateFiles [
 	filesList notNil
-		ifTrue: [ filesList display: model files ]
+		ifTrue: [ filesList items: model files ]
 ]
 
 { #category : #private }

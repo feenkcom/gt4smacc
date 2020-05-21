@@ -297,7 +297,7 @@ GtSmaCCRewriteElement >> updateTypeMatch [
 						text: each asRopedText;
 						constraintsDo: [ :c | c horizontal matchParent ];
 						padding: (BlInsets all: 5) ];
-				display:
+				items:
 					(Set new
 						addAll: rewrite match nodeClass allInstVarNames;
 						removeAll: SmaCCParseNode allInstVarNames;
