@@ -1,5 +1,5 @@
-# GT 4 SmaCC
-The development environment for SmaCC based on the [Glamorous Toolkit](https://gtoolkit.com).
+# GT for SmaCC
+The development environment for [SmaCC](https://github.com/j-brant/SmaCC), the parser engine. It part of [Glamorous Toolkit](https://github.com/feenkcom/gtoolkit).
 
 ## How to load
 
