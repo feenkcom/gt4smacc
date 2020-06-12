@@ -566,10 +566,9 @@ GtSmaCCDebuggerElement >> updateParser [
 	self session isInsideReductionAction
 		ifTrue: [ self showContext ]
 		ifFalse: [ self removeContext ].
-	parserStackList selection
-		do: [ :each | 
-			each isEmpty
-				ifFalse: [ ^ self selectSourceFor: (parserStackList items at: each to) last ] ]
+	parserStackList selectedIndices
+		do:
+			[ :each | ^ self selectSourceFor: (parserStackList items at: each) last ]
 ]
 
 { #category : #'private-updating' }
