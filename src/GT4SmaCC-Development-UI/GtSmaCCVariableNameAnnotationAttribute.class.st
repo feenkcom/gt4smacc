@@ -27,15 +27,6 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 		at: #variableCoderElement
 			put: (self variableCoderElementFor: anEditorElement);
 		at: #variableNameAttribute put: self.
-	editorElement border: (BlBorder paint: Color veryLightGray width: 1).
-	editorElement
-		margin:
-			(BlInsets
-				top: -3
-				left: 5
-				bottom: 3
-				right: 5).
-	editorElement padding: (BlInsets all: 2).
 	editorElement
 		constraintsDo: [ :c | 
 			c minWidth: 25.
@@ -54,7 +45,17 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 	editorElement
 		addEventFilterOn: BlBaseFocusEvent
 		do: [ :event | self updateFocus: event ].
-	^ editorElement
+	^ BlElement new
+		geometry: (BlRectangle cornerRadius: 4);
+		border: (BlBorder paint: Color veryLightGray width: 1);
+		padding: (BlInsets all: 2);
+		margin: (BlInsets all: 2);
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ];
+		addChild: editorElement;
+		yourself
 ]
 
 { #category : #accessing }
