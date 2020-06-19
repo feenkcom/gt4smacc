@@ -63,8 +63,7 @@ GtSmaCCSimulatorElement >> buildResultsElement [
 GtSmaCCSimulatorElement >> clearAttributesIn: editor [
 	editor text
 		clearAttributes:
-			[ :attr | attr == AcceptAttributes first or: [ attr == ErrorAttributes first ] ].
-	editor updater all update
+			[ :attr | attr == AcceptAttributes first or: [ attr == ErrorAttributes first ] ]
 ]
 
 { #category : #'event handling' }
