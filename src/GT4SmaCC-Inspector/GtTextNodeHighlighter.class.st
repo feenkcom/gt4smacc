@@ -32,10 +32,7 @@ GtTextNodeHighlighter >> highlight: aNode with: anAttribute [
 	| start stop |
 	start := self editorPositionFor: aNode startPosition.
 	stop := self editorPositionFor: aNode stopPosition.
-	(editor text from: start to: stop) attributes: {anAttribute}.
-	editor editor updater
-		all;
-		update
+	(editor text from: start to: stop) attributes: { anAttribute }
 ]
 
 { #category : #'initialize-release' }
