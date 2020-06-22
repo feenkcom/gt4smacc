@@ -201,6 +201,30 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
+{ #category : #instances }
+GtSmaCCParserStyler class >> vbnetStyler: aParserClass [
+	<smaccStyler: #VBNetParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #VBNetLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #VBNetAttributeBlockNode
+				styleBlock: [ :styler | styler bold ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCErrorNode
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
 { #category : #accessing }
 GtSmaCCParserStyler >> addStylerRule: aStylerRule [
 	self stylerRules add: aStylerRule.
