@@ -400,7 +400,7 @@ GtSmaCCGrammar >> source: aString [
 GtSmaCCGrammar >> startDirectivesDo: aBlock [
 	self
 		activeDirectivesDo: [ :each | 
-			each ast isStartDirective
+			(each ast isErrorNode not and: [ each ast isStartDirective ])
 				ifTrue: [ aBlock value: each ] ]
 ]
 
