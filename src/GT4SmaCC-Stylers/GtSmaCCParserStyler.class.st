@@ -214,7 +214,7 @@ GtSmaCCParserStyler class >> teradataStyler: aParserClass [
 			(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCTokenStylerRule
-				tokenName: '<semicolon>'
+				tokenName: '";"'
 				styleBlock: [ :styler | 
 					styler
 						foreground: Color black;
