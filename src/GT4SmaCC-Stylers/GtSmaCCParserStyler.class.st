@@ -202,6 +202,33 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 ]
 
 { #category : #instances }
+GtSmaCCParserStyler class >> teradataStyler: aParserClass [
+	<smaccStyler: #TeradataParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCTokenStylerRule
+				tokenName: '";"'
+				styleBlock: [ :styler | 
+					styler
+						foreground: Color black;
+						bold ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #TeradataLiteralExpressionNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCErrorNode
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> vbnetStyler: aParserClass [
 	<smaccStyler: #VBNetParser priority: 50>
 	^ (self forParser: aParserClass)
