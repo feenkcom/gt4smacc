@@ -101,8 +101,7 @@ SmaCCParseNode >> gtParentsFor: aView [
 				ifTrue: [ #() ]
 				ifFalse: [ {each parent} ] ];
 		expandAll;
-		itemFormat: [ :each | each class name asRopedText glamorousRegularFontAndSize ];
-		send: [ :each | each value ]
+		itemFormat: [ :each | each class name asRopedText glamorousRegularFontAndSize ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
