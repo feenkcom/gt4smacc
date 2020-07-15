@@ -162,11 +162,6 @@ GtSmaCCCoderElement >> initialize [
 				action: [ self toggle ])
 ]
 
-{ #category : #testing }
-GtSmaCCCoderElement >> isExpanded [
-	^ expandableModel isExpanded
-]
-
 { #category : #ui }
 GtSmaCCCoderElement >> sourceEditor [
 	| element |
