@@ -153,11 +153,6 @@ GtSmaCCVariableCoderElement >> initialize [
 				action: [ :each | self togglePreviousRenaming ])
 ]
 
-{ #category : #testing }
-GtSmaCCVariableCoderElement >> isExpanded [
-	^ expandableModel isExpanded
-]
-
 { #category : #ui }
 GtSmaCCVariableCoderElement >> labelElement [
 	| label |
