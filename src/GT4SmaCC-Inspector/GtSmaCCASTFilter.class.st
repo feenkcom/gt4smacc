@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCASTFilter,
-	#superclass : #GTStringFilter,
+	#superclass : #GtStringFilter,
 	#instVars : [
 		'queryObject'
 	],
