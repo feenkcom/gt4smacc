@@ -46,7 +46,7 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 		addEventFilterOn: BlBaseFocusEvent
 		do: [ :event | self updateFocus: event ].
 	^ BlElement new
-		geometry: (BlRectangle cornerRadius: 4);
+		geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
 		border: (BlBorder paint: Color veryLightGray width: 1);
 		padding: (BlInsets all: 2);
 		margin: (BlInsets all: 2);
