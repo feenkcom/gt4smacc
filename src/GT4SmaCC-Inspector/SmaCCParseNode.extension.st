@@ -9,9 +9,10 @@ SmaCCParseNode >> gtAttributesFor: aView [
 		priority: 40;
 		title: 'Attributes';
 		items: [ attributes keys asSortedCollection ];
-		column: 'Name' format: [:each | each ];
-		column: 'Value' format: [ :each | (self attributeNamed: each) printString ];
-		send: [:each | self attributeNamed: each ]
+		column: 'Name' text: [ :each | each ];
+		column: 'Value'
+			text: [ :each | (self attributeNamed: each) printString ];
+		send: [ :each | self attributeNamed: each ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -101,7 +102,7 @@ SmaCCParseNode >> gtParentsFor: aView [
 				ifTrue: [ #() ]
 				ifFalse: [ {each parent} ] ];
 		expandAll;
-		itemFormat: [ :each | each class name asRopedText glamorousRegularFontAndSize ]
+		itemText: [ :each | each class name asRopedText glamorousRegularFontAndSize ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -197,9 +198,9 @@ SmaCCParseNode >> gtTreeFor: aView [
 			#node.
 			self}} ];
 		children: [ :each | self gtChildrenOf: each ];
-		column: 'Node' format: [ :each | each value first ];
+		column: 'Node' text: [ :each | each value first ];
 		column: 'Type'
-			format: [ :each | 
+			text: [ :each | 
 			(each value at: 2) = #node
 				ifTrue: [ each value last class name ]
 				ifFalse: [ '' ] ];
