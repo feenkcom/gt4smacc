@@ -30,6 +30,7 @@ GtTextNodeHighlighter >> editorPositionFor: anInteger [
 { #category : #highlighting }
 GtTextNodeHighlighter >> highlight: aNode with: anAttribute [
 	| start stop |
+	aNode stopPosition isZero ifTrue: [ ^ self ].
 	start := self editorPositionFor: aNode startPosition.
 	stop := self editorPositionFor: aNode stopPosition.
 	(editor text from: start to: stop) attributes: { anAttribute }

@@ -122,8 +122,6 @@ GtSmaCCDebuggerElement >> buildParserActions [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				text: text;
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
@@ -144,8 +142,6 @@ GtSmaCCDebuggerElement >> buildParserActions [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				text: text;
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
@@ -195,8 +191,6 @@ GtSmaCCDebuggerElement >> buildParserStack [
 			BrLabel new
 				look: (BrGlamorousLabelLook new foreground: Color black);
 				text: (each first ifNil: [ '' ]);
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
@@ -209,8 +203,6 @@ GtSmaCCDebuggerElement >> buildParserStack [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				text: each last displayString;
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
@@ -264,8 +256,6 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				text: each first;
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
@@ -278,8 +268,6 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 			BrLabel new
 				look: BrGlamorousLabelLook new;
 				text: each last displayString;
-				hMatchParent;
-				vMatchParent;
 				margin:
 					(BlInsets
 						top: 3
