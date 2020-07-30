@@ -64,6 +64,11 @@ GtSmaCCDefinitionListElement >> listElement [
 ]
 
 { #category : #private }
+GtSmaCCDefinitionListElement >> updateFilters [
+	self updateList
+]
+
+{ #category : #private }
 GtSmaCCDefinitionListElement >> updateList [
 	| highlighter |
 	highlighter := group highlighter.
