@@ -142,11 +142,12 @@ SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 		ifNotNil: [ :class | 
 			class gtStyler
 				ifNotNil: [ :styler | styler style: source using: self topParent ] ].
-	(source from: self startPosition to: self stopPosition)
-		attributes:
-			{(BlTextHighlightAttribute new
-				beNotOverwritableByStyler;
-				paint: aColor)}.
+	self stopPosition isZero ifFalse: [
+		(source from: self startPosition to: self stopPosition)
+			attributes:
+				{(BlTextHighlightAttribute new
+					beNotOverwritableByStyler;
+					paint: aColor)} ].
 	editor := BrEditor new
 		text: source;
 		look: BrGlamorousCodeEditorLook new.
