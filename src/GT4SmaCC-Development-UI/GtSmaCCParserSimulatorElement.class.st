@@ -142,7 +142,7 @@ GtSmaCCParserSimulatorElement >> parseTreeElement [
 			parseTreeElement column
 				stencil: [ :each | 
 					BrColumnCellLabelStencil new
-						text: (self labelFor: each value) asRopedText glamorousRegularFontAndSize ].
+						text: (self labelFor: each) asRopedText glamorousRegularFontAndSize ].
 			parseTreeElement
 				when: BrSelectionChanged
 				do:
