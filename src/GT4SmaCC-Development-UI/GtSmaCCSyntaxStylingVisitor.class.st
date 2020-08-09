@@ -155,13 +155,14 @@ GtSmaCCSyntaxStylingVisitor >> visitSymbol: aSymbol [
 
 { #category : #visiting }
 GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
+	| selector |
 	self style: aTokenRegex with: #formatToken:.
-	(self characterSelectorFor: aTokenRegex name)
-		ifNotNil: [ :selector | 
-			self
+	((selector := self characterSelectorFor: aTokenRegex name) notNil
+		and: [ (styler grammarCoder ruleNamed: aTokenRegex name source) isNil ])
+		ifTrue: [ self
 				formatMethod: (Character lookupSelector: selector)
 				for: aTokenRegex ]
-		ifNil: [ self formatInlineDefinition: aTokenRegex token: aTokenRegex name ].
+		ifFalse: [ self formatInlineDefinition: aTokenRegex token: aTokenRegex name ].
 	super visitTokenRegex: aTokenRegex
 ]
 
