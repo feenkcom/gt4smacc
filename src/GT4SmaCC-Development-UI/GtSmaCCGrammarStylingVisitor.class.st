@@ -44,8 +44,7 @@ GtSmaCCGrammarStylingVisitor >> initialize [
 GtSmaCCGrammarStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 	| editor editorElement innerText |
 	innerText := aString asRopedText.
-	innerText
-		attributes: SmaCCParserGeneratorPresentation defaultTextAttributes.
+	innerText attributes: GtSmaCCCoder defaultTextAttributes.
 	editor := BrTextEditor new.
 	aStyler notNil
 		ifTrue: [ editor styler: aStyler ].

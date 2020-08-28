@@ -51,24 +51,11 @@ GtSmaCCGrammar >> activeRulesDo: aBlock [
 				ifFalse: [ aBlock value: each ] ]
 ]
 
-{ #category : #iterating }
-GtSmaCCGrammar >> activeTokensDo: aBlock [
-	self
-		activeRulesDo: [ :each | 
-			each isTokenRule
-				ifTrue: [ aBlock value: each ] ]
-]
-
 { #category : #private }
 GtSmaCCGrammar >> addGrammarItem: item afterIndex: anInteger [
 	rules add: item afterIndex: anInteger.
 	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
-]
-
-{ #category : #actions }
-GtSmaCCGrammar >> addProductionNamed: aString [
-	self addProductionNamed: aString for: nil
 ]
 
 { #category : #actions }
@@ -100,11 +87,6 @@ GtSmaCCGrammar >> addRuleNode: aNode afterIndex: anInteger [
 	item isNil
 		ifTrue: [ ^ self ].
 	self addGrammarItem: item afterIndex: anInteger
-]
-
-{ #category : #actions }
-GtSmaCCGrammar >> addTokenNamed: aString [
-	self addTokenNamed: aString for: nil
 ]
 
 { #category : #actions }
@@ -146,11 +128,6 @@ GtSmaCCGrammar >> allReferencesTo: aString do: aBlock [
 						or: [ each isKindOf: SmaCCTokenRegexNode ])
 						ifTrue: [ each name source = aString
 								ifTrue: [ aBlock value: each ] ] ] ]
-]
-
-{ #category : #accessing }
-GtSmaCCGrammar >> announcer [
-	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
 { #category : #accessing }

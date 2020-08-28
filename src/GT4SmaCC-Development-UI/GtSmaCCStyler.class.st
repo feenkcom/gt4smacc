@@ -14,11 +14,6 @@ GtSmaCCStyler class >> formatAST: aText [
 ]
 
 { #category : #formatting }
-GtSmaCCStyler class >> formatCode: aText [
-	aText foreground: Color darkGray
-]
-
-{ #category : #formatting }
 GtSmaCCStyler class >> formatComment: aText [
 	aText foreground: Color lightGray
 ]

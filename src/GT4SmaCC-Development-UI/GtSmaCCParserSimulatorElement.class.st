@@ -14,13 +14,6 @@ GtSmaCCParserSimulatorElement class >> initialize [
 		width: 3)}
 ]
 
-{ #category : #'instance creation' }
-GtSmaCCParserSimulatorElement class >> onSimulator: aSimulator [
-	^ self new
-		simulator: aSimulator;
-		yourself
-]
-
 { #category : #'event handling' }
 GtSmaCCParserSimulatorElement >> accepted: anAcceptAnnouncement [
 	self testEditor styleText.

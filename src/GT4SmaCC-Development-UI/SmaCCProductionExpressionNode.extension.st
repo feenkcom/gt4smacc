@@ -81,24 +81,9 @@ SmaCCProductionExpressionNode >> styledText [
 	| text rule |
 	rule := self parentOfType: SmaCCProductionRuleNode.
 	text := rule source asRopedText.
-	text
-		attributes: SmaCCParserGeneratorPresentation defaultTextAttributes.
+	text attributes: GtSmaCCCoder defaultTextAttributes.
 	GtSmaCCGrammarStyler new style: text.
 	^ text
 		copyFrom: self startPosition - rule startPosition + 1
 		to: self stopPosition - rule startPosition + 1
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCProductionExpressionNode >> updateSource: aSmaCCString [
-	| position index |
-	self hasNodeDefined
-		ifFalse: [ ^ self ].
-	self terms isEmpty
-		ifTrue: [ index := self parent expressions identityIndexOf: self.
-			position := index = 1
-				ifTrue: [ aSmaCCString nextIndex: self parent colon stopPosition ]
-				ifFalse: [ aSmaCCString nextIndex: (self parent barTokens at: index - 1) stopPosition ] ]
-		ifFalse: [ position := aSmaCCString nextIndex: self stopPosition ].
-	aSmaCCString insert: ' {{' , self astNodeName , '}}' at: position
 ]

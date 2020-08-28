@@ -57,19 +57,6 @@ SmaCCSymbolNode >> definition [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCSymbolNode >> updateSource: aSmaCCString [
-	| name |
-	name := self attributeNamed: #variableName ifAbsent: [ ^ self ].
-	name isEmpty
-		ifTrue: [ variableNameToken notNil
-				ifTrue: [ aSmaCCString deleteFrom: variableNameToken startPosition to: variableNameToken stopPosition ] ]
-		ifFalse: [ variableNameToken notNil
-				ifTrue: [ aSmaCCString deleteFrom: variableNameToken startPosition to: variableNameToken stopPosition.
-					aSmaCCString insert: '''' , name , '''' at: variableNameToken startPosition ]
-				ifFalse: [ aSmaCCString insert: ' ''' , name , '''' at: (aSmaCCString nextIndex: self name stopPosition) ] ]
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCSymbolNode >> variableName [
 	^ self
 		attributeNamed: #variableName

@@ -8,8 +8,3 @@ Class {
 GtSmaCCDefinitionsFilter class >> resultType [
 	^ GtSmaCCDefinitionGroupResult
 ]
-
-{ #category : #accessing }
-GtSmaCCDefinitionsFilter >> highlighter [
-	^ nil
-]

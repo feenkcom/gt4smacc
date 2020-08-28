@@ -7,10 +7,7 @@ Class {
 		'announcer',
 		'owner',
 		'itemName',
-		'expanded',
-		'collapsedEditor',
-		'sourceEditor',
-		'attributes'
+		'expanded'
 	],
 	#category : #'GT4SmaCC-Development-UI-Coders'
 }
