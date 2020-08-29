@@ -235,11 +235,6 @@ GtSmaCCGrammarCoder >> updateVariableItems [
 ]
 
 { #category : #accessing }
-GtSmaCCGrammarCoder >> variableCoderNamed: aString [
-	^ variableGroup coderFor: aString
-]
-
-{ #category : #accessing }
 GtSmaCCGrammarCoder >> variableGroup [
 	^ variableGroup
 ]

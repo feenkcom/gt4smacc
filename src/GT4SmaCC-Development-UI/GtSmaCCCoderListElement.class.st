@@ -136,8 +136,7 @@ GtSmaCCCoderListElement >> typeFilterElement [
 	| toggles element |
 	toggles := self ruleTypes
 		collect: [ :each | 
-			| toggle |
-			toggle := BrToggle new
+			BrToggle new
 				layout: BlLinearLayout horizontal alignCenter;
 				constraintsDo: [ :c | 
 					c horizontal fitContent.

@@ -51,9 +51,3 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		from: aToken stopPosition
 		to: aToken stopPosition
 ]
-
-{ #category : #testing }
-GtSmaCCCoderStylingVisitor >> isForCharacter: aToken [
-	^ aToken value first = $<
-		and: [ (self characterSelectorFor: aToken) notNil ]
-]

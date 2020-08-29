@@ -32,8 +32,10 @@ SmaCCParseNode >> gtExploreFor: aView [
 				constraintsDo: [ :c | 
 					c vertical matchParent.
 					c horizontal matchParent ].
-			editor := self gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
+			editor := self
+				gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
 			editor
+				beReadOnlyWithSelection;
 				look: BrShadowLook;
 				background: Color white;
 				margin: (BlInsets all: 10).
@@ -142,12 +144,12 @@ SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 		ifNotNil: [ :class | 
 			class gtStyler
 				ifNotNil: [ :styler | styler style: source using: self topParent ] ].
-	self stopPosition isZero ifFalse: [
-		(source from: self startPosition to: self stopPosition)
-			attributes:
-				{(BlTextHighlightAttribute new
-					beNotOverwritableByStyler;
-					paint: aColor)} ].
+	self stopPosition isZero
+		ifFalse: [ (source from: self startPosition to: self stopPosition)
+				attributes:
+					{(BlTextHighlightAttribute new
+						beNotOverwritableByStyler;
+						paint: aColor)} ].
 	editor := BrEditor new
 		text: source;
 		look: BrGlamorousCodeEditorLook new.

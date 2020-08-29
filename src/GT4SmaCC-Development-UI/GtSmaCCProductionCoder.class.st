@@ -69,10 +69,6 @@ GtSmaCCProductionCoder >> extractSource: anElement [
 	self installRenameActionOn: anElement forCoders: renameMap
 ]
 
-{ #category : #'private-actions' }
-GtSmaCCProductionCoder >> inlineAllReferencesTo: aProductionRuleNode [
-]
-
 { #category : #actions }
 GtSmaCCProductionCoder >> inlineSource [
 	| node interval |

@@ -14,8 +14,7 @@ SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 	bloc
 		element: [ | styler text editor element |
 			text := self source asRopedText.
-			text
-				attributes: SmaCCParserGeneratorPresentation defaultTextAttributes.
+			text attributes: GtSmaCCCoder defaultTextAttributes.
 			styler := GtSmaCCGrammarStyler for: SmaCCScanner.
 			editor := BrTextEditor new.
 			editor text: (styler style: text).
@@ -98,30 +97,7 @@ SmaCCDefinitionNode >> buildVariableNameInterfaceFor: aString in: presentation [
 
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> defaultTextAttributes [
-	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
-		beNotOverwritableByStyler.
-	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCDefinitionNode >> findItemsToRenameFrom: anInteger [
-	| token |
-	self
-		allNodesDo: [ :each |  ]
-		andTokensDo: [ :each | 
-			(anInteger between: each startPosition and: each stopPosition)
-				ifTrue: [ token := each ] ]
-		includeErrors: true.
-	token isNil
-		ifTrue: [ ^ #() ].
-	('''"<' includes: token value first)
-		ifTrue: [ ^ (self allTokensMatching: token)
-				collect: [ :each | each startPosition + 1 to: each stopPosition - 1 ] ].
-	(token value first isLetter or: [ token value first = $_ ])
-		ifTrue: [ ^ (self allTokensMatching: token)
-				collect: [ :each | each sourceInterval ] ].
-	^ #()
+	^ GtSmaCCCoder defaultTextAttributes
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
@@ -137,8 +113,4 @@ SmaCCDefinitionNode >> scannerClass [
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> tags [
 	^ #()
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCDefinitionNode >> updateSource: aSmaCCString [
 ]
