@@ -11,7 +11,7 @@ Class {
 GtSmaCCHighlightingVisitor class >> initialize [
 	HighlightAttributes := {(BlTextUnderlineAttribute new
 		paint: BrGlamorousColors textHighlightColor;
-		width: 3)}
+		thickness: 3)}
 ]
 
 { #category : #private }

@@ -11,7 +11,7 @@ Class {
 GtSmaCCParserSimulatorElement class >> initialize [
 	ErrorAttributes := {(BlTextUnderlineAttribute new
 		paint: BrGlamorousColors errorBorderColor;
-		width: 3)}
+		thickness: 3)}
 ]
 
 { #category : #'event handling' }
