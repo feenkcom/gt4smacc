@@ -10,8 +10,8 @@ Class {
 { #category : #'class initialization' }
 GtSmaCCParserSimulatorElement class >> initialize [
 	ErrorAttributes := {(BlTextUnderlineAttribute new
-		paint: BrGlamorousColors errorBorderColor;
-		width: 3)}
+		color: BrGlamorousColors errorBorderColor;
+		thickness: 3)}
 ]
 
 { #category : #'event handling' }
