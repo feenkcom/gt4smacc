@@ -10,7 +10,7 @@ Class {
 { #category : #'class initialization' }
 GtSmaCCHighlightingVisitor class >> initialize [
 	HighlightAttributes := {(BlTextUnderlineAttribute new
-		paint: BrGlamorousColors textHighlightColor;
+		color: BrGlamorousColors textHighlightColor;
 		thickness: 3)}
 ]
 

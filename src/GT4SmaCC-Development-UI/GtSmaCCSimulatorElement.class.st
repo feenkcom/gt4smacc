@@ -15,10 +15,10 @@ Class {
 { #category : #'class initialization' }
 GtSmaCCSimulatorElement class >> initialize [
 	ErrorAttributes := {(BlTextUnderlineAttribute new
-		paint: BrGlamorousColors errorBorderColor;
+		color: BrGlamorousColors errorBorderColor;
 		thickness: 3)}.
 	AcceptAttributes := {(BlTextUnderlineAttribute new
-		paint: BrGlamorousColors successBackgroundColor;
+		color: BrGlamorousColors successBackgroundColor;
 		thickness: 3;
 		beNotOverwritableByStyler)}
 ]
