@@ -59,8 +59,8 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 		source: self topParent completeSource asString.
 	highlightAttribute := BlTextUnderlineAttribute new
 		beNotOverwritableByStyler;
-		paint: BrGlamorousColors textHighlightColor;
-		width: 3.
+		color: BrGlamorousColors textHighlightColor;
+		thickness: 3.
 	aTree
 		when: BrSelectionChanged
 		do: [ :anEvent | 
