@@ -131,7 +131,7 @@ GtSmaCCParserSimulatorElement >> parseTreeElement [
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ].
-			parseTreeElement items: #() children: [ :each |  ].
+			parseTreeElement items: #() lazy: [ :each |  ].
 			parseTreeElement column
 				stencil: [ :each | 
 					BrColumnCellLabelStencil new
