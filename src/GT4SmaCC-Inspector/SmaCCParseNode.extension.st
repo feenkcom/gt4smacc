@@ -57,7 +57,7 @@ SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 	highlighter := GtTextNodeHighlighter
 		on: anEditor
 		source: self topParent completeSource asString.
-	highlightAttribute := BlTextUnderlineAttribute new
+	highlightAttribute := BlTextDecorationAttribute new underline
 		beNotOverwritableByStyler;
 		color: BrGlamorousColors textHighlightColor;
 		thickness: 3.
@@ -131,8 +131,8 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 						and: [ self gtIsPosition: position inNode: each value last ] ] ]
 		ifNone: [ nil ].
 	nextNode notNil ] whileTrue.
-	aTree selectOne: treeNode globalIndexInTree.
-	aTree children first scrollToPosition: treeNode globalIndexInTree
+	aTree selectOne: treeNode indexInTree.
+	aTree children first scrollToPosition: treeNode indexInTree
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
