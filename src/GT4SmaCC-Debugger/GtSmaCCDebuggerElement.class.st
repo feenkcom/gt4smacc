@@ -56,8 +56,8 @@ GtSmaCCDebuggerElement class >> sessionClass [
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> acceptAttributes [
 	^ {(BlTextUnderlineAttribute new
-		paint: BrGlamorousColors successBackgroundColor;
-		width: 3)}
+		color: BrGlamorousColors successBackgroundColor;
+		thickness: 3)}
 ]
 
 { #category : #callbacks }
