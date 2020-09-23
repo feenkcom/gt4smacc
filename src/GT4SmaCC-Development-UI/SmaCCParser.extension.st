@@ -94,6 +94,8 @@ SmaCCParser class >> gtTestElement [
 				label: 'Inspect';
 				icon: BrGlamorousVectorIcons inspect;
 				action: [ :button | 
+					text
+						clearAttributes: [ :each | each isKindOf: GtSourceCoderErrorAttribute ].
 					[ button phlow spawnObject: (self parse: editor text asString) ]
 						on: SmaCCParserError
 						do: [ :ex | ex gtDisplayErrorIn: editor ] ]);
