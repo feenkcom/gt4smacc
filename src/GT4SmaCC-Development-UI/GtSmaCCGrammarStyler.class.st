@@ -35,6 +35,11 @@ GtSmaCCGrammarStyler >> completions [
 	^ completions
 ]
 
+{ #category : #testing }
+GtSmaCCGrammarStyler >> hasExpandableRuleNamed: aString [
+	^ false
+]
+
 { #category : #private }
 GtSmaCCGrammarStyler >> initialize [
 	super initialize.

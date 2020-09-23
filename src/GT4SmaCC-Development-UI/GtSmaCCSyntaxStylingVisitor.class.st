@@ -158,7 +158,7 @@ GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
 	| selector |
 	self style: aTokenRegex with: #formatToken:.
 	((selector := self characterSelectorFor: aTokenRegex name) notNil
-		and: [ (styler grammarCoder ruleNamed: aTokenRegex name source) isNil ])
+		and: [ (styler hasExpandableRuleNamed: aTokenRegex name source) not ])
 		ifTrue: [ self
 				formatMethod: (Character lookupSelector: selector)
 				for: aTokenRegex ]
