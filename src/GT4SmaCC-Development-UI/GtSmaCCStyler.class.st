@@ -87,6 +87,11 @@ GtSmaCCStyler >> grammarCoder [
 	^ coder owner
 ]
 
+{ #category : #testing }
+GtSmaCCStyler >> hasExpandableRuleNamed: aString [
+	^ (self grammarCoder ruleNamed: aString) notNil
+]
+
 { #category : #'initialize-release' }
 GtSmaCCStyler >> initialize [
 	super initialize.
