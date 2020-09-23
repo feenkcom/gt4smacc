@@ -1,7 +1,7 @@
-Extension { #name : #GtCoder }
+Extension { #name : #GtCoderToolbarElement }
 
 { #category : #'*GT4SmaCC-Development-UI' }
-GtCoder >> addParserTab: look [
+GtCoderToolbarElement >> addParserTab: look [
 	<gtCreateComponentTab: 100>
 	^ BrTab new
 		look: BrGlamorousTabLook new;
