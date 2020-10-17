@@ -55,7 +55,8 @@ GtSmaCCDebuggerElement class >> sessionClass [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> acceptAttributes [
-	^ {(BlTextUnderlineAttribute new
+	^ {(BlTextDecorationAttribute new
+		underline;
 		color: BrGlamorousColors successBackgroundColor;
 		thickness: 3)}
 ]
@@ -284,7 +285,7 @@ GtSmaCCDebuggerElement >> buildSource [
 	text attributes: GtSmaCCCoder defaultTextAttributes.
 	editorElement := BrEditorElement new.
 	sourceEditor := BrTextEditor new.
-	sourceEditor text: text readonly.
+	sourceEditor text: text.
 	editorElement editor: sourceEditor.
 	editorElement
 		constraintsDo: [ :c | 
@@ -346,7 +347,7 @@ GtSmaCCDebuggerElement >> clearAttributes [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
 	sourceEditor text
-		clearAttributes: [ :attr | attr class = BlTextUnderlineAttribute ]
+		clearAttributes: [ :attr | attr class = BlTextDecorationAttribute ]
 ]
 
 { #category : #'private-updating' }
