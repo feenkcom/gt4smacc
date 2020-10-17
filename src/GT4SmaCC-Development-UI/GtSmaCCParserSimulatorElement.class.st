@@ -69,7 +69,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 GtSmaCCParserSimulatorElement >> displayResult: reducedItem [
 	self parseTreeElement
 		items: {reducedItem}
-		children: [ :each | self childrenOf: each ].
+		lazy: [ :each | self childrenOf: each ].
 	self expandRoot
 ]
 
