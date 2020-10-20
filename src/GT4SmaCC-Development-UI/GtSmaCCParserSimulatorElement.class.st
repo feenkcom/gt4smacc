@@ -61,7 +61,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 				-> (stack copyWith: aSmaCCToken) ].
 	self parseTreeElement
 		items: {root}
-		children: [ :each | self childrenOf: each ].
+		lazy: [ :each | self childrenOf: each ].
 	self expandRoot
 ]
 
