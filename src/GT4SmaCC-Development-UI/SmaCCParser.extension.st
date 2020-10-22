@@ -122,3 +122,46 @@ SmaCCParser class >> gtTestFor: aView [
 		priority: 7;
 		stencil: [ self gtTestElement ]
 ]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> simulateParse: inputString fromRule: ruleName [
+	| simulator |
+	simulator := SmaCCParserSimulator on: self definitionString.
+	simulator setupFor: ruleName.
+	^ simulator simulateParse: inputString
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> simulationError [
+	<gtExample>
+	Smalltalk
+		at: #GtPharoParser
+		ifPresent: [ :each | 
+			| source |
+			source := '[:each | each * 2'.
+			self assert: (each simulationParses: source fromRule: 'Block') not.
+			[ each simulateParse: source fromRule: 'Block' ]
+				on: SmaCCParserSimulationError
+				do: [ :ex | ^ ex ].
+			self error: 'Should not get here' ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> simulationExample [
+	<gtExample>
+	^ Smalltalk
+		at: #GtPharoParser
+		ifPresent: [ :each | 
+			| source |
+			source := '[:each | each * 2]'.
+			self assert: (each simulationParses: source fromRule: 'Block').
+			each simulateParse: source fromRule: 'Block' ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> simulationParses: inputString fromRule: ruleName [
+	^ [ self simulateParse: inputString fromRule: ruleName.
+	true ]
+		on: Error
+		do: [ :ex | ex return: false ]
+]
