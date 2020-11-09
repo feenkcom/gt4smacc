@@ -128,7 +128,7 @@ GtSmaCCVariableCoderElement >> initialize [
 									self background: Color white ] ]).
 	self
 		addShortcut:
-			(BlShortcut new
+			(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
 						primary;
@@ -136,7 +136,7 @@ GtSmaCCVariableCoderElement >> initialize [
 						build);
 				action: [ self toggle ]);
 		addShortcut:
-			(BlShortcut new
+			(BlShortcutWithAction new
 				combination:
 					(BlCompulsoryCombination new
 						withAll:
@@ -144,7 +144,7 @@ GtSmaCCVariableCoderElement >> initialize [
 							(BlSingleKeyCombination key: BlKeyboardKey t)});
 				action: [ :each | self toggleNextRenaming ]);
 		addShortcut:
-			(BlShortcut new
+			(BlShortcutWithAction new
 				combination:
 					(BlCompulsoryCombination new
 						withAll:

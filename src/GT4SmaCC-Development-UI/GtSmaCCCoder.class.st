@@ -525,11 +525,11 @@ GtSmaCCCoder >> selectedToken [
 
 { #category : #private }
 GtSmaCCCoder >> shortcuts [
-	^ {(BlShortcut new
+	^ {(BlShortcutWithAction new
 		combination: BlKeyCombination primaryN;
 		repeatable: false;
 		action: [ :element | self browseReferences: element ]).
-	(BlShortcut new
+	(BlShortcutWithAction new
 		combination: BlKeyCombination primaryR;
 		repeatable: false;
 		action: [ :element | self renameItem: element ])}
