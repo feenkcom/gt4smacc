@@ -153,7 +153,7 @@ GtSmaCCCoderElement >> initialize [
 									self background: Color white ] ]).
 	self
 		addShortcut:
-			(BlShortcut new
+			(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
 						primary;

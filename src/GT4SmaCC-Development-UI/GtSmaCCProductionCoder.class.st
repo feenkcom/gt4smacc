@@ -90,7 +90,7 @@ GtSmaCCProductionCoder >> inlineSource [
 GtSmaCCProductionCoder >> shortcuts [
 	^ super shortcuts
 		,
-			{(BlShortcut new
+			{(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
 						meta;
@@ -98,7 +98,7 @@ GtSmaCCProductionCoder >> shortcuts [
 						build);
 				repeatable: false;
 				action: [ self inlineSource ]).
-			(BlShortcut new
+			(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
 						meta;

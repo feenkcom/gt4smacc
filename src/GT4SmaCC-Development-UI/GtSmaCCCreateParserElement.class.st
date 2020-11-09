@@ -21,14 +21,14 @@ GtSmaCCCreateParserElement >> buildDefinitionEditor [
 { #category : #private }
 GtSmaCCCreateParserElement >> compileBehavior [
 	| change parserClass |
-	change := definition createParserChange.
+	change := self createParserChange.
 	change execute.
-	definition createScannerChange execute.
+	self createScannerChange execute.
 	parserClass := change definedClass.
 	(RBAddMethodChange
 		compile:
 			'scannerClass
-	^' , definition scannerClass
+	^' , self scannerClass
 		in:
 			parserClass class
 		classified: #generated) execute.
