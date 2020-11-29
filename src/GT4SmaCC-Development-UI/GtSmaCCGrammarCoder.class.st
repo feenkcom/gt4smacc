@@ -27,6 +27,48 @@ GtSmaCCGrammarCoder class >> onParser: parserClass [
 	^ self onGrammar: (GtSmaCCGrammar onParser: parserClass)
 ]
 
+{ #category : #element }
+GtSmaCCGrammarCoder >> addMenuItems [
+	| items |
+	items := OrderedCollection new.
+	items add: #('<token>' #addToken).
+	items add: #('Production' #addProduction).
+	(grammar hasDirectiveNamed: 'root')
+		ifFalse: [ items add: #('%root' #addRoot) ].
+	(grammar hasDirectiveNamed: 'prefix')
+		ifFalse: [ items add: #('%prefix' #addPrefix) ].
+	(grammar hasDirectiveNamed: 'suffix')
+		ifFalse: [ items add: #('%suffix' #addSuffix) ].
+	items add: #('%attributes' #addAttributes).
+	(grammar hasDirectiveNamed: 'ignore_variables')
+		ifFalse: [ items add: #('%ignore_variables' #addIgnoreVariables) ].
+	items add: #('%hierarchy' #addHierarchy).
+	(grammar hasDirectiveNamed: 'start')
+		ifFalse: [ items add: #('%start' #addStart) ].
+	items add: #('%left/right/nonassoc' #addLeft).
+	(grammar hasDirectiveNamed: 'id')
+		ifFalse: [ items add: #('%id' #addId) ].
+	(grammar hasDirectiveNamed: 'scopes')
+		ifFalse: [ items add: #('%scopes' #addScopes) ].
+	(grammar hasDirectiveNamed: 'excludes')
+		ifFalse: [ items add: #('%excludes' #addExcludes) ].
+	^ items
+]
+
+{ #category : #element }
+GtSmaCCGrammarCoder >> addMenuItemsElement [
+	^ GtCoderContextMenuContent new
+		constraintsDo: [ :c | c horizontal matchParent ];
+		items:
+			(self addMenuItems
+				collect: [ :each | 
+					GtCoderContextMenuAction new
+						action: [ :element | grammar perform: each second ];
+						title: each first ]);
+		hMatchParent;
+		vMatchParent
+]
+
 { #category : #accessing }
 GtSmaCCGrammarCoder >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]

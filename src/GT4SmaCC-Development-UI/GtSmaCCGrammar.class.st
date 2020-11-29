@@ -51,11 +51,64 @@ GtSmaCCGrammar >> activeRulesDo: aBlock [
 				ifFalse: [ aBlock value: each ] ]
 ]
 
+{ #category : #actions }
+GtSmaCCGrammar >> addAttributes [
+	self addDirective: '%attributes SomeNode (someVariable);'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addDirective: aString [
+	| rule |
+	rule := GtSmaCCDirective on: self source: aString.
+	self
+		addGrammarItem: rule
+		afterIndex:
+			((rules size to: 1 by: -1)
+				detect: [ :i | (rules at: i) isDirective ]
+				ifNone: [ 0 ]).
+	^ rule
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addExcludes [
+	self addDirective: '%excludes scannerScope;'
+]
+
 { #category : #private }
 GtSmaCCGrammar >> addGrammarItem: item afterIndex: anInteger [
 	rules add: item afterIndex: anInteger.
 	item weak when: GtSmaCCGrammarAnnouncement send: #announce: to: self.
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addHierarchy [
+	self addDirective: '%hierarchy Superclass (Subclass);'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addId [
+	self addDirective: '%id <someToken>;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addIgnoreVariables [
+	self addDirective: '%ignore_variables someVariable;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addLeft [
+	self addDirective: '%left <someToken>;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addPrefix [
+	self addDirective: '%prefix My;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addProduction [
+	self addProductionNamed: 'Production' for: self
 ]
 
 { #category : #actions }
@@ -68,6 +121,11 @@ GtSmaCCGrammar >> addProductionNamed: aString for: aGrammarItem [
 		addGrammarItem: rule
 		afterIndex: (rules identityIndexOf: aGrammarItem ifAbsent: [ rules size ]).
 	^ rule
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addRoot [
+	self addDirective: '%root Program;'
 ]
 
 { #category : #private }
@@ -87,6 +145,30 @@ GtSmaCCGrammar >> addRuleNode: aNode afterIndex: anInteger [
 	item isNil
 		ifTrue: [ ^ self ].
 	self addGrammarItem: item afterIndex: anInteger
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addScopes [
+	self addDirective: '%scopes default;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addStart [
+	[ self
+		activeProductionsDo: [ :each | ^ self addDirective: '%start ' , each name , ';' ] ]
+		on: Error
+		do: [ :ex | ex return ].
+	self addDirective: '%start SomeStart;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addSuffix [
+	self addDirective: '%suffix Node;'
+]
+
+{ #category : #actions }
+GtSmaCCGrammar >> addToken [
+	self addTokenNamed: '<token>' for: self
 ]
 
 { #category : #actions }
@@ -184,6 +266,15 @@ GtSmaCCGrammar >> gtLiveFor: aView [
 { #category : #private }
 GtSmaCCGrammar >> hasCaseInsensitiveDirective [
 	^ self caseInsensitiveDirective notNil
+]
+
+{ #category : #testing }
+GtSmaCCGrammar >> hasDirectiveNamed: aString [
+	self
+		activeRulesDo: [ :each | 
+			(each isDirective and: [ each directiveName = aString ])
+				ifTrue: [ ^ true ] ].
+	^ false
 ]
 
 { #category : #private }

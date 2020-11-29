@@ -23,7 +23,7 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 		ifTrue: [ ^ GtSmaCCTokenCoder ].
 	anItem isDirective
 		ifTrue:
-			[ (#(isAssociativeDirective isAttributeDirective isIdDirective isIgnoreDirective isHierarchyDirective isStartDirective)
+			[ (#(isAssociativeDirective isAttributeDirective isIdDirective isIgnoreDirective isHierarchyDirective isStartDirective isNameDirective isScopeDirective)
 				anySatisfy: [ :each | anItem ast perform: each ])
 				ifTrue: [ ^ GtSmaCCDirectiveCoder ] ].
 	^ nil
