@@ -48,6 +48,9 @@ SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 	^ aView explicit
 		title: 'Grammar';
 		priority: 1;
+		actionDropdownButtonIcon: BrGlamorousVectorIcons add
+			tooltip: 'Add'
+			content: [ :element | coder addMenuItemsElement ];
 		stencil: [ coder asElement ]
 ]
 
