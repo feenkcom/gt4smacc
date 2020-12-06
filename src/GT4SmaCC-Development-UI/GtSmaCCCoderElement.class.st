@@ -22,7 +22,7 @@ GtSmaCCCoderElement >> actionBar [
 			(coder actions
 				collect: [ :each | 
 					BrButton new
-						beSmall;
+						beSmallSize;
 						look: BrGlamorousButtonWithIconLook;
 						label: each title;
 						icon: each icon asElement;
