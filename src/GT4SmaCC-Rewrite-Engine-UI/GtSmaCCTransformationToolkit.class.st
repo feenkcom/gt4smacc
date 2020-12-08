@@ -123,7 +123,7 @@ GtSmaCCTransformationToolkit >> connectModel [
 { #category : #ui }
 GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action: aBlock [
 	^ BrButton new
-		beSmall;
+		beSmallSize;
 		look: BrGlamorousButtonWithIconLook;
 		label: aString;
 		icon: anIcon asElement;

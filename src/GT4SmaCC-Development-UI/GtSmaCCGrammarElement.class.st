@@ -22,7 +22,7 @@ GtSmaCCGrammarElement >> actionBar [
 		padding: (BlInsets all: 5);
 		addItem:
 			(BrButton new
-				beSmall;
+				beSmallSize;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Save';
 				icon: BrGlamorousVectorIcons accept;

@@ -22,7 +22,7 @@ GtSmaCCCoderElement >> actionBar [
 			(coder actions
 				collect: [ :each | 
 					BrButton new
-						beSmall;
+						beSmallSize;
 						look: BrGlamorousButtonWithIconLook;
 						label: each title;
 						icon: each icon asElement;
@@ -44,9 +44,14 @@ GtSmaCCCoderElement >> coder: aCoder [
 	self header: [ self collapsedElement ].
 	self content: [ self contentElement ].
 	self margin: (BlInsets all: 4).
-	expandableModel
-		when: BrExpansionChanged
-		do: [ :event | coder expanded: self isExpanded ].
+
+	self
+		when: BrExpandedEvent
+		do: [ :event | coder expanded: true ].	
+	self
+		when: BrCollapsedEvent
+		do: [ :event | coder expanded: false ].	
+	
 	coder expanded
 		ifTrue: [ self expand ].
 	self updateDeleteButton

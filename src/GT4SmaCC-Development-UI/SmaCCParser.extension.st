@@ -92,7 +92,7 @@ SmaCCParser class >> gtTestElement [
 		look: BrGlamorousToolbarLook new;
 		addItem:
 			(BrButton new
-				beSmall;
+				beSmallSize;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Inspect';
 				icon: BrGlamorousVectorIcons inspect;
@@ -104,7 +104,7 @@ SmaCCParser class >> gtTestElement [
 						do: [ :ex | ex gtDisplayErrorIn: editor ] ]);
 		addItem:
 			(BrButton new
-				beSmall;
+				beSmallSize;
 				look: BrGlamorousButtonWithIconLook;
 				label: 'Debug';
 				icon: BrGlamorousVectorIcons debug;
