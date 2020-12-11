@@ -109,6 +109,8 @@ SmaCCParseNode >> gtParentsFor: aView [
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtScrollToPosition: index inEditor: editor [
+	index isNil
+		ifTrue: [ ^ self ].
 	editor
 		scrollToPosition:
 			(self topParent completeSource asString
