@@ -35,6 +35,9 @@ SmaCCParseNode >> gtExploreFor: aView [
 			editor := self
 				gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
 			editor
+				constraintsDo: [ :e | 
+					e vertical matchParent.
+					e horizontal matchParent ];
 				beReadOnlyWithSelection;
 				look: BrShadowLook;
 				background: Color white;
@@ -43,6 +46,9 @@ SmaCCParseNode >> gtExploreFor: aView [
 			(topParent gtTreeFor: GtPhlowView empty)
 				asElementDo: [ :e | tree := e ].
 			tree
+				constraintsDo: [ :e | 
+					e vertical matchParent.
+					e horizontal matchParent ];
 				look: BrShadowLook;
 				background: Color white;
 				margin: (BlInsets all: 10).
