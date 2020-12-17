@@ -25,7 +25,7 @@ GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 	stStyler classOrMetaClass: aCompiledMethod methodClass.
 	self text
 		attributes:
-			{(BrTextExpandButtonAttribute new
+			{(BrGlamorousTrangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
 						stencil: [ (GtMethodCoder forMethod: aCompiledMethod) asCoderUIModel 								expanded: true;

@@ -40,7 +40,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		ifFalse: [ ^ self ].
 	self text
 		attributes:
-			{(BrTextExpandButtonAttribute new
+			{(BrGlamorousTrangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
 						stencil: [ | element coder |

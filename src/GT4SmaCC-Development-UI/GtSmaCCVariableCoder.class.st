@@ -138,7 +138,7 @@ GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	ruleText attributes: GtSmaCCCoder defaultTextAttributes.
 	ruleText := styler privateStyle: ruleText.
 	ruleText
-		clearAttributes: [ :each | each class = BrTextExpandButtonAttribute ].
+		clearAttributes: [ :each | each class = BrGlamorousTrangleExpanderTextAttribute ].
 	(ruleText from: position - node name value size + 1 to: position)
 		attributes:
 			{(BlTextUnderlineAttribute new
