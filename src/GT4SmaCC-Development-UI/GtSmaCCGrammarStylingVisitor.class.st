@@ -22,7 +22,7 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		ifTrue: [ ^ self style: aToken with: #formatMissing: ].
 	self text
 		attributes:
-			{(BrTextExpandButtonAttribute new
+			{(BrGlamorousTrangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
 						stencil: [ self
