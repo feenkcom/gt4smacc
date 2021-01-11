@@ -21,8 +21,7 @@ GtSmaCCRewriteAccordion >> contentElement [
 
 { #category : #private }
 GtSmaCCRewriteAccordion >> defaultTextAttributes [
-	^ {BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-	(BlFontSizeAttribute size: 14) beNotOverwritableByStyler}
+	^ { (BlFontSizeAttribute size: 14) beNotOverwritableByStyler }
 ]
 
 { #category : #ui }
