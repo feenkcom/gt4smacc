@@ -31,10 +31,10 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 
 { #category : #accessing }
 GtSmaCCCoder class >> defaultTextAttributes [
-	^ {(BlFontFamilyAttribute named: 'Source Code Pro')
-		beNotOverwritableByStyler.
-	BlFontGenericFamilyAttribute monospace beNotOverwritableByStyler.
-	(BlFontSizeAttribute size: 12) beNotOverwritableByStyler}
+	^ {
+		(BlFontFamilyAttribute named: 'Source Code Pro') beNotOverwritableByStyler.
+		(BlFontSizeAttribute size: 12) beNotOverwritableByStyler
+	}
 ]
 
 { #category : #testing }
