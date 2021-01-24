@@ -126,7 +126,8 @@ GtSmaCCParserSimulatorElement >> labelFor: anObject [
 { #category : #ui }
 GtSmaCCParserSimulatorElement >> parseTreeElement [
 	^ parseTreeElement
-		ifNil: [ parseTreeElement := BrColumnedTree new.
+		ifNil: [ parseTreeElement := BrColumnedTree new addEventHandler: GtPhlowListToSelectHandler new.
+			parseTreeElement rowStencil: (BrGlamorousColumnedTreeSelectableRowElementStencilBuilder new).
 			parseTreeElement
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
