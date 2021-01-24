@@ -131,6 +131,7 @@ GtSmaCCCoderElement >> initialize [
 				ifNone: [  ] ];
 		yourself.
 	self
+		background: Color white;
 		look:
 			(GtCoderExpanderLook new
 				borderWidth: 0;
