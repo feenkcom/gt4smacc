@@ -9,7 +9,7 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
 		spec baseline: 'SmaCC' with: [
-				spec repository: 'github://j-brant/SmaCC:c87d75dfc74292d0f7e24f8aa5210233dbf354df/src' ].
+				spec repository: 'github://j-brant/SmaCC:d8bc30abb7795334bd7167b612a88b7783e06956/src' ].
 		spec 
 			package: 'GT4SmaCC-Inspector' with: [
 				spec requires: #('SmaCC' ). ];
