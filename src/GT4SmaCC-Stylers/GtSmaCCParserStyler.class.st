@@ -8,6 +8,18 @@ Class {
 }
 
 { #category : #instances }
+GtSmaCCParserStyler class >> clojureStyler: aParserClass [
+	<smaccStyler: #ClojureParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #ClojureStringNode
+				styleBlock: [ :styler | styler foreground: Color blue muchDarker ]) }
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> cppStyler: aParserClass [
 	<smaccStyler: #CPPParser priority: 50>
 	^ (self forParser: aParserClass)
