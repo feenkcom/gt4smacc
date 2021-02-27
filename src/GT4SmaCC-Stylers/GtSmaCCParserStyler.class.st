@@ -10,13 +10,43 @@ Class {
 { #category : #instances }
 GtSmaCCParserStyler class >> clojureStyler: aParserClass [
 	<smaccStyler: #ClojureParser priority: 50>
+	| colors |
+	colors := BrGlamorousColors distinctTenStrongColors allButFirst	"remove red"
+		collect: [ :each | each twiceDarker ].
 	^ (self forParser: aParserClass)
 		stylerRules:
 			{(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
 			(GtSmaCCNodeStylerRule
+				nodeClassName: #ClojureDiscardNode
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #ClojureMetadataNode
+				styleBlock:
+					[ :styler :node :text | (text from: node startPosition to: node metadata stopPosition) bold ]).
+			(GtSmaCCNodeStylerRule
 				nodeClassName: #ClojureStringNode
-				styleBlock: [ :styler | styler foreground: Color blue muchDarker ]) }
+				styleBlock: [ :styler | styler foreground: Color blue muchDarker ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #ClojureLiteralNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #ClojureListNode
+				styleBlock: [ :styler :node :text | 
+					| color |
+					color := colors at: (node listDepth - 1) \\ colors size + 1.
+					(text from: node startPosition to: node startPosition)
+						foreground: color.
+					(text from: node stopPosition to: node stopPosition)
+						foreground: color.
+					(node expressions notEmpty
+						and: [ node isQuoted not
+								and: [ (node expressions first isKindOf: ClojureSymbolNode)
+										and: [ node isDiscarded not ] ] ])
+						ifTrue: [ (text
+								from: node expressions first startPosition
+								to: node expressions first stopPosition)
+								foreground: Color purple ] ])}
 ]
 
 { #category : #instances }
