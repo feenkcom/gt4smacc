@@ -28,7 +28,7 @@ GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 			{(BrGlamorousTrangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ (GtMethodCoder forMethod: aCompiledMethod) asCoderUIModel 								expanded: true;
+						stencil: [ (GtPharoMethodCoder forMethod: aCompiledMethod) asCoderUIModel 								expanded: true;
 								asElement ] ])}
 		from: aToken stopPosition
 		to: aToken stopPosition
