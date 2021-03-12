@@ -518,7 +518,7 @@ GtSmaCCDebuggerElement >> updateContextCoderElement [
 		childNamed: #coderElement
 		ifFound: [ :element | contextElement removeChild: element ]
 		ifNone: [  ].
-	coder := GtMethodContextCoder
+	coder := GtPharoMethodContextCoder
 		forContext: self session context
 		session: self session.
 	coder expanded: true.
