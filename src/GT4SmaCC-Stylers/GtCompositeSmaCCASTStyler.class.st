@@ -9,9 +9,7 @@ Class {
 
 { #category : #private }
 GtCompositeSmaCCASTStyler >> style: aText using: anAST [
-	text := aText.
-	self stylers do: [ :each | each style: aText using: anAST ].
-	^ text
+	self stylers do: [ :each | each style: aText using: anAST ]
 ]
 
 { #category : #accessing }

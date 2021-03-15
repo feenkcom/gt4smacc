@@ -34,10 +34,10 @@ GtSmaCCASTStyler >> parserClass: aSmaCCParserClass [
 
 { #category : #private }
 GtSmaCCASTStyler >> privateStyle: aText [
-	[ text := aText.
-	self style: aText using: self ast ]
+	[ self style: aText using: self ast ]
 		on: Error
 		do: [ :ex | ex return ].
+
 	^ aText
 ]
 
@@ -54,8 +54,8 @@ GtSmaCCASTStyler >> startingState: anInteger [
 { #category : #styling }
 GtSmaCCASTStyler >> style: aText using: anAST [
 	text := aText.
-	self styleAST: anAST.
-	^ text
+	[ self styleAST: anAST ]
+		ensure: [ text := nil ]
 ]
 
 { #category : #private }
