@@ -120,12 +120,11 @@ GtSmaCCGrammarElement >> updateEditor [
 			([ grammar scannerClass ]
 				on: Error
 				do: [ :ex | ex return: SmaCCScanner ]).
-	styler
-		when: BlTextStyledEvent
-		do: [ :event | completionStrategy completions: styler completions ].
 	text := grammar source asRopedText.
 	text attributes: GtSmaCCCoder defaultTextAttributes.
 	self sourceEditor
 		text: text;
-		styler: styler
+		styler: styler;
+		when: BrTextStyledEvent
+			do: [ :event | completionStrategy completions: styler completions ].
 ]
