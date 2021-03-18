@@ -7,7 +7,7 @@ SmaCCString >> gtSourceFor: aView [
 		priority: 10;
 		title: 'String';
 		stencil: [ | editor source |
-			source := BlRopedRawText string: self asString.
+			source := self asString asRopedText.
 			editor := BrEditor new
 				text: source;
 				look: BrGlamorousCodeEditorLook new.
