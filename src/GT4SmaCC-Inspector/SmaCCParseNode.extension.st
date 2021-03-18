@@ -146,8 +146,7 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 	| source editor |
-	source := BlRopedRawText
-		string: self topParent completeSource asString.
+	source := self topParent completeSource asString asRopedText.
 	self parserClass
 		ifNotNil: [ :class | 
 			class gtStyler
