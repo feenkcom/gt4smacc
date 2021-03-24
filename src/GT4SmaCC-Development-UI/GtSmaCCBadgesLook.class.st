@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCBadgesLook,
-	#superclass : #BrLook,
+	#superclass : #BrAptitude,
 	#instVars : [
 		'definitionList',
 		'badgeList'
