@@ -89,11 +89,11 @@ SmaCCParser class >> gtTestElement [
 	self gtStyler ifNotNil: [ :styler | editor styler: styler ].
 	editorElement editor: editor.
 	actionBar := BrToolbar new
-		look: BrGlamorousToolbarLook new;
+		aptitude: BrGlamorousToolbarAptitude new;
 		addItem:
 			(BrButton new
 				beSmallSize;
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: 'Inspect';
 				icon: BrGlamorousVectorIcons inspect;
 				action: [ :button | 
@@ -105,7 +105,7 @@ SmaCCParser class >> gtTestElement [
 		addItem:
 			(BrButton new
 				beSmallSize;
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: 'Debug';
 				icon: BrGlamorousVectorIcons debug;
 				action: [ :button | self debug: editor text asString from: button ]).

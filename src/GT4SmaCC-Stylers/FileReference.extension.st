@@ -13,7 +13,7 @@ FileReference >> gtStyledCodeFor: aView [
 		title: 'Code';
 		priority: 10;
 		styler: styler;
-		look: BrGlamorousCodeEditorLook;
+		aptitude: BrGlamorousCodeEditorAptitude;
 		text: [ self contents asRopedText ];
 		actionDropdownButtonIcon: BrGlamorousVectorIcons hamburger
 			content: [ | parsers menuItems |

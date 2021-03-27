@@ -79,7 +79,7 @@ GtSmaCCTransformationToolkit >> configurationElement [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationToolbar [
 	^ BrToolbar new
-		look: BrGlamorousToolbarLook new;
+		aptitude: BrGlamorousToolbarAptitude new;
 		hMatchParent;
 		addItems: self configurationToolbarItems
 ]
@@ -124,7 +124,7 @@ GtSmaCCTransformationToolkit >> connectModel [
 GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action: aBlock [
 	^ BrButton new
 		beSmallSize;
-		look: BrGlamorousButtonWithIconLook;
+		aptitude: BrGlamorousButtonWithIconAptitude;
 		label: aString;
 		icon: anIcon asElement;
 		action: aBlock
@@ -180,7 +180,7 @@ GtSmaCCTransformationToolkit >> filesElement [
 		constraintsDo: [ :c | 
 			c horizontal fitContent.
 			c vertical fitContent ];
-		look: BrGlamorousLabelLook new;
+		aptitude: BrGlamorousLabelAptitude new;
 		text: 'Files'.
 	element addChild: label.
 	filesList := BrSimpleList new
@@ -297,7 +297,7 @@ GtSmaCCTransformationToolkit >> previewFilesElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ];
-		look: BrGlamorousWithResizerLook;
+		aptitude: BrGlamorousWithResizerAptitude;
 		addChild: self previewInputSourceElement;
 		addChild: self previewOutputSourceElement;
 		yourself
@@ -313,11 +313,11 @@ GtSmaCCTransformationToolkit >> previewInputFilename [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputSourceElement [
 	^ BrTabGroup new
-		look: BrGlamorousTabGroupLook + BrShadowLook;
+		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
 		addTab: (BrTab new
-			look: BrGlamorousTabLook new;
+			aptitude: BrGlamorousTabAptitude new;
 			label: self previewInputFilename;
 			stencil: [
 				| editorElement |
@@ -347,11 +347,11 @@ GtSmaCCTransformationToolkit >> previewOutputFilename [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 	^ BrTabGroup new
-		look: BrGlamorousTabGroupLook + BrShadowLook;
+		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
 		addTab: (BrTab new
-			look: BrGlamorousTabLook new;
+			aptitude: BrGlamorousTabAptitude new;
 			label: self previewOutputFilename;
 			stencil: [
 				| editorElement |
@@ -552,22 +552,22 @@ GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
 { #category : #ui }
 GtSmaCCTransformationToolkit >> windowElement [
 	windowElement := BrTabGroup new.
-	windowElement look: BrGlamorousTabGroupLook.
+	windowElement aptitude: BrGlamorousTabGroupAptitude.
 	windowElement addTab: (
 		BrTab new
-			look: BrGlamorousTabLook;
+			aptitude: BrGlamorousTabAptitude;
 			label:  'Configuration';
 			stencil: [ self configurationElement ]).
 
 	windowElement addTab: (
 		BrTab new
-			look: BrGlamorousTabLook;
+			aptitude: BrGlamorousTabAptitude;
 			label:  'Transformations';
 			stencil: [ self transformationsElement ]).
 
 	windowElement addTab: (
 		BrTab new
-			look: BrGlamorousTabLook;
+			aptitude: BrGlamorousTabAptitude;
 			label:  'Preview';
 			stencil: [ self previewElement ]).
 

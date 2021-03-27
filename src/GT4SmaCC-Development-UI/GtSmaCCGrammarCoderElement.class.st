@@ -76,7 +76,7 @@ GtSmaCCGrammarCoderElement >> toggleButton: aString activated: aSymbol [
 				attributes:
 					{(BlFontSizeAttribute size: 12).
 					(BlFontFamilyAttribute named: 'Source Sans Pro')});
-		look: GtCoderToggleLook;
+		aptitude: GtCoderToggleAptitude;
 		when: BrToggleActivatedEvent
 			do:
 				[ :anEvent | grammarCoder perform: (aSymbol , ':') asSymbol with: true ];

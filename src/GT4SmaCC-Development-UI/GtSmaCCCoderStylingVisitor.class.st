@@ -12,7 +12,7 @@ GtSmaCCCoderStylingVisitor >> createDefinitionButtonFor: aToken [
 				beAppend;
 				stencil: [ BrButton new
 						background: Color white;
-						look: BrIconLook + BrGlamorousFocusableShadowLook new;
+						aptitude: BrIconAptitude + BrGlamorousFocusableShadowAptitude new;
 						geometry: BlEllipseGeometry new;
 						icon: BrGlamorousVectorIcons add;
 						layout: BlLinearLayout horizontal alignCenter;

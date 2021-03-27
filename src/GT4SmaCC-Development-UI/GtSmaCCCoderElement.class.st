@@ -17,13 +17,13 @@ GtSmaCCCoderElement class >> onCoder: aGrammarCoder [
 { #category : #ui }
 GtSmaCCCoderElement >> actionBar [
 	^ BrToolbar new
-		look: BrGlamorousToolbarLook new;
+		aptitude: BrGlamorousToolbarAptitude new;
 		addItems:
 			(coder actions
 				collect: [ :each | 
 					BrButton new
 						beSmallSize;
-						look: BrGlamorousButtonWithIconLook;
+						aptitude: BrGlamorousButtonWithIconAptitude;
 						label: each title;
 						icon: each icon asElement;
 						action: each ])
@@ -122,7 +122,7 @@ GtSmaCCCoderElement >> initialize [
 	self addChild: self deleteElement as: #deleteButton.
 	resizer := BrResizer new
 		beBottom;
-		look: BrGlamorousResizerLook new;
+		aptitude: BrGlamorousResizerAptitude new;
 		constraintsDo: [ :c | c ignoreByLayout ];
 		when: BlDoubleClickEvent
 			do: [ self
@@ -132,8 +132,8 @@ GtSmaCCCoderElement >> initialize [
 		yourself.
 	self
 		background: Color white;
-		look:
-			(GtCoderExpanderLook new
+		aptitude:
+			(GtCoderExpanderAptitude new
 				borderWidth: 0;
 				padding:
 					(BlInsets
@@ -142,7 +142,7 @@ GtSmaCCCoderElement >> initialize [
 						bottom: 1
 						right: 10))
 				+
-					(BrInteractiveLook new
+					(BrInteractiveAptitude new
 						style: [ :aStyler | 
 							aStyler
 								default: [ resizer removeFromParent.

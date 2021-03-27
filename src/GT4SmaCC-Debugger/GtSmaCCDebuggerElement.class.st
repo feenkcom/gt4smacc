@@ -83,15 +83,15 @@ GtSmaCCDebuggerElement >> buildDetails [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildDetailsInspector [
 	^ BrTabGroup new
-		look: BrGlamorousTabGroupLook new;
+		aptitude: BrGlamorousTabGroupAptitude new;
 		addTab:
 			(parserTab := BrTab new
-				look: BrGlamorousTabLook new;
+				aptitude: BrGlamorousTabAptitude new;
 				label: 'Parser';
 				stencil: [ self buildParserElement ]);
 		addTab:
 			(scannerTab := BrTab new
-				look: BrGlamorousTabLook new;
+				aptitude: BrGlamorousTabAptitude new;
 				label: 'Scanner';
 				stencil: [ self buildScannerElement ])
 ]
@@ -99,7 +99,7 @@ GtSmaCCDebuggerElement >> buildDetailsInspector [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildGLRStates [
 	^ glrLabel := BrLabel new
-		look: BrGlamorousLabelLook new;
+		aptitude: BrGlamorousLabelAptitude new;
 		padding: (BlInsets all: 5);
 		text: self glrStateText;
 		hMatchParent;
@@ -121,7 +121,7 @@ GtSmaCCDebuggerElement >> buildParserActions [
 							BlFontWeightAttribute bold} ]
 						ifFalse: [ {(BlTextForegroundAttribute paint: Color red)} ]).
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
 				margin:
 					(BlInsets
@@ -141,7 +141,7 @@ GtSmaCCDebuggerElement >> buildParserActions [
 							BlFontWeightAttribute bold} ]
 						ifFalse: [ {(BlTextForegroundAttribute paint: Color red)} ]).
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
 				margin:
 					(BlInsets
@@ -190,7 +190,7 @@ GtSmaCCDebuggerElement >> buildParserStack [
 		title: 'Symbol';
 		stencil: [ :each | 
 			BrLabel new
-				look: (BrGlamorousLabelLook new foreground: Color black);
+				aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
 				text: (each first ifNil: [ '' ]);
 				margin:
 					(BlInsets
@@ -202,7 +202,7 @@ GtSmaCCDebuggerElement >> buildParserStack [
 		title: 'Value';
 		stencil: [ :each | 
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: each last displayString;
 				margin:
 					(BlInsets
@@ -222,7 +222,7 @@ GtSmaCCDebuggerElement >> buildParserToolbarActions [
 		collect: [ :aDebuggingAction | 
 			| actionButton |
 			actionButton := BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: aDebuggingAction label;
 				action: [ aDebuggingAction execute.
 					aDebuggingAction needsUpdate
@@ -255,7 +255,7 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 		title: 'Name';
 		stencil: [ :each | 
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: each first;
 				margin:
 					(BlInsets
@@ -267,7 +267,7 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 		title: 'Value';
 		stencil: [ :each | 
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: each last displayString;
 				margin:
 					(BlInsets
@@ -299,7 +299,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	| tab tabGroup |
 	tab := BrTab new.
 	tab
-		look: BrGlamorousTabWithoutBarLook;
+		aptitude: BrGlamorousTabWithoutBarAptitude;
 		label: self session name;
 		stencil: [ BrValuableStencil from: anElement ];
 		padding:
@@ -310,14 +310,14 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 				left: 10);
 		toolbarStencil: [ | aToolbar |
 			aToolbar := BrToolbar new.
-			aToolbar look: BrGlamorousToolbarLook new.
+			aToolbar aptitude: BrGlamorousToolbarAptitude new.
 			self buildParserToolbarActions
 				do: [ :anAction | aToolbar addItem: anAction ].
 			aToolbar ].
 	tabGroup := BrTabGroup new.
 	tabGroup
-		look:
-			(BrGlamorousTabGroupLook new
+		aptitude:
+			(BrGlamorousTabGroupAptitude new
 				headerBackground: BrGlamorousColors defaultHeaderBackgroundColor);
 		addTab: tab;
 		constraintsDo: [ :c | 
@@ -481,7 +481,7 @@ GtSmaCCDebuggerElement >> showContext [
 	self tabs
 		addTab:
 			((contextTab := BrTab new)
-				look: BrGlamorousTabLook new;
+				aptitude: BrGlamorousTabAptitude new;
 				label: 'Context';
 				stencil: [ contextElement := BlElement new.
 					contextElement

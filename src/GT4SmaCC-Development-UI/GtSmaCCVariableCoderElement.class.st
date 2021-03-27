@@ -95,7 +95,7 @@ GtSmaCCVariableCoderElement >> initialize [
 		hMatchParent.
 	resizer := BrResizer new
 		beBottom;
-		look: BrGlamorousResizerLook new;
+		aptitude: BrGlamorousResizerAptitude new;
 		constraintsDo: [ :c | c ignoreByLayout ];
 		when: BlDoubleClickEvent
 			do: [ self
@@ -104,8 +104,8 @@ GtSmaCCVariableCoderElement >> initialize [
 				ifNone: [  ] ];
 		yourself.
 	self
-		look:
-			(GtCoderExpanderLook new
+		aptitude:
+			(GtCoderExpanderAptitude new
 				borderWidth: 0;
 				padding:
 					(BlInsets
@@ -114,7 +114,7 @@ GtSmaCCVariableCoderElement >> initialize [
 						bottom: 1
 						right: 10))
 				+
-					(BrInteractiveLook new
+					(BrInteractiveAptitude new
 						style: [ :aStyler | 
 							aStyler
 								default: [ resizer removeFromParent.
@@ -161,7 +161,7 @@ GtSmaCCVariableCoderElement >> labelElement [
 	| label |
 	label := BrLabel new.
 	label padding: (BlInsets all: 2).
-	label look: BrGlamorousLabelLook new glamorousCodeFontAndSize.
+	label aptitude: BrGlamorousLabelAptitude new glamorousCodeFontAndSize.
 	label
 		constraintsDo: [ :c | 
 			c horizontal matchParent.

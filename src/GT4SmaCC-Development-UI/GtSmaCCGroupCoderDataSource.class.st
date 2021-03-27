@@ -14,7 +14,7 @@ GtSmaCCGroupCoderDataSource >> buildElementForCoder: aCoder [
 	| element |
 	element := aCoder asElement.
 	lookBlock notNil
-		ifTrue: [ element addLook: lookBlock value ].
+		ifTrue: [ element addAptitude: lookBlock value ].
 	^ element
 ]
 

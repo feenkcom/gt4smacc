@@ -15,7 +15,7 @@ GtSmaCCCoderListElement >> addBadgeFilter: aSymbol [
 
 { #category : #ui }
 GtSmaCCCoderListElement >> addItemLookTo: dataSource [
-	dataSource lookBlock: [ GtSmaCCBadgesLook new definitionList: self ]
+	dataSource lookBlock: [ GtSmaCCBadgesAptitude new definitionList: self ]
 ]
 
 { #category : #filtering }
@@ -156,7 +156,7 @@ GtSmaCCCoderListElement >> typeFilterElement [
 						attributes:
 							{(BlFontSizeAttribute size: 12).
 							(BlFontFamilyAttribute named: 'Source Sans Pro')});
-				look: GtCoderToggleLook;
+				aptitude: GtCoderToggleAptitude;
 				when: BrToggleActivatedEvent
 					do: [ :anEvent | self updateFilters ];
 				when: BrToggleDeactivatedEvent

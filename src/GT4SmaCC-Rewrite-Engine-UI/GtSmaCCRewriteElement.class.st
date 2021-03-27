@@ -86,7 +86,7 @@ GtSmaCCRewriteElement >> matchHeaderElement [
 	| typeLabel patternLabel toggle |
 	typeLabel := self labelFor: 'Match: Type'.
 	toggle := BrToggle new
-		look: BrHydraSwitchWithTrackLook new;
+		aptitude: BrHydraSwitchWithTrackAptitude new;
 		margin: (BlInsets all: 3);
 		activated: (rewrite match isKindOf: SmaCCRewriteTypeMatch);
 		when: BrToggleActivatedEvent
@@ -207,7 +207,7 @@ GtSmaCCRewriteElement >> transformationHeaderElement [
 	| codeLabel stringLabel toggle |
 	codeLabel := self labelFor: 'Transformation: Code'.
 	toggle := BrToggle new
-		look: BrHydraSwitchWithTrackLook new;
+		aptitude: BrHydraSwitchWithTrackAptitude new;
 		margin: (BlInsets all: 3);
 		activated: (rewrite transformation isKindOf: SmaCCRewriteCodeTransformation);
 		when: BrToggleActivatedEvent

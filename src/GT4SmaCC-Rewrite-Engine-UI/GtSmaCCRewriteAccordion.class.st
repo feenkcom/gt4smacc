@@ -31,7 +31,7 @@ GtSmaCCRewriteAccordion >> headerElement [
 		padding: (BlInsets all: 5);
 		vFitContent;
 		hMatchParent;
-		look: (BrGlamorousLabelLook new weight: 550);
+		aptitude: (BrGlamorousLabelAptitude new weight: 550);
 		label: rewrite displayString;
 		background: (Color veryLightGray alpha: 0.6);
 		action: [ self toggle ]
@@ -42,14 +42,14 @@ GtSmaCCRewriteAccordion >> initialize [
 	super initialize.
 	self vFitContent.
 	self hMatchParent.
-	self look: BrGlamorousAccordionWithBorderLook new
+	self aptitude: BrGlamorousAccordionWithBorderAptitude new
 ]
 
 { #category : #private }
 GtSmaCCRewriteAccordion >> labelFor: aString [
 	^ BrLabel new
 		text: aString;
-		look: BrGlamorousLabelLook new;
+		aptitude: BrGlamorousLabelAptitude new;
 		padding: (BlInsets all: 5);
 		hFitContent;
 		yourself
