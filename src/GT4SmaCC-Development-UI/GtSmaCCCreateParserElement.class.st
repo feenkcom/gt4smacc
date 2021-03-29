@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCCreateParserElement,
-	#superclass : #GtCreateBehaviorElement,
+	#superclass : #GtPharoCreateBehaviorElement,
 	#instVars : [
 		'scannerDefinition'
 	],
