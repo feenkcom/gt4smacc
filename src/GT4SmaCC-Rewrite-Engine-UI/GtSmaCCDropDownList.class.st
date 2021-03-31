@@ -14,12 +14,12 @@ GtSmaCCDropDownList >> initialize [
 	super initialize.
 	items := #().
 	self
-		look:
-			BrGlamorousButtonWithLabelLook
+		aptitude:
+			BrGlamorousButtonWithLabelAptitude
 				+
-					(withDropdownLook := BrGlamorousWithDropdownLook
+					(withDropdownLook := BrGlamorousWithDropdownAptitude
 						handle: [ BrButton new
-								look: BrGlamorousButtonWithLabelLook - BrGlamorousButtonExteriorLook;
+								aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
 								padding:
 									(BlInsets
 										top: 3
@@ -64,7 +64,7 @@ GtSmaCCDropDownList >> popupList [
 	list
 		stencil: [ :each :index | 
 			BrLabel new
-				look: BrGlamorousLabelLook new;
+				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				text: (self labelFor: each);
 				hMatchParent;

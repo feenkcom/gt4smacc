@@ -42,7 +42,7 @@ GtSmaCCRewriteFileElement >> parserElement [
 	| label |
 	label := BrLabel new
 		text: 'Parser:';
-		look: BrGlamorousLabelLook new;
+		aptitude: BrGlamorousLabelAptitude new;
 		padding: (BlInsets all: 5);
 		hFitContent;
 		yourself.

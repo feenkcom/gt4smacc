@@ -18,12 +18,12 @@ GtSmaCCGrammarElement class >> onGrammar: aGrammar [
 { #category : #ui }
 GtSmaCCGrammarElement >> actionBar [
 	^ BrToolbar new
-		look: BrGlamorousToolbarLook new;
+		aptitude: BrGlamorousToolbarAptitude new;
 		padding: (BlInsets all: 5);
 		addItem:
 			(BrButton new
 				beSmallSize;
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: 'Save';
 				icon: BrGlamorousVectorIcons accept;
 				action: [ :element | self save ])
@@ -97,7 +97,7 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element look: BrGlamorousCodeEditorLook new.
+	element aptitude: BrGlamorousCodeEditorAptitude new.
 	completionStrategy := GtWeightedStringsCompletionStrategy new.
 	completionController := GtCompletionController
 		on: element

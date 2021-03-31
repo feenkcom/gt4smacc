@@ -23,7 +23,7 @@ SmaCCProductionExpressionNode >> buildASTNodeInterfaceElement [
 	label := BlTextElement text: self styledProductionLabel asRopedText.
 	label margin: (BlInsets all: 7).
 	toggle := BrToggle new
-		look: BrMaterialToggleLabelledLook;
+		aptitude: BrMaterialToggleLabelledAptitude;
 		label: 'AST';
 		margin: (BlInsets all: 1).
 	toggle activated: self hasNodeDefined.

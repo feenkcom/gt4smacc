@@ -4,7 +4,7 @@ Extension { #name : #GtCoderToolbarElement }
 GtCoderToolbarElement >> addParserTab: look [
 	<gtCreateComponentTab: 100>
 	^ BrTab new
-		look: BrGlamorousTabLook new;
+		aptitude: BrGlamorousTabAptitude new;
 		label: 'SmaCC';
 		stencil: [ | element |
 			element := GtSmaCCCreateParserElement new.

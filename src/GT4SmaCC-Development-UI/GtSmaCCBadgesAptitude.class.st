@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCBadgesLook,
-	#superclass : #BrLook,
+	#name : #GtSmaCCBadgesAptitude,
+	#superclass : #BrAptitude,
 	#instVars : [
 		'definitionList',
 		'badgeList'
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #initialization }
-GtSmaCCBadgesLook >> badgeToggles [
+GtSmaCCBadgesAptitude >> badgeToggles [
 	| toggles |
 	toggles := OrderedCollection new.
 	widget coder badgeTypes
@@ -28,7 +28,7 @@ GtSmaCCBadgesLook >> badgeToggles [
 										attributes:
 											{(BlFontSizeAttribute size: 12).
 											(BlFontFamilyAttribute named: 'Source Sans Pro')});
-								look: GtCategoryToggleLook;
+								aptitude: GtCategoryToggleAptitude;
 								when: BrToggleActivatedEvent
 									do: [ :anEvent | definitionList addBadgeFilter: each last ];
 								when: BrToggleDeactivatedEvent
@@ -38,12 +38,12 @@ GtSmaCCBadgesLook >> badgeToggles [
 ]
 
 { #category : #accessing }
-GtSmaCCBadgesLook >> definitionList: anObject [
+GtSmaCCBadgesAptitude >> definitionList: anObject [
 	definitionList := anObject
 ]
 
 { #category : #initialization }
-GtSmaCCBadgesLook >> initialize [
+GtSmaCCBadgesAptitude >> initialize [
 	super initialize.
 	badgeList := BlElement new.
 	badgeList layout: BlLinearLayout horizontal.

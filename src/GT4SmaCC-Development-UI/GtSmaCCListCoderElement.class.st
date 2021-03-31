@@ -17,7 +17,7 @@ GtSmaCCListCoderElement class >> onCoder: aGrammarCoder [
 { #category : #ui }
 GtSmaCCListCoderElement >> actionBar [
 	^ BrToolbar new
-		look: BrGlamorousToolbarLook new;
+		aptitude: BrGlamorousToolbarAptitude new;
 		padding:
 			(BlInsets
 				top: 0
@@ -29,7 +29,7 @@ GtSmaCCListCoderElement >> actionBar [
 				collect: [ :each | 
 					BrButton new
 						beSmallSize;
-						look: BrGlamorousButtonWithIconLook;
+						aptitude: BrGlamorousButtonWithIconAptitude;
 						label: each title;
 						icon: each icon asElement;
 						action: each ])

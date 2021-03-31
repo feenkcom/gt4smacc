@@ -10,6 +10,6 @@ SmaCCString >> gtSourceFor: aView [
 			source := self asString asRopedText.
 			editor := BrEditor new
 				text: source;
-				look: BrGlamorousCodeEditorLook new.
+				aptitude: BrGlamorousCodeEditorAptitude new.
 			editor ]
 ]
