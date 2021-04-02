@@ -16,9 +16,9 @@ GtSmaCCASTStyler class >> forParser: aSmaCCParserClass [
 ]
 
 { #category : #private }
-GtSmaCCASTStyler >> ast [
+GtSmaCCASTStyler >> astForText: aText [
 	^ parserClass
-		parseWithErrors: text asString
+		parseWithErrors: aText asString
 		startingAt: self startingState
 ]
 
@@ -34,9 +34,18 @@ GtSmaCCASTStyler >> parserClass: aSmaCCParserClass [
 
 { #category : #private }
 GtSmaCCASTStyler >> privateStyle: aText [
-	[ self style: aText using: self ast ]
+	[
+	self style: aText using: (self astForText: aText) ]
 		on: Error
-		do: [ :ex | ex return ].
+		do: [ :ex |
+			NonInteractiveTranscript stdout
+				nextPut: $[;
+				nextPutAll: self class name;
+				nextPut: $];
+				space;
+				print: ex;
+				cr.
+			ex return ].
 
 	^ aText
 ]
