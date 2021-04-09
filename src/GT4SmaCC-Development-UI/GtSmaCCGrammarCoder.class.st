@@ -59,6 +59,7 @@ GtSmaCCGrammarCoder >> addMenuItems [
 GtSmaCCGrammarCoder >> addMenuItemsElement [
 	^ GtCoderContextMenuContent new
 		constraintsDo: [ :c | c horizontal matchParent ];
+		editorElement: self;
 		items:
 			(self addMenuItems
 				collect: [ :each | 
@@ -205,6 +206,11 @@ GtSmaCCGrammarCoder >> scannerClass [
 { #category : #accessing }
 GtSmaCCGrammarCoder >> source [
 	^ grammar source
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarCoder >> textualCoderViewModel [
+	^ self
 ]
 
 { #category : #accessing }
