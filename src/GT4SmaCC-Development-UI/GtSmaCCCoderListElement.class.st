@@ -115,7 +115,7 @@ GtSmaCCCoderListElement >> textSearchElement [
 	element := BrEditorElement new.
 	element editor: editor.
 	element
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
+		border: (BlBorder paint: self theme editor borderColor width: 1).
 	element
 		constraintsDo: [ :c | 
 			c horizontal matchParent.

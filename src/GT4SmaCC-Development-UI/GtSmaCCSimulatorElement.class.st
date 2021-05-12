@@ -123,7 +123,7 @@ GtSmaCCSimulatorElement >> testElement [
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
+		border: (BlBorder paint: self theme editor borderColor width: 1).
 	element margin: (BlInsets all: 5).
 	element padding: (BlInsets all: 3).
 	element editor: editor.
