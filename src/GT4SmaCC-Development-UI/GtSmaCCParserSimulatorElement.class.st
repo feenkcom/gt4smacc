@@ -57,7 +57,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 	root := aSmaCCToken isNil
 		ifTrue: [ ('Incomplete' asRopedText foreground: Color yellow muchDarker)
 				-> stack ]
-		ifFalse: [ ('Error' asRopedText foreground: BrGlamorousColors errorBorderColor)
+		ifFalse: [ ('Error' asRopedText foreground: self theme status errorBorderColor)
 				-> (stack copyWith: aSmaCCToken) ].
 	self parseTreeElement
 		items: {root}
@@ -116,7 +116,7 @@ GtSmaCCParserSimulatorElement >> labelFor: anObject [
 	(anObject isKindOf: SmaCCToken)
 		ifTrue: [ anObject isSyntaxError
 				ifTrue: [ ^ 'Scanner Error' asRopedText
-						foreground: BrGlamorousColors errorBorderColor ].
+						foreground: self theme status errorBorderColor ].
 			^ anObject source ].
 	(anObject isKindOf: Association)
 		ifTrue: [ ^ anObject key ].

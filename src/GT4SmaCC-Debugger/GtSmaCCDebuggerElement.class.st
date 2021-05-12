@@ -57,7 +57,7 @@ GtSmaCCDebuggerElement class >> sessionClass [
 GtSmaCCDebuggerElement >> acceptAttributes [
 	^ {(BlTextDecorationAttribute new
 		underline;
-		color: BrGlamorousColors successBackgroundColor;
+		color: self theme status successBackgroundColor;
 		thickness: 3)}
 ]
 
@@ -318,7 +318,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	tabGroup
 		aptitude:
 			(BrGlamorousTabGroupAptitude new
-				headerBackground: BrGlamorousColors defaultHeaderBackgroundColor);
+				headerBackground: self theme header defaultBackgroundColor);
 		addTab: tab;
 		constraintsDo: [ :c | 
 			c vertical matchParent.
@@ -329,7 +329,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 					c ignoreByLayout.
 					c horizontal matchParent.
 					c vertical exact: 5 ];
-				background: BrGlamorousColors errorBackgroundColor;
+				background: self theme status errorBackgroundColor;
 				yourself).
 	^ tabGroup
 ]
