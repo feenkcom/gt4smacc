@@ -205,7 +205,7 @@ GtSmaCCCoderExamples >> grammarCoder [
 	grammar := self smaccDefinitionGrammar.
 	coder := GtSmaCCGrammarCoder onGrammar: grammar.
 	coder updateCompletions.
-	self assert: coder source = self smaccGrammarClass definitionString.
+	self assert: coder source = self smaccGrammarClass parserDefinitionString.
 	self assert: coder group size = grammar rules size.
 	self
 		assert: (coder productionCompletionStrategy hasCompletionEntryFor: 'Pro').
