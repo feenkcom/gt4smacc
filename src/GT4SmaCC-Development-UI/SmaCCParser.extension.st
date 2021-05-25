@@ -19,7 +19,7 @@ SmaCCParser class >> debug: aString from: anElement [
 SmaCCParser class >> gtAnnotationsFor: aView context: aDictionary [
 	<gtClassView>
 	| coder |
-	self definitionString isEmpty
+	self parserDefinitionString isEmpty
 		ifTrue: [ ^ aView empty ].
 	coder := aDictionary
 		at: #coder
@@ -40,7 +40,7 @@ SmaCCParser class >> gtGrammarFor: aView [
 SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 	<gtClassView>
 	| coder |
-	self definitionString isEmpty
+	self parserDefinitionString isEmpty
 		ifTrue: [ ^ aView empty ].
 	coder := aDictionary
 		at: #coder
@@ -58,7 +58,7 @@ SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 SmaCCParser class >> gtSourceFor: aView [
 	<gtView>
 	<gtClassView>
-	self definitionString isEmpty
+	self parserDefinitionString isEmpty
 		ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'Source';
@@ -118,7 +118,7 @@ SmaCCParser class >> gtTestElement [
 SmaCCParser class >> gtTestFor: aView [
 	<gtView>
 	<gtClassView>
-	self definitionString isEmpty
+	self parserDefinitionString isEmpty
 		ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'Test';
@@ -129,7 +129,7 @@ SmaCCParser class >> gtTestFor: aView [
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulateParse: inputString fromRule: ruleName [
 	| simulator |
-	simulator := SmaCCParserSimulator on: self definitionString.
+	simulator := SmaCCParserSimulator on: self parserDefinitionString.
 	simulator setupFor: ruleName.
 	^ simulator simulateParse: inputString
 ]
