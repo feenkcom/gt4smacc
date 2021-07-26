@@ -15,7 +15,7 @@ Class {
 	#classInstVars : [
 		'availableAutomatically'
 	],
-	#category : #'GT4SmaCC-Debugger'
+	#category : 'GT4SmaCC-Debugger'
 }
 
 { #category : #accessing }
@@ -109,6 +109,11 @@ GtSmaCCDebuggerElement >> buildGLRStates [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildParserActions [
 	stateActionsList := BrColumnedList new.
+	stateActionsList 
+		margin: (BlInsets all: 10); 
+		addAptitude: BrShadowAptitude;
+		background: Color white;
+		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new cellSpacing: 10).
 	stateActionsList column
 		title: 'Symbol';
 		stencil: [ :each | 
@@ -123,12 +128,7 @@ GtSmaCCDebuggerElement >> buildParserActions [
 			BrLabel new
 				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
-				margin:
-					(BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ].
+				margin: (BlInsets top: 5 bottom: 5)].
 	stateActionsList column
 		title: 'Action';
 		stencil: [ :each | 
@@ -143,12 +143,7 @@ GtSmaCCDebuggerElement >> buildParserActions [
 			BrLabel new
 				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
-				margin:
-					(BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ].
+				margin: (BlInsets top: 5 bottom: 5) ].
 	^ stateActionsList
 ]
 
@@ -158,7 +153,6 @@ GtSmaCCDebuggerElement >> buildParserElement [
 	element := BlElement new.
 	element
 		layout: BlLinearLayout horizontal;
-		padding: (BlInsets all: 10);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
@@ -180,6 +174,11 @@ GtSmaCCDebuggerElement >> buildParserElement [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildParserStack [
 	parserStackList := BrColumnedList new.
+	parserStackList 
+		margin: (BlInsets all: 10); 
+		addAptitude: BrShadowAptitude;
+		background: Color white;
+		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new cellSpacing: 10).
 	parserStackList
 		when: BrSelectionChanged
 		do: [ :event | 
@@ -192,24 +191,14 @@ GtSmaCCDebuggerElement >> buildParserStack [
 			BrLabel new
 				aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
 				text: (each first ifNil: [ '' ]);
-				margin:
-					(BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ].
+				margin: (BlInsets top: 5 bottom: 5) ].
 	parserStackList column
 		title: 'Value';
 		stencil: [ :each | 
 			BrLabel new
 				aptitude: BrGlamorousLabelAptitude new;
 				text: each last displayString;
-				margin:
-					(BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ].
+				margin: (BlInsets top: 5 bottom: 5)].
 	^ parserStackList
 ]
 
@@ -284,6 +273,11 @@ GtSmaCCDebuggerElement >> buildSource [
 	text := self session inputText asRopedText.
 	text attributes: GtSmaCCCoder defaultTextAttributes.
 	editorElement := BrEditorElement new.
+	editorElement 
+		margin: (BlInsets all: 10); 
+		addAptitude: BrShadowAptitude;
+		background: Color white;
+		padding: (BlInsets all: 10).
 	sourceEditor := BrTextEditor new.
 	sourceEditor text: text.
 	editorElement editor: sourceEditor.
