@@ -55,10 +55,7 @@ GtSmaCCDebuggerElement class >> sessionClass [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> acceptAttributes [
-	^ {(BlTextDecorationAttribute new
-		underline;
-		color: self theme status successBackgroundColor;
-		thickness: 3)}
+	^ {(BlTextHighlightAttribute paint: self theme status errorBackgroundColor)}
 ]
 
 { #category : #callbacks }
@@ -341,7 +338,7 @@ GtSmaCCDebuggerElement >> clearAttributes [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
 	sourceEditor text
-		clearAttributes: [ :attr | attr class = BlTextDecorationAttribute ]
+		clearAttributes: [ :attr | attr class = BlTextHighlightAttribute ]
 ]
 
 { #category : #'private-updating' }
