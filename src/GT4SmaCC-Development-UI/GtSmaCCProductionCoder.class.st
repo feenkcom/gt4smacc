@@ -93,7 +93,7 @@ GtSmaCCProductionCoder >> shortcuts [
 			{(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
-						meta;
+						primary;
 						key: BlKeyboardKey i;
 						build);
 				repeatable: false;
@@ -101,7 +101,7 @@ GtSmaCCProductionCoder >> shortcuts [
 			(BlShortcutWithAction new
 				combination:
 					(BlKeyCombination builder
-						meta;
+						primary;
 						key: BlKeyboardKey e;
 						build);
 				repeatable: false;
