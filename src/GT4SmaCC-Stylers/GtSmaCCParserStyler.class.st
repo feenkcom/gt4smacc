@@ -224,6 +224,40 @@ GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 ]
 
 { #category : #instances }
+GtSmaCCParserStyler class >> rubyStyler: aParserClass [
+	<smaccStyler: #RubyParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules:
+			{(GtSmaCCKeywordTokensStylerRule
+				styleBlock: [ :styler | 
+					styler
+						bold;
+						foreground: Color purple ]).
+			(GtSmaCCCommentStylerRule
+				styleBlock: [ :styler | styler foreground: Color lightGray ]).
+			(GtSmaCCTokenStylerRule
+				tokenName: '<semicolon>'
+				styleBlock: [ :styler | 
+					styler
+						foreground: Color black;
+						bold ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #RubyNumberNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #RubySymbolNode
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #RubyStringNode
+				variableNames: #(parts)
+				styleBlock: [ :styler | styler foreground: Color blue ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #SmaCCErrorNode
+				variableNames: #(dismissedTokens errorToken)
+				styleBlock: [ :styler | styler foreground: Color red ])}
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 	"This is a generic styler that does a little formatting for any parser"
 
