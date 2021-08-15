@@ -1,1 +1,1 @@
-Package { #name : #BaselineOfGToolkit4SmaCC }
+Package { #name : 'BaselineOfGToolkit4SmaCC' }

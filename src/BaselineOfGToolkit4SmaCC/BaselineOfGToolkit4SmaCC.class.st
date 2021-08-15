@@ -1,15 +1,15 @@
 Class {
-	#name : #BaselineOfGToolkit4SmaCC,
-	#superclass : #BaselineOf,
-	#category : #BaselineOfGToolkit4SmaCC
+	#name : 'BaselineOfGToolkit4SmaCC',
+	#superclass : 'BaselineOf',
+	#category : 'BaselineOfGToolkit4SmaCC'
 }
 
-{ #category : #baseline }
+{ #category : 'baseline' }
 BaselineOfGToolkit4SmaCC >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
 		spec baseline: 'SmaCC' with: [
-				spec repository: 'github://j-brant/SmaCC:29b4a7634eb98a44f40ef17d00d24e16f7ace276/src' ].
+				spec repository: 'github://j-brant/SmaCC:17390470738ba30d3fd92d6a1d8d746f11a564a6/src' ].
 		spec 
 			package: 'GT4SmaCC-Inspector' with: [
 				spec requires: #('SmaCC' ). ];
