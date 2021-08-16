@@ -1,40 +1,40 @@
 Class {
-	#name : #GtSmaCCTokenStylerRule,
-	#superclass : #GtSmaCCStylerRule,
+	#name : 'GtSmaCCTokenStylerRule',
+	#superclass : 'GtSmaCCStylerRule',
 	#instVars : [
 		'tokenName',
 		'id'
 	],
-	#category : #'GT4SmaCC-Stylers'
+	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCTokenStylerRule class >> tokenName: aString styleBlock: aBlock [
 	^ (self styleBlock: aBlock)
 		tokenName: aString;
 		yourself
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtSmaCCTokenStylerRule >> initializeForParser: parserClass [
 	| parser |
 	parser := parserClass basicNew.
 	id := parser symbolNames indexOf: tokenName
 ]
 
-{ #category : #asserting }
+{ #category : 'asserting' }
 GtSmaCCTokenStylerRule >> shouldApplyToToken: aSmaCCToken [
 	aSmaCCToken ids isEmpty
 		ifTrue: [ ^ false ].
 	^ id = aSmaCCToken ids first
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTokenStylerRule >> tokenName [
 	^ tokenName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTokenStylerRule >> tokenName: aString [
 	tokenName := aString
 ]

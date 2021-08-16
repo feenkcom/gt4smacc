@@ -1,6 +1,6 @@
-Extension { #name : #SmaCCParser }
+Extension { #name : 'SmaCCParser' }
 
-{ #category : #'*GT4SmaCC-Stylers' }
+{ #category : '*GT4SmaCC-Stylers' }
 SmaCCParser class >> gtStyler [
 	| stylers |
 	stylers := self gtStylers.
@@ -9,7 +9,7 @@ SmaCCParser class >> gtStyler [
 		ifFalse: [ stylers first ]
 ]
 
-{ #category : #'*GT4SmaCC-Stylers' }
+{ #category : '*GT4SmaCC-Stylers' }
 SmaCCParser class >> gtStylers [
 	| pragmas |
 	pragmas := OrderedCollection new.
