@@ -8,22 +8,23 @@ Class {
 BaselineOfGToolkit4SmaCC >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
-		spec baseline: 'SmaCC' with: [
-				spec repository: 'github://j-brant/SmaCC:17390470738ba30d3fd92d6a1d8d746f11a564a6/src' ].
-		spec 
-			package: 'GT4SmaCC-Inspector' with: [
-				spec requires: #('SmaCC' ). ];
-			package: 'GT4SmaCC-Development-UI' with: [
-				spec requires: #('SmaCC' ). ];
-			package: 'GT4SmaCC-Debugger' with: [
-				spec requires: #('GT4SmaCC-Development-UI' ). ];
-			package: 'GT4SmaCC-Stylers' with: [
-				spec requires: #('SmaCC' ). ];
-			package: 'GT4SmaCC-Queries' with: [
-				spec requires: #('SmaCC' ). ];
-			package: 'GT4SmaCC-Examples' with: [
-				spec requires: #('SmaCC' ). ];
-			package: 'GT4SmaCC-Rewrite-Engine-UI' with: [
-				spec requires: #('SmaCC' ). ]. ].
+		spec
+			baseline: 'SmaCC' with: [
+				spec repository: 'github://j-brant/SmaCC:fbd278f9c14bd2d190e36b733ff89cd648381cdb/src' ].
 
+		spec package: 'GT4SmaCC-Inspector' with: [
+			spec requires: #('SmaCC') ].
+		spec package: 'GT4SmaCC-Development-UI' with: [
+			spec requires: #('SmaCC') ].
+		spec package: 'GT4SmaCC-Debugger' with: [
+			spec requires: #('GT4SmaCC-Development-UI') ].
+		spec package: 'GT4SmaCC-Stylers' with: [
+			spec requires: #('SmaCC') ].
+		spec package: 'GT4SmaCC-Queries' with: [
+			spec requires: #('SmaCC') ].
+		spec package: 'GT4SmaCC-Examples' with: [
+			spec requires: #('SmaCC') ].
+		spec package: 'GT4SmaCC-Rewrite-Engine-UI' with: [
+			spec requires: #('SmaCC') ].
+	]
 ]
