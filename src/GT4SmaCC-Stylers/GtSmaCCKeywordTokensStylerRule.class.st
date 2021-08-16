@@ -1,13 +1,13 @@
 Class {
-	#name : #GtSmaCCKeywordTokensStylerRule,
-	#superclass : #GtSmaCCStylerRule,
+	#name : 'GtSmaCCKeywordTokensStylerRule',
+	#superclass : 'GtSmaCCStylerRule',
 	#instVars : [
 		'ids'
 	],
-	#category : #'GT4SmaCC-Stylers'
+	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtSmaCCKeywordTokensStylerRule >> initializeForParser: parserClass [
 	| keywords |
 	keywords := parserClass scannerClass keywordMap.
@@ -21,7 +21,7 @@ GtSmaCCKeywordTokensStylerRule >> initializeForParser: parserClass [
 						ifFalse: [ ids add: id ] ] ]
 ]
 
-{ #category : #asserting }
+{ #category : 'asserting' }
 GtSmaCCKeywordTokensStylerRule >> shouldApplyToToken: aSmaCCToken [
 	aSmaCCToken ids isEmpty
 		ifTrue: [ ^ false ].

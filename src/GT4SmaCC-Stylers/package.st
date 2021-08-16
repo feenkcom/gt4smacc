@@ -1,1 +1,1 @@
-Package { #name : #'GT4SmaCC-Stylers' }
+Package { #name : 'GT4SmaCC-Stylers' }

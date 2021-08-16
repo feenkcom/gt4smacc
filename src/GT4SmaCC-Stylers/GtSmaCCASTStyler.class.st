@@ -1,38 +1,38 @@
 Class {
-	#name : #GtSmaCCASTStyler,
-	#superclass : #BlTextStyler,
+	#name : 'GtSmaCCASTStyler',
+	#superclass : 'BlTextStyler',
 	#instVars : [
 		'parserClass',
 		'startingState'
 	],
-	#category : #'GT4SmaCC-Stylers'
+	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCASTStyler class >> forParser: aSmaCCParserClass [
 	^ self new
 		parserClass: aSmaCCParserClass;
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCASTStyler >> astForText: aText [
 	^ parserClass
 		parseWithErrors: aText asString
 		startingAt: self startingState
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCASTStyler >> parserClass [
 	^ parserClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCASTStyler >> parserClass: aSmaCCParserClass [
 	parserClass := aSmaCCParserClass
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCASTStyler >> privateStyle: aText [
 	[
 	self style: aText using: (self astForText: aText) ]
@@ -50,23 +50,23 @@ GtSmaCCASTStyler >> privateStyle: aText [
 	^ aText
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCASTStyler >> startingState [
 	^ startingState ifNil: [ parserClass defaultStartingState ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCASTStyler >> startingState: anInteger [
 	startingState := anInteger
 ]
 
-{ #category : #styling }
+{ #category : 'styling' }
 GtSmaCCASTStyler >> style: aText using: anAST [
 	text := aText.
 	[ self styleAST: anAST ]
 		ensure: [ text := nil ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCASTStyler >> styleAST: anAST [
 ]

@@ -1,15 +1,15 @@
 Class {
-	#name : #GtSmaCCCommentStylerRule,
-	#superclass : #GtSmaCCStylerRule,
-	#category : #'GT4SmaCC-Stylers'
+	#name : 'GtSmaCCCommentStylerRule',
+	#superclass : 'GtSmaCCStylerRule',
+	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : #applying }
+{ #category : 'applying' }
 GtSmaCCCommentStylerRule >> applyTo: aSmaCCParseNode on: aText [
 	aSmaCCParseNode comments do: [ :each | (aText from: each first to: each last) stylerDo: styleBlock ]
 ]
 
-{ #category : #asserting }
+{ #category : 'asserting' }
 GtSmaCCCommentStylerRule >> shouldApplyToNode: aSmaCCParseNode [
 	^ aSmaCCParseNode comments notNil
 ]
