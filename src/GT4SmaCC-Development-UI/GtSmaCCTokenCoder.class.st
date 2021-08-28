@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCTokenCoder,
-	#superclass : #GtSmaCCCoder,
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#name : 'GtSmaCCTokenCoder',
+	#superclass : 'GtSmaCCCoder',
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCTokenCoder >> actions [
 	^ {(GtCoderAction new
 		title: 'Simulate' translated;
@@ -13,12 +13,12 @@ GtSmaCCTokenCoder >> actions [
 		yourself)}
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTokenCoder >> badgeTypes [
 	^ super badgeTypes , #(#('Method' isScannerMethod))
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTokenCoder >> collapsedText [
 	| text |
 	text := self name asRopedText.
@@ -26,7 +26,7 @@ GtSmaCCTokenCoder >> collapsedText [
 	^ text
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCTokenCoder >> viewTokenSimulator: anElement [
 	| simulator |
 	self isValid

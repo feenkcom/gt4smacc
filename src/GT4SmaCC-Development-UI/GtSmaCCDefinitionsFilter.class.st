@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCDefinitionsFilter,
-	#superclass : #GtSearchTypedEntitiesFilter,
-	#category : #'GT4SmaCC-Development-UI-Filters'
+	#name : 'GtSmaCCDefinitionsFilter',
+	#superclass : 'GtSearchTypedEntitiesFilter',
+	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDefinitionsFilter class >> resultType [
 	^ GtSmaCCDefinitionGroupResult
 ]

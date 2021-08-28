@@ -1,20 +1,20 @@
 Class {
-	#name : #GtSmaCCImplementorHighlightingVisitor,
-	#superclass : #GtSmaCCHighlightingVisitor,
+	#name : 'GtSmaCCImplementorHighlightingVisitor',
+	#superclass : 'GtSmaCCHighlightingVisitor',
 	#instVars : [
 		'pattern'
 	],
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCImplementorHighlightingVisitor class >> pattern: aString [
 	^ self new
 		pattern: aString;
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCImplementorHighlightingVisitor >> highlightName: aToken [
 	| name index |
 	name := aToken source asLowercase.
@@ -26,23 +26,23 @@ GtSmaCCImplementorHighlightingVisitor >> highlightName: aToken [
 				to: aToken startPosition + index + pattern size - 2 ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCImplementorHighlightingVisitor >> pattern [
 	^ pattern
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCImplementorHighlightingVisitor >> pattern: aString [
 	pattern := aString asLowercase
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCImplementorHighlightingVisitor >> visitProductionRule: aProductionRule [
 	self highlightName: aProductionRule name.
 	super visitProductionRule: aProductionRule
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCImplementorHighlightingVisitor >> visitTokenRule: aTokenRule [
 	self highlightName: aTokenRule name.
 	super visitTokenRule: aTokenRule

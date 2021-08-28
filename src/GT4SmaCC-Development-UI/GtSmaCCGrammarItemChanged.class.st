@@ -1,30 +1,30 @@
 Class {
-	#name : #GtSmaCCGrammarItemChanged,
-	#superclass : #GtSmaCCGrammarAnnouncement,
+	#name : 'GtSmaCCGrammarItemChanged',
+	#superclass : 'GtSmaCCGrammarAnnouncement',
 	#instVars : [
 		'item'
 	],
-	#category : #'GT4SmaCC-Development-UI-Model'
+	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarItemChanged class >> forItem: aGrammarItem [
 	^ self new
 		item: aGrammarItem;
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemChanged >> grammar [
 	^ item grammar
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemChanged >> item [
 	^ item
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemChanged >> item: aGrammarItem [
 	item := aGrammarItem
 ]

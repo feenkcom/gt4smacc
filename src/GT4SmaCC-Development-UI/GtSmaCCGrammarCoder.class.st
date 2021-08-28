@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCGrammarCoder,
-	#superclass : #Object,
+	#name : 'GtSmaCCGrammarCoder',
+	#superclass : 'Object',
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
@@ -12,22 +12,22 @@ Class {
 		'completionsProcess',
 		'variableGroup'
 	],
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarCoder class >> onGrammar: aGrammar [
 	^ self new
 		grammar: aGrammar;
 		yourself
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarCoder class >> onParser: parserClass [
 	^ self onGrammar: (GtSmaCCGrammar onParser: parserClass)
 ]
 
-{ #category : #element }
+{ #category : 'element' }
 GtSmaCCGrammarCoder >> addMenuItems [
 	| items |
 	items := OrderedCollection new.
@@ -55,7 +55,7 @@ GtSmaCCGrammarCoder >> addMenuItems [
 	^ items
 ]
 
-{ #category : #element }
+{ #category : 'element' }
 GtSmaCCGrammarCoder >> addMenuItemsElement [
 	^ GtCoderContextMenuContent new
 		constraintsDo: [ :c | c horizontal matchParent ];
@@ -70,50 +70,50 @@ GtSmaCCGrammarCoder >> addMenuItemsElement [
 		vMatchParent
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
-{ #category : #element }
+{ #category : 'element' }
 GtSmaCCGrammarCoder >> asElement [
 	^ GtSmaCCGrammarCoderElement onCoder: self
 ]
 
-{ #category : #element }
+{ #category : 'element' }
 GtSmaCCGrammarCoder >> asVariableElement [
 	^ GtSmaCCGrammarVariableCoderElement onCoder: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> coderNamed: aString [
 	^ (self ruleNamed: aString)
 		ifNotNil: [ :item | group coderFor: item ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> coders [
 	^ group coders
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCGrammarCoder >> compileParser [
 	grammar compileParser
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCGrammarCoder >> createRuleNamed: aString from: aCoder [
 	^ aString first = $<
 		ifTrue: [ grammar addTokenNamed: aString for: aCoder grammarItem ]
 		ifFalse: [ grammar addProductionNamed: aString for: aCoder grammarItem ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> grammar [
 	^ grammar
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarCoder >> grammar: aGrammar [
 	grammar := aGrammar.
 	self updateRuleList.
@@ -124,7 +124,7 @@ GtSmaCCGrammarCoder >> grammar: aGrammar [
 	self updateItems
 ]
 
-{ #category : #events }
+{ #category : 'events' }
 GtSmaCCGrammarCoder >> grammarChanged: grammarAnnouncement [
 	| announcementClass |
 	(GtSmaCCGrammarRulesChanged handlesAnnouncement: grammarAnnouncement)
@@ -134,12 +134,12 @@ GtSmaCCGrammarCoder >> grammarChanged: grammarAnnouncement [
 	self announce: (announcementClass forCoder: self)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> group [
 	^ group
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarCoder >> initialize [
 	super initialize.
 	group := GtSmaCCDefinitionGroupResult onCoder: self.
@@ -148,88 +148,88 @@ GtSmaCCGrammarCoder >> initialize [
 	productionCompletionStrategy := GtSmaCCCompletionStrategy new
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarCoder >> isCaseInsensitive [
 	^ grammar isCaseInsensitive
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> isCaseInsensitive: aBoolean [
 	grammar isCaseInsensitive: aBoolean
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarCoder >> isGLR [
 	^ grammar isGLR
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> isGLR: aBoolean [
 	grammar isGLR: aBoolean
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarCoder >> isUnicode [
 	^ grammar isUnicode
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> isUnicode: aBoolean [
 	grammar isUnicode: aBoolean
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarCoder >> isValid [
 	^ grammar isValid
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> productionCompletionStrategy [
 	^ productionCompletionStrategy
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> ruleNamed: aString [
 	^ grammar ruleNamed: aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> rulesNamed: aString [
 	^ grammar rulesNamed: aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> scannerClass [
 	^ grammar scannerClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> source [
 	^ grammar source
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> textualCoderViewModel [
 	^ self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> tokenCompletionStrategy [
 	^ tokenCompletionStrategy
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateCompletions [
 	self updateProductionCompletions.
 	self updateTokenCompletions
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateCompletions: aPrefixTree with: aNode [
 	(GtSmaCCCompletionVisitor new completions: aPrefixTree) accept: aNode
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateItems [
 	completionsProcess notNil
 		ifTrue: [ completionsProcess terminate ].
@@ -239,7 +239,7 @@ GtSmaCCGrammarCoder >> updateItems [
 	completionsProcess := nil ] forkAt: Processor userBackgroundPriority
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateProductionCompletions [
 	| completions |
 	completions := GtPrefixTree new.
@@ -250,12 +250,12 @@ GtSmaCCGrammarCoder >> updateProductionCompletions [
 	productionCompletionStrategy completions: completions
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateRuleList [
 	group updateItemsFrom: grammar rules
 ]
 
-{ #category : #events }
+{ #category : 'events' }
 GtSmaCCGrammarCoder >> updateStylingForRenameFrom: oldName to: newName [
 	self coders
 		do: [ :each | 
@@ -266,7 +266,7 @@ GtSmaCCGrammarCoder >> updateStylingForRenameFrom: oldName to: newName [
 				ifTrue: [ each styleSource ] ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateTokenCompletions [
 	| completions |
 	completions := GtPrefixTree new.
@@ -277,12 +277,12 @@ GtSmaCCGrammarCoder >> updateTokenCompletions [
 	tokenCompletionStrategy completions: completions
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarCoder >> updateVariableItems [
 	variableGroup updateItems: grammar allItemNames
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarCoder >> variableGroup [
 	^ variableGroup
 ]

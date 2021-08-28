@@ -1,21 +1,21 @@
 Class {
-	#name : #GtSmaCCParserSimulator,
-	#superclass : #GtSmaCCSimulator,
-	#category : #'GT4SmaCC-Development-UI-Simulation'
+	#name : 'GtSmaCCParserSimulator',
+	#superclass : 'GtSmaCCSimulator',
+	#category : 'GT4SmaCC-Development-UI-Simulation'
 }
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCParserSimulator >> asElement [
 	^ GtSmaCCParserSimulatorElement onSimulator: self
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulator >> buildSimulator [
 	simulator := SmaCCParserSimulator on: self grammar source.
 	simulator setupFor: self ruleName
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 GtSmaCCParserSimulator >> simulateOn: aString [
 	[ | results |
 	results := simulator simulateParse: aString.
@@ -35,7 +35,7 @@ GtSmaCCParserSimulator >> simulateOn: aString [
 								token: ex token ]) ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCParserSimulator >> symbolNameFor: anInteger [
 	anInteger = 0
 		ifTrue: [ ^ nil ].

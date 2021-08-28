@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCCoder,
-	#superclass : #Object,
+	#name : 'GtSmaCCCoder',
+	#superclass : 'Object',
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
@@ -12,10 +12,10 @@ Class {
 		'sourceEditor',
 		'attributes'
 	],
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder class >> coderClassFor: anItem [
 	anItem isProductionRule
 		ifTrue: [ ^ GtSmaCCProductionCoder ].
@@ -29,7 +29,7 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 	^ nil
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder class >> defaultTextAttributes [
 	^ {
 		(BlFontFamilyAttribute named: 'Source Code Pro') beNotOverwritableByStyler.
@@ -37,12 +37,12 @@ GtSmaCCCoder class >> defaultTextAttributes [
 	}
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder class >> hasCoderFor: anItem [
 	^ (self coderClassFor: anItem) notNil
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
 	| class |
 	class := self coderClassFor: aGrammarItem.
@@ -54,12 +54,12 @@ GtSmaCCCoder class >> on: aGrammarItem in: aGrammarCoder [
 		yourself
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCCoder >> actions [
 	^ #()
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCCoder >> addShortcutsTo: editorElement [
 	self shortcuts
 		do: [ :each | 
@@ -67,55 +67,55 @@ GtSmaCCCoder >> addShortcutsTo: editorElement [
 				addShortcut: (each copy action: [ each action cull: editorElement ]) ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
-{ #category : #elements }
+{ #category : 'elements' }
 GtSmaCCCoder >> asElement [
 	^ GtSmaCCCoderElement onCoder: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> ast [
 	^ grammarItem ast
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> attributeNamed: aSymbol [
 	^ attributes notNil
 		ifTrue: [ attributes at: aSymbol ifAbsent: [  ] ]
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> attributeNamed: aSymbol ifAbsent: aBlock [
 	^ attributes notNil
 		ifTrue: [ attributes at: aSymbol ifAbsent: aBlock ]
 		ifFalse: [ aBlock value ]
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> attributeNamed: aSymbol ifAbsentPut: aBlock [
 	^ self attributes at: aSymbol ifAbsentPut: aBlock
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> attributeNamed: aSymbol put: anObject [
 	^ self attributes at: aSymbol put: anObject
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> attributes [
 	^ attributes ifNil: [ attributes := IdentityDictionary new ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> badgeTypes [
 	^ #()
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> badges [
 	| items |
 	items := OrderedCollection new.
@@ -126,7 +126,7 @@ GtSmaCCCoder >> badges [
 	^ items
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCCoder >> browseReferences: anElement [
 	| filter |
 	filter := self referencesFilterAtCursor.
@@ -134,7 +134,7 @@ GtSmaCCCoder >> browseReferences: anElement [
 	anElement phlow spawnObject: (GtSmaCCGrammarFilter on: self owner) & filter
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> coderRenamePositionsForProduction: aSmaCCToken [
 	| coderMap |
 	coderMap := Dictionary new.
@@ -164,7 +164,7 @@ GtSmaCCCoder >> coderRenamePositionsForProduction: aSmaCCToken [
 	^ coderMap
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> coderRenamePositionsForToken: aSmaCCToken [
 	| coderMap |
 	coderMap := Dictionary new.
@@ -179,7 +179,7 @@ GtSmaCCCoder >> coderRenamePositionsForToken: aSmaCCToken [
 	^ coderMap
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> collapsedEditor [
 	collapsedEditor isNil
 		ifTrue: [ collapsedEditor := self newCollapsedEditor.
@@ -187,12 +187,12 @@ GtSmaCCCoder >> collapsedEditor [
 	^ collapsedEditor
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> collapsedText [
 	^ self name asRopedText
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> completionStrategy [
 	grammarItem isProductionRule
 		ifTrue: [ ^ self productionCompletionStrategy ].
@@ -201,57 +201,57 @@ GtSmaCCCoder >> completionStrategy [
 	^ nil
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> defaultTextAttributes [
 	^ self class defaultTextAttributes
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCCoder >> deleteRule [
 	self
 		executeTransformation: (GtSmaCCDeleteRefactoring delete: grammarItem)
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> disableCodeCompletion [
 	self productionCompletionStrategy disable.
 	self tokenCompletionStrategy disable
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> enableCodeCompletion [
 	self productionCompletionStrategy enable.
 	self tokenCompletionStrategy enable
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> executeTransformation: aSmaCCTransformation [
 	[ aSmaCCTransformation execute ]
 		on: GtSmaCCTransformationError
 		do: [ :ex | self inform: ex messageText ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> expanded [
 	^ expanded
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> expanded: aBoolean [
 	expanded := aBoolean
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> grammar [
 	^ self grammarItem grammar
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> grammarItem [
 	^ grammarItem
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> grammarItem: aGrammarItem [
 	grammarItem notNil
 		ifTrue: [ grammarItem announcer unsubscribe: self ].
@@ -263,24 +263,24 @@ GtSmaCCCoder >> grammarItem: aGrammarItem [
 				to: self ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> highlighter [
 	^ self attributeNamed: #highlighter
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> highlighter: aHighlightingVisitor [
 	self attributeNamed: #highlighter put: aHighlightingVisitor.
 	self styleSource
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCoder >> initialize [
 	super initialize.
 	expanded := false
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 	| renameAction localIntervals local |
 	local := coderIntervalMap keys
@@ -305,43 +305,43 @@ GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 	renameAction install
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isDirective [
 	^ grammarItem isDirective
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> isInterval: interval inside: aNodeOrToken [
 	^ interval first >= aNodeOrToken startPosition
 		and: [ interval last <= aNodeOrToken stopPosition ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isModified [
 	^ grammarItem isModified
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isProductionRule [
 	^ grammarItem isProductionRule
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isReferenced [
 	^ grammarItem isReferenced
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isTokenRule [
 	^ grammarItem isTokenRule
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoder >> isValid [
 	^ grammarItem isValid
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> itemChanged: anAnnouncement [
 	grammarItem source ~= self sourceEditor text asString
 		ifTrue: [ self sourceEditor text: self sourceText ].
@@ -352,17 +352,17 @@ GtSmaCCCoder >> itemChanged: anAnnouncement [
 			self updateCollapsedSource ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> name [
 	^ grammarItem name
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> newCollapsedEditor [
 	^ BrTextEditor new
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> newSourceEditor [
 	^ BrTextEditor new
 		text: self sourceText;
@@ -374,20 +374,20 @@ GtSmaCCCoder >> newSourceEditor [
 		yourself
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> newStyler [
 	^ GtSmaCCStyler new
 		coder: self;
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> nodeAtCursor [
 	self nodeForSelectionDo: [ :each | ^ each ].
 	^ nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 	| node interval |
 	interval := self selectedSourceInterval.
@@ -402,7 +402,7 @@ GtSmaCCCoder >> nodeForSelectionDo: aBlock [
 		ifTrue: [ aBlock cull: node cull: interval ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> nodesForInterval: interval in: aNode [
 	| nodes |
 	nodes := OrderedCollection new.
@@ -420,7 +420,7 @@ GtSmaCCCoder >> nodesForInterval: interval in: aNode [
 	^ nodes
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> nodesForSelection [
 	| interval |
 	interval := self selectedSourceInterval.
@@ -429,22 +429,22 @@ GtSmaCCCoder >> nodesForSelection [
 	^ self nodesForInterval: interval in: self ast
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> owner [
 	^ owner
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> productionCompletionStrategy [
 	^ owner productionCompletionStrategy
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> referencesFilterAtCursor [
 	self
 		nodeForSelectionDo: [ :node :interval | 
@@ -466,14 +466,14 @@ GtSmaCCCoder >> referencesFilterAtCursor [
 	^ nil
 ]
 
-{ #category : #'accessing-attributes' }
+{ #category : 'accessing-attributes' }
 GtSmaCCCoder >> removeAttributeNamed: aSymbol [
 	attributes isNil
 		ifTrue: [ ^ self ].
 	^ attributes removeKey: aSymbol ifAbsent: [  ]
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCCoder >> renameItem: anElement [
 	| token |
 	token := self selectedToken.
@@ -485,21 +485,21 @@ GtSmaCCCoder >> renameItem: anElement [
 		ifTrue: [ self renameProductionNamed: token in: anElement ]
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> renameProductionNamed: aSmaCCToken in: anElement [
 	| coderIntervalMap |
 	coderIntervalMap := self coderRenamePositionsForProduction: aSmaCCToken.
 	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
-{ #category : #'private-actions' }
+{ #category : 'private-actions' }
 GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
 	| coderIntervalMap |
 	coderIntervalMap := self coderRenamePositionsForToken: aSmaCCToken.
 	self installRenameActionOn: anElement forCoders: coderIntervalMap
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> selectedSourceInterval [
 	self sourceEditor selection
 		do: [ :each | ^ each from + 1 to: each to ].
@@ -508,7 +508,7 @@ GtSmaCCCoder >> selectedSourceInterval [
 	^ nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> selectedToken [
 	| token interval |
 	interval := self selectedSourceInterval.
@@ -523,7 +523,7 @@ GtSmaCCCoder >> selectedToken [
 	^ token
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> shortcuts [
 	^ {(BlShortcutWithAction new
 		combination: BlKeyCombination primaryN;
@@ -535,12 +535,12 @@ GtSmaCCCoder >> shortcuts [
 		action: [ :element | self renameItem: element ])}
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoder >> source [
 	^ grammarItem source
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCCoder >> sourceChanged [
 	| source |
 	source := self sourceEditor text asString.
@@ -550,12 +550,12 @@ GtSmaCCCoder >> sourceChanged [
 	owner updateItems
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> sourceEditor [
 	^ sourceEditor ifNil: [ sourceEditor := self newSourceEditor ]
 ]
 
-{ #category : #editor }
+{ #category : 'editor' }
 GtSmaCCCoder >> sourceText [
 	| text |
 	text := grammarItem source asRopedText.
@@ -563,17 +563,17 @@ GtSmaCCCoder >> sourceText [
 	^ text
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> styleSource [
 	self sourceEditor styleText
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> tokenCompletionStrategy [
 	^ owner tokenCompletionStrategy
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoder >> updateCollapsedSource [
 	| text |
 	text := self collapsedText.

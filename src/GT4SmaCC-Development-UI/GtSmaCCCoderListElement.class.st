@@ -1,31 +1,31 @@
 Class {
-	#name : #GtSmaCCCoderListElement,
-	#superclass : #GtSmaCCDefinitionListElement,
+	#name : 'GtSmaCCCoderListElement',
+	#superclass : 'GtSmaCCDefinitionListElement',
 	#instVars : [
 		'badgeTypes'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #filtering }
+{ #category : 'filtering' }
 GtSmaCCCoderListElement >> addBadgeFilter: aSymbol [
 	badgeTypes add: aSymbol.
 	self updateFilters
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderListElement >> addItemLookTo: dataSource [
 	dataSource lookBlock: [ GtSmaCCBadgesAptitude new definitionList: self ]
 ]
 
-{ #category : #filtering }
+{ #category : 'filtering' }
 GtSmaCCCoderListElement >> badgeFilter [
 	^ badgeTypes
 		inject: GtSmaCCNoFilter new
 		into: [ :sum :each | sum & (GtSmaCCSelectorFilter selector: each) ]
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderListElement >> filterElement [
 	| element |
 	element := BlElement new.
@@ -39,7 +39,7 @@ GtSmaCCCoderListElement >> filterElement [
 	^ element
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderListElement >> filterErrors [
 	| filter |
 	filter := GtSmaCCDefinitionErrorFilter new.
@@ -47,30 +47,30 @@ GtSmaCCCoderListElement >> filterErrors [
 	self updateList
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoderListElement >> group: aDefinitionGroupResult [
 	super
 		group: (GtSmaCCNoFilter new applyInScope: aDefinitionGroupResult)
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCCoderListElement >> includesBadge: aSymbol [
 	^ badgeTypes includes: aSymbol
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCoderListElement >> initialize [
 	super initialize.
 	badgeTypes := Set new
 ]
 
-{ #category : #filtering }
+{ #category : 'filtering' }
 GtSmaCCCoderListElement >> removeBadgeFilter: aSymbol [
 	badgeTypes remove: aSymbol ifAbsent: [  ].
 	self updateFilters
 ]
 
-{ #category : #filtering }
+{ #category : 'filtering' }
 GtSmaCCCoderListElement >> ruleTypeFilter [
 	^ (self
 		childNamed: #toggles
@@ -88,12 +88,12 @@ GtSmaCCCoderListElement >> ruleTypeFilter [
 		ifNone: [  ]) ifNil: [ GtSmaCCNoFilter new ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderListElement >> ruleTypes [
 	^ #('Production' 'Token' 'Directive')
 ]
 
-{ #category : #filtering }
+{ #category : 'filtering' }
 GtSmaCCCoderListElement >> searchFilter [
 	| string |
 	string := self
@@ -105,7 +105,7 @@ GtSmaCCCoderListElement >> searchFilter [
 		ifFalse: [ GtSmaCCSourcePatternFilter pattern: string ]
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderListElement >> textSearchElement [
 	| element editor |
 	editor := BrTextEditor new.
@@ -131,7 +131,7 @@ GtSmaCCCoderListElement >> textSearchElement [
 	^ element
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderListElement >> typeFilterElement [
 	| toggles element |
 	toggles := self ruleTypes
@@ -156,7 +156,7 @@ GtSmaCCCoderListElement >> typeFilterElement [
 						attributes:
 							{(BlFontSizeAttribute size: 12).
 							(BlFontFamilyAttribute named: 'Source Sans Pro')});
-				aptitude: GtCoderToggleAptitude;
+				aptitude: BrGlamorousButtonLabelAptitude + BrGlamorousToggleBackgroundAptitude;
 				when: BrToggleActivatedEvent
 					do: [ :anEvent | self updateFilters ];
 				when: BrToggleDeactivatedEvent
@@ -172,7 +172,7 @@ GtSmaCCCoderListElement >> typeFilterElement [
 	^ element
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderListElement >> updateFilters [
 	| filter |
 	filter := self searchFilter & self ruleTypeFilter & self badgeFilter.

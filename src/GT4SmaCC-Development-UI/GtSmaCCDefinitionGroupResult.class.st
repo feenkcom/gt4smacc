@@ -1,21 +1,21 @@
 Class {
-	#name : #GtSmaCCDefinitionGroupResult,
-	#superclass : #GtSearchTypedGroupResult,
+	#name : 'GtSmaCCDefinitionGroupResult',
+	#superclass : 'GtSearchTypedGroupResult',
 	#instVars : [
 		'coderMap',
 		'grammarCoder'
 	],
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCDefinitionGroupResult class >> onCoder: aGrammarCoder [
 	^ self new
 		grammarCoder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : #elements }
+{ #category : 'elements' }
 GtSmaCCDefinitionGroupResult >> asElement [
 	^ GtSmaCCCoderListElement new
 		group: self;
@@ -25,7 +25,7 @@ GtSmaCCDefinitionGroupResult >> asElement [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDefinitionGroupResult >> coderFor: aGrammarItem [
 	aGrammarItem isDeleted
 		ifTrue: [ ^ nil ].
@@ -34,7 +34,7 @@ GtSmaCCDefinitionGroupResult >> coderFor: aGrammarItem [
 		ifAbsentPut: [ GtSmaCCCoder on: aGrammarItem in: self grammarCoder ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDefinitionGroupResult >> coders [
 	| coders |
 	coders := OrderedCollection new.
@@ -44,17 +44,17 @@ GtSmaCCDefinitionGroupResult >> coders [
 	^ coders
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDefinitionGroupResult >> grammarCoder [
 	^ grammarCoder ifNil: [ scope grammarCoder ]
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCDefinitionGroupResult >> grammarCoder: aGrammarCoder [
 	grammarCoder := aGrammarCoder
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCDefinitionGroupResult >> gtItemsFor: aView [
 	<gtView>
 	^ aView explicit 
@@ -63,7 +63,7 @@ GtSmaCCDefinitionGroupResult >> gtItemsFor: aView [
 		stencil: [ self ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDefinitionGroupResult >> highlighter [
 	filter notNil
 		ifTrue: [ filter highlighter ifNotNil: [ :highlighter | ^ highlighter ] ].
@@ -72,12 +72,12 @@ GtSmaCCDefinitionGroupResult >> highlighter [
 	^ nil
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 GtSmaCCDefinitionGroupResult >> itemsDo: aBlock [
 	self do: aBlock
 ]
 
-{ #category : #updating }
+{ #category : 'updating' }
 GtSmaCCDefinitionGroupResult >> updateItemsFrom: aCollection [
 	items := OrderedCollection withAll: aCollection.
 	filtered := true

@@ -1,15 +1,15 @@
 Class {
-	#name : #GtSmaCCGrammarAnnouncement,
-	#superclass : #Announcement,
-	#category : #'GT4SmaCC-Development-UI-Model'
+	#name : 'GtSmaCCGrammarAnnouncement',
+	#superclass : 'Announcement',
+	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarAnnouncement >> grammar [
 	self subclassResponsibility
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarAnnouncement >> isRename [
 	^ false
 ]

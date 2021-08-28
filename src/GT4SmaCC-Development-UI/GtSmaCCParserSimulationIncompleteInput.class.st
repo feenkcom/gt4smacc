@@ -1,25 +1,25 @@
 Class {
-	#name : #GtSmaCCParserSimulationIncompleteInput,
-	#superclass : #GtSmaCCSimulationAnnoucement,
+	#name : 'GtSmaCCParserSimulationIncompleteInput',
+	#superclass : 'GtSmaCCSimulationAnnoucement',
 	#instVars : [
 		'stack'
 	],
-	#category : #'GT4SmaCC-Development-UI-Simulation'
+	#category : 'GT4SmaCC-Development-UI-Simulation'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCParserSimulationIncompleteInput class >> input: aString stack: nodeCollection [
 	^ (self input: aString index: aString size)
 		stack: nodeCollection;
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCParserSimulationIncompleteInput >> stack [
 	^ stack
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCParserSimulationIncompleteInput >> stack: aCollection [
 	stack := aCollection
 ]

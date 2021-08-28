@@ -1,14 +1,14 @@
 Class {
-	#name : #GtSmaCCSimulationAnnoucement,
-	#superclass : #Announcement,
+	#name : 'GtSmaCCSimulationAnnoucement',
+	#superclass : 'Announcement',
 	#instVars : [
 		'input',
 		'index'
 	],
-	#category : #'GT4SmaCC-Development-UI-Simulation'
+	#category : 'GT4SmaCC-Development-UI-Simulation'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCSimulationAnnoucement class >> input: aString index: anInteger [
 	^ self new
 		input: aString;
@@ -16,22 +16,22 @@ GtSmaCCSimulationAnnoucement class >> input: aString index: anInteger [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSimulationAnnoucement >> index [
 	^ index
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSimulationAnnoucement >> index: anInteger [
 	index := anInteger
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSimulationAnnoucement >> input [
 	^ input
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSimulationAnnoucement >> input: aString [
 	input := aString
 ]

@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCProductionCoder,
-	#superclass : #GtSmaCCCoder,
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#name : 'GtSmaCCProductionCoder',
+	#superclass : 'GtSmaCCCoder',
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCProductionCoder >> actions [
 	^ {(GtCoderAction new
 		title: 'Simulate' translated;
@@ -13,14 +13,14 @@ GtSmaCCProductionCoder >> actions [
 		yourself)}
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCProductionCoder >> badgeTypes [
 	^ super badgeTypes
 		,
 			#(#('AST' hasASTExpression) #('Code' hasCodeExpression) #('Default' hasDefaultExpression))
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCProductionCoder >> collapsedText [
 	| text |
 	text := self name asRopedText.
@@ -28,7 +28,7 @@ GtSmaCCProductionCoder >> collapsedText [
 	^ text
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCProductionCoder >> extractSource: anElement [
 	| nodes newSource extractedSource extractedLocation newItem renameMap |
 	nodes := self nodesForSelection.
@@ -69,7 +69,7 @@ GtSmaCCProductionCoder >> extractSource: anElement [
 	self installRenameActionOn: anElement forCoders: renameMap
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCProductionCoder >> inlineSource [
 	| node interval |
 	node := self nodeAtCursor.
@@ -86,7 +86,7 @@ GtSmaCCProductionCoder >> inlineSource [
 				executeTransformation: (GtSmaCCInlineAllRefactoring inlineAll: grammarItem) ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCProductionCoder >> shortcuts [
 	^ super shortcuts
 		,
@@ -108,7 +108,7 @@ GtSmaCCProductionCoder >> shortcuts [
 				action: [ :element | self extractSource: element ])}
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCProductionCoder >> viewParserSimulator: anElement [
 	| simulator |
 	simulator := GtSmaCCParserSimulator on: grammarItem.

@@ -1,14 +1,14 @@
 Class {
-	#name : #GtSmaCCBadgesAptitude,
-	#superclass : #BrAptitude,
+	#name : 'GtSmaCCBadgesAptitude',
+	#superclass : 'BrAptitude',
 	#instVars : [
 		'definitionList',
 		'badgeList'
 	],
-	#category : #'GT4SmaCC-Development-UI-Looks'
+	#category : 'GT4SmaCC-Development-UI-Looks'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtSmaCCBadgesAptitude >> badgeToggles [
 	| toggles |
 	toggles := OrderedCollection new.
@@ -18,17 +18,24 @@ GtSmaCCBadgesAptitude >> badgeToggles [
 				ifTrue: [ toggles
 						add:
 							(BrToggle new
-								margin: (BlInsets all: 2);
+								layout: BlLinearLayout horizontal alignCenter;
 								constraintsDo: [ :c | 
-									c frame horizontal alignRight.
-									c frame vertical alignTop ];
+									c horizontal fitContent.
+									c vertical exact: 16.
+									c padding: (BlInsets all: 6) ];
+								margin:
+									(BlInsets
+										top: 0
+										left: 2
+										bottom: 0
+										right: 2);
 								activated: (definitionList includesBadge: each last);
 								label:
 									(each first asRopedText
 										attributes:
 											{(BlFontSizeAttribute size: 12).
 											(BlFontFamilyAttribute named: 'Source Sans Pro')});
-								aptitude: GtCategoryToggleAptitude;
+								aptitude: BrGlamorousButtonLabelAptitude + BrGlamorousToggleBackgroundAptitude;
 								when: BrToggleActivatedEvent
 									do: [ :anEvent | definitionList addBadgeFilter: each last ];
 								when: BrToggleDeactivatedEvent
@@ -37,12 +44,12 @@ GtSmaCCBadgesAptitude >> badgeToggles [
 	^ toggles
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCBadgesAptitude >> definitionList: anObject [
 	definitionList := anObject
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtSmaCCBadgesAptitude >> initialize [
 	super initialize.
 	badgeList := BlElement new.

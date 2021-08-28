@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCTokenSimulatorElement,
-	#superclass : #GtSmaCCSimulatorElement,
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#name : 'GtSmaCCTokenSimulatorElement',
+	#superclass : 'GtSmaCCSimulatorElement',
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTokenSimulatorElement >> add: aTokenRule to: aGroup [
 	(aGroup includes: aTokenRule)
 		ifTrue: [ ^ self ].
@@ -16,7 +16,7 @@ GtSmaCCTokenSimulatorElement >> add: aTokenRule to: aGroup [
 				ifNotNil: [ :rule | self add: rule to: aGroup ] ]
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCTokenSimulatorElement >> buildResultsElement [
 	| element group |
 	group := GtSmaCCDefinitionGroupResult onCoder: grammarCoder.
@@ -27,12 +27,12 @@ GtSmaCCTokenSimulatorElement >> buildResultsElement [
 	self addChild: element as: #list
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCTokenSimulatorElement >> cursorMoved [
 	self simulateInput
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCTokenSimulatorElement >> setupSimulator [
 	simulator weak
 		when: GtSmaCCTokenSimulationError send: #styleError: to: self;
@@ -41,7 +41,7 @@ GtSmaCCTokenSimulatorElement >> setupSimulator [
 	self buildElement
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTokenSimulatorElement >> styleAccept: acceptAnnouncement [
 	| group |
 	self clearAttributesIn: self testEditor.
@@ -68,7 +68,7 @@ GtSmaCCTokenSimulatorElement >> styleAccept: acceptAnnouncement [
 										attributes: AcceptAttributes ] ] ] ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTokenSimulatorElement >> styleError: errorAnnouncement [
 	| editor text |
 	editor := self testEditor.
