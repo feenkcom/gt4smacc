@@ -1,21 +1,21 @@
 Class {
-	#name : #GtSmaCCGrammarElement,
-	#superclass : #BlElement,
+	#name : 'GtSmaCCGrammarElement',
+	#superclass : 'BlElement',
 	#instVars : [
 		'grammar',
 		'completionStrategy'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarElement class >> onGrammar: aGrammar [
 	^ self new
 		grammar: aGrammar;
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCGrammarElement >> actionBar [
 	^ BrToolbar new
 		aptitude: BrGlamorousToolbarAptitude new;
@@ -29,7 +29,7 @@ GtSmaCCGrammarElement >> actionBar [
 				action: [ :element | self save ])
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCGrammarElement >> buildInterface [
 	self layout: BlLinearLayout vertical.
 	self padding: (BlInsets all: 5).
@@ -41,7 +41,7 @@ GtSmaCCGrammarElement >> buildInterface [
 	self addChild: self actionBar
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarElement >> displayError: aString at: anIndex [
 	| index |
 	index := (anIndex - 1 max: 1) min: self sourceEditor text size.
@@ -50,24 +50,24 @@ GtSmaCCGrammarElement >> displayError: aString at: anIndex [
 	self sourceEditor moveCursorTo: index
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarElement >> grammar [
 	^ grammar
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarElement >> grammar: aGrammar [
 	grammar := aGrammar.
 	self updateEditor
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarElement >> initialize [
 	super initialize.
 	self buildInterface
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCGrammarElement >> save [
 	[ SmaCCGrammarCompiler new
 		buildDefinition: self source;
@@ -77,17 +77,17 @@ GtSmaCCGrammarElement >> save [
 		do: [ :ex | self displayError: ex description at: ex tag position ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarElement >> source [
 	^ self sourceEditor text asString
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarElement >> sourceEditor [
 	^ self sourceElement editor
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCGrammarElement >> sourceEditorElement [
 	| completionController element |
 	element := BrEditor new.
@@ -107,12 +107,12 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 	^ element
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarElement >> sourceElement [
 	^ self childNamed: #source
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarElement >> updateEditor [
 	| styler text |
 	styler := GtSmaCCGrammarStyler

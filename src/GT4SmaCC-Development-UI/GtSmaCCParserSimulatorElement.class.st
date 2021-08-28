@@ -1,31 +1,31 @@
 Class {
-	#name : #GtSmaCCParserSimulatorElement,
-	#superclass : #GtSmaCCSimulatorElement,
+	#name : 'GtSmaCCParserSimulatorElement',
+	#superclass : 'GtSmaCCSimulatorElement',
 	#instVars : [
 		'parseTreeElement'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'class initialization' }
+{ #category : 'class initialization' }
 GtSmaCCParserSimulatorElement class >> initialize [
 	ErrorAttributes := {(BlTextUnderlineAttribute new
 		color: BrGlamorousColors errorBorderColor;
 		thickness: 3)}
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCParserSimulatorElement >> accepted: anAcceptAnnouncement [
 	self testEditor styleText.
 	self displayResult: anAcceptAnnouncement results first
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCParserSimulatorElement >> buildResultsElement [
 	self addChild: self parseTreeElement as: #parseTree
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> childrenOf: anObject [
 	^ (anObject isKindOf: SmaCCReducedItem)
 		ifTrue: [ anObject items ]
@@ -34,7 +34,7 @@ GtSmaCCParserSimulatorElement >> childrenOf: anObject [
 				ifFalse: [ #() ] ]
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCParserSimulatorElement >> cursorMoved [
 	| position |
 	position := self inputCursorPosition.
@@ -51,7 +51,7 @@ GtSmaCCParserSimulatorElement >> cursorMoved [
 					ifTrue: [ self parseTreeElement selectOne: i ] ] ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 	| root |
 	root := aSmaCCToken isNil
@@ -65,7 +65,7 @@ GtSmaCCParserSimulatorElement >> displayError: stack token: aSmaCCToken [
 	self expandRoot
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> displayResult: reducedItem [
 	self parseTreeElement
 		items: {reducedItem}
@@ -73,12 +73,12 @@ GtSmaCCParserSimulatorElement >> displayResult: reducedItem [
 	self expandRoot
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> expandRoot [
 	(self parseTreeElement viewModel itemAt: 1) expand
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCParserSimulatorElement >> failed: errorAnnouncement [
 	| editor text |
 	editor := self testEditor.
@@ -91,7 +91,7 @@ GtSmaCCParserSimulatorElement >> failed: errorAnnouncement [
 		token: errorAnnouncement token
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> highlightInputFrom: startPosition to: stopPosition [
 	| editor text |
 	editor := self testEditor.
@@ -103,13 +103,13 @@ GtSmaCCParserSimulatorElement >> highlightInputFrom: startPosition to: stopPosit
 	editor text: text
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCParserSimulatorElement >> incomplete: incompleteAnnouncement [
 	self testEditor styleText.
 	self displayError: incompleteAnnouncement stack token: nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> labelFor: anObject [
 	(anObject isKindOf: SmaCCReducedItem)
 		ifTrue: [ ^ anObject rhs productionSymbol name ].
@@ -123,7 +123,7 @@ GtSmaCCParserSimulatorElement >> labelFor: anObject [
 	^ self error: 'Unknown object'
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCParserSimulatorElement >> parseTreeElement [
 	^ parseTreeElement
 		ifNil: [ parseTreeElement := BrColumnedTree new addEventHandler: GtPhlowListToSelectHandler new.
@@ -144,7 +144,7 @@ GtSmaCCParserSimulatorElement >> parseTreeElement [
 			parseTreeElement ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> phlowSelection: aNode [
 	| name value node |
 	node := aNode.
@@ -163,7 +163,7 @@ GtSmaCCParserSimulatorElement >> phlowSelection: aNode [
 	node notNil ] whileTrue
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> selectNodeAt: anInteger from: treeNode [
 	(self selectionIntervalFor: treeNode value)
 		ifNotNil: [ :interval | 
@@ -176,13 +176,13 @@ GtSmaCCParserSimulatorElement >> selectNodeAt: anInteger from: treeNode [
 	^ nil
 ]
 
-{ #category : #'event handling' }
+{ #category : 'event handling' }
 GtSmaCCParserSimulatorElement >> selected: aNode [
 	self phlowSelection: aNode.
 	self styleSelection: aNode
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
 	(anObject isKindOf: Association)
 		ifTrue: [ ^ 1 to: self testEditor text size ].
@@ -190,7 +190,7 @@ GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
 		ifTrue: [ anObject sourceInterval ]
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCParserSimulatorElement >> setupSimulator [
 	simulator weak
 		when: GtSmaCCParserSimulationAccept send: #accepted: to: self;
@@ -202,7 +202,7 @@ GtSmaCCParserSimulatorElement >> setupSimulator [
 	self buildElement
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCParserSimulatorElement >> styleSelection: aNode [
 	| value |
 	self clearAttributesIn: self testEditor.

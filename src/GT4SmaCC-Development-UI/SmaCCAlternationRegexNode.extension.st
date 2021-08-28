@@ -1,6 +1,6 @@
-Extension { #name : #SmaCCAlternationRegexNode }
+Extension { #name : 'SmaCCAlternationRegexNode' }
 
-{ #category : #'*GT4SmaCC-Development-UI' }
+{ #category : '*GT4SmaCC-Development-UI' }
 SmaCCAlternationRegexNode >> testTokensDo: aBlock [
 	super testTokensDo: aBlock.
 	barTokens do: aBlock

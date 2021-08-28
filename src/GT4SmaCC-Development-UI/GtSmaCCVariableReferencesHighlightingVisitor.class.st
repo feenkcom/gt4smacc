@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCVariableReferencesHighlightingVisitor,
-	#superclass : #GtSmaCCReferencesHighlightingVisitor,
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#name : 'GtSmaCCVariableReferencesHighlightingVisitor',
+	#superclass : 'GtSmaCCReferencesHighlightingVisitor',
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #visting }
+{ #category : 'visting' }
 GtSmaCCVariableReferencesHighlightingVisitor >> visitSymbol: aSymbol [
 	aSymbol variableNameToken notNil
 		ifTrue: [ aSymbol variableNameToken source = name

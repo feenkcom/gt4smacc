@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCGrammarItem,
-	#superclass : #GtSmaCCModel,
+	#name : 'GtSmaCCGrammarItem',
+	#superclass : 'GtSmaCCModel',
 	#instVars : [
 		'grammar',
 		'originalAST',
@@ -8,10 +8,10 @@ Class {
 		'ast',
 		'isDeleted'
 	],
-	#category : #'GT4SmaCC-Development-UI-Model'
+	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarItem class >> on: aGrammar ast: aNode [
 	^ self new
 		grammar: aGrammar;
@@ -19,7 +19,7 @@ GtSmaCCGrammarItem class >> on: aGrammar ast: aNode [
 		yourself
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCGrammarItem class >> on: aGrammar source: aString [
 	^ self new
 		grammar: aGrammar;
@@ -27,7 +27,7 @@ GtSmaCCGrammarItem class >> on: aGrammar source: aString [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> ast [
 	^ ast
 		ifNil: [ ast := SmaCCDefinitionParser
@@ -35,45 +35,45 @@ GtSmaCCGrammarItem >> ast [
 				startingAt: self parserStartingState ]
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCGrammarItem >> delete [
 	isDeleted := true.
 	self announce: (GtSmaCCGrammarItemChanged forItem: self)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> grammar [
 	^ grammar
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarItem >> grammar: aGrammar [
 	grammar := aGrammar
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarItem >> initialize [
 	super initialize.
 	isDeleted := false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarItem >> isDeleted [
 	^ isDeleted
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarItem >> isModified [
 	^ source ~= self originalSource or: [ isDeleted ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarItem >> isReferenced [
 	self grammar allReferencesTo: self name do: [ :node | ^ true ].
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarItem >> isValid [
 	isDeleted
 		ifTrue: [ ^ true ].
@@ -85,7 +85,7 @@ GtSmaCCGrammarItem >> isValid [
 		do: [ :ex | ex return: false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> name [
 	^ self ast
 		ifNotNil: [ :node | 
@@ -97,35 +97,35 @@ GtSmaCCGrammarItem >> name [
 				ifFalse: [ node name source ] ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> originalAST [
 	^ originalAST
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCGrammarItem >> originalAST: aNode [
 	originalAST := aNode.
 	source := originalAST source
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> originalSource [
 	^ originalAST isNil
 		ifTrue: [ '' ]
 		ifFalse: [ originalAST source ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarItem >> parserStartingState [
 	^ self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> source [
 	^ source
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItem >> source: aString [
 	| previousName newName |
 	source = aString
@@ -143,7 +143,7 @@ GtSmaCCGrammarItem >> source: aString [
 						newName: newName ])
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCGrammarItem >> updateSource: aSmaCCString at: anIndex [
 	self isModified
 		ifTrue: [ isDeleted

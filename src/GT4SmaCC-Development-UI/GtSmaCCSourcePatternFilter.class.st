@@ -1,25 +1,25 @@
 Class {
-	#name : #GtSmaCCSourcePatternFilter,
-	#superclass : #GtSmaCCDefinitionsFilter,
+	#name : 'GtSmaCCSourcePatternFilter',
+	#superclass : 'GtSmaCCDefinitionsFilter',
 	#instVars : [
 		'pattern'
 	],
-	#category : #'GT4SmaCC-Development-UI-Filters'
+	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCSourcePatternFilter class >> pattern: aString [
 	^ self new
 		pattern: aString;
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSourcePatternFilter >> highlighter [
 	^ GtSmaCCSourceHighlightingVisitor pattern: pattern
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCSourcePatternFilter >> matches: anObject [
 	(anObject isKindOf: GtSmaCCGrammarItem)
 		ifFalse: [ ^ false ].
@@ -29,7 +29,7 @@ GtSmaCCSourcePatternFilter >> matches: anObject [
 		indexOfSubCollection: pattern asLowercase) > 0
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSourcePatternFilter >> pattern: aString [
 	pattern := aString
 ]

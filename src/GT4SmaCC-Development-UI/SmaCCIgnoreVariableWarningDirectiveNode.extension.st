@@ -1,11 +1,11 @@
-Extension { #name : #SmaCCIgnoreVariableWarningDirectiveNode }
+Extension { #name : 'SmaCCIgnoreVariableWarningDirectiveNode' }
 
-{ #category : #'*GT4SmaCC-Development-UI' }
+{ #category : '*GT4SmaCC-Development-UI' }
 SmaCCIgnoreVariableWarningDirectiveNode >> directiveNameToken [
 	^ ignoreVariableWarningToken
 ]
 
-{ #category : #'*GT4SmaCC-Development-UI' }
+{ #category : '*GT4SmaCC-Development-UI' }
 SmaCCIgnoreVariableWarningDirectiveNode >> displayString [
 	^ '%' , ignoreVariableWarningToken value
 ]

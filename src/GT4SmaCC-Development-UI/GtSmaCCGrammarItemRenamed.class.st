@@ -1,34 +1,34 @@
 Class {
-	#name : #GtSmaCCGrammarItemRenamed,
-	#superclass : #GtSmaCCGrammarItemChanged,
+	#name : 'GtSmaCCGrammarItemRenamed',
+	#superclass : 'GtSmaCCGrammarItemChanged',
 	#instVars : [
 		'previousName',
 		'newName'
 	],
-	#category : #'GT4SmaCC-Development-UI-Model'
+	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCGrammarItemRenamed >> isRename [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemRenamed >> newName [
 	^ newName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemRenamed >> newName: aString [
 	newName := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemRenamed >> previousName [
 	^ previousName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCGrammarItemRenamed >> previousName: aString [
 	previousName := aString
 ]
