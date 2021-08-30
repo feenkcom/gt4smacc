@@ -81,10 +81,11 @@ GtSmaCCListCoderElement >> compilationBar [
 	element := BlElement new.
 	element layout: BlLinearLayout horizontal.
 	element
-		constraintsDo: [ :c | 
+		constraintsDo:
+			[ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
-	element addChild: self actionBar.
+	element addChild: self actionBar as: #actionBar.
 	^ element
 ]
 
