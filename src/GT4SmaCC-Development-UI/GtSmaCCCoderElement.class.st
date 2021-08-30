@@ -89,7 +89,7 @@ GtSmaCCCoderElement >> contentElement [
 			c vertical fitContent.
 			c horizontal matchParent ].
 	element addChild: self sourceEditor.
-	element addChild: self actionBar.
+	element addChild: self actionBar as: #actionBar.
 	^ element
 ]
 
