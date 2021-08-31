@@ -60,6 +60,11 @@ GtSmaCCListCoderElement >> buildElement [
 		addChild: self compilationBar
 ]
 
+{ #category : 'accessing' }
+GtSmaCCListCoderElement >> coder [
+	^ grammarCoder
+]
+
 { #category : 'initialize-release' }
 GtSmaCCListCoderElement >> coder: aGrammarCoder [
 	grammarCoder := aGrammarCoder.
@@ -109,6 +114,12 @@ GtSmaCCListCoderElement >> listElement [
 	list stencil: [ :each :index | each asElement ].
 	list items: self group coders.
 	^ list asScrollableElement
+]
+
+{ #category : 'ui' }
+GtSmaCCListCoderElement >> showDefinition: aString [
+	grammarCoder grammar: (GtSmaCCGrammar forDefinition: aString).
+	self updateList
 ]
 
 { #category : 'private' }

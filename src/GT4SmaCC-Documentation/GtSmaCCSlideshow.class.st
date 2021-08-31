@@ -1,6 +1,6 @@
 Class {
 	#name : 'GtSmaCCSlideshow',
-	#superclass : 'Object',
+	#superclass : 'GtSmaCCSlides',
 	#category : 'GT4SmaCC-Documentation'
 }
 
@@ -10,24 +10,6 @@ GtSmaCCSlideshow >> addButtonFor: coderElement [
 		allChildrenBreadthFirstDetect:
 			[ :aChild | (aChild isKindOf: BrToolbar) and: [ aChild parent isKindOf: GtCoderToolbarElement ] ]
 		ifFound: [ :aChild | aChild childAt: 4 ]
-]
-
-{ #category : 'private' }
-GtSmaCCSlideshow >> createParserCoderOn: aClass [
-	<gtExample>
-	
-	| coderElement |
-	coderElement := BlUseAsyncFeatures
-		disableDuring: [ (GtPager createWrappedOn: (GtClassCoderLiveSlide new class: aClass)) maximized ].
-	^ (BlElement new)
-		constraintsDo:
-				[ :c | 
-					c vertical matchParent.
-					c horizontal matchParent ];
-		aptitude: BrShadowAptitude;
-		background: Color white;
-		margin: (BlInsets all: 5);
-		addChild: coderElement
 ]
 
 { #category : 'create parser slide' }
@@ -185,16 +167,6 @@ GtSmaCCSlideshow >> filterSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'private' }
-GtSmaCCSlideshow >> findItem: aString in: coderElement [
-	^ coderElement
-		allChildrenBreadthFirstDetect:
-			[ :each | 
-			(each isKindOf: GtSmaCCCoderElement)
-				and: [ (each coder isTokenRule or: [ each coder isProductionRule ]) and: [ each coder name = aString ] ] ]
-		ifFound: [ :each | each ]
-]
-
 { #category : 'production simulator slide' }
 GtSmaCCSlideshow >> productionSimulatorSlideElement [
 	<gtExample>
@@ -300,14 +272,4 @@ GtSmaCCSlideshow >> tokenSimulatorSlideText [
 				asRopedText)
 		glamorousRegularFont;
 		fontSize: 20
-]
-
-{ #category : 'private' }
-GtSmaCCSlideshow >> yellowExplanationTargetCircleFor: aModel [
-	^ (BrButton new)
-		constraintsDo: [ :c | c ignoreByLayout ];
-		size: 0 @ 0;
-		elevation: (BlRelativeElevation elevation: 10);
-		geometry: BlCircle new;
-		aptitude: (GtExplainerTargetAptitude new explanationModel: aModel)
 ]
