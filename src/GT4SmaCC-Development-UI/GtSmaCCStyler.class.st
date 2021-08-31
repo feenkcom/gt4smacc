@@ -129,6 +129,13 @@ GtSmaCCStyler >> startingState: anInteger [
 ]
 
 { #category : 'private' }
+GtSmaCCStyler >> style: aText using: anAST [
+	text := aText.
+	[ [ coder highlighter ifNotNil: [ :highlighter | highlighter styleNode: anAST using: self ].
+	self syntaxStylingVisitor styleNode: anAST using: self ] on: Error do: [ :ex | ex return ] ] ensure: [ text := nil ]
+]
+
+{ #category : 'private' }
 GtSmaCCStyler >> syntaxStylingVisitor [
 	^ GtSmaCCCoderStylingVisitor new
 ]

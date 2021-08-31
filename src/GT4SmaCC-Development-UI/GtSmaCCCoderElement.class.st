@@ -85,10 +85,11 @@ GtSmaCCCoderElement >> contentElement [
 	element layout: BlLinearLayout vertical.
 	element margin: (BlInsets left: 5).
 	element
-		constraintsDo: [ :c | 
+		constraintsDo:
+			[ :c | 
 			c vertical fitContent.
 			c horizontal matchParent ].
-	element addChild: self sourceEditor.
+	element addChild: self sourceEditor as: #editor.
 	element addChild: self actionBar as: #actionBar.
 	^ element
 ]
