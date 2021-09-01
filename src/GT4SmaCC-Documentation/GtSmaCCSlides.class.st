@@ -27,7 +27,8 @@ GtSmaCCSlides >> createTokenSimulatorFor: ruleName from: aGrammar [
 	| value |
 	value := SmaCCGrammar maximumCharacterValue.
 	SmaCCGrammar maximumCharacterValue: 255.
-	^ [ SmaCCRegexSimulator on: aGrammar ast tokenName: ruleName ] ensure: [ SmaCCGrammar maximumCharacterValue: value ]
+	^ [ [ SmaCCRegexSimulator on: aGrammar ast tokenName: ruleName ] on: Error do: [ :ex | ex return: nil ] ]
+		ensure: [ SmaCCGrammar maximumCharacterValue: value ]
 ]
 
 { #category : 'private' }

@@ -4,6 +4,125 @@ Class {
 	#category : 'GT4SmaCC-Documentation'
 }
 
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> addExpressionStylerTo: aSmaCCCoderElement [
+	| validationStyler editorElement |
+	validationStyler := self expressionValidationStyler.
+	editorElement := aSmaCCCoderElement childNamed: #editor.
+	editorElement installValidatorsFor: #(operators parens).
+	editorElement editor
+		styler:
+			((GtCompositeSmaCCASTStyler forParser: SmaCCDefinitionParser)
+				stylers:
+					{editorElement styler.
+						validationStyler})
+]
+
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> expressionValidationStyler [
+	| binaryExpressions parenExpression |
+	(SmaCCDefinitionParser
+		parse:
+			'Expression: Expression "-" Expression | Expression "*" Expression | Expression "/" Expression | Expression "^" Expression;'
+		startingAt: SmaCCDefinitionParser startingStateForProductionRule) ifNotNil: [ :ast | binaryExpressions := ast expressions ].
+	(SmaCCDefinitionParser
+		parse: 'Expression: "(" Expression ")";'
+		startingAt: SmaCCDefinitionParser startingStateForProductionRule)
+		ifNotNil: [ :ast | parenExpression := ast expressions first ].
+	^ (GtSmaCCParserStyler forParser: SmaCCDefinitionParser)
+		stylerRules:
+			{GtSmaCCNodeStylerRule
+					nodeClassName: #SmaCCProductionRuleNode
+					styleBlock:
+						[ :styler :node :text | 
+						| index |
+						(binaryExpressions allSatisfy: [ :each | node expressions includes: each ])
+							ifTrue:
+								[ (text from: node startPosition to: node startPosition) attributes: {GtValidatorTextAttribute new model: #operators} ].
+						(index := node expressions indexOf: parenExpression) > 0
+							ifTrue:
+								[ (text from: (node expressions at: index) startPosition to: (node expressions at: index) startPosition)
+									attributes: {GtValidatorTextAttribute new model: #parens} ] ]}
+]
+
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> expressionsSlideElement [
+	<gtExample>
+	
+	| element |
+	element := self createParserCoderOn: GtSmaCCCalculatorParser.
+	self
+		setSource:
+			'<number>
+	: \d+ (\. \d+)?
+	;
+<whitespace>
+	: \s+
+	;
+Expression
+	: <number>
+	| Expression "+" Expression
+	;'
+		in: element.
+	element
+		enqueueTask:
+			((BlDelayedTaskAction new)
+				delay: 500 milliSeconds;
+				action:
+						[ (self findItem: 'Expression' in: element)
+								ifNotNil:
+									[ :each | 
+									| bar |
+									each expand.
+									self addExpressionStylerTo: each.
+									each addChild: ((self yellowExplanationTargetCircleFor: #Expression) relocate: 2 @ 8).
+									bar := each childNamed: #actionBar.
+									bar children first addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8) ] ]).
+	^ element
+]
+
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> expressionsSlideFor: aSlide [
+	<gtSlide>
+	
+	^ (aSlide textAndElement)
+		priority: 21;
+		newTextWithFormat: self expressionsSlideText;
+		element: [ self expressionsSlideElement ];
+		elementWeight: 0.6
+]
+
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> expressionsSlideText [
+	^ ('In this slide we have the tokens defined and have started the Expression definition. Currently, it only accepts addition.'
+		asRopedText , String cr asRopedText
+		,
+			(' ' asRopedText
+				attributes:
+					{BrTextAdornmentDynamicAttribute new
+							stencil:
+								[ (BrCheckbox new)
+									disable;
+									aptitude: (GtCheckedValidatorTargetAptitude new model: #operators) + BrGlamorousCheckboxAptitude new ]})
+		, ' Extend the ' asRopedText , ('Expression' asRopedText glamorousExplanationFor: #Expression)
+		, ' production to add -, *, /, and ^ operators.' asRopedText , String cr asRopedText
+		,
+			(' ' asRopedText
+				attributes:
+					{BrTextAdornmentDynamicAttribute new
+							stencil:
+								[ (BrCheckbox new)
+									disable;
+									aptitude: (GtCheckedValidatorTargetAptitude new model: #parens) + BrGlamorousCheckboxAptitude new ]})
+		, ' Add a parenthesized expression to the ' asRopedText , ('Expression' asRopedText glamorousExplanationFor: #Expression)
+		, ' production.' asRopedText , String cr asRopedText , 'You can test the ' asRopedText
+		, ('Expression' asRopedText glamorousExplanationFor: #Expression)
+		, ' production without compiling by using the ' asRopedText
+		, ('debug' asRopedText glamorousExplanationFor: #simulateButton) , ' button.' asRopedText)
+		glamorousRegularFont;
+		fontSize: 20
+]
+
 { #category : 'number token slide' }
 GtSmaCCCalculatorSlideshow >> isValidNumberToken: aGrammar [
 	| item simulator ruleName |
@@ -12,6 +131,7 @@ GtSmaCCCalculatorSlideshow >> isValidNumberToken: aGrammar [
 	item isNil ifTrue: [ ^ false ].
 	aGrammar isValid ifFalse: [ ^ false ].
 	simulator := self createTokenSimulatorFor: ruleName from: aGrammar.
+	simulator isNil ifTrue: [ ^ false ].
 	0
 		to: 255
 		do:
@@ -42,6 +162,7 @@ GtSmaCCCalculatorSlideshow >> isValidWhitespaceToken: aGrammar [
 	item isNil ifTrue: [ ^ false ].
 	aGrammar isValid ifFalse: [ ^ false ].
 	simulator := self createTokenSimulatorFor: ruleName from: aGrammar.
+	simulator isNil ifTrue: [ ^ false ].
 	whitespace := ' 	' , String crlf.
 	0
 		to: 255
@@ -131,6 +252,11 @@ GtSmaCCCalculatorSlideshow >> runSimulator: simulator with: aString [
 			nodes isNil ifTrue: [ ^ false ].
 			i = aString size ifTrue: [ ^ nodes anySatisfy: [ :each | each isTokenRule ] ] ].
 	^ false
+]
+
+{ #category : 'expressions slide' }
+GtSmaCCCalculatorSlideshow >> updateExpressionsSlideToggles: anElement with: anAnnouncement [
+	
 ]
 
 { #category : 'number token slide' }
