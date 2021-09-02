@@ -1,14 +1,14 @@
 Class {
-	#name : #GtSmaCCAttributeQuery,
-	#superclass : #GtSmaCCQuery,
+	#name : 'GtSmaCCAttributeQuery',
+	#superclass : 'GtSmaCCQuery',
 	#instVars : [
 		'query',
 		'attributeName'
 	],
-	#category : #'GT4SmaCC-Queries'
+	#category : 'GT4SmaCC-Queries'
 }
 
-{ #category : #querying }
+{ #category : 'querying' }
 GtSmaCCAttributeQuery >> <- aValue [
 	| results |
 	results := GtSmaCCNodeQuery new.
@@ -33,22 +33,22 @@ GtSmaCCAttributeQuery >> <- aValue [
 	^ results
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCAttributeQuery >> attributeName [
 	^ attributeName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCAttributeQuery >> attributeName: aName [
 	attributeName := aName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCAttributeQuery >> query [
 	^ query
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCAttributeQuery >> query: aSmaCCQuery [
 	query := aSmaCCQuery
 ]
