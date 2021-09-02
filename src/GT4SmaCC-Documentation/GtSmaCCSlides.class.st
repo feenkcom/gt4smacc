@@ -83,6 +83,18 @@ GtSmaCCSlides >> setSource: aString in: anElement [
 		allChildrenDepthFirstDo: [ :each | (each isKindOf: GtSmaCCListCoderElement) ifTrue: [ each showDefinition: aString ] ]
 ]
 
+{ #category : 'coder explanation slide' }
+GtSmaCCSlides >> switchToTab: aString in: coderElement [
+	| tabgroup |
+	coderElement
+		allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtPharoBehaviorCoderElement ]
+		ifFound:
+			[ :each | tabgroup := each allChildrenBreadthFirstDetect: [ :child | child isKindOf: BrTabGroup ] ifFound: [ :child | child ] ].
+	tabgroup
+		allChildrenDepthFirstDo:
+			[ :each | (each isKindOf: BrTab) ifTrue: [ each label asString = aString ifTrue: [ BlSpace simulateClickOn: each ] ] ]
+]
+
 { #category : 'private' }
 GtSmaCCSlides >> yellowExplanationTargetCircleFor: aModel [
 	^ (BrButton new)
