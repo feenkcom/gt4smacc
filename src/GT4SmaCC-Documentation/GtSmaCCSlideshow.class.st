@@ -65,18 +65,9 @@ GtSmaCCSlideshow >> createSlideText [
 GtSmaCCSlideshow >> explanationSlideElement [
 	<gtExample>
 	
-	| coderElement toolbar tabgroup actionBar |
+	| coderElement |
 	coderElement := self createParserCoderOn: LineParser.
-	coderElement
-		allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtPharoBehaviorCoderElement ]
-		ifFound:
-			[ :each | 
-			tabgroup := each allChildrenBreadthFirstDetect: [ :child | child isKindOf: BrTabGroup ] ifFound: [ :child | child ].
-			toolbar := tabgroup childNamed: #toolbar.
-			actionBar := each childNamed: #actionBar ].
-	tabgroup addChild: ((self yellowExplanationTargetCircleFor: #grammarTab) relocate: 4 @ 12).
-	toolbar addChild: ((self yellowExplanationTargetCircleFor: #addButton) relocate: 4 @ 10).
-	actionBar children first addChild: ((self yellowExplanationTargetCircleFor: #saveButton) relocate: 4 @ 10).
+	self addCommonExplanationTargetsFor: coderElement.
 	coderElement
 		allChildrenDepthFirstDo:
 			[ :each | 
@@ -103,7 +94,7 @@ GtSmaCCSlideshow >> explanationSlideFor: aSlide [
 { #category : 'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideText [
 	^ ('Browsing a SmaCC parser class in coder displays a special ' asRopedText
-		, ('grammar' asRopedText glamorousExplanationFor: #grammarTab) , ' tab that displays the parser''s ' asRopedText
+		, ('grammar' asRopedText glamorousExplanationFor: #GrammarTab) , ' tab that displays the parser''s ' asRopedText
 		, ('productions' asRopedText glamorousExplanationFor: #productions) , ', ' asRopedText
 		, ('tokens' asRopedText glamorousExplanationFor: #tokens) , ', and ' asRopedText
 		, ('directives' asRopedText glamorousExplanationFor: #directives)

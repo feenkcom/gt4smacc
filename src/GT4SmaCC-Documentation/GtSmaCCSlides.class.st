@@ -4,6 +4,26 @@ Class {
 	#category : 'GT4SmaCC-Documentation'
 }
 
+{ #category : 'coder explanation slide' }
+GtSmaCCSlides >> addCommonExplanationTargetsFor: coderElement [
+	| tabgroup actionBar toolbar |
+	coderElement
+		allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtPharoBehaviorCoderElement ]
+		ifFound:
+			[ :each | 
+			tabgroup := each allChildrenBreadthFirstDetect: [ :child | child isKindOf: BrTabGroup ] ifFound: [ :child | child ].
+			toolbar := tabgroup childNamed: #toolbar.
+			actionBar := each childNamed: #actionBar ].
+	tabgroup
+		allChildrenDepthFirstDo:
+			[ :each | 
+			(each isKindOf: BrTab)
+				ifTrue:
+					[ each addChild: ((self yellowExplanationTargetCircleFor: (each label asString , 'Tab') asSymbol) relocate: 8 @ 22) ] ].
+	toolbar addChild: ((self yellowExplanationTargetCircleFor: #addButton) relocate: 4 @ 10).
+	actionBar children first addChild: ((self yellowExplanationTargetCircleFor: #saveButton) relocate: 4 @ 10)
+]
+
 { #category : 'private' }
 GtSmaCCSlides >> createParserCoderOn: aClass [
 	<gtExample>
