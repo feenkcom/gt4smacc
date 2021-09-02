@@ -88,6 +88,7 @@ GtSmaCCSlideshow >> debuggerSlideElement [
 }'
 		in: JSONParser.
 	element := GtSmaCCDebuggerElement on: session.
+	element aptitude: BrShadowAptitude.
 	element
 		enqueueTask:
 			((BlDelayedTaskAction new)
