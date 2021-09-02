@@ -1,1 +1,1 @@
-Package { #name : #'GT4SmaCC-Queries' }
+Package { #name : 'GT4SmaCC-Queries' }
