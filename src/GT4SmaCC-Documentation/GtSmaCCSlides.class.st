@@ -52,6 +52,16 @@ GtSmaCCSlides >> createTokenSimulatorFor: ruleName from: aGrammar [
 ]
 
 { #category : 'private' }
+GtSmaCCSlides >> directivesIn: coderElement [
+	| elements |
+	elements := OrderedCollection new.
+	coderElement
+		allChildrenBreadthFirstDo:
+			[ :each | ((each isKindOf: GtSmaCCCoderElement) and: [ each coder isDirective ]) ifTrue: [ elements add: each ] ].
+	^ elements
+]
+
+{ #category : 'private' }
 GtSmaCCSlides >> findItem: aString in: coderElement [
 	^ coderElement
 		allChildrenBreadthFirstDetect:
