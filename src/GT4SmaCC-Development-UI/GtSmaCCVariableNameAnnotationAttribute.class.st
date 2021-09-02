@@ -1,15 +1,15 @@
 Class {
-	#name : #GtSmaCCVariableNameAnnotationAttribute,
-	#superclass : #BrTextAdornmentAttribute,
+	#name : 'GtSmaCCVariableNameAnnotationAttribute',
+	#superclass : 'BrTextAdornmentAttribute',
 	#instVars : [
 		'coder',
 		'index',
 		'initialName'
 	],
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCVariableNameAnnotationAttribute class >> for: aCoder at: anIndex named: aString [
 	^ self new
 		beAppend;
@@ -19,7 +19,7 @@ GtSmaCCVariableNameAnnotationAttribute class >> for: aCoder at: anIndex named: a
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in: anEditorElement [
 	| editorElement editor text |
 	editorElement := BrEditorElement new.
@@ -58,37 +58,37 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCVariableNameAnnotationAttribute >> coder [
 	^ coder
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCVariableNameAnnotationAttribute >> coder: anObject [
 	coder := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCVariableNameAnnotationAttribute >> index [
 	^ index
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCVariableNameAnnotationAttribute >> index: anObject [
 	index := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCVariableNameAnnotationAttribute >> initialName [
 	^ initialName
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCVariableNameAnnotationAttribute >> initialName: aString [
 	initialName := aString
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCVariableNameAnnotationAttribute >> initialNameText [
 	| text |
 	text := initialName asRopedText.
@@ -96,7 +96,7 @@ GtSmaCCVariableNameAnnotationAttribute >> initialNameText [
 	^ text
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCVariableNameAnnotationAttribute >> updateFocus: event [
 	| coderElement |
 	coderElement := event target userData
@@ -107,7 +107,7 @@ GtSmaCCVariableNameAnnotationAttribute >> updateFocus: event [
 		ifFalse: [ coderElement loseFocusFrom: event target ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCVariableNameAnnotationAttribute >> updateVariableName: editorElement [
 	| name textEditor coderElement |
 	textEditor := editorElement editor.
@@ -120,7 +120,7 @@ GtSmaCCVariableNameAnnotationAttribute >> updateVariableName: editorElement [
 	coderElement updateNameTo: name from: initialName in: editorElement
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCVariableNameAnnotationAttribute >> variableCoderElementFor: anElement [
 	anElement
 		allParentsDo: [ :each | 

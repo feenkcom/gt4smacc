@@ -1,20 +1,20 @@
 Class {
-	#name : #GtSmaCCListCoderElement,
-	#superclass : #BlElement,
+	#name : 'GtSmaCCListCoderElement',
+	#superclass : 'BlElement',
 	#instVars : [
 		'grammarCoder'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCListCoderElement class >> onCoder: aGrammarCoder [
 	^ self new
 		coder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> actionBar [
 	^ BrToolbar new
 		aptitude: BrGlamorousToolbarAptitude new;
@@ -35,7 +35,7 @@ GtSmaCCListCoderElement >> actionBar [
 						action: each ])
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> actions [
 	^ {(GtCoderAction new
 		title: 'Accept' translated;
@@ -44,7 +44,7 @@ GtSmaCCListCoderElement >> actions [
 		yourself)}
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> buildElement [
 	self layout: BlLinearLayout vertical.
 	self
@@ -60,7 +60,12 @@ GtSmaCCListCoderElement >> buildElement [
 		addChild: self compilationBar
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'accessing' }
+GtSmaCCListCoderElement >> coder [
+	^ grammarCoder
+]
+
+{ #category : 'initialize-release' }
 GtSmaCCListCoderElement >> coder: aGrammarCoder [
 	grammarCoder := aGrammarCoder.
 	grammarCoder weak
@@ -70,37 +75,38 @@ GtSmaCCListCoderElement >> coder: aGrammarCoder [
 	self buildElement
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> coderListElementClass [
 	^ self subclassResponsibility
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> compilationBar [
 	| element |
 	element := BlElement new.
 	element layout: BlLinearLayout horizontal.
 	element
-		constraintsDo: [ :c | 
+		constraintsDo:
+			[ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
-	element addChild: self actionBar.
+	element addChild: self actionBar as: #actionBar.
 	^ element
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 GtSmaCCListCoderElement >> compileParser [
 	grammarCoder isValid
 		ifFalse: [ ^ self showErrors ].
 	grammarCoder compileParser
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCListCoderElement >> group [
 	^ self subclassResponsibility
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> listElement [
 	| list |
 	list := BrSimpleList new.
@@ -110,11 +116,17 @@ GtSmaCCListCoderElement >> listElement [
 	^ list asScrollableElement
 ]
 
-{ #category : #private }
+{ #category : 'ui' }
+GtSmaCCListCoderElement >> showDefinition: aString [
+	grammarCoder grammar: (GtSmaCCGrammar forDefinition: aString).
+	self updateList
+]
+
+{ #category : 'private' }
 GtSmaCCListCoderElement >> showErrors [
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCListCoderElement >> updateList [
 	self
 		childNamed: #list

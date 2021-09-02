@@ -1,25 +1,25 @@
 Class {
-	#name : #GtSmaCCSourceHighlightingVisitor,
-	#superclass : #GtSmaCCHighlightingVisitor,
+	#name : 'GtSmaCCSourceHighlightingVisitor',
+	#superclass : 'GtSmaCCHighlightingVisitor',
 	#instVars : [
 		'pattern'
 	],
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCSourceHighlightingVisitor class >> pattern: aString [
 	^ self new
 		pattern: aString;
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCSourceHighlightingVisitor >> pattern: aString [
 	pattern := aString asLowercase
 ]
 
-{ #category : #styling }
+{ #category : 'styling' }
 GtSmaCCSourceHighlightingVisitor >> styleNode: aNode using: aStyler [
 	| string index |
 	styler := aStyler.

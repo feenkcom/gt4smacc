@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCSyntaxStylingVisitor,
-	#superclass : #GtSmaCCStylingVisitor,
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#name : 'GtSmaCCSyntaxStylingVisitor',
+	#superclass : 'GtSmaCCStylingVisitor',
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCSyntaxStylingVisitor >> characterSelectorFor: aToken [
 	| name |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1)
@@ -13,12 +13,12 @@ GtSmaCCSyntaxStylingVisitor >> characterSelectorFor: aToken [
 		ifTrue: [ name ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCSyntaxStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	self subclassResponsibility
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 	| stStyler |
 	stStyler := BrRBTextStyler new.
@@ -34,7 +34,7 @@ GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 		to: aToken stopPosition
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCSyntaxStylingVisitor >> formatTokenMethod: aToken [
 	| name class |
 	name := (aToken source copyFrom: 2 to: aToken source size - 1)
@@ -47,20 +47,20 @@ GtSmaCCSyntaxStylingVisitor >> formatTokenMethod: aToken [
 	self formatMethod: (class lookupSelector: name) for: aToken
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCSyntaxStylingVisitor >> style: anItem with: aSymbol [
 	GtSmaCCStyler
 		perform: aSymbol
 		with: (self text from: anItem startPosition to: anItem stopPosition)
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitClassProductionExpression: aClassProductionExpression [
 	self style: aClassProductionExpression with: #formatAST:.
 	super visitClassProductionExpression: aClassProductionExpression
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitCodeProductionExpression: aCodeProductionExpression [
 	| codeText |
 	codeText := self text from: aCodeProductionExpression code startPosition + 1 to: aCodeProductionExpression code stopPosition - 1.
@@ -76,7 +76,7 @@ GtSmaCCSyntaxStylingVisitor >> visitCodeProductionExpression: aCodeProductionExp
 	super visitCodeProductionExpression: aCodeProductionExpression
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitDirective: aDirective [
 	self style: aDirective directiveStartToken with: #formatDirectiveKeyword:.
 	self style: aDirective directiveNameToken with: #formatDirectiveKeyword:.
@@ -84,7 +84,7 @@ GtSmaCCSyntaxStylingVisitor >> visitDirective: aDirective [
 	super visitDirective: aDirective
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
 	super visitGrammarDefinition: aGrammarDefinition.
 	aGrammarDefinition comments
@@ -93,7 +93,7 @@ GtSmaCCSyntaxStylingVisitor >> visitGrammarDefinition: aGrammarDefinition [
 				formatComment: (self text from: each first to: each last) ]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitIdDirective: anIdDirective [
 	super visitIdDirective: anIdDirective.
 	anIdDirective names
@@ -103,26 +103,26 @@ GtSmaCCSyntaxStylingVisitor >> visitIdDirective: anIdDirective [
 					self formatInlineDefinition: anIdDirective token: each ] ]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitIgnoreVariableDirective: anIgnoreVariableDirective [
 	super visitIgnoreVariableDirective: anIgnoreVariableDirective.
 	anIgnoreVariableDirective names
 		do: [ :each | self style: each with: #formatVariableName: ]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitKeywordSymbol: aKeywordSymbol [
 	self style: aKeywordSymbol name with: #formatKeyword:.
 	super visitKeywordSymbol: aKeywordSymbol
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitProductionRule: aProductionRule [
 	self style: aProductionRule name with: #formatProductionDefinition:.
 	super visitProductionRule: aProductionRule
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitProductionSymbol: aProductionSymbol [
 	self style: aProductionSymbol name with: #formatProduction:.
 	self
@@ -131,13 +131,13 @@ GtSmaCCSyntaxStylingVisitor >> visitProductionSymbol: aProductionSymbol [
 	super visitProductionSymbol: aProductionSymbol
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitRepeatRegex: aRepeatRegex [
 	self style: aRepeatRegex count with: #formatRepeat:.
 	super visitRepeatRegex: aRepeatRegex
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitSuperclassDirective: aSuperclassDirective [
 	super visitSuperclassDirective: aSuperclassDirective.
 	self style: aSuperclassDirective superclass with: #formatAST:.
@@ -145,14 +145,14 @@ GtSmaCCSyntaxStylingVisitor >> visitSuperclassDirective: aSuperclassDirective [
 		do: [ :each | self style: each with: #formatAST: ]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitSymbol: aSymbol [
 	aSymbol variableNameToken notNil
 		ifTrue: [ self style: aSymbol variableNameToken with: #formatVariableName: ].
 	super visitSymbol: aSymbol
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
 	| selector |
 	self style: aTokenRegex with: #formatToken:.
@@ -165,14 +165,14 @@ GtSmaCCSyntaxStylingVisitor >> visitTokenRegex: aTokenRegex [
 	super visitTokenRegex: aTokenRegex
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitTokenRule: aTokenRule [
 	self style: aTokenRule name with: #formatTokenDefinition:.
 	self formatTokenMethod: aTokenRule name.
 	super visitTokenRule: aTokenRule
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 GtSmaCCSyntaxStylingVisitor >> visitTokenSymbol: aTokenSymbol [
 	self style: aTokenSymbol name with: #formatToken:.
 	self formatInlineDefinition: aTokenSymbol token: aTokenSymbol name.

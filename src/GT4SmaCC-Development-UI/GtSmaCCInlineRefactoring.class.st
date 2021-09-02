@@ -1,15 +1,15 @@
 Class {
-	#name : #GtSmaCCInlineRefactoring,
-	#superclass : #GtSmaCCTransformation,
+	#name : 'GtSmaCCInlineRefactoring',
+	#superclass : 'GtSmaCCTransformation',
 	#instVars : [
 		'symbolNode',
 		'production',
 		'rule'
 	],
-	#category : #'GT4SmaCC-Development-UI-Transformations'
+	#category : 'GT4SmaCC-Development-UI-Transformations'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCInlineRefactoring class >> inline: aProductionSymbolNode in: smaccProductionRule [
 	^ self new
 		symbolNode: aProductionSymbolNode;
@@ -17,7 +17,7 @@ GtSmaCCInlineRefactoring class >> inline: aProductionSymbolNode in: smaccProduct
 		yourself
 ]
 
-{ #category : #execution }
+{ #category : 'execution' }
 GtSmaCCInlineRefactoring >> checkPreconditions [
 	rule := grammar ruleNamed: symbolNode name value.
 	rule isNil
@@ -31,7 +31,7 @@ GtSmaCCInlineRefactoring >> checkPreconditions [
 					'Cannot inline definition when it defines an AST node or has a code expression' ]
 ]
 
-{ #category : #execution }
+{ #category : 'execution' }
 GtSmaCCInlineRefactoring >> inlinedDefinitionWithVariableNamed: aString [
 	| firstIsEmpty expression ast |
 	ast := rule ast.
@@ -73,18 +73,18 @@ GtSmaCCInlineRefactoring >> inlinedDefinitionWithVariableNamed: aString [
 				ifTrue: [ stream nextPut: $? ] ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCInlineRefactoring >> production: smaccProductionRule [
 	production := smaccProductionRule.
 	self grammar: production grammar
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCInlineRefactoring >> symbolNode: aProductionSymbolNode [
 	symbolNode := aProductionSymbolNode
 ]
 
-{ #category : #execution }
+{ #category : 'execution' }
 GtSmaCCInlineRefactoring >> transform [
 	| inlineSource originalSource newSource |
 	inlineSource := self

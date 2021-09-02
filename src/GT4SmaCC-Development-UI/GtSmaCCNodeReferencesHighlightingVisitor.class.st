@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCNodeReferencesHighlightingVisitor,
-	#superclass : #GtSmaCCReferencesHighlightingVisitor,
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#name : 'GtSmaCCNodeReferencesHighlightingVisitor',
+	#superclass : 'GtSmaCCReferencesHighlightingVisitor',
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #generated }
+{ #category : 'generated' }
 GtSmaCCNodeReferencesHighlightingVisitor >> visitClassProductionExpression: aClassProductionExpression [
 	aClassProductionExpression nodeName = name
 		ifTrue: [ self

@@ -1,10 +1,10 @@
 Class {
-	#name : #BaselineOfGToolkit4SmaCC,
-	#superclass : #BaselineOf,
-	#category : #BaselineOfGToolkit4SmaCC
+	#name : 'BaselineOfGToolkit4SmaCC',
+	#superclass : 'BaselineOf',
+	#category : 'BaselineOfGToolkit4SmaCC'
 }
 
-{ #category : #baseline }
+{ #category : 'baseline' }
 BaselineOfGToolkit4SmaCC >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
@@ -23,6 +23,8 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 				spec requires: #('SmaCC' ). ];
 			package: 'GT4SmaCC-Examples' with: [
 				spec requires: #('SmaCC' ). ];
+			package: 'GT4SmaCC-Documentation' with: [
+				spec requires: #('GT4SmaCC-Development-UI' ). ];
 			package: 'GT4SmaCC-Rewrite-Engine-UI' with: [
 				spec requires: #('SmaCC' ). ]. ].
 

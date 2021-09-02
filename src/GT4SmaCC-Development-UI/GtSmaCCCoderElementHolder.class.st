@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCCoderElementHolder,
-	#superclass : #BlInfiniteHolder,
-	#category : #'GT4SmaCC-Development-UI-Coders'
+	#name : 'GtSmaCCCoderElementHolder',
+	#superclass : 'BlInfiniteHolder',
+	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoderElementHolder >> coderElement: anElement [
 	anElement removeFromParent.
 	self initializeWith: anElement

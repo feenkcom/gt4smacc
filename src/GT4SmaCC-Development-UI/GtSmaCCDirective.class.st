@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCDirective,
-	#superclass : #GtSmaCCGrammarItem,
-	#category : #'GT4SmaCC-Development-UI-Model'
+	#name : 'GtSmaCCDirective',
+	#superclass : 'GtSmaCCGrammarItem',
+	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDirective >> directiveName [
 	| node |
 	node := self ast isErrorNode
@@ -15,7 +15,7 @@ GtSmaCCDirective >> directiveName [
 	^ node directiveNameToken value
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDirective >> isCaseInsensitive [
 	| tree |
 	tree := self ast.
@@ -23,12 +23,12 @@ GtSmaCCDirective >> isCaseInsensitive [
 		and: [ tree typeToken value = 'ignorecase' ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDirective >> isDirective [
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDirective >> isGLR [
 	| tree |
 	tree := self ast.
@@ -36,12 +36,12 @@ GtSmaCCDirective >> isGLR [
 		and: [ tree typeToken value = 'glr' ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDirective >> isReferenced [
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDirective >> isUnicode [
 	| tree |
 	tree := self ast.
@@ -49,12 +49,12 @@ GtSmaCCDirective >> isUnicode [
 		and: [ tree typeToken value = 'unicode' ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDirective >> name [
 	^ nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDirective >> parserStartingState [
 	^ SmaCCDefinitionParser startingStateForDirectiveLine
 ]

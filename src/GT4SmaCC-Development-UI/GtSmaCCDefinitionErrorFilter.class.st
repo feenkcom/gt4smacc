@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCDefinitionErrorFilter,
-	#superclass : #GtSmaCCDefinitionsFilter,
-	#category : #'GT4SmaCC-Development-UI-Filters'
+	#name : 'GtSmaCCDefinitionErrorFilter',
+	#superclass : 'GtSmaCCDefinitionsFilter',
+	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDefinitionErrorFilter >> matches: anObject [
 	^ (anObject isKindOf: GtSmaCCGrammarItem)
 		and: [ anObject isValid not ]

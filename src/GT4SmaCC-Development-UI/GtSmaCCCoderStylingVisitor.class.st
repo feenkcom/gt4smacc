@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCCoderStylingVisitor,
-	#superclass : #GtSmaCCSyntaxStylingVisitor,
-	#category : #'GT4SmaCC-Development-UI-Styler'
+	#name : 'GtSmaCCCoderStylingVisitor',
+	#superclass : 'GtSmaCCSyntaxStylingVisitor',
+	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderStylingVisitor >> createDefinitionButtonFor: aToken [
 	self text
 		attributes:
@@ -29,7 +29,7 @@ GtSmaCCCoderStylingVisitor >> createDefinitionButtonFor: aToken [
 		to: aToken stopPosition
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	| item |
 	item := styler grammarCoder ruleNamed: aToken source.

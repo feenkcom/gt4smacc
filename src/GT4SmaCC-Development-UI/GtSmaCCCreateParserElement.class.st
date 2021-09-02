@@ -1,13 +1,13 @@
 Class {
-	#name : #GtSmaCCCreateParserElement,
-	#superclass : #GtPharoCreateBehaviorElement,
+	#name : 'GtSmaCCCreateParserElement',
+	#superclass : 'GtPharoCreateBehaviorElement',
 	#instVars : [
 		'scannerDefinition'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'private - instance creation' }
+{ #category : 'private - instance creation' }
 GtSmaCCCreateParserElement >> buildDefinitionEditor [
 	| saveButton properties |
 	properties := super buildDefinitionEditor.
@@ -18,7 +18,7 @@ GtSmaCCCreateParserElement >> buildDefinitionEditor [
 	^ properties
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCreateParserElement >> compileBehavior [
 	| change parserClass |
 	change := self createParserChange.
@@ -45,12 +45,12 @@ GtSmaCCCreateParserElement >> compileBehavior [
 		ifTrue: [ behaviorBlock cull: parserClass ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCreateParserElement >> createParserChange [
 	^ definition createBehaviorChange
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCreateParserElement >> createScannerChange [
 	scannerDefinition category package
 		name: definition category package name.
@@ -59,14 +59,14 @@ GtSmaCCCreateParserElement >> createScannerChange [
 	^ scannerDefinition createBehaviorChange
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCreateParserElement >> editors [
 	^ {
 		self scannerEditor. definition category categoryEditor
 	}
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCreateParserElement >> initialize [
 	super initialize.
 	
@@ -81,7 +81,7 @@ GtSmaCCCreateParserElement >> initialize [
 	self addChild: self buildDefinitionEditor
 ]
 
-{ #category : #'private - testing' }
+{ #category : 'private - testing' }
 GtSmaCCCreateParserElement >> isValidParserClassName [
 	self parserClass = #SomeParser
 		ifTrue: [ ^ false ].
@@ -91,7 +91,7 @@ GtSmaCCCreateParserElement >> isValidParserClassName [
 	^ self parserClass first isUppercase
 ]
 
-{ #category : #'private - testing' }
+{ #category : 'private - testing' }
 GtSmaCCCreateParserElement >> isValidScannerClassName [
 	self scannerClass = #SomeScanner
 		ifTrue: [ ^ false ].
@@ -101,32 +101,32 @@ GtSmaCCCreateParserElement >> isValidScannerClassName [
 	^ self scannerClass first isUppercase
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCreateParserElement >> parserClass [
 	^ definition name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCreateParserElement >> parserClass: aSymbol [
 	definition name: aSymbol
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCreateParserElement >> scannerClass [
 	^ scannerDefinition name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCreateParserElement >> scannerClass: aSymbol [
 	scannerDefinition name: aSymbol
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCreateParserElement >> scannerDefinition [
 	^ scannerDefinition
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCreateParserElement >> scannerEditor [
 	^ GtCodeDefinitionSingleEditor new
 		definition: scannerDefinition;

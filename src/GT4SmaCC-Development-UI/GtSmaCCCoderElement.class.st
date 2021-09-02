@@ -1,20 +1,20 @@
 Class {
-	#name : #GtSmaCCCoderElement,
-	#superclass : #BrExpander,
+	#name : 'GtSmaCCCoderElement',
+	#superclass : 'BrExpander',
 	#instVars : [
 		'coder'
 	],
-	#category : #'GT4SmaCC-Development-UI-UI'
+	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCCoderElement class >> onCoder: aGrammarCoder [
 	^ self new
 		coder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderElement >> actionBar [
 	^ BrToolbar new
 		aptitude: BrGlamorousToolbarAptitude new;
@@ -29,12 +29,12 @@ GtSmaCCCoderElement >> actionBar [
 						action: each ])
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCoderElement >> coder [
 	^ coder
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
 	coder owner weak
@@ -57,7 +57,7 @@ GtSmaCCCoderElement >> coder: aCoder [
 	self updateDeleteButton
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderElement >> collapsedElement [
 	| element label |
 	element := BlElement new.
@@ -78,22 +78,23 @@ GtSmaCCCoderElement >> collapsedElement [
 	^ element
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderElement >> contentElement [
 	| element |
 	element := BlElement new.
 	element layout: BlLinearLayout vertical.
 	element margin: (BlInsets left: 5).
 	element
-		constraintsDo: [ :c | 
+		constraintsDo:
+			[ :c | 
 			c vertical fitContent.
 			c horizontal matchParent ].
-	element addChild: self sourceEditor.
-	element addChild: self actionBar.
+	element addChild: self sourceEditor as: #editor.
+	element addChild: self actionBar as: #actionBar.
 	^ element
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderElement >> deleteElement [
 	^ GtInspectorRoundButtonStencil new asElement
 		icon: GtInspectorPlusIconStencil close asElement;
@@ -111,7 +112,7 @@ GtSmaCCCoderElement >> deleteElement [
 		action: [ :e | coder deleteRule ]
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCCoderElement >> initialize [
 	| resizer |
 	super initialize.
@@ -168,7 +169,7 @@ GtSmaCCCoderElement >> initialize [
 				action: [ self toggle ])
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCCoderElement >> sourceEditor [
 	| element |
 	element := BrEditor new.
@@ -192,7 +193,7 @@ GtSmaCCCoderElement >> sourceEditor [
 	^ element
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCCoderElement >> updateDeleteButton [
 	self
 		childNamed: #deleteButton

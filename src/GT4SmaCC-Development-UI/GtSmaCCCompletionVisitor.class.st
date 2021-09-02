@@ -1,29 +1,29 @@
 Class {
-	#name : #GtSmaCCCompletionVisitor,
-	#superclass : #SmaCCDefinitionNodeVisitor,
+	#name : 'GtSmaCCCompletionVisitor',
+	#superclass : 'SmaCCDefinitionNodeVisitor',
 	#instVars : [
 		'completions'
 	],
-	#category : #'GT4SmaCC-Development-UI-Completion'
+	#category : 'GT4SmaCC-Development-UI-Completion'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCompletionVisitor >> completions [
 	^ completions
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCCompletionVisitor >> completions: anObject [
 	completions := anObject
 ]
 
-{ #category : #generated }
+{ #category : 'generated' }
 GtSmaCCCompletionVisitor >> visitProductionRule: aProductionRule [
 	completions add: aProductionRule name source.
 	super visitProductionRule: aProductionRule
 ]
 
-{ #category : #generated }
+{ #category : 'generated' }
 GtSmaCCCompletionVisitor >> visitSymbol: aSymbol [
 	completions add: aSymbol name source.
 	aSymbol variableNameToken notNil
@@ -33,13 +33,13 @@ GtSmaCCCompletionVisitor >> visitSymbol: aSymbol [
 	super visitSymbol: aSymbol
 ]
 
-{ #category : #generated }
+{ #category : 'generated' }
 GtSmaCCCompletionVisitor >> visitTokenRegex: aTokenRegex [
 	completions add: aTokenRegex name source.
 	super visitTokenRegex: aTokenRegex
 ]
 
-{ #category : #generated }
+{ #category : 'generated' }
 GtSmaCCCompletionVisitor >> visitTokenRule: aTokenRule [
 	completions add: aTokenRule name source.
 	super visitTokenRule: aTokenRule
