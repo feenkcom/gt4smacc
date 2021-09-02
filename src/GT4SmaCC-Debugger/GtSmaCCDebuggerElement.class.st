@@ -153,8 +153,8 @@ GtSmaCCDebuggerElement >> buildParserElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element addChild: self buildParserStack.
-	element addChild: self buildParserActions.
+	element addChild: self buildParserStack as: #parserStack.
+	element addChild: self buildParserActions as: #parserActions.
 	self updateContents.
 	(self session parser isKindOf: SmaCCGLRParser)
 		ifFalse: [ ^ element ].
@@ -229,7 +229,7 @@ GtSmaCCDebuggerElement >> buildScannerElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element addChild: self buildScannerProperties.
+	element addChild: self buildScannerProperties as: #scannerProperties.
 	self updateContents.
 	^ element
 ]
@@ -512,7 +512,6 @@ GtSmaCCDebuggerElement >> updateContextCoderElement [
 	coder := GtPharoMethodContextCoder
 		forContext: self session context
 		session: self session.
-	coder expanded: true.
 	coder announcer
 		when: GtCoderRefreshStackAnnouncement
 		send: #updateContents
