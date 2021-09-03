@@ -109,8 +109,8 @@ SmaCCParser class >> gtTestElement [
 				label: 'Debug';
 				icon: BrGlamorousVectorIcons debug;
 				action: [ :button | self debug: editor text asString from: button ]).
-	element addChild: editorElement.
-	element addChild: actionBar.
+	element addChild: editorElement as: #parserTestInput.
+	element addChild: actionBar as: #parserTestActions.
 	^ element
 ]
 

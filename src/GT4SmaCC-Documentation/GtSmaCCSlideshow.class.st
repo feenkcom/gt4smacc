@@ -61,6 +61,98 @@ GtSmaCCSlideshow >> createSlideText [
 		fontSize: 20
 ]
 
+{ #category : 'debugger slide' }
+GtSmaCCSlideshow >> debuggerSlideElement [
+	<gtExample>
+	
+	| session element |
+	session := self
+		startDebuggerOn:
+			'{
+  "colors": [
+    {
+      "color": "black",
+      "code": {
+        "rgba": [255,255,255,1],
+        "hex": "#000"
+      }
+    },
+    {
+      "color": "white",
+      "code": {
+        "rgba": [0,0,0,1],
+        "hex": "#FFF"
+      }
+    }
+   ]
+}'
+		in: JSONParser.
+	element := GtSmaCCDebuggerElement on: session.
+	element aptitude: BrShadowAptitude.
+	element
+		enqueueTask:
+			((BlDelayedTaskAction new)
+				delay: 500 milliSeconds;
+				action:
+						[ element
+								childNamed: #parserStack
+								ifFound: [ :each | each addChild: ((self yellowExplanationTargetCircleFor: #parserStack) relocate: 2 @ 8) ].
+							element
+								childNamed: #parserActions
+								ifFound: [ :each | each addChild: ((self yellowExplanationTargetCircleFor: #parserActions) relocate: 2 @ 8) ].
+							element
+								childNamed: #source
+								ifFound:
+									[ :each | each parent addChild: ((self yellowExplanationTargetCircleFor: #parserSource) relocate: 2 @ 8 + each position) ].
+							element
+								childNamed: #toolbar
+								ifFound:
+									[ :each | 
+									each
+										allChildrenDepthFirstDo:
+											[ :child | 
+											((child isKindOf: BrButton) and: [ child label asString ~= '' ])
+												ifTrue:
+													[ child addChild: ((self yellowExplanationTargetCircleFor: child label asString asSymbol) relocate: 2 @ 8) ] ] ] ]).
+	^ element
+]
+
+{ #category : 'debugger slide' }
+GtSmaCCSlideshow >> debuggerSlideFor: aSlide [
+	<gtSlide>
+	
+	^ (aSlide textAndElement)
+		priority: 40;
+		newTextWithFormat: self debuggerSlideText;
+		element: [ self debuggerSlideElement ];
+		elementWeight: 0.6
+]
+
+{ #category : 'debugger slide' }
+GtSmaCCSlideshow >> debuggerSlideText [
+	^ ('SmaCC defines a custom debugger for parsers. If a debugger opens while parsing, there will be a SmaCCParser button at the top of the window. Selecting that button, switches to the SmaCC debugger. The SmaCC debugger shows the parser''s '
+		asRopedText , ('stack' asRopedText glamorousExplanationFor: #parserStack) , ', the potential ' asRopedText
+		, ('actions' asRopedText glamorousExplanationFor: #parserActions)
+		, ' that the parser can perform, and the parser''s ' asRopedText
+		, ('input' asRopedText glamorousExplanationFor: #parserSource) , '.' asRopedText , String cr asRopedText
+		, 'You can use the ' asRopedText , ('Through Action' asRopedText glamorousExplanationFor: #'Through Action')
+		, ' button to step until the next shift or reduce action is performed. The ' asRopedText
+		, ('Into Reduce' asRopedText glamorousExplanationFor: #'Into Reduce')
+		,
+			' button steps until the parser starts to perform the reduction action for a production. This allows you to debug the code expressions defined in your parser. The '
+				asRopedText , ('Next Token' asRopedText glamorousExplanationFor: #'Next Token')
+		,
+			' button steps until the next token is returned from the scanner. Finally, the last two buttons step until a character is processed by the scanner. The '
+				asRopedText , ('Step Next Character' asRopedText glamorousExplanationFor: #'Step Next Character')
+		, ' button steps until the scanner processes the next character from the input, and the ' asRopedText
+		, ('Step to Cursor' asRopedText glamorousExplanationFor: #'Step to Cursor')
+		, ' steps until the scanner processes the character at the cursor''s position in the ' asRopedText
+		, ('input' asRopedText glamorousExplanationFor: #parserSource)
+		, '. This can be used for skipping to the location where an error is occurring.' asRopedText)
+		glamorousRegularFont;
+		fontSize: 20
+]
+
 { #category : 'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideElement [
 	<gtExample>
@@ -210,6 +302,54 @@ GtSmaCCSlideshow >> productionSimulatorSlideText [
 		,
 			' will display the production''s name if the text can be parsed, Incomplete if the text is a prefix of a valid parse, or Error if the text cannot be parsed.'
 				asRopedText)
+		glamorousRegularFont;
+		fontSize: 20
+]
+
+{ #category : 'testing slide' }
+GtSmaCCSlideshow >> testingSlideElement [
+	<gtExample>
+	
+	| coderElement |
+	coderElement := self createParserCoderOn: JSONParser.
+	self addCommonExplanationTargetsFor: coderElement.
+	self switchToTab: 'Test' in: coderElement.
+	coderElement
+		enqueueTask:
+			((BlDelayedTaskAction new)
+				delay: 500 milliSeconds;
+				action:
+						[ coderElement
+								childNamed: #parserTestInput
+								ifFound: [ :each | each parent addChild: ((self yellowExplanationTargetCircleFor: #testInput) relocate: 2 @ 8) ].
+							coderElement
+								childNamed: #parserTestActions
+								ifFound:
+									[ :each | 
+									each children first addChild: ((self yellowExplanationTargetCircleFor: #inspectButton) relocate: 2 @ 8).
+									each children second addChild: ((self yellowExplanationTargetCircleFor: #debugButton) relocate: 2 @ 8) ] ]).
+	^ coderElement
+]
+
+{ #category : 'testing slide' }
+GtSmaCCSlideshow >> testingSlideFor: aSlide [
+	<gtSlide>
+	
+	^ (aSlide textAndElement)
+		priority: 30;
+		newTextWithFormat: self testingSlideText;
+		element: [ self testingSlideElement ];
+		elementWeight: 0.6
+]
+
+{ #category : 'testing slide' }
+GtSmaCCSlideshow >> testingSlideText [
+	^ ('You can test your compiled parser by using the ' asRopedText , ('Test' asRopedText glamorousExplanationFor: #TestTab)
+		, ' tab. Enter your expression you want to parse in the ' asRopedText
+		, ('input field' asRopedText glamorousExplanationFor: #testInput) , '. You can ' asRopedText
+		, ('inspect' asRopedText glamorousExplanationFor: #inspectButton) , ' the results of parsing the ' asRopedText
+		, ('text' asRopedText glamorousExplanationFor: #testInput) , ', or you can ' asRopedText
+		, ('debug' asRopedText glamorousExplanationFor: #debugButton) , ' the parse.' asRopedText)
 		glamorousRegularFont;
 		fontSize: 20
 ]

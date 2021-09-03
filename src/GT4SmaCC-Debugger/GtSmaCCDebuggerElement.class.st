@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCDebuggerElement,
-	#superclass : #GtDebuggerElement,
+	#name : 'GtSmaCCDebuggerElement',
+	#superclass : 'GtDebuggerElement',
 	#instVars : [
 		'scannerPropertiesList',
 		'parserStackList',
@@ -18,52 +18,52 @@ Class {
 	#category : 'GT4SmaCC-Debugger'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement class >> availableAutomatically [
 	^ availableAutomatically ifNil: [ false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement class >> availableAutomatically: aBoolean [
 	availableAutomatically := aBoolean
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement class >> defaultTitle [
 	^ 'SmaCCParser'
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCDebuggerElement class >> handlesContext: aContext [
 	^ SmaCCParserDebugSession handlesContext: aContext
 ]
 
-{ #category : #'class initialization' }
+{ #category : 'class initialization' }
 GtSmaCCDebuggerElement class >> initialize [
 	self register
 ]
 
-{ #category : #'tools registry' }
+{ #category : 'tools registry' }
 GtSmaCCDebuggerElement class >> registerToolsOn: registry [
 	registry registerDebugger: self withRank: 1100.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement class >> sessionClass [
 	^ SmaCCParserDebugSession
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> acceptAttributes [
 	^ {(BlTextHighlightAttribute paint: self theme status errorBackgroundColor)}
 ]
 
-{ #category : #callbacks }
+{ #category : 'callbacks' }
 GtSmaCCDebuggerElement >> actOnDebugSessionChanged [
 	self buildUI
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildDetails [
 	| element |
 	element := BlElement new
@@ -77,7 +77,7 @@ GtSmaCCDebuggerElement >> buildDetails [
 	^ element
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildDetailsInspector [
 	^ BrTabGroup new
 		aptitude: BrGlamorousTabGroupAptitude new;
@@ -93,7 +93,7 @@ GtSmaCCDebuggerElement >> buildDetailsInspector [
 				stencil: [ self buildScannerElement ])
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildGLRStates [
 	^ glrLabel := BrLabel new
 		aptitude: BrGlamorousLabelAptitude new;
@@ -103,7 +103,7 @@ GtSmaCCDebuggerElement >> buildGLRStates [
 		yourself
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildParserActions [
 	stateActionsList := BrColumnedList new.
 	stateActionsList 
@@ -144,7 +144,7 @@ GtSmaCCDebuggerElement >> buildParserActions [
 	^ stateActionsList
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildParserElement [
 	| element |
 	element := BlElement new.
@@ -153,8 +153,8 @@ GtSmaCCDebuggerElement >> buildParserElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element addChild: self buildParserStack.
-	element addChild: self buildParserActions.
+	element addChild: self buildParserStack as: #parserStack.
+	element addChild: self buildParserActions as: #parserActions.
 	self updateContents.
 	(self session parser isKindOf: SmaCCGLRParser)
 		ifFalse: [ ^ element ].
@@ -168,7 +168,7 @@ GtSmaCCDebuggerElement >> buildParserElement [
 		yourself
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildParserStack [
 	parserStackList := BrColumnedList new.
 	parserStackList 
@@ -199,7 +199,7 @@ GtSmaCCDebuggerElement >> buildParserStack [
 	^ parserStackList
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildParserToolbarActions [
 	| buttons |
 	buttons := (self
@@ -219,7 +219,7 @@ GtSmaCCDebuggerElement >> buildParserToolbarActions [
 	^ buttons
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildScannerElement [
 	| element |
 	element := BlElement new.
@@ -229,12 +229,12 @@ GtSmaCCDebuggerElement >> buildScannerElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-	element addChild: self buildScannerProperties.
+	element addChild: self buildScannerProperties as: #scannerProperties.
 	self updateContents.
 	^ element
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildScannerProperties [
 	scannerPropertiesList := BrColumnedList new.
 	scannerPropertiesList column
@@ -264,7 +264,7 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 	^ scannerPropertiesList
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildSource [
 	| editorElement text |
 	text := self session inputText asRopedText.
@@ -285,7 +285,7 @@ GtSmaCCDebuggerElement >> buildSource [
 	^ editorElement
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	| tab tabGroup |
 	tab := BrTab new.
@@ -325,7 +325,7 @@ GtSmaCCDebuggerElement >> buildTabGroupForElement: anElement [
 	^ tabGroup
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> buildUI [
 	| detailsElement |
 	self removeChildren.
@@ -333,7 +333,7 @@ GtSmaCCDebuggerElement >> buildUI [
 	self addChild: (self buildTabGroupForElement: detailsElement)
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> clearAttributes [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
@@ -341,19 +341,19 @@ GtSmaCCDebuggerElement >> clearAttributes [
 		clearAttributes: [ :attr | attr class = BlTextHighlightAttribute ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> contextCoder [
 	contextElement isNil
 		ifTrue: [ ^ nil ].
 	^ ((contextElement childNamed: #coderElement) childAt: 1) coder
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement >> currentContext [
 	^ self interruptedContext
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 	sourceEditor isNil
 		ifTrue: [ ^ 1 to: 0 ].
@@ -364,7 +364,7 @@ GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 	^ 1 to: 0
 ]
 
-{ #category : #'building widgets' }
+{ #category : 'building widgets' }
 GtSmaCCDebuggerElement >> glrStateText [
 	| text index states |
 	states := self session glrParserStates.
@@ -377,14 +377,14 @@ GtSmaCCDebuggerElement >> glrStateText [
 	^ text
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> highlightFrom: start to: end with: attributes [
 	(sourceEditor isNil or: [ end < start ])
 		ifTrue: [ ^ self ].
 	(sourceEditor text from: start to: end) attributes: attributes
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCDebuggerElement >> initialize [
 	super initialize.
 	self
@@ -394,19 +394,19 @@ GtSmaCCDebuggerElement >> initialize [
 			c vertical matchParent ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> moveCursor [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
 	sourceEditor moveCursorTo: self session scanner position
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDebuggerElement >> parserDebuggingActionsPragmas [
 	^ #(gtSmaCCDebuggingParserAction)
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> removeContext [
 	| tab |
 	contextTab isNil
@@ -423,12 +423,12 @@ GtSmaCCDebuggerElement >> removeContext [
 						ifFalse: [ parserTab select ] ])
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDebuggerElement >> scannerDebuggingActionsPragmas [
 	^ #(gtSmaCCDebuggingInputAction gtSmaCCDebuggingScannerAction)
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDebuggerElement >> scrollTo: anInteger [
 	self
 		childNamed: #source
@@ -438,7 +438,7 @@ GtSmaCCDebuggerElement >> scrollTo: anInteger [
 		ifNone: [  ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	| interval |
 	sourceEditor isNil
@@ -454,7 +454,7 @@ GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	self scrollTo: interval first
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> selectedStackItem: value [
 	value = ''
 		ifTrue: [ ^ self ].
@@ -462,7 +462,7 @@ GtSmaCCDebuggerElement >> selectedStackItem: value [
 	self phlow selectObject: value
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> showContext [
 	(contextElement notNil
 		and: [ self contextCoder context ~~ self session context ])
@@ -483,12 +483,12 @@ GtSmaCCDebuggerElement >> showContext [
 					contextElement ])
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> tabs [
 	^ self childNamed: #tabs
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateContents [
 	self updateParserStack.
 	self updateParserStates.
@@ -500,7 +500,7 @@ GtSmaCCDebuggerElement >> updateContents [
 		ifFalse: [ self updateParser ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateContextCoderElement [
 	| coder |
 	contextElement isNil
@@ -512,7 +512,6 @@ GtSmaCCDebuggerElement >> updateContextCoderElement [
 	coder := GtPharoMethodContextCoder
 		forContext: self session context
 		session: self session.
-	coder expanded: true.
 	coder announcer
 		when: GtCoderRefreshStackAnnouncement
 		send: #updateContents
@@ -522,21 +521,21 @@ GtSmaCCDebuggerElement >> updateContextCoderElement [
 		as: #coderElement
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateContextCoderSelection [
 	self contextCoder
 		ifNotNil: [ :coder | 
 			coder updateSelection ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateGLRStates [
 	glrLabel isNil
 		ifTrue: [ ^ self ].
 	glrLabel text: self glrStateText
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateParser [
 	(scannerTab notNil and: [ scannerTab viewModel isSelected ])
 		ifTrue: [ self enqueueTask: (BlTaskAction new action: [ parserTab select ]) ].
@@ -548,7 +547,7 @@ GtSmaCCDebuggerElement >> updateParser [
 			[ :each | ^ self selectSourceFor: (parserStackList items at: each) last ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateParserStack [
 	parserStackList notNil
 		ifTrue: [ | items |
@@ -559,13 +558,13 @@ GtSmaCCDebuggerElement >> updateParserStack [
 				ifNone: [  ]) ifNotNil: [ :i | parserStackList selectOne: i ] ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateParserStates [
 	stateActionsList notNil
 		ifTrue: [ stateActionsList items: self session potentialStateActions ]
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateScanner [
 	| scanner start end success attributes |
 	self showContext.
@@ -581,7 +580,7 @@ GtSmaCCDebuggerElement >> updateScanner [
 	self highlightFrom: start + 1 to: end with: attributes
 ]
 
-{ #category : #'private-updating' }
+{ #category : 'private-updating' }
 GtSmaCCDebuggerElement >> updateScannerProperties [
 	scannerPropertiesList notNil
 		ifTrue: [ scannerPropertiesList items: self session scannerProperties ]

@@ -32,6 +32,92 @@ GtSmaCCCalculatorSlideshow >> addExpressionStylerTo: aSmaCCCoderElement [
 						validationStyler})
 ]
 
+{ #category : 'directive slide' }
+GtSmaCCCalculatorSlideshow >> directiveSlideElement [
+	<gtExample>
+	
+	| element |
+	element := self createParserCoderOn: GtSmaCCCalculatorParser.
+	self addCommonExplanationTargetsFor: element.
+	self
+		setSource:
+			'<number>
+	: \d+ (\. \d+)?
+	;
+<whitespace>
+	: \s+
+	;
+Expression
+	: <number> { ''1'' source asNumber }
+	| Expression ''left'' "+" Expression ''right'' { left + right }
+	| Expression ''left'' "-" Expression ''right'' { left - right }
+	| Expression ''left'' "*" Expression ''right'' { left * right }
+	| Expression ''left'' "/" Expression ''right'' { left / right }
+	| Expression ''left'' "^" Expression ''right'' { left raisedTo: right }
+	| "(" Expression ")" { ''2'' }
+	;'
+		in: element.
+	(self grammarFrom: element)
+		when: GtSmaCCGrammarAnnouncement
+		do: [ :annoucement | self updateDirectiveSlideToggles: element with: annoucement ].
+	^ element
+]
+
+{ #category : 'directive slide' }
+GtSmaCCCalculatorSlideshow >> directiveSlideFor: aSlide [
+	<gtSlide>
+	
+	^ (aSlide textAndElement)
+		priority: 4;
+		newTextWithFormat: self directiveSlideText;
+		element: [ self directiveSlideElement ];
+		elementWeight: 0.6
+]
+
+{ #category : 'directive slide' }
+GtSmaCCCalculatorSlideshow >> directiveSlideText [
+	^ ('In the previous slide we added code to evaluate the expressions. However, you may have noticed that sometimes the evaluation returned a value you were not expecting. For example, evaluating "2 * 3 + 4" returns 14 instead of 10. This happened since the grammar we defined was ambiguous and SmaCC didn''t know how to handle these ambiguities. In this slide we will '
+		asRopedText , ('add' asRopedText glamorousExplanationFor: #addButton)
+		,
+			' directives to our grammar to handle the operator precedence. SmaCC handles precedence with precedence directives '
+				asRopedText , ('%left' asRopedText glamorousExplanationFor: #leftDirective) , ', ' asRopedText
+		, ('%right' asRopedText glamorousExplanationFor: #rightDirective)
+		,
+			', and %nonassoc. Each directive takes a list of tokens, and the order of the rules goes from the least to greatest precedence.'
+				asRopedText , String cr asRopedText
+		,
+			(' ' asRopedText
+				attributes:
+					{BrTextAdornmentDynamicAttribute new
+							stencil:
+								[ (BrCheckbox new)
+									disable;
+									aptitude: (GtCheckedValidatorTargetAptitude new model: #lowestPrecedence) + BrGlamorousCheckboxAptitude new ]})
+		, ' Create left precedence rule for addition and subtraction.' asRopedText , String cr asRopedText
+		,
+			(' ' asRopedText
+				attributes:
+					{BrTextAdornmentDynamicAttribute new
+							stencil:
+								[ (BrCheckbox new)
+									disable;
+									aptitude: (GtCheckedValidatorTargetAptitude new model: #middlePrecedence) + BrGlamorousCheckboxAptitude new ]})
+		, ' Create left precedence rule for multiplication and division.' asRopedText , String cr asRopedText
+		,
+			(' ' asRopedText
+				attributes:
+					{BrTextAdornmentDynamicAttribute new
+							stencil:
+								[ (BrCheckbox new)
+									disable;
+									aptitude: (GtCheckedValidatorTargetAptitude new model: #highestPrecedence) + BrGlamorousCheckboxAptitude new ]})
+		, ' Create right precedence rule for power.' asRopedText , String cr asRopedText
+		, 'After adding the directives, you can ' asRopedText , ('compile' asRopedText glamorousExplanationFor: #saveButton)
+		, ' the parser and ' asRopedText , ('test' asRopedText glamorousExplanationFor: #TestTab) , ' it.' asRopedText)
+		glamorousRegularFont;
+		fontSize: 20
+]
+
 { #category : 'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationSlideElement [
 	<gtExample>
@@ -76,7 +162,7 @@ GtSmaCCCalculatorSlideshow >> evaluationSlideFor: aSlide [
 	<gtSlide>
 	
 	^ (aSlide textAndElement)
-		priority: 22;
+		priority: 3;
 		newTextWithFormat: self evaluationSlideText;
 		element: [ self evaluationSlideElement ];
 		elementWeight: 0.6
@@ -257,7 +343,7 @@ GtSmaCCCalculatorSlideshow >> expressionsSlideFor: aSlide [
 	<gtSlide>
 	
 	^ (aSlide textAndElement)
-		priority: 21;
+		priority: 2;
 		newTextWithFormat: self expressionsSlideText;
 		element: [ self expressionsSlideElement ];
 		elementWeight: 0.6
@@ -370,7 +456,7 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideElement [
 		in: element.
 	(self grammarFrom: element)
 		when: GtSmaCCGrammarItemChanged do: [ :annoucement | self updateNumberSlideToggles: element with: annoucement ];
-		when: GtSmaCCGrammarRulesChanged do: [ :annoucement | self updateTargetsIn: element ].
+		when: GtSmaCCGrammarRulesChanged do: [ :annoucement | self updateTokenTargetsIn: element ].
 	element
 		enqueueTask:
 			((BlDelayedTaskAction new)
@@ -384,7 +470,7 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideFor: aSlide [
 	<gtSlide>
 	
 	^ (aSlide textAndElement)
-		priority: 21;
+		priority: 1;
 		newTextWithFormat: self numberTokenSlideText;
 		element: [ self numberTokenSlideElement ];
 		elementWeight: 0.6
@@ -479,16 +565,60 @@ GtSmaCCCalculatorSlideshow >> styleCodeValidatorsFor: node inText: text [
 					[ (text from: node startPosition to: node startPosition) attributes: {GtValidatorTextAttribute new model: #parens} ] ]
 ]
 
+{ #category : 'directive slide' }
+GtSmaCCCalculatorSlideshow >> updateDirectiveSlideToggles: anElement with: anAnnouncement [
+	anElement
+		enqueueTask:
+			((BlDelayedTaskAction new)
+				delay: 500 milliSeconds;
+				action:
+						[ | index |
+							index := 1.
+							(anElement explainer firstExplanationHolderParent explainer)
+								updateValidatorTargetsOf: #lowestPrecedence to: false;
+								updateValidatorTargetsOf: #middlePrecedence to: false;
+								updateValidatorTargetsOf: #highestPrecedence to: false.
+							(self directivesIn: anElement)
+								do:
+									[ :each | 
+									| targetName |
+									targetName := (each coder directiveName , 'Directive') asSymbol.
+									each childNamed: #directiveTarget ifFound: [ :element | element removeFromParent ].
+									each addChild: ((self yellowExplanationTargetCircleFor: targetName) relocate: 2 @ 8) as: #directiveTarget.
+									index = 1
+										ifTrue:
+											[ each coder directiveName = 'left'
+												ifTrue:
+													[ (each coder grammarItem ast symbols collect: [ :node | node name source ]) asSortedCollection asArray = #('"+"' '"-"')
+														ifTrue:
+															[ anElement explainer firstExplanationHolderParent explainer updateValidatorTargetsOf: #lowestPrecedence to: true ] ] ].
+									index = 2
+										ifTrue:
+											[ each coder directiveName = 'left'
+												ifTrue:
+													[ (each coder grammarItem ast symbols collect: [ :node | node name source ]) asSortedCollection asArray = #('"*"' '"/"')
+														ifTrue:
+															[ anElement explainer firstExplanationHolderParent explainer updateValidatorTargetsOf: #middlePrecedence to: true ] ] ].
+									index = 3
+										ifTrue:
+											[ each coder directiveName = 'right'
+												ifTrue:
+													[ (each coder grammarItem ast symbols collect: [ :node | node name source ]) asArray = #('"^"')
+														ifTrue:
+															[ anElement explainer firstExplanationHolderParent explainer updateValidatorTargetsOf: #highestPrecedence to: true ] ] ].
+									(#('left' 'right' 'nonassoc') includes: each coder directiveName) ifTrue: [ index := index + 1 ] ] ])
+]
+
 { #category : 'number token slide' }
 GtSmaCCCalculatorSlideshow >> updateNumberSlideToggles: anElement with: anAnnouncement [
 	anAnnouncement item isTokenRule ifFalse: [ ^ self ].
 	self validateNumber: anAnnouncement grammar in: anElement.
 	self validateWhitespace: anAnnouncement grammar in: anElement.
-	self updateTargetsIn: anElement
+	self updateTokenTargetsIn: anElement
 ]
 
 { #category : 'number token slide' }
-GtSmaCCCalculatorSlideshow >> updateTargetsIn: anElement [
+GtSmaCCCalculatorSlideshow >> updateTokenTargetsIn: anElement [
 	anElement
 		enqueueTask:
 			((BlDelayedTaskAction new)

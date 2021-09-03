@@ -52,6 +52,16 @@ GtSmaCCSlides >> createTokenSimulatorFor: ruleName from: aGrammar [
 ]
 
 { #category : 'private' }
+GtSmaCCSlides >> directivesIn: coderElement [
+	| elements |
+	elements := OrderedCollection new.
+	coderElement
+		allChildrenBreadthFirstDo:
+			[ :each | ((each isKindOf: GtSmaCCCoderElement) and: [ each coder isDirective ]) ifTrue: [ elements add: each ] ].
+	^ elements
+]
+
+{ #category : 'private' }
 GtSmaCCSlides >> findItem: aString in: coderElement [
 	^ coderElement
 		allChildrenBreadthFirstDetect:
@@ -71,6 +81,31 @@ GtSmaCCSlides >> grammarFrom: anElement [
 GtSmaCCSlides >> setSource: aString in: anElement [
 	anElement
 		allChildrenDepthFirstDo: [ :each | (each isKindOf: GtSmaCCListCoderElement) ifTrue: [ each showDefinition: aString ] ]
+]
+
+{ #category : 'debugger slide' }
+GtSmaCCSlides >> startDebuggerOn: aString in: aParser [
+	| process context debuggingSession |
+	context := [ aParser parse: aString ] asContext.
+	process := Process forContext: context priority: Processor userInterruptPriority.
+	debuggingSession := SmaCCParserDebugSession
+		named: 'Debug parse'
+		on: process
+		startedAt: process suspendedContext.
+	[ SmaCCParserDebugSession handlesContext: debuggingSession context ] whileFalse: [ debuggingSession stepInto ].
+	^ debuggingSession
+]
+
+{ #category : 'coder explanation slide' }
+GtSmaCCSlides >> switchToTab: aString in: coderElement [
+	| tabgroup |
+	coderElement
+		allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtPharoBehaviorCoderElement ]
+		ifFound:
+			[ :each | tabgroup := each allChildrenBreadthFirstDetect: [ :child | child isKindOf: BrTabGroup ] ifFound: [ :child | child ] ].
+	tabgroup
+		allChildrenDepthFirstDo:
+			[ :each | (each isKindOf: BrTab) ifTrue: [ each label asString = aString ifTrue: [ BlSpace simulateClickOn: each ] ] ]
 ]
 
 { #category : 'private' }
