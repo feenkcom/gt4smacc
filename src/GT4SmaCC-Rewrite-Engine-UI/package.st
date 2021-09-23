@@ -1,1 +1,1 @@
-Package { #name : #'GT4SmaCC-Rewrite-Engine-UI' }
+Package { #name : 'GT4SmaCC-Rewrite-Engine-UI' }

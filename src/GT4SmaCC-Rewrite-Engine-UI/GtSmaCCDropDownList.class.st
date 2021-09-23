@@ -1,15 +1,15 @@
 Class {
-	#name : #GtSmaCCDropDownList,
-	#superclass : #BrButton,
+	#name : 'GtSmaCCDropDownList',
+	#superclass : 'BrButton',
 	#instVars : [
 		'selectedItem',
 		'items',
 		'withDropdownLook'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCDropDownList >> initialize [
 	super initialize.
 	items := #().
@@ -40,22 +40,22 @@ GtSmaCCDropDownList >> initialize [
 		label: (self labelFor: self selectedItem)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDropDownList >> items [
 	^ items
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDropDownList >> items: aCollection [
 	items := aCollection
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDropDownList >> labelFor: anObject [
 	^ anObject ifNil: [ '' ] ifNotNil: #displayString
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCDropDownList >> popupList [
 	| list |
 	list := BrSimpleList new.
@@ -82,12 +82,12 @@ GtSmaCCDropDownList >> popupList [
 	^ list
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDropDownList >> selectedItem [
 	^ selectedItem
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCDropDownList >> selectedItem: anObject [
 	selectedItem := anObject.
 	self label: (self labelFor: selectedItem)
