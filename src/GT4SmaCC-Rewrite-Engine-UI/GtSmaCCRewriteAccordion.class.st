@@ -1,30 +1,30 @@
 Class {
-	#name : #GtSmaCCRewriteAccordion,
-	#superclass : #BrAccordion,
+	#name : 'GtSmaCCRewriteAccordion',
+	#superclass : 'BrAccordion',
 	#instVars : [
 		'rewrite'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 GtSmaCCRewriteAccordion class >> rewrite: aRewrite [
 	^ self new
 		rewrite: aRewrite;
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCRewriteAccordion >> contentElement [
 	^ self subclassResponsibility
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteAccordion >> defaultTextAttributes [
 	^ { (BlFontSizeAttribute size: 14) beNotOverwritableByStyler }
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCRewriteAccordion >> headerElement [
 	^ BrButton new
 		alignCenterLeft;
@@ -37,7 +37,7 @@ GtSmaCCRewriteAccordion >> headerElement [
 		action: [ self toggle ]
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteAccordion >> initialize [
 	super initialize.
 	self vFitContent.
@@ -45,7 +45,7 @@ GtSmaCCRewriteAccordion >> initialize [
 	self aptitude: BrGlamorousAccordionWithBorderAptitude new
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteAccordion >> labelFor: aString [
 	^ BrLabel new
 		text: aString;
@@ -55,12 +55,12 @@ GtSmaCCRewriteAccordion >> labelFor: aString [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCRewriteAccordion >> rewrite [
 	^ rewrite
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCRewriteAccordion >> rewrite: aRewrite [
 	rewrite notNil
 		ifTrue: [ rewrite unsubscribe: self ].
@@ -70,12 +70,12 @@ GtSmaCCRewriteAccordion >> rewrite: aRewrite [
 	self updateContent
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteAccordion >> subscribeEvents [
 	
 ]
 
-{ #category : #updating }
+{ #category : 'updating' }
 GtSmaCCRewriteAccordion >> updateContent [
 	self content: [ self contentElement ].
 	self header: [ self headerElement ]

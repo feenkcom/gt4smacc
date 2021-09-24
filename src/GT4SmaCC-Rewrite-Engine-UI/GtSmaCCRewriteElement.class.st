@@ -1,16 +1,16 @@
 Class {
-	#name : #GtSmaCCRewriteElement,
-	#superclass : #GtSmaCCRewriteAccordion,
+	#name : 'GtSmaCCRewriteElement',
+	#superclass : 'GtSmaCCRewriteAccordion',
 	#instVars : [
 		'matchElement',
 		'matchEditor',
 		'transformationElement',
 		'transformationEditor'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCRewriteElement >> contentElement [
 	^ BrHorizontalPane new
 		vFitContent;
@@ -20,7 +20,7 @@ GtSmaCCRewriteElement >> contentElement [
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteElement >> editorElementFor: anEditor [
 	^ BrEditorElement new
 		effect: (BlGaussianShadowEffect color: Color black width: 3 offset: 0 @ 0);
@@ -39,7 +39,7 @@ GtSmaCCRewriteElement >> editorElementFor: anEditor [
 		yourself
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteElement >> initialize [
 	super initialize.
 	matchEditor := BrTextEditor new.
@@ -53,17 +53,17 @@ GtSmaCCRewriteElement >> initialize [
 		when: BrTextEditorDeletedEvent do: [ :event | self transformationChanged ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCRewriteElement >> isCodeTransformation [
 	^ rewrite transformation isKindOf: SmaCCRewriteCodeTransformation
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 GtSmaCCRewriteElement >> isPatternMatch [
 	^ rewrite match isKindOf: SmaCCRewriteTreeMatch
 ]
 
-{ #category : #changes }
+{ #category : 'changes' }
 GtSmaCCRewriteElement >> matchChanged [
 	| string |
 	string := matchEditor text asString.
@@ -72,7 +72,7 @@ GtSmaCCRewriteElement >> matchChanged [
 		ifFalse: [ rewrite match code: string ]
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> matchElement [
 	matchElement := BrHorizontalPane new
 		vFitContent;
@@ -81,7 +81,7 @@ GtSmaCCRewriteElement >> matchElement [
 	^ matchElement
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> matchHeaderElement [
 	| typeLabel patternLabel toggle |
 	typeLabel := self labelFor: 'Match: Type'.
@@ -106,7 +106,7 @@ GtSmaCCRewriteElement >> matchHeaderElement [
 		yourself
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> matchNodeClassElement [
 	| classLabel classList |
 	classLabel := self labelFor: 'Class:'.
@@ -128,7 +128,7 @@ GtSmaCCRewriteElement >> matchNodeClassElement [
 		yourself
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> matchStateElement [
 	| stateLabel stateList |
 	stateLabel := self labelFor: 'State:'.
@@ -151,7 +151,7 @@ GtSmaCCRewriteElement >> matchStateElement [
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteElement >> patternStyler [
 	| styler |
 	(rewrite parserClass notNil
@@ -169,22 +169,22 @@ GtSmaCCRewriteElement >> patternStyler [
 	^ styler
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteElement >> sourceStyler [
 	^ BrRBTextStyler new
 		classOrMetaClass: SmaCCRewriteMatchContext;
-		workspace: GtHighlightingBindingStrategy new;
+		workspace: GtLocalVariablesBindings new;
 		yourself
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCRewriteElement >> subscribeEvents [
 	rewrite announcer weak
 		when: #match send: #updateMatch to: self;
 		when: #transformation send: #updateTransformation to: self
 ]
 
-{ #category : #changes }
+{ #category : 'changes' }
 GtSmaCCRewriteElement >> transformationChanged [
 	| string |
 	string := transformationEditor text asString.
@@ -193,7 +193,7 @@ GtSmaCCRewriteElement >> transformationChanged [
 		ifFalse: [ rewrite transformation string: string ]
 ]
 
-{ #category : #'transformation ui' }
+{ #category : 'transformation ui' }
 GtSmaCCRewriteElement >> transformationElement [
 	transformationElement := BrHorizontalPane new
 		vFitContent;
@@ -202,7 +202,7 @@ GtSmaCCRewriteElement >> transformationElement [
 	^ transformationElement
 ]
 
-{ #category : #'transformation ui' }
+{ #category : 'transformation ui' }
 GtSmaCCRewriteElement >> transformationHeaderElement [
 	| codeLabel stringLabel toggle |
 	codeLabel := self labelFor: 'Transformation: Code'.
@@ -229,7 +229,7 @@ GtSmaCCRewriteElement >> transformationHeaderElement [
 		yourself
 ]
 
-{ #category : #'transformation ui' }
+{ #category : 'transformation ui' }
 GtSmaCCRewriteElement >> updateCodeTransformation [
 	transformationEditor text: rewrite transformation code asRopedText.
 	transformationEditor text attributes: self defaultTextAttributes.
@@ -237,7 +237,7 @@ GtSmaCCRewriteElement >> updateCodeTransformation [
 	transformationElement addChild: (self editorElementFor: transformationEditor)
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> updateMatch [
 	matchElement isNil
 		ifTrue: [ ^ self ].
@@ -249,7 +249,7 @@ GtSmaCCRewriteElement >> updateMatch [
 		ifFalse: [ self updateTypeMatch ]
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> updatePatternMatch [
 	matchElement addChild: self matchStateElement.
 	matchEditor text: rewrite match source asRopedText.
@@ -258,14 +258,14 @@ GtSmaCCRewriteElement >> updatePatternMatch [
 	matchElement addChild: (self editorElementFor: matchEditor)
 ]
 
-{ #category : #'transformation ui' }
+{ #category : 'transformation ui' }
 GtSmaCCRewriteElement >> updateStringTransformation [
 	transformationEditor text: rewrite transformation string asRopedText.
 	transformationEditor text attributes: self defaultTextAttributes.
 	transformationElement addChild: (self editorElementFor: transformationEditor)
 ]
 
-{ #category : #'transformation ui' }
+{ #category : 'transformation ui' }
 GtSmaCCRewriteElement >> updateTransformation [
 	transformationElement removeChildren.
 	transformationElement addChild: self transformationHeaderElement.
@@ -275,7 +275,7 @@ GtSmaCCRewriteElement >> updateTransformation [
 		ifFalse: [ self updateStringTransformation ]
 ]
 
-{ #category : #'match ui' }
+{ #category : 'match ui' }
 GtSmaCCRewriteElement >> updateTypeMatch [
 	| element variablesList editorElement |
 	matchElement addChild: self matchNodeClassElement.

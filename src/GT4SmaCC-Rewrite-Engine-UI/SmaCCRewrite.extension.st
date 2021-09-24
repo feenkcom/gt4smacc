@@ -1,6 +1,6 @@
-Extension { #name : #SmaCCRewrite }
+Extension { #name : 'SmaCCRewrite' }
 
-{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+{ #category : '*GT4SmaCC-Rewrite-Engine-UI' }
 SmaCCRewrite >> element [
 	^ GtSmaCCRewriteElement rewrite: self
 ]

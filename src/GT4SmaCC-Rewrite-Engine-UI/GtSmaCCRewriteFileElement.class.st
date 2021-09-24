@@ -1,10 +1,10 @@
 Class {
-	#name : #GtSmaCCRewriteFileElement,
-	#superclass : #GtSmaCCRewriteAccordion,
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#name : 'GtSmaCCRewriteFileElement',
+	#superclass : 'GtSmaCCRewriteAccordion',
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteFileElement >> contentElement [
 	^ BlElement new
 		layout: BlLinearLayout vertical;
@@ -15,7 +15,7 @@ GtSmaCCRewriteFileElement >> contentElement [
 		yourself
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCRewriteFileElement >> headerElement [
 	| header |
 	header := super headerElement.
@@ -26,7 +26,7 @@ GtSmaCCRewriteFileElement >> headerElement [
 	^ header
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteFileElement >> parserDropDown [
 	^ GtSmaCCDropDownList new
 		selectedItem: rewrite parserClass;
@@ -37,7 +37,7 @@ GtSmaCCRewriteFileElement >> parserDropDown [
 			do: [ :event | rewrite parserClass: event target selectedItem ]
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteFileElement >> parserElement [
 	| label |
 	label := BrLabel new
@@ -57,7 +57,7 @@ GtSmaCCRewriteFileElement >> parserElement [
 		yourself
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCRewriteFileElement >> rewritesElement [
 	| list |
 	list := BrSimpleList new.
@@ -76,7 +76,7 @@ GtSmaCCRewriteFileElement >> rewritesElement [
 	^ list
 ]
 
-{ #category : #updating }
+{ #category : 'updating' }
 GtSmaCCRewriteFileElement >> updateContent [
 	rewrite isRoot
 		ifTrue: [ self expand ].

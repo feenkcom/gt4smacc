@@ -1,13 +1,13 @@
 Class {
-	#name : #GtSmaCCMethodDefinitionElement,
-	#superclass : #GtSmaCCRewriteAccordion,
+	#name : 'GtSmaCCMethodDefinitionElement',
+	#superclass : 'GtSmaCCRewriteAccordion',
 	#instVars : [
 		'editor'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCMethodDefinitionElement >> contentElement [
 	editor text: rewrite source asRopedText.
 	editor text attributes: self defaultTextAttributes.
@@ -25,7 +25,7 @@ GtSmaCCMethodDefinitionElement >> contentElement [
 		yourself
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCMethodDefinitionElement >> initialize [
 	super initialize.
 	editor := BrTextEditor new.
@@ -35,12 +35,12 @@ GtSmaCCMethodDefinitionElement >> initialize [
 		when: BrTextEditorDeletedEvent do: [ :event | self sourceChanged ]
 ]
 
-{ #category : #updating }
+{ #category : 'updating' }
 GtSmaCCMethodDefinitionElement >> sourceChanged [
 	rewrite source: editor text asString
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCMethodDefinitionElement >> styler [
 	^ BrRBTextStyler new
 		classOrMetaClass: SmaCCRewriteMatchContext;

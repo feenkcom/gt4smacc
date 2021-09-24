@@ -1,6 +1,6 @@
 Class {
-	#name : #GtSmaCCTransformationToolkit,
-	#superclass : #Object,
+	#name : 'GtSmaCCTransformationToolkit',
+	#superclass : 'Object',
 	#instVars : [
 		'model',
 		'windowElement',
@@ -9,10 +9,10 @@ Class {
 		'previewResult',
 		'transformationsElement'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : 'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #'world menu' }
+{ #category : 'world menu' }
 GtSmaCCTransformationToolkit class >> menuCommandOn: aBuilder [
 	<worldMenu>
 	(aBuilder item: #'SmaCC Transformation Toolkit (GT)')
@@ -22,12 +22,12 @@ GtSmaCCTransformationToolkit class >> menuCommandOn: aBuilder [
 	aBuilder withSeparatorAfter
 ]
 
-{ #category : #opening }
+{ #category : 'opening' }
 GtSmaCCTransformationToolkit class >> open [
 	^ self new open
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
 	| items |
 	items := IdentitySet new.
@@ -39,7 +39,7 @@ GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
 		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
 	| items |
 	items := IdentitySet new.
@@ -51,7 +51,7 @@ GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
 		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
 ]
 
-{ #category : #'ui-configuration' }
+{ #category : 'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationBody [
 	| element |
 	element := BlElement new.
@@ -64,7 +64,7 @@ GtSmaCCTransformationToolkit >> configurationBody [
 	^ element
 ]
 
-{ #category : #'ui-configuration' }
+{ #category : 'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationElement [
 	^ BlElement new
 		layout: BlLinearLayout vertical;
@@ -76,7 +76,7 @@ GtSmaCCTransformationToolkit >> configurationElement [
 		yourself
 ]
 
-{ #category : #'ui-configuration' }
+{ #category : 'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationToolbar [
 	^ BrToolbar new
 		aptitude: BrGlamorousToolbarAptitude new;
@@ -84,7 +84,7 @@ GtSmaCCTransformationToolkit >> configurationToolbar [
 		addItems: self configurationToolbarItems
 ]
 
-{ #category : #'ui-configuration' }
+{ #category : 'ui-configuration' }
 GtSmaCCTransformationToolkit >> configurationToolbarItems [
 	^ #(
 		#('Load' #open #loadConfiguration) 
@@ -99,7 +99,7 @@ GtSmaCCTransformationToolkit >> configurationToolbarItems [
 				action: [ self perform: each last ] ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> connectModel [
 	| announcer |
 	announcer := model announcer weak.
@@ -120,7 +120,7 @@ GtSmaCCTransformationToolkit >> connectModel [
 		#(#removedTransformation:)"
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action: aBlock [
 	^ BrButton new
 		beSmallSize;
@@ -130,12 +130,12 @@ GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action
 		action: aBlock
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> disconnectModel [
 	model announcer unsubscribe: self
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 	previewResult := aResult.
 	self previewElement
@@ -148,7 +148,7 @@ GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 		addChild: self previewRulesElement
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
 	| editor element |
 	editor := BrTextEditor new.
@@ -166,7 +166,7 @@ GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
 	^ element
 ]
 
-{ #category : #'ui-configuration' }
+{ #category : 'ui-configuration' }
 GtSmaCCTransformationToolkit >> filesElement [
 	| element label |
 	element := BlElement new
@@ -201,18 +201,18 @@ GtSmaCCTransformationToolkit >> filesElement [
 	^ element
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> gotoPreviewTab [
 	self previewTab select
 ]
 
-{ #category : #'initialize-release' }
+{ #category : 'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
 	self model: SmaCCTransformationToolkitModel new
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
 	| stream |
 	stream := SmaCCLineNumberStream on: aString readStream.
@@ -220,7 +220,7 @@ GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
 	^ stream lineNumber
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> loadConfiguration [
 	| file |
 	file := self promptForFile: 'Load Configuration File' extensions: #('rwc').
@@ -231,12 +231,12 @@ GtSmaCCTransformationToolkit >> loadConfiguration [
 	self result: SmaCCRewriteCompleteResult new"
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTransformationToolkit >> model [
 	^ model
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
 	model notNil
 		ifTrue: [ self disconnectModel ].
@@ -245,7 +245,7 @@ GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
 		ifTrue: [ self connectModel ]
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCTransformationToolkit >> open [
 	| space |
 	space := BlSpace new.
@@ -256,7 +256,7 @@ GtSmaCCTransformationToolkit >> open [
 	space show
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> openResultFor: aFilename [
 	| result processor |
 	aFilename isNil
@@ -274,12 +274,12 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename [
 			self gotoPreviewTab ]
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> preview [
 	self openResultFor: self selectedFile
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewElement [
 	^ previewElement
 		ifNil: [ previewElement := BlElement new
@@ -290,7 +290,7 @@ GtSmaCCTransformationToolkit >> previewElement [
 				yourself ]
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewFilesElement [
 	^ BlElement new
 		layout: (BlGridLayout horizontal columnCount: 2);
@@ -303,14 +303,14 @@ GtSmaCCTransformationToolkit >> previewFilesElement [
 		yourself
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputFilename [
 	^ previewResult notNil
 		ifTrue: [ previewResult filename asFileReference basename ]
 		ifFalse: [ 'Input' ]
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputSourceElement [
 	^ BrTabGroup new
 		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
@@ -337,14 +337,14 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 					yourself ])
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputFilename [
 	^ previewResult notNil
 		ifTrue: [ previewResult outputFilename asFileReference basename ]
 		ifFalse: [ 'Output' ]
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 	^ BrTabGroup new
 		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
@@ -371,7 +371,7 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 					yourself ])
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> previewRulesElement [
 	| list |
 	list := BrColumnedList new.
@@ -403,12 +403,12 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 		yourself
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> previewTab [
 	^ windowElement viewModel tabs at: 3
 ]
 
-{ #category : #'configuration-actions' }
+{ #category : 'configuration-actions' }
 GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 	^ UIManager default
 		chooseExistingFileReference: aTitle
@@ -417,13 +417,13 @@ GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 		preview: nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> selectedFile [
 	filesList selectedIndices do: [ :i | ^ filesList items at: i ].
 	^ nil
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCTransformationToolkit >> separatorToolbarItem [
 	^ BlElement new
 		background: (Color gray alpha: 0.2);
@@ -438,7 +438,7 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 			c vertical matchParent ]
 ]
 
-{ #category : #'ui-transformations' }
+{ #category : 'ui-transformations' }
 GtSmaCCTransformationToolkit >> transformationsElement [
 	^ transformationsElement
 		ifNil: [ transformationsElement := BlElement new
@@ -450,11 +450,11 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 				yourself ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 	annotation isNil
 		ifTrue: [ ^ self ].
@@ -488,21 +488,21 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 							(self lineNumberFor: firstIndex in: previewResult outputSource) ] ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateFiles [
 	filesList notNil
 		ifTrue: [ filesList items: model files ]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateInputParserClass [
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateOutputDirectory [
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 	(self previewElement childNamed: #previewRewrites)
 		ifNotNil: [ :element | 
@@ -511,7 +511,7 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 				items: aCollection ]
 ]
 
-{ #category : #'ui-transformations' }
+{ #category : 'ui-transformations' }
 GtSmaCCTransformationToolkit >> updateRewrites [
 	| rewritesElement |
 	self transformationsElement removeChildren.
@@ -520,19 +520,19 @@ GtSmaCCTransformationToolkit >> updateRewrites [
 		addChild: rewritesElement asScrollableElement
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateRunOnServer [
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateServer [
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 GtSmaCCTransformationToolkit >> updateValidationParserClass [
 ]
 
-{ #category : #'ui-preview' }
+{ #category : 'ui-preview' }
 GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
 	editor
 		when: BrTextEditorEvent
@@ -549,7 +549,7 @@ GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
 			aBlock value: intervals ]
 ]
 
-{ #category : #ui }
+{ #category : 'ui' }
 GtSmaCCTransformationToolkit >> windowElement [
 	windowElement := BrTabGroup new.
 	windowElement aptitude: BrGlamorousTabGroupAptitude.
