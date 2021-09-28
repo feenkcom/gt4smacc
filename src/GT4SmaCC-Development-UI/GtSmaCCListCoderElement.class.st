@@ -113,6 +113,7 @@ GtSmaCCListCoderElement >> listElement [
 	list vFitContent.
 	list stencil: [ :each :index | each asElement ].
 	list items: self group coders.
+	list clipChildren: false.
 	^ list asScrollableElement
 ]
 
