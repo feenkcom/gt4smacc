@@ -8,3 +8,9 @@ Class {
 GtSmaCCGroupCoderInfiniteElement >> defaultLayout [
 	^ BlInfiniteLinearLayout vertical
 ]
+
+{ #category : 'initialization' }
+GtSmaCCGroupCoderInfiniteElement >> initialize [
+	super initialize.
+	self clipChildren: false
+]

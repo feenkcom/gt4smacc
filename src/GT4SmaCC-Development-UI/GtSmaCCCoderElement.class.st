@@ -97,7 +97,7 @@ GtSmaCCCoderElement >> contentElement [
 { #category : 'ui' }
 GtSmaCCCoderElement >> deleteElement [
 	^ GtInspectorRoundButtonStencil new asElement
-		icon: GtInspectorPlusIconStencil close asElement;
+		icon: BrPlusIconStencil close asElement;
 		constraintsDo: [ :c | 
 			c ignoreByLayout.
 			c
@@ -141,23 +141,7 @@ GtSmaCCCoderElement >> initialize [
 						top: 1
 						left: 10
 						bottom: 1
-						right: 10))
-				+
-					(BrInteractiveAptitude new
-						style: [ :aStyler | 
-							aStyler
-								default: [ resizer removeFromParent.
-									self background: Color transparent ].
-							aStyler
-								expanded: [ self addChild: resizer.
-									self
-										enqueueTask:
-											(BlTaskAction new
-												action: [ self
-														childNamed: #bodyEditor
-														ifFound: [ :anEditor | resizer target: anEditor ]
-														ifNone: [ resizer target: nil ] ]).
-									self background: Color white ] ]).
+						right: 10)).
 	self
 		addShortcut:
 			(BlShortcutWithAction new

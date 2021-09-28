@@ -48,8 +48,8 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 	^ BlElement new
 		geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
 		border: (BlBorder paint: Color veryLightGray width: 1);
-		padding: (BlInsets all: 2);
-		margin: (BlInsets all: 2);
+		padding: (BlInsets left: 2 right: 2);
+		margin: (BlInsets top: 0 left: 4 bottom: 0 right: -2);
 		layout: BlLinearLayout horizontal;
 		constraintsDo: [ :c | 
 			c horizontal fitContent.

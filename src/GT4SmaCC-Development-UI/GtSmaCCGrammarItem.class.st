@@ -38,7 +38,8 @@ GtSmaCCGrammarItem >> ast [
 { #category : 'actions' }
 GtSmaCCGrammarItem >> delete [
 	isDeleted := true.
-	self announce: (GtSmaCCGrammarItemChanged forItem: self)
+	self announce: (GtSmaCCGrammarItemChanged forItem: self).
+	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self grammar)
 ]
 
 { #category : 'accessing' }
