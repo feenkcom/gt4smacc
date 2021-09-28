@@ -67,7 +67,8 @@ GtSmaCCCoderElement >> collapsedElement [
 		constraintsDo: [ :c | 
 			c vertical fitContent.
 			c horizontal matchParent ].
-	label := BrEditorElement new.
+	label := BrEditor new.
+	label beReadOnlyWithoutSelection.
 	label padding: (BlInsets all: 2).
 	label
 		constraintsDo: [ :c | 
@@ -114,23 +115,12 @@ GtSmaCCCoderElement >> deleteElement [
 
 { #category : 'initialize-release' }
 GtSmaCCCoderElement >> initialize [
-	| resizer |
 	super initialize.
 	self
 		vFitContent;
 		hMatchParent;
 		clipChildren: false.
 	self addChild: self deleteElement as: #deleteButton.
-	resizer := BrResizer new
-		beBottom;
-		aptitude: BrGlamorousResizerAptitude new;
-		constraintsDo: [ :c | c ignoreByLayout ];
-		when: BlDoubleClickEvent
-			do: [ self
-				childNamed: #bodyEditor
-				ifFound: [ :anEditor | anEditor constraintsDo: [ :c | c vertical fitContent ] ]
-				ifNone: [  ] ];
-		yourself.
 	self
 		background: Color white;
 		aptitude:
