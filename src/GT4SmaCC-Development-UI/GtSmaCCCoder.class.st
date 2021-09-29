@@ -288,7 +288,7 @@ GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 		ifNone: [ ^ self ].
 	localIntervals := coderIntervalMap at: local.
 	coderIntervalMap removeKey: local.
-	renameAction := GtCompositeRenameAction
+	renameAction := GtSmaCCRenameAction
 		locations: localIntervals
 		element: anElement.
 	coderIntervalMap
@@ -578,5 +578,5 @@ GtSmaCCCoder >> updateCollapsedSource [
 	| text |
 	text := self collapsedText.
 	text attributes: self defaultTextAttributes.
-	self collapsedEditor text: text readonly
+	self collapsedEditor text: text
 ]
