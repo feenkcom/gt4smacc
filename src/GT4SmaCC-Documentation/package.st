@@ -1,1 +1,1 @@
-Package { #name : 'GT4SmaCC-Documentation' }
+Package { #name : #'GT4SmaCC-Documentation' }

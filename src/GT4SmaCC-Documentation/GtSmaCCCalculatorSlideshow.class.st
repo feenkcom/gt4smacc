@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCCalculatorSlideshow',
-	#superclass : 'GtSmaCCSlides',
+	#name : #GtSmaCCCalculatorSlideshow,
+	#superclass : #GtSmaCCSlides,
 	#category : 'GT4SmaCC-Documentation'
 }
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> addEvaluationStylerTo: aSmaCCCoderElement [
 	| validationStyler editorElement |
 	validationStyler := self evaluationValidationStyler.
@@ -18,7 +18,7 @@ GtSmaCCCalculatorSlideshow >> addEvaluationStylerTo: aSmaCCCoderElement [
 						validationStyler})
 ]
 
-{ #category : 'expressions slide' }
+{ #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> addExpressionStylerTo: aSmaCCCoderElement [
 	| validationStyler editorElement |
 	validationStyler := self expressionValidationStyler.
@@ -32,7 +32,7 @@ GtSmaCCCalculatorSlideshow >> addExpressionStylerTo: aSmaCCCoderElement [
 						validationStyler})
 ]
 
-{ #category : 'directive slide' }
+{ #category : #'directive slide' }
 GtSmaCCCalculatorSlideshow >> directiveSlideElement [
 	<gtExample>
 	
@@ -63,7 +63,7 @@ Expression
 	^ element
 ]
 
-{ #category : 'directive slide' }
+{ #category : #'directive slide' }
 GtSmaCCCalculatorSlideshow >> directiveSlideFor: aSlide [
 	<gtSlide>
 	
@@ -74,7 +74,7 @@ GtSmaCCCalculatorSlideshow >> directiveSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'directive slide' }
+{ #category : #'directive slide' }
 GtSmaCCCalculatorSlideshow >> directiveSlideText [
 	^ ('In the previous slide we added code to evaluate the expressions. However, you may have noticed that sometimes the evaluation returned a value you were not expecting. For example, evaluating "2 * 3 + 4" returns 14 instead of 10. This happened since the grammar we defined was ambiguous and SmaCC didn''t know how to handle these ambiguities. In this slide we will '
 		asRopedText , ('add' asRopedText glamorousExplanationFor: #addButton)
@@ -118,7 +118,7 @@ GtSmaCCCalculatorSlideshow >> directiveSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationSlideElement [
 	<gtExample>
 	
@@ -157,7 +157,7 @@ Expression
 	^ element
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationSlideFor: aSlide [
 	<gtSlide>
 	
@@ -168,7 +168,7 @@ GtSmaCCCalculatorSlideshow >> evaluationSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationSlideText [
 	^ ('In the previous slide we defined a parser that recognizes our expressions. In this slide we will add  ' asRopedText
 		, ('code' asRopedText glamorousExplanationFor: #code) , ' to our ' asRopedText
@@ -234,7 +234,7 @@ GtSmaCCCalculatorSlideshow >> evaluationSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationValidationStyler [
 	^ (GtSmaCCParserStyler forParser: SmaCCDefinitionParser)
 		stylerRules:
@@ -264,7 +264,7 @@ GtSmaCCCalculatorSlideshow >> evaluationValidationStyler [
 									attributes: {GtYellowCircleExplanationTextAdornment forIdentifier: #variable} ] ]}
 ]
 
-{ #category : 'expressions slide' }
+{ #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> expressionValidationStyler [
 	| binaryExpressions parenExpression |
 	(SmaCCDefinitionParser
@@ -302,7 +302,7 @@ GtSmaCCCalculatorSlideshow >> expressionValidationStyler [
 									attributes: {GtYellowCircleExplanationTextAdornment forIdentifier: identifier} ] ]}
 ]
 
-{ #category : 'expressions slide' }
+{ #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> expressionsSlideElement [
 	<gtExample>
 	
@@ -338,7 +338,7 @@ Expression
 	^ element
 ]
 
-{ #category : 'expressions slide' }
+{ #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> expressionsSlideFor: aSlide [
 	<gtSlide>
 	
@@ -349,7 +349,7 @@ GtSmaCCCalculatorSlideshow >> expressionsSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'expressions slide' }
+{ #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> expressionsSlideText [
 	^ ('In this slide we have the tokens defined and have started the ' asRopedText
 		, ('Expression' asRopedText glamorousExplanationFor: #Expression) , ' definition. Currently, it only accepts ' asRopedText
@@ -385,7 +385,7 @@ GtSmaCCCalculatorSlideshow >> expressionsSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> isValidNumberToken: aGrammar [
 	| item simulator ruleName |
 	ruleName := '<number>'.
@@ -416,7 +416,7 @@ GtSmaCCCalculatorSlideshow >> isValidNumberToken: aGrammar [
 	^ true
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> isValidWhitespaceToken: aGrammar [
 	| item simulator whitespace ruleName |
 	ruleName := '<whitespace>'.
@@ -442,7 +442,7 @@ GtSmaCCCalculatorSlideshow >> isValidWhitespaceToken: aGrammar [
 	^ true
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> numberTokenSlideElement [
 	<gtExample>
 	
@@ -465,7 +465,7 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideElement [
 	^ element
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> numberTokenSlideFor: aSlide [
 	<gtSlide>
 	
@@ -476,7 +476,7 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> numberTokenSlideText [
 	^ ('In these slides we will be creating a simple calculator parser. We will start by creating a simple parser that parses a number that could potentially have whitespace around it.'
 		asRopedText , String cr asRopedText
@@ -505,7 +505,7 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> runSimulator: simulator with: aString [
 	simulator
 		matchesOn: aString
@@ -516,7 +516,7 @@ GtSmaCCCalculatorSlideshow >> runSimulator: simulator with: aString [
 	^ false
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> styleCodeValidatorsFor: node inText: text [
 	| source ast |
 	source := node code source copyFrom: 2 to: node code source size - 1.
@@ -565,7 +565,7 @@ GtSmaCCCalculatorSlideshow >> styleCodeValidatorsFor: node inText: text [
 					[ (text from: node startPosition to: node startPosition) attributes: {GtValidatorTextAttribute new model: #parens} ] ]
 ]
 
-{ #category : 'directive slide' }
+{ #category : #'directive slide' }
 GtSmaCCCalculatorSlideshow >> updateDirectiveSlideToggles: anElement with: anAnnouncement [
 	anElement
 		enqueueTask:
@@ -609,7 +609,7 @@ GtSmaCCCalculatorSlideshow >> updateDirectiveSlideToggles: anElement with: anAnn
 									(#('left' 'right' 'nonassoc') includes: each coder directiveName) ifTrue: [ index := index + 1 ] ] ])
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> updateNumberSlideToggles: anElement with: anAnnouncement [
 	anAnnouncement item isTokenRule ifFalse: [ ^ self ].
 	self validateNumber: anAnnouncement grammar in: anElement.
@@ -617,7 +617,7 @@ GtSmaCCCalculatorSlideshow >> updateNumberSlideToggles: anElement with: anAnnoun
 	self updateTokenTargetsIn: anElement
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> updateTokenTargetsIn: anElement [
 	anElement
 		enqueueTask:
@@ -643,21 +643,21 @@ GtSmaCCCalculatorSlideshow >> updateTokenTargetsIn: anElement [
 										ifNone: [ each addChild: ((self yellowExplanationTargetCircleFor: #numberToken) relocate: 2 @ 8) as: #numberToken ] ] ])
 ]
 
-{ #category : 'evaluation slide' }
+{ #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> validate: node is: variableName or: literalValue [
 	node isVariable ifTrue: [ ^ node name = variableName ].
 	node isLiteralNode ifFalse: [ ^ false ].
 	^ node value = literalValue
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> validateNumber: aGrammar in: anElement [
 	anElement explainer firstExplanationHolderParent explainer
 		updateValidatorTargetsOf: #number
 		to: (self isValidNumberToken: aGrammar)
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> validateWhitespace: aGrammar in: anElement [
 	anElement explainer firstExplanationHolderParent explainer
 		updateValidatorTargetsOf: #whitespace
