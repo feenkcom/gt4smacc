@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCSlides',
-	#superclass : 'Object',
-	#category : 'GT4SmaCC-Documentation'
+	#name : #GtSmaCCSlides,
+	#superclass : #Object,
+	#category : #'GT4SmaCC-Documentation'
 }
 
-{ #category : 'coder explanation slide' }
+{ #category : #'coder explanation slide' }
 GtSmaCCSlides >> addCommonExplanationTargetsFor: coderElement [
 	| tabgroup actionBar toolbar |
 	coderElement
@@ -24,7 +24,7 @@ GtSmaCCSlides >> addCommonExplanationTargetsFor: coderElement [
 	actionBar children first addChild: ((self yellowExplanationTargetCircleFor: #saveButton) relocate: 4 @ 10)
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> createParserCoderOn: aClass [
 	<gtExample>
 	
@@ -42,7 +42,7 @@ GtSmaCCSlides >> createParserCoderOn: aClass [
 		addChild: coderElement
 ]
 
-{ #category : 'number token slide' }
+{ #category : #'number token slide' }
 GtSmaCCSlides >> createTokenSimulatorFor: ruleName from: aGrammar [
 	| value |
 	value := SmaCCGrammar maximumCharacterValue.
@@ -51,7 +51,7 @@ GtSmaCCSlides >> createTokenSimulatorFor: ruleName from: aGrammar [
 		ensure: [ SmaCCGrammar maximumCharacterValue: value ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> directivesIn: coderElement [
 	| elements |
 	elements := OrderedCollection new.
@@ -61,7 +61,7 @@ GtSmaCCSlides >> directivesIn: coderElement [
 	^ elements
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> findItem: aString in: coderElement [
 	^ coderElement
 		allChildrenBreadthFirstDetect:
@@ -71,19 +71,19 @@ GtSmaCCSlides >> findItem: aString in: coderElement [
 		ifFound: [ :each | each ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> grammarFrom: anElement [
 	anElement allChildrenDepthFirstDo: [ :each | (each isKindOf: GtSmaCCListCoderElement) ifTrue: [ ^ each coder grammar ] ].
 	^ nil
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> setSource: aString in: anElement [
 	anElement
 		allChildrenDepthFirstDo: [ :each | (each isKindOf: GtSmaCCListCoderElement) ifTrue: [ each showDefinition: aString ] ]
 ]
 
-{ #category : 'debugger slide' }
+{ #category : #'debugger slide' }
 GtSmaCCSlides >> startDebuggerOn: aString in: aParser [
 	| process context debuggingSession |
 	context := [ aParser parse: aString ] asContext.
@@ -96,7 +96,7 @@ GtSmaCCSlides >> startDebuggerOn: aString in: aParser [
 	^ debuggingSession
 ]
 
-{ #category : 'coder explanation slide' }
+{ #category : #'coder explanation slide' }
 GtSmaCCSlides >> switchToTab: aString in: coderElement [
 	| tabgroup |
 	coderElement
@@ -108,12 +108,12 @@ GtSmaCCSlides >> switchToTab: aString in: coderElement [
 			[ :each | (each isKindOf: BrTab) ifTrue: [ each label asString = aString ifTrue: [ BlSpace simulateClickOn: each ] ] ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlides >> yellowExplanationTargetCircleFor: aModel [
 	^ (BrButton new)
 		constraintsDo: [ :c | c ignoreByLayout ];
 		size: 0 @ 0;
 		elevation: (BlRelativeElevation elevation: 10);
-		geometry: BlCircle new;
+		geometry: BlCircleGeometry new;
 		aptitude: (GtExplainerTargetAptitude new explanationModel: aModel)
 ]

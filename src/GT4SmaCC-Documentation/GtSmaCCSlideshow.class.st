@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCSlideshow',
-	#superclass : 'GtSmaCCSlides',
+	#name : #GtSmaCCSlideshow,
+	#superclass : #GtSmaCCSlides,
 	#category : 'GT4SmaCC-Documentation'
 }
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSlideshow >> addButtonFor: coderElement [
 	^ coderElement
 		allChildrenBreadthFirstDetect:
@@ -12,7 +12,7 @@ GtSmaCCSlideshow >> addButtonFor: coderElement [
 		ifFound: [ :aChild | aChild childAt: 4 ]
 ]
 
-{ #category : 'create parser slide' }
+{ #category : #'create parser slide' }
 GtSmaCCSlideshow >> createSlideElement [
 	| coderElement buttonTarget |
 	coderElement := BlUseAsyncFeatures disableDuring: [ GtCoder new createInPager maximized ].
@@ -30,7 +30,7 @@ GtSmaCCSlideshow >> createSlideElement [
 		addChild: coderElement
 ]
 
-{ #category : 'create parser slide' }
+{ #category : #'create parser slide' }
 GtSmaCCSlideshow >> createSlideFor: aSlide [
 	<gtSlide>
 	
@@ -51,7 +51,7 @@ GtSmaCCSlideshow >> createSlideFor: aSlide [
 									BlSpace simulateClickOn: button ]) ]
 ]
 
-{ #category : 'create parser slide' }
+{ #category : #'create parser slide' }
 GtSmaCCSlideshow >> createSlideText [
 	^ ('To create a SmaCC parser, click the ' asRopedText , ('+' asRopedText glamorousExplanationFor: #addButton)
 		,
@@ -61,7 +61,7 @@ GtSmaCCSlideshow >> createSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'debugger slide' }
+{ #category : #'debugger slide' }
 GtSmaCCSlideshow >> debuggerSlideElement [
 	<gtExample>
 	
@@ -117,7 +117,7 @@ GtSmaCCSlideshow >> debuggerSlideElement [
 	^ element
 ]
 
-{ #category : 'debugger slide' }
+{ #category : #'debugger slide' }
 GtSmaCCSlideshow >> debuggerSlideFor: aSlide [
 	<gtSlide>
 	
@@ -128,7 +128,7 @@ GtSmaCCSlideshow >> debuggerSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'debugger slide' }
+{ #category : #'debugger slide' }
 GtSmaCCSlideshow >> debuggerSlideText [
 	^ ('SmaCC defines a custom debugger for parsers. If a debugger opens while parsing, there will be a SmaCCParser button at the top of the window. Selecting that button, switches to the SmaCC debugger. The SmaCC debugger shows the parser''s '
 		asRopedText , ('stack' asRopedText glamorousExplanationFor: #parserStack) , ', the potential ' asRopedText
@@ -153,7 +153,7 @@ GtSmaCCSlideshow >> debuggerSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'coder explanation slide' }
+{ #category : #'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideElement [
 	<gtExample>
 	
@@ -172,7 +172,7 @@ GtSmaCCSlideshow >> explanationSlideElement [
 	^ coderElement
 ]
 
-{ #category : 'coder explanation slide' }
+{ #category : #'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideFor: aSlide [
 	<gtSlide>
 	
@@ -183,7 +183,7 @@ GtSmaCCSlideshow >> explanationSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'coder explanation slide' }
+{ #category : #'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideText [
 	^ ('Browsing a SmaCC parser class in coder displays a special ' asRopedText
 		, ('grammar' asRopedText glamorousExplanationFor: #GrammarTab) , ' tab that displays the parser''s ' asRopedText
@@ -200,7 +200,7 @@ New items can be added to the grammar by using the ' asRopedText , ('+' asRopedT
 		fontSize: 20
 ]
 
-{ #category : 'filter slide' }
+{ #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideElement [
 	<gtExample>
 	
@@ -226,7 +226,7 @@ GtSmaCCSlideshow >> filterSlideElement [
 	^ coderElement
 ]
 
-{ #category : 'filter slide' }
+{ #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideFor: aSlide [
 	<gtSlide>
 	
@@ -237,7 +237,7 @@ GtSmaCCSlideshow >> filterSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'filter slide' }
+{ #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideText [
 	^ ('When working with a large grammar, you need to be able to quickly search for items. First, you can filter the items by entering a '
 		asRopedText , ('search string' asRopedText glamorousExplanationFor: #textSearch)
@@ -250,7 +250,7 @@ GtSmaCCSlideshow >> filterSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'production simulator slide' }
+{ #category : #'production simulator slide' }
 GtSmaCCSlideshow >> productionSimulatorSlideElement [
 	<gtExample>
 	
@@ -279,7 +279,7 @@ GtSmaCCSlideshow >> productionSimulatorSlideElement [
 	^ coderElement
 ]
 
-{ #category : 'production simulator slide' }
+{ #category : #'production simulator slide' }
 GtSmaCCSlideshow >> productionSimulatorSlideFor: aSlide [
 	<gtSlide>
 	
@@ -290,7 +290,7 @@ GtSmaCCSlideshow >> productionSimulatorSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'production simulator slide' }
+{ #category : #'production simulator slide' }
 GtSmaCCSlideshow >> productionSimulatorSlideText [
 	^ ('Like tokens, you can also test your production definitions without compiling by using the ' asRopedText
 		, ('debug' asRopedText glamorousExplanationFor: #simulateButton)
@@ -306,7 +306,7 @@ GtSmaCCSlideshow >> productionSimulatorSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'testing slide' }
+{ #category : #'testing slide' }
 GtSmaCCSlideshow >> testingSlideElement [
 	<gtExample>
 	
@@ -331,7 +331,7 @@ GtSmaCCSlideshow >> testingSlideElement [
 	^ coderElement
 ]
 
-{ #category : 'testing slide' }
+{ #category : #'testing slide' }
 GtSmaCCSlideshow >> testingSlideFor: aSlide [
 	<gtSlide>
 	
@@ -342,7 +342,7 @@ GtSmaCCSlideshow >> testingSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'testing slide' }
+{ #category : #'testing slide' }
 GtSmaCCSlideshow >> testingSlideText [
 	^ ('You can test your compiled parser by using the ' asRopedText , ('Test' asRopedText glamorousExplanationFor: #TestTab)
 		, ' tab. Enter your expression you want to parse in the ' asRopedText
@@ -354,7 +354,7 @@ GtSmaCCSlideshow >> testingSlideText [
 		fontSize: 20
 ]
 
-{ #category : 'token simulator slide' }
+{ #category : #'token simulator slide' }
 GtSmaCCSlideshow >> tokenSimulatorSlideElement [
 	<gtExample>
 	
@@ -381,7 +381,7 @@ GtSmaCCSlideshow >> tokenSimulatorSlideElement [
 	^ coderElement
 ]
 
-{ #category : 'token simulator slide' }
+{ #category : #'token simulator slide' }
 GtSmaCCSlideshow >> tokenSimulatorSlideFor: aSlide [
 	<gtSlide>
 	
@@ -392,7 +392,7 @@ GtSmaCCSlideshow >> tokenSimulatorSlideFor: aSlide [
 		elementWeight: 0.6
 ]
 
-{ #category : 'token simulator slide' }
+{ #category : #'token simulator slide' }
 GtSmaCCSlideshow >> tokenSimulatorSlideText [
 	^ ('You can test your token definition regular expressions without compiling the grammar by using the ' asRopedText
 		, ('debug' asRopedText glamorousExplanationFor: #simulateButton)
