@@ -1,18 +1,18 @@
 Class {
-	#name : 'GtSmaCCGrammarStylingVisitor',
-	#superclass : 'GtSmaCCSyntaxStylingVisitor',
+	#name : #GtSmaCCGrammarStylingVisitor,
+	#superclass : #GtSmaCCSyntaxStylingVisitor,
 	#instVars : [
 		'completions'
 	],
 	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStylingVisitor >> completions [
 	^ completions
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	| name definition grammar |
 	name := aToken source.
@@ -32,7 +32,7 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		to: aToken stopPosition
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCGrammarStylingVisitor >> initialize [
 	super initialize.
 	completions := GtPrefixTree
@@ -40,7 +40,7 @@ GtSmaCCGrammarStylingVisitor >> initialize [
 			#('%annotate_tokens;' '%attributes' '%excludes' '%glr;' '%hierarchy' '%id' '%ignorecase;' '%ignore_variables' '%left' '%nonassoc' '%prefix' '%right' '%root' '%scopes' '%start' '%suffix' '%states')
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 	| editor editorElement innerText |
 	innerText := aString asRopedText.
@@ -67,13 +67,13 @@ GtSmaCCGrammarStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 	^ editorElement
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 GtSmaCCGrammarStylingVisitor >> visitProductionRule: aProductionRule [
 	completions add: aProductionRule name source.
 	super visitProductionRule: aProductionRule
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 GtSmaCCGrammarStylingVisitor >> visitSymbol: aSymbol [
 	completions add: aSymbol name source.
 	aSymbol variableNameToken notNil
@@ -83,13 +83,13 @@ GtSmaCCGrammarStylingVisitor >> visitSymbol: aSymbol [
 	super visitSymbol: aSymbol
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 GtSmaCCGrammarStylingVisitor >> visitTokenRegex: aTokenRegex [
 	completions add: aTokenRegex name source.
 	super visitTokenRegex: aTokenRegex
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 GtSmaCCGrammarStylingVisitor >> visitTokenRule: aTokenRule [
 	completions add: aTokenRule name source.
 	super visitTokenRule: aTokenRule

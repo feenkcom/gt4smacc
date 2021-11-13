@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCGroupCoderDataSource',
-	#superclass : 'BlInfiniteDataSource',
+	#name : #GtSmaCCGroupCoderDataSource,
+	#superclass : #BlInfiniteDataSource,
 	#instVars : [
 		'group',
 		'elementsByCoder',
@@ -9,7 +9,7 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGroupCoderDataSource >> buildElementForCoder: aCoder [
 	| element |
 	element := aCoder asElement.
@@ -18,29 +18,29 @@ GtSmaCCGroupCoderDataSource >> buildElementForCoder: aCoder [
 	^ element
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCGroupCoderDataSource >> group: aSmaCCDefinitionGroup [
 	group := aSmaCCDefinitionGroup.
 	self notifyChanged
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCGroupCoderDataSource >> initialize [
 	super initialize.
 	elementsByCoder := Dictionary new
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGroupCoderDataSource >> itemCount [
 	^ group coders size
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGroupCoderDataSource >> lookBlock: aBlock [
 	lookBlock := aBlock
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCGroupCoderDataSource >> onBindHolder: anElementHolder at: aPosition [
 	| currentCoder |
 	currentCoder := group coders at: aPosition.
@@ -51,12 +51,12 @@ GtSmaCCGroupCoderDataSource >> onBindHolder: anElementHolder at: aPosition [
 				ifAbsentPut: [ self buildElementForCoder: currentCoder ])
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCGroupCoderDataSource >> onCreateHolder: anInfiniteElement type: anItemType [
 	^ GtSmaCCCoderElementHolder new
 ]
 
-{ #category : 'updating' }
+{ #category : #updating }
 GtSmaCCGroupCoderDataSource >> updateCoders [
 	| cachedCodersToRemove |
 	cachedCodersToRemove := elementsByCoder keys

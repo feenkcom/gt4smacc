@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtSmaCCCoderRulesChangedAnnouncement',
-	#superclass : 'GtSmaCCCoderAnnouncement',
+	#name : #GtSmaCCCoderRulesChangedAnnouncement,
+	#superclass : #GtSmaCCCoderAnnouncement,
 	#category : 'GT4SmaCC-Development-UI-Coders'
 }

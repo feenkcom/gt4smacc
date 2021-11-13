@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCParser' }
+Extension { #name : #SmaCCParser }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> debug: aString from: anElement [
 	| process context debuggingSession |
 	context := [ self parse: aString ] asContext.
@@ -15,7 +15,7 @@ SmaCCParser class >> debug: aString from: anElement [
 	process debug
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtAnnotationsFor: aView context: aDictionary [
 	<gtClassView>
 	| coder |
@@ -30,13 +30,13 @@ SmaCCParser class >> gtAnnotationsFor: aView context: aDictionary [
 		stencil: [ coder asVariableElement ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtGrammarFor: aView [
 	<gtView>
 	^ self gtGrammarFor: aView context: Dictionary new
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 	<gtClassView>
 	| coder |
@@ -54,7 +54,7 @@ SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 		stencil: [ coder asElement ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtSourceFor: aView [
 	<gtView>
 	<gtClassView>
@@ -66,7 +66,7 @@ SmaCCParser class >> gtSourceFor: aView [
 		stencil: [ GtSmaCCGrammarElement onGrammar: (GtSmaCCGrammar onParser: self) ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtTestElement [
 	| element editor actionBar editorElement text |
 	element := BlElement new.
@@ -114,7 +114,7 @@ SmaCCParser class >> gtTestElement [
 	^ element
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtTestFor: aView [
 	<gtView>
 	<gtClassView>
@@ -126,7 +126,7 @@ SmaCCParser class >> gtTestFor: aView [
 		stencil: [ self gtTestElement ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulateParse: inputString fromRule: ruleName [
 	| simulator |
 	simulator := SmaCCParserSimulator on: self parserDefinitionString.
@@ -134,7 +134,7 @@ SmaCCParser class >> simulateParse: inputString fromRule: ruleName [
 	^ simulator simulateParse: inputString
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulationError [
 	<gtExample>
 	Smalltalk
@@ -149,7 +149,7 @@ SmaCCParser class >> simulationError [
 			self error: 'Should not get here' ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulationExample [
 	<gtExample>
 	^ Smalltalk
@@ -161,7 +161,7 @@ SmaCCParser class >> simulationExample [
 			each simulateParse: source fromRule: 'Block' ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulationParses: inputString fromRule: ruleName [
 	^ [ self simulateParse: inputString fromRule: ruleName.
 	true ]

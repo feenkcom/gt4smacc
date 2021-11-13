@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCTokenSimulator',
-	#superclass : 'GtSmaCCSimulator',
+	#name : #GtSmaCCTokenSimulator,
+	#superclass : #GtSmaCCSimulator,
 	#category : 'GT4SmaCC-Development-UI-Simulation'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCTokenSimulator >> asElement [
 	^ GtSmaCCTokenSimulatorElement onSimulator: self
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCTokenSimulator >> buildSimulator [
 	| definitionAST |
 	definitionAST := self grammar ast.
@@ -18,7 +18,7 @@ GtSmaCCTokenSimulator >> buildSimulator [
 		tokenName: self ruleName
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 GtSmaCCTokenSimulator >> simulateOn: aString [
 	simulator
 		matchesOn: aString

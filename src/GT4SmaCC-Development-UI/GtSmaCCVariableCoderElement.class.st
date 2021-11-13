@@ -1,25 +1,25 @@
 Class {
-	#name : 'GtSmaCCVariableCoderElement',
-	#superclass : 'BrExpander',
+	#name : #GtSmaCCVariableCoderElement,
+	#superclass : #BrExpander,
 	#instVars : [
 		'coder'
 	],
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCVariableCoderElement class >> onCoder: aGrammarCoder [
 	^ self new
 		coder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoderElement >> coder [
 	^ coder
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoderElement >> coder: aCoder [
 	coder := aCoder.
 	self header: [ self collapsedElement ].
@@ -35,7 +35,7 @@ GtSmaCCVariableCoderElement >> coder: aCoder [
 		ifTrue: [ self expand ]
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCVariableCoderElement >> collapsedElement [
 	| element |
 	element := BlElement new.
@@ -49,7 +49,7 @@ GtSmaCCVariableCoderElement >> collapsedElement [
 	^ element
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCVariableCoderElement >> contentElement [
 	| element |
 	element := BlElement new.
@@ -64,12 +64,12 @@ GtSmaCCVariableCoderElement >> contentElement [
 	^ element
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> editType [
 	^ self ownerElement editType
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> editorsDo: aBlock [
 	self
 		allChildrenBreadthFirstDo: [ :each | 
@@ -77,7 +77,7 @@ GtSmaCCVariableCoderElement >> editorsDo: aBlock [
 				ifTrue: [ aBlock value: each ] ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> focusedEditor [
 	self
 		editorsDo: [ :each | 
@@ -86,7 +86,7 @@ GtSmaCCVariableCoderElement >> focusedEditor [
 	^ nil
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCVariableCoderElement >> initialize [
 	| resizer |
 	super initialize.
@@ -156,7 +156,7 @@ GtSmaCCVariableCoderElement >> initialize [
 				action: [ :each | self togglePreviousRenaming ])
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCVariableCoderElement >> labelElement [
 	| label |
 	label := BrLabel new.
@@ -170,12 +170,12 @@ GtSmaCCVariableCoderElement >> labelElement [
 	^ label
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> loseFocusFrom: anEditorElement [
 	self editorsDo: [ :each | each background: Color white ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> ownerElement [
 	self
 		allParentsDo: [ :each | 
@@ -184,7 +184,7 @@ GtSmaCCVariableCoderElement >> ownerElement [
 	^ nil
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCVariableCoderElement >> referenceElements [
 	^ coder referencesText
 		collect: [ :each | 
@@ -210,19 +210,19 @@ GtSmaCCVariableCoderElement >> referenceElements [
 			editorElement ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> toggleNextRenaming [
 	self ownerElement toggleNextRenaming.
 	self updateEditorBackgrounds
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> togglePreviousRenaming [
 	self ownerElement togglePreviousRenaming.
 	self updateEditorBackgrounds
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> updateEditorBackgrounds [
 	| focused |
 	focused := self focusedEditor.
@@ -231,7 +231,7 @@ GtSmaCCVariableCoderElement >> updateEditorBackgrounds [
 	self updateFocusTo: focused
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> updateFocusTo: anEditorElement [
 	| testBlock |
 	testBlock := self editType = #single
@@ -247,7 +247,7 @@ GtSmaCCVariableCoderElement >> updateFocusTo: anEditorElement [
 				ifFalse: [ each background: Color white ] ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoderElement >> updateNameTo: newName from: initialName in: element [
 	| testBlock |
 	testBlock := self editType = #single

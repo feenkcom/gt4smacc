@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCTokenRule',
-	#superclass : 'GtSmaCCGrammarItem',
+	#name : #GtSmaCCTokenRule,
+	#superclass : #GtSmaCCGrammarItem,
 	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCTokenRule >> isReferenced [
 	^ super isReferenced or: [ self isScannerMethod ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCTokenRule >> isScannerMethod [
 	^ ((grammar scannerClass ifNil: [ SmaCCScanner ])
 		whichClassIncludesSelector: self methodName)
@@ -17,19 +17,19 @@ GtSmaCCTokenRule >> isScannerMethod [
 		ifNotNil: [ :class | class includesBehavior: SmaCCScanner ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCTokenRule >> isTokenRule [
 	^ true
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCTokenRule >> methodName [
 	^ self name
 		ifNil: [ #'' ]
 		ifNotNil: [ :name | (name copyFrom: 2 to: name size - 1) asSymbol ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCTokenRule >> parserStartingState [
 	^ SmaCCDefinitionParser startingStateForRegexRule
 ]

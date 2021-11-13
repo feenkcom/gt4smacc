@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCGroupCoderInfiniteElement',
-	#superclass : 'BlInfiniteElement',
+	#name : #GtSmaCCGroupCoderInfiniteElement,
+	#superclass : #BlInfiniteElement,
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCGroupCoderInfiniteElement >> defaultLayout [
 	^ BlInfiniteLinearLayout vertical
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCGroupCoderInfiniteElement >> initialize [
 	super initialize.
 	self clipChildren: false

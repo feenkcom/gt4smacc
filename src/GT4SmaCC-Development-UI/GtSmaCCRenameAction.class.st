@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCRenameAction',
-	#superclass : 'GtRenameAction',
+	#name : #GtSmaCCRenameAction,
+	#superclass : #GtRenameAction,
 	#instVars : [
 		'otherLocations',
 		'otherRenameAttributes'
@@ -8,14 +8,14 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCRenameAction >> addLocations: intervals to: anEditor [
 	otherLocations
 		at: anEditor
 		put: (intervals asSortedCollection: [ :a :b | a first < b first ])
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCRenameAction >> addRenameAttributes [
 	super addRenameAttributes.
 	otherLocations keysAndValuesDo: [ :editor :intervals | 
@@ -32,35 +32,35 @@ GtSmaCCRenameAction >> addRenameAttributes [
 		editor text: text ]
 ]
 
-{ #category : 'private - actions' }
+{ #category : #'private - actions' }
 GtSmaCCRenameAction >> allowSave [
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCRenameAction >> initialize [
 	super initialize.
 	otherLocations := IdentityDictionary new.
 	otherRenameAttributes := OrderedCollection new
 ]
 
-{ #category : 'private - actions' }
+{ #category : #'private - actions' }
 GtSmaCCRenameAction >> preventSave [
 ]
 
-{ #category : 'removing' }
+{ #category : #removing }
 GtSmaCCRenameAction >> removeAttributes [
 	super removeAttributes.
 	otherLocations keysDo: [ :editor | 
 		editor text clearAttributes: [ :each | self isRenameAttribute: each ] ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCRenameAction >> undoChanges [
 	self textElement text: originalText.
 	self textEditor moveCursorTo: originalCursorPosition
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCRenameAction >> updateEditor: editor intervals: intervals [
 	| newText index |
 	newText := '' asRopedText.
@@ -79,13 +79,13 @@ GtSmaCCRenameAction >> updateEditor: editor intervals: intervals [
 	editor text: newText
 ]
 
-{ #category : 'actions' }
+{ #category : #actions }
 GtSmaCCRenameAction >> updateName: blText [
 	otherRenameAttributes do: [ :each | each updateText: blText ].
 	super updateName: blText
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCRenameAction >> updateSource [
 	self newName = self originalName ifTrue: [ ^ self removeAttributes ].
 	self updateEditor: self textEditor intervals: originalLocations.

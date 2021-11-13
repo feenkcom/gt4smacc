@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCModel',
-	#superclass : 'Object',
+	#name : #GtSmaCCModel,
+	#superclass : #Object,
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
@@ -9,37 +9,37 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Model'
 }
 
-{ #category : 'announcer' }
+{ #category : #announcer }
 GtSmaCCModel >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCModel >> grammar [
 	self subclassResponsibility
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCModel >> isDirective [
 	^ false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCModel >> isProductionRule [
 	^ false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCModel >> isTokenRule [
 	^ false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCModel >> isValid [
 	^ true
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCModel >> ruleNamed: aString [
 	^ self grammar ruleNamed: aString
 ]

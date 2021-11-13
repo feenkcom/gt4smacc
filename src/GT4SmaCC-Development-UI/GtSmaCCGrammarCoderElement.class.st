@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCGrammarCoderElement',
-	#superclass : 'GtSmaCCListCoderElement',
+	#name : #GtSmaCCGrammarCoderElement,
+	#superclass : #GtSmaCCListCoderElement,
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarCoderElement >> coderListElementClass [
 	^ GtSmaCCCoderListElement
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarCoderElement >> compilationBar [
 	| element |
 	element := super compilationBar.
@@ -17,7 +17,7 @@ GtSmaCCGrammarCoderElement >> compilationBar [
 	^ element
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarCoderElement >> flagsElement [
 	| element |
 	element := BlElement new.
@@ -40,19 +40,19 @@ GtSmaCCGrammarCoderElement >> flagsElement [
 	^ element
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarCoderElement >> group [
 	^ grammarCoder group
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarCoderElement >> showErrors [
 	| list |
 	list := self childNamed: #list.
 	list filterErrors
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarCoderElement >> toggleButton: aString activated: aSymbol [
 	| toggle |
 	toggle := BrToggle new

@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCGrammarStyler',
-	#superclass : 'BlTextStyler',
+	#name : #GtSmaCCGrammarStyler,
+	#superclass : #BlTextStyler,
 	#instVars : [
 		'scannerClass',
 		'originalGrammar',
@@ -9,14 +9,14 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Styler'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCGrammarStyler class >> for: aSmaCCScannerClass [
 	^ self new
 		scannerClass: aSmaCCScannerClass;
 		yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCGrammarStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefinitionNode [
 	^ self new
 		scannerClass: aSmaCCScannerClass;
@@ -24,56 +24,56 @@ GtSmaCCGrammarStyler class >> for: aSmaCCScannerClass grammar: aSmaCCGrammarDefi
 		yourself
 ]
 
-{ #category : 'stylers' }
+{ #category : #stylers }
 GtSmaCCGrammarStyler class >> stylerFor: aClass [
 	<smaccStyler: #SmaCCDefinitionParser priority: 10>
 	^ self new
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> completions [
 	^ completions
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCGrammarStyler >> hasExpandableRuleNamed: aString [
 	^ false
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarStyler >> initialize [
 	super initialize.
 	completions := GtPrefixTree new
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> originalGrammar [
 	^ originalGrammar
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> originalGrammar: anObject [
 	originalGrammar := anObject
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarStyler >> privateStyle: aText [
 	^ self
 		style: aText
 		using: (SmaCCDefinitionParser parseWithErrors: aText asString)
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> scannerClass [
 	^ scannerClass ifNil: [ SmaCCScanner ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> scannerClass: anObject [
 	scannerClass := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> style: aText using: anAST [
 	[ | stylingVisitor |
 	text := aText.
@@ -85,7 +85,7 @@ GtSmaCCGrammarStyler >> style: aText using: anAST [
 	^ aText
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarStyler >> text [
 	^ text
 ]

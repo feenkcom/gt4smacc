@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCNodeReferencesFilter',
-	#superclass : 'GtSmaCCReferencesFilter',
+	#name : #GtSmaCCNodeReferencesFilter,
+	#superclass : #GtSmaCCReferencesFilter,
 	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeReferencesFilter >> highlighterClass [
 	^ GtSmaCCNodeReferencesHighlightingVisitor
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCNodeReferencesFilter >> matches: anObject [
 	(anObject isKindOf: GtSmaCCGrammarItem)
 		ifFalse: [ ^ false ].

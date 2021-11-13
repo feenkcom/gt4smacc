@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCVariableGroupResult',
-	#superclass : 'GtSearchTypedGroupResult',
+	#name : #GtSmaCCVariableGroupResult,
+	#superclass : #GtSearchTypedGroupResult,
 	#instVars : [
 		'coderMap',
 		'grammarCoder'
@@ -8,21 +8,21 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCVariableGroupResult class >> onCoder: aGrammarCoder [
 	^ self new
 		grammarCoder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableGroupResult >> coderFor: aString [
 	^ (coderMap ifNil: [ coderMap := Dictionary new ])
 		at: aString
 		ifAbsentPut: [ GtSmaCCVariableCoder for: aString in: self grammarCoder ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableGroupResult >> coders [
 	| coders |
 	coders := OrderedCollection new.
@@ -32,22 +32,22 @@ GtSmaCCVariableGroupResult >> coders [
 	^ coders
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableGroupResult >> grammarCoder [
 	^ grammarCoder ifNil: [ scope grammarCoder ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableGroupResult >> grammarCoder: aGrammarCoder [
 	grammarCoder := aGrammarCoder
 ]
 
-{ #category : 'enumerating' }
+{ #category : #enumerating }
 GtSmaCCVariableGroupResult >> itemsDo: aBlock [
 	self do: aBlock
 ]
 
-{ #category : 'updating' }
+{ #category : #updating }
 GtSmaCCVariableGroupResult >> updateItems: nameCollection [
 	| names |
 	names := nameCollection asSet.

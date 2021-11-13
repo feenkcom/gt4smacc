@@ -1,20 +1,20 @@
 Class {
-	#name : 'GtSmaCCInlineAllRefactoring',
-	#superclass : 'GtSmaCCTransformation',
+	#name : #GtSmaCCInlineAllRefactoring,
+	#superclass : #GtSmaCCTransformation,
 	#instVars : [
 		'productionRule'
 	],
 	#category : 'GT4SmaCC-Development-UI-Transformations'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCInlineAllRefactoring class >> inlineAll: productionRule [
 	^ self new
 		productionRule: productionRule;
 		yourself
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCInlineAllRefactoring >> checkPreconditions [
 	productionRule hasOnlyDefaultReduceExpressions
 		ifFalse: [ self
@@ -22,7 +22,7 @@ GtSmaCCInlineAllRefactoring >> checkPreconditions [
 					'Cannot inline definition when it defines an AST node or has a code expression' ]
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCInlineAllRefactoring >> inlineAllIn: anItem [
 	anItem isProductionRule
 		ifFalse: [ ^ self ].
@@ -36,13 +36,13 @@ GtSmaCCInlineAllRefactoring >> inlineAllIn: anItem [
 						do: [ :ex | ex return ] ] ]
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCInlineAllRefactoring >> productionRule: aProductionRule [
 	productionRule := aProductionRule.
 	self grammar: aProductionRule grammar
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCInlineAllRefactoring >> transform [
 	self grammar rules
 		do: [ :each | 

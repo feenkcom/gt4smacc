@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCProductionRuleNode' }
+Extension { #name : #SmaCCProductionRuleNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> buildASTNodeInterfaceIn: presentation [
 	| bloc |
 	bloc := presentation bloc.
@@ -28,7 +28,7 @@ SmaCCProductionRuleNode >> buildASTNodeInterfaceIn: presentation [
 			element ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> buildInterfaceIn: presentation [
 	self buildASTNodeInterfaceIn: presentation.
 	self buildVariableNameInterfaceFor: name value in: presentation.
@@ -45,12 +45,12 @@ SmaCCProductionRuleNode >> buildInterfaceIn: presentation [
 	self buildSourceInterfaceIn: presentation label: 'Definition'
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> displayString [
 	^ name value
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> nodeName [
 	^ String
 		streamContents: [ :stream | 
@@ -68,12 +68,12 @@ SmaCCProductionRuleNode >> nodeName [
 							nextIsUppercase := false ] ] ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> ruleReferences [
 	^ self ruleReferencesTo: self name value
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionRuleNode >> tags [
 	| hasClass noClass code tags |
 	hasClass := noClass := code := false.

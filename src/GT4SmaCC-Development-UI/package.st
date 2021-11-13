@@ -1,1 +1,1 @@
-Package { #name : 'GT4SmaCC-Development-UI' }
+Package { #name : #'GT4SmaCC-Development-UI' }

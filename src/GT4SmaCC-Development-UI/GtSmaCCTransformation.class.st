@@ -1,39 +1,39 @@
 Class {
-	#name : 'GtSmaCCTransformation',
-	#superclass : 'Object',
+	#name : #GtSmaCCTransformation,
+	#superclass : #Object,
 	#instVars : [
 		'grammar'
 	],
 	#category : 'GT4SmaCC-Development-UI-Transformations'
 }
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCTransformation >> checkPreconditions [
 	self subclassResponsibility
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCTransformation >> error: aString [
 	GtSmaCCTransformationError signal: aString
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCTransformation >> execute [
 	self checkPreconditions.
 	self transform
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCTransformation >> grammar [
 	^ grammar
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCTransformation >> grammar: gtSmaCCGrammar [
 	grammar := gtSmaCCGrammar
 ]
 
-{ #category : 'execution' }
+{ #category : #execution }
 GtSmaCCTransformation >> transform [
 	self subclassResponsibility
 ]

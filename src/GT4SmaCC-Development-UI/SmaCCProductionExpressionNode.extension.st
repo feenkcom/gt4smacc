@@ -1,16 +1,16 @@
-Extension { #name : 'SmaCCProductionExpressionNode' }
+Extension { #name : #SmaCCProductionExpressionNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> astNodeName [
 	^ self attributeNamed: #astNodeName ifAbsent: [ self originalAstNodeName ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> astNodeName: aString [
 	^ self attributeNamed: #astNodeName put: aString
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> buildASTNodeInterfaceElement [
 	| toggle element label textEditor editorElement textChangedBlock |
 	textEditor := BrTextEditor new.
@@ -56,27 +56,27 @@ SmaCCProductionExpressionNode >> buildASTNodeInterfaceElement [
 	^ element
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> definesNode: aBoolean [
 	^ self attributeNamed: #hasNodeDefined put: aBoolean
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> hasNodeDefined [
 	^ self attributeNamed: #hasNodeDefined ifAbsent: [ self class == SmaCCClassProductionExpressionNode ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> originalAstNodeName [
 	^ ''
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> styledProductionLabel [
 	^ self styledText
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> styledText [
 	| text rule |
 	rule := self parentOfType: SmaCCProductionRuleNode.
