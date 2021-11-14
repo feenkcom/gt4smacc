@@ -1,11 +1,11 @@
 Class {
 	#name : #GtSmaCCVariableGroupResult,
-	#superclass : #GtSearchTypedGroupResult,
+	#superclass : #GtSmaCCSearchTypedGroupResult,
 	#instVars : [
 		'coderMap',
 		'grammarCoder'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #'instance creation' }
