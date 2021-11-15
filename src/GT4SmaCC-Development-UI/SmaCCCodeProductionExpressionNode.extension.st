@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCCodeProductionExpressionNode' }
+Extension { #name : #SmaCCCodeProductionExpressionNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCCodeProductionExpressionNode >> styledProductionLabel [
 	| text |
 	text := super styledProductionLabel.

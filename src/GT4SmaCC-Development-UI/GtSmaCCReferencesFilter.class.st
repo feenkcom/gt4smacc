@@ -1,30 +1,30 @@
 Class {
-	#name : 'GtSmaCCReferencesFilter',
-	#superclass : 'GtSmaCCDefinitionsFilter',
+	#name : #GtSmaCCReferencesFilter,
+	#superclass : #GtSmaCCDefinitionsFilter,
 	#instVars : [
 		'name'
 	],
 	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCReferencesFilter class >> name: aString [
 	^ self new
 		name: aString;
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCReferencesFilter >> highlighter [
 	^ self highlighterClass name: name
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCReferencesFilter >> highlighterClass [
 	^ self subclassResponsibility
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCReferencesFilter >> name: aString [
 	name := aString
 ]

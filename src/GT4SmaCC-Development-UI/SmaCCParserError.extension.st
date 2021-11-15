@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCParserError' }
+Extension { #name : #SmaCCParserError }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParserError >> gtDisplayErrorIn: aBrTextEditor [
 	| index text string offset |
 	index := (self tag position - 1 max: 1) min: aBrTextEditor text size.

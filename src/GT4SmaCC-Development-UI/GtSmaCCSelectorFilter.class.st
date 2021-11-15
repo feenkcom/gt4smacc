@@ -1,25 +1,25 @@
 Class {
-	#name : 'GtSmaCCSelectorFilter',
-	#superclass : 'GtSmaCCDefinitionsFilter',
+	#name : #GtSmaCCSelectorFilter,
+	#superclass : #GtSmaCCDefinitionsFilter,
 	#instVars : [
 		'selector'
 	],
 	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCSelectorFilter class >> selector: aString [
 	^ self new
 		selector: aString;
 		yourself
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCSelectorFilter >> matches: anObject [
 	^ (anObject respondsTo: selector) and: [ anObject perform: selector ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCSelectorFilter >> selector: aSymbol [
 	selector := aSymbol
 ]

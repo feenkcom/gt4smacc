@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCRepeatRegexNode' }
+Extension { #name : #SmaCCRepeatRegexNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCRepeatRegexNode >> testTokensDo: aBlock [
 	super testTokensDo: aBlock.
 	aBlock value: count

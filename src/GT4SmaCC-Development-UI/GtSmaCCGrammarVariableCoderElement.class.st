@@ -1,39 +1,39 @@
 Class {
-	#name : 'GtSmaCCGrammarVariableCoderElement',
-	#superclass : 'GtSmaCCListCoderElement',
+	#name : #GtSmaCCGrammarVariableCoderElement,
+	#superclass : #GtSmaCCListCoderElement,
 	#instVars : [
 		'editType'
 	],
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCGrammarVariableCoderElement >> coderListElementClass [
 	^ GtSmaCCVariableListElement
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarVariableCoderElement >> editType [
 	^ editType
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarVariableCoderElement >> editTypes [
 	^ #(single same all)
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarVariableCoderElement >> group [
 	^ grammarCoder variableGroup
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCGrammarVariableCoderElement >> initialize [
 	super initialize.
 	editType := self editTypes first
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarVariableCoderElement >> toggleNextRenaming [
 	| index |
 	index := self editTypes indexOf: self editType.
@@ -43,7 +43,7 @@ GtSmaCCGrammarVariableCoderElement >> toggleNextRenaming [
 	editType := self editTypes at: index
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCGrammarVariableCoderElement >> togglePreviousRenaming [
 	| index |
 	index := self editTypes indexOf: self editType.

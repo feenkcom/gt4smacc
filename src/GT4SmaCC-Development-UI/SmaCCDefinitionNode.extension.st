@@ -1,11 +1,11 @@
-Extension { #name : 'SmaCCDefinitionNode' }
+Extension { #name : #SmaCCDefinitionNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> buildInterfaceIn: presentation [
 	self buildSourceInterfaceIn: presentation label: nil
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 	| bloc |
 	bloc := presentation bloc.
@@ -27,7 +27,7 @@ SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 			element ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> buildVariableNameInterfaceFor: aString in: presentation [
 	| bloc refs count commonName |
 	refs := (self allReferencesTo: aString) select: [ :each | each isKindOf: SmaCCSymbolNode ].
@@ -95,22 +95,22 @@ SmaCCDefinitionNode >> buildVariableNameInterfaceFor: aString in: presentation [
 			element ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> defaultTextAttributes [
 	^ GtSmaCCCoder defaultTextAttributes
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> matches: aString [
 	^ (self source asLowercase indexOfSubCollection: aString asLowercase) > 0
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> scannerClass [
 	^ self topParent attributeNamed: #scannerClass ifAbsent: [ SmaCCScanner ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCDefinitionNode >> tags [
 	^ #()
 ]

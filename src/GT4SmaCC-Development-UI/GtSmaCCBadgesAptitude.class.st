@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCBadgesAptitude',
-	#superclass : 'BrAptitude',
+	#name : #GtSmaCCBadgesAptitude,
+	#superclass : #BrAptitude,
 	#instVars : [
 		'definitionList',
 		'badgeList'
@@ -8,7 +8,7 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Looks'
 }
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCBadgesAptitude >> badgeToggles [
 	| toggles |
 	toggles := OrderedCollection new.
@@ -44,12 +44,12 @@ GtSmaCCBadgesAptitude >> badgeToggles [
 	^ toggles
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCBadgesAptitude >> definitionList: anObject [
 	definitionList := anObject
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCBadgesAptitude >> initialize [
 	super initialize.
 	badgeList := BlElement new.

@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCDirectiveCoder',
-	#superclass : 'GtSmaCCCoder',
+	#name : #GtSmaCCDirectiveCoder,
+	#superclass : #GtSmaCCCoder,
 	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCDirectiveCoder >> collapsedText [
 	| text |
 	text := ('%' , self directiveName) asRopedText.
@@ -14,12 +14,12 @@ GtSmaCCDirectiveCoder >> collapsedText [
 	^ text
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCDirectiveCoder >> directiveName [
 	^ grammarItem directiveName
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCDirectiveCoder >> referencesFilterAtCursor [
 	| ast interval |
 	ast := self ast.

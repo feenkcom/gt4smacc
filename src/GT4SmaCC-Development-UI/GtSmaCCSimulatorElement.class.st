@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCSimulatorElement',
-	#superclass : 'BlElement',
+	#name : #GtSmaCCSimulatorElement,
+	#superclass : #BlElement,
 	#instVars : [
 		'simulator',
 		'grammarCoder'
@@ -12,7 +12,7 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'class initialization' }
+{ #category : #'class initialization' }
 GtSmaCCSimulatorElement class >> initialize [
 	ErrorAttributes := {(BlTextUnderlineAttribute new
 		color: BrGlamorousColors errorBorderColor;
@@ -23,21 +23,21 @@ GtSmaCCSimulatorElement class >> initialize [
 		beNotOverwritableByStyler)}
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCSimulatorElement class >> onSimulator: aSimulator [
 	^ self new
 		simulator: aSimulator;
 		yourself
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCSimulatorElement >> buildElement [
 	self layout: BlLinearLayout vertical.
 	self buildInputElement.
 	self buildResultsElement
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCSimulatorElement >> buildInputElement [
 	self
 		constraintsDo: [ :c | 
@@ -54,35 +54,35 @@ GtSmaCCSimulatorElement >> buildInputElement [
 	self addChild: self testElement as: #testInput
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCSimulatorElement >> buildResultsElement [
 	self subclassResponsibility
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSimulatorElement >> clearAttributesIn: editor [
 	editor text
 		clearAttributes:
 			[ :attr | attr == AcceptAttributes first or: [ attr == ErrorAttributes first ] ]
 ]
 
-{ #category : 'event handling' }
+{ #category : #'event handling' }
 GtSmaCCSimulatorElement >> cursorMoved [
 	
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSimulatorElement >> inputCursorPosition [
 	self testEditor cursors do: [ :each | ^ each position ].
 	^ 0
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCSimulatorElement >> setupSimulator [
 	self subclassResponsibility
 ]
 
-{ #category : 'event handling' }
+{ #category : #'event handling' }
 GtSmaCCSimulatorElement >> simulateInput [
 	| editor |
 	editor := self testEditor.
@@ -90,23 +90,23 @@ GtSmaCCSimulatorElement >> simulateInput [
 	simulator simulateOn: editor text asString
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCSimulatorElement >> simulator [
 	^ simulator
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCSimulatorElement >> simulator: aSimulator [
 	simulator := aSimulator.
 	self setupSimulator
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCSimulatorElement >> testEditor [
 	^ (self childNamed: #testInput) editor
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCSimulatorElement >> testElement [
 	| element editor |
 	editor := BrTextEditor new.

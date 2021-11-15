@@ -1,6 +1,6 @@
-Extension { #name : 'SmaCCSymbolNode' }
+Extension { #name : #SmaCCSymbolNode }
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCSymbolNode >> buildVariableNameInterfaceElement: aBrTextEditor [
 	| expression element isCommon textEditor labelText editorElement commonNameBlock nameEditorBlock |
 	expression := self
@@ -51,12 +51,12 @@ SmaCCSymbolNode >> buildVariableNameInterfaceElement: aBrTextEditor [
 	^ element
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCSymbolNode >> definition [
 	^ nil
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCSymbolNode >> variableName [
 	^ self
 		attributeNamed: #variableName
@@ -65,7 +65,7 @@ SmaCCSymbolNode >> variableName [
 				ifFalse: [ variableNameToken value copyFrom: 2 to: variableNameToken value size - 1 ] ]
 ]
 
-{ #category : '*GT4SmaCC-Development-UI' }
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCSymbolNode >> variableName: aString [
 	^ self attributeNamed: #variableName put: aString
 ]

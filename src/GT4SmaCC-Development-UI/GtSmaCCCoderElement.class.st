@@ -1,20 +1,20 @@
 Class {
-	#name : 'GtSmaCCCoderElement',
-	#superclass : 'BrExpander',
+	#name : #GtSmaCCCoderElement,
+	#superclass : #BrExpander,
 	#instVars : [
 		'coder'
 	],
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCCoderElement class >> onCoder: aGrammarCoder [
 	^ self new
 		coder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCCoderElement >> actionBar [
 	^ BrToolbar new
 		aptitude: BrGlamorousToolbarAptitude new;
@@ -29,12 +29,12 @@ GtSmaCCCoderElement >> actionBar [
 						action: each ])
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCCoderElement >> coder [
 	^ coder
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCCoderElement >> coder: aCoder [
 	coder := aCoder.
 	coder owner weak
@@ -57,7 +57,7 @@ GtSmaCCCoderElement >> coder: aCoder [
 	self updateDeleteButton
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCCoderElement >> collapsedElement [
 	| element label |
 	element := BlElement new.
@@ -79,7 +79,7 @@ GtSmaCCCoderElement >> collapsedElement [
 	^ element
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCCoderElement >> contentElement [
 	| element |
 	element := BlElement new.
@@ -95,7 +95,7 @@ GtSmaCCCoderElement >> contentElement [
 	^ element
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCCoderElement >> deleteElement [
 	^ GtInspectorRoundButtonStencil new asElement
 		icon: BrPlusIconStencil close asElement;
@@ -113,7 +113,7 @@ GtSmaCCCoderElement >> deleteElement [
 		action: [ :e | coder deleteRule ]
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCCoderElement >> initialize [
 	super initialize.
 	self
@@ -143,7 +143,7 @@ GtSmaCCCoderElement >> initialize [
 				action: [ self toggle ])
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCCoderElement >> sourceEditor [
 	| element |
 	element := BrEditor new.
@@ -167,7 +167,7 @@ GtSmaCCCoderElement >> sourceEditor [
 	^ element
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCCoderElement >> updateDeleteButton [
 	self
 		childNamed: #deleteButton

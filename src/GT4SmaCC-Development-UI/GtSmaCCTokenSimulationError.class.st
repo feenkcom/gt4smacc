@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtSmaCCTokenSimulationError',
-	#superclass : 'GtSmaCCSimulationAnnoucement',
+	#name : #GtSmaCCTokenSimulationError,
+	#superclass : #GtSmaCCSimulationAnnoucement,
 	#category : 'GT4SmaCC-Development-UI-Simulation'
 }

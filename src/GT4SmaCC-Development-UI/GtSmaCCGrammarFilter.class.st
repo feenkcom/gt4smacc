@@ -1,40 +1,40 @@
 Class {
-	#name : 'GtSmaCCGrammarFilter',
-	#superclass : 'GtSmaCCDefinitionsFilter',
+	#name : #GtSmaCCGrammarFilter,
+	#superclass : #GtSmaCCDefinitionsFilter,
 	#instVars : [
 		'grammarCoder'
 	],
-	#category : 'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCGrammarFilter class >> on: aGrammarCoder [
 	^ self new
 		grammarCoder: aGrammarCoder;
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarFilter >> defaultFilterScope [
-	^ self
+	^ (Array streamContents: [ :aStream | self itemsDo: [ :each | aStream nextPut: each ] ]) asAsyncStream
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarFilter >> grammar [
 	^ grammarCoder grammar
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarFilter >> grammarCoder [
 	^ grammarCoder
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarFilter >> grammarCoder: aGrammarCoder [
 	grammarCoder := aGrammarCoder
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCGrammarFilter >> itemsDo: aBlock [
 	| classItemsDoBlock |
 	aBlock value: self grammar.
@@ -49,7 +49,7 @@ GtSmaCCGrammarFilter >> itemsDo: aBlock [
 	self grammar parserClass ifNotNil: classItemsDoBlock
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCGrammarFilter >> matches: anObject [
 	^ true
 ]

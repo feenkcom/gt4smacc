@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCDefinitionListElement',
-	#superclass : 'BlElement',
+	#name : #GtSmaCCDefinitionListElement,
+	#superclass : #BlElement,
 	#instVars : [
 		'group',
 		'listElement'
@@ -8,11 +8,11 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-UI'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCDefinitionListElement >> addItemLookTo: dataSource [
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCDefinitionListElement >> buildElement [
 	self layout: BlLinearLayout vertical.
 	self
@@ -33,23 +33,23 @@ GtSmaCCDefinitionListElement >> buildElement [
 	self updateList
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCDefinitionListElement >> filterElement [
 	^ nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCDefinitionListElement >> group [
 	^ group
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCDefinitionListElement >> group: aDefinitionGroupResult [
 	group := aDefinitionGroupResult.
 	self buildElement
 ]
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCDefinitionListElement >> listElement [
 	^ listElement
 		ifNil: [ | dataSource |
@@ -63,12 +63,12 @@ GtSmaCCDefinitionListElement >> listElement [
 			listElement ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCDefinitionListElement >> updateFilters [
 	self updateList
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCDefinitionListElement >> updateList [
 	| highlighter |
 	highlighter := group highlighter.

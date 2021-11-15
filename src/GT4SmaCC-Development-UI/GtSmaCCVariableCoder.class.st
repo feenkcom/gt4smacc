@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCVariableCoder',
-	#superclass : 'Object',
+	#name : #GtSmaCCVariableCoder,
+	#superclass : #Object,
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
@@ -12,7 +12,7 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Coders'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCVariableCoder class >> for: aString in: aGrammarCoder [
 	^ self new
 		itemName: aString;
@@ -20,52 +20,52 @@ GtSmaCCVariableCoder class >> for: aString in: aGrammarCoder [
 		yourself
 ]
 
-{ #category : 'announcer' }
+{ #category : #announcer }
 GtSmaCCVariableCoder >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
-{ #category : 'elements' }
+{ #category : #elements }
 GtSmaCCVariableCoder >> asElement [
 	^ GtSmaCCVariableCoderElement onCoder: self
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> expanded [
 	^ expanded
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> expanded: anObject [
 	expanded := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> grammar [
 	^ owner grammar
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> highlighter: highlighter [
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCVariableCoder >> initialize [
 	super initialize.
 	expanded := false
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> itemName [
 	^ itemName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> itemName: aString [
 	itemName := aString
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> labelText [
 	| text |
 	text := itemName asRopedText.
@@ -79,7 +79,7 @@ GtSmaCCVariableCoder >> labelText [
 	^ text
 ]
 
-{ #category : 'actions' }
+{ #category : #actions }
 GtSmaCCVariableCoder >> nameVariableAt: anInteger as: aString [
 	(aString isEmpty or: [ RBScanner isVariable: aString ])
 		ifFalse: [ ^ nil ].
@@ -102,17 +102,17 @@ GtSmaCCVariableCoder >> nameVariableAt: anInteger as: aString [
 	^ nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> owner [
 	^ owner
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> owner: aGrammarCoder [
 	owner := aGrammarCoder
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	| ruleText position styler |
 	ruleText := (String
@@ -154,7 +154,7 @@ GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	^ ruleText
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> references [
 	| references |
 	references := OrderedCollection new.
@@ -168,7 +168,7 @@ GtSmaCCVariableCoder >> references [
 	^ references
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCVariableCoder >> referencesDo: aBlock [
 	| index |
 	index := 1.
@@ -182,7 +182,7 @@ GtSmaCCVariableCoder >> referencesDo: aBlock [
 							index := index + 1 ] ] ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableCoder >> referencesText [
 	| references |
 	references := OrderedCollection new.

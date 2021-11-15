@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtSmaCCVariableReferencesFilter',
-	#superclass : 'GtSmaCCReferencesFilter',
+	#name : #GtSmaCCVariableReferencesFilter,
+	#superclass : #GtSmaCCReferencesFilter,
 	#category : 'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCVariableReferencesFilter >> highlighterClass [
 	^ GtSmaCCVariableReferencesHighlightingVisitor
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCVariableReferencesFilter >> matches: anObject [
 	(anObject isKindOf: GtSmaCCGrammarItem)
 		ifFalse: [ ^ false ].

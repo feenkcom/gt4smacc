@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCParserSimulationError',
-	#superclass : 'GtSmaCCSimulationAnnoucement',
+	#name : #GtSmaCCParserSimulationError,
+	#superclass : #GtSmaCCSimulationAnnoucement,
 	#instVars : [
 		'stack',
 		'token'
@@ -8,7 +8,7 @@ Class {
 	#category : 'GT4SmaCC-Development-UI-Simulation'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCParserSimulationError class >> input: aString stack: nodeCollection token: aSmaCCToken [
 	^ (self input: aString index: aSmaCCToken startPosition)
 		stack: nodeCollection;
@@ -16,22 +16,22 @@ GtSmaCCParserSimulationError class >> input: aString stack: nodeCollection token
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserSimulationError >> stack [
 	^ stack
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserSimulationError >> stack: aCollection [
 	stack := aCollection
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserSimulationError >> token [
 	^ token
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserSimulationError >> token: aSmaCCToken [
 	token := aSmaCCToken
 ]
