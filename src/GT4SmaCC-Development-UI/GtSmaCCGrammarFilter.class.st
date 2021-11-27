@@ -16,7 +16,7 @@ GtSmaCCGrammarFilter class >> on: aGrammarCoder [
 
 { #category : #accessing }
 GtSmaCCGrammarFilter >> defaultFilterScope [
-	^ (Array streamContents: [ :aStream | self itemsDo: [ :each | aStream nextPut: each ] ]) asAsyncStream
+	^ self
 ]
 
 { #category : #accessing }

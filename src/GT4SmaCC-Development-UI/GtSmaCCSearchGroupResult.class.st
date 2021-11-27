@@ -63,9 +63,9 @@ GtSmaCCSearchGroupResult >> filter: methodsFilter [
 ]
 
 { #category : #initialization }
-GtSmaCCSearchGroupResult >> forFilter: aFilter scope: aScopeStream [
+GtSmaCCSearchGroupResult >> forFilter: aFilter scope: aSearchScope [
 	filter := aFilter.
-	scope := aScopeStream
+	scope := aSearchScope
 ]
 
 { #category : #enumerating }
@@ -110,6 +110,11 @@ GtSmaCCSearchGroupResult >> initialize [
 GtSmaCCSearchGroupResult >> isEmpty [
 	"Answer whether the receiver contains any elements."
 	^ self size = 0
+]
+
+{ #category : #enumerating }
+GtSmaCCSearchGroupResult >> itemsDo: aBlock [
+	self do: aBlock
 ]
 
 { #category : #enumerating }
@@ -158,12 +163,4 @@ GtSmaCCSearchGroupResult >> species [
 GtSmaCCSearchGroupResult >> sumNumbers: aBlock [
 	self refreshItems.
 	^ items sumNumbers: aBlock
-]
-
-{ #category : #initialization }
-GtSmaCCSearchGroupResult >> updateForFilter: aFilter [
-	self filter: aFilter.
-	self scope: (aFilter 
-		ifNil: [ AsyncEmptyStream new ]
-		ifNotNil: [  aFilter defaultFilterScope ])
 ]
