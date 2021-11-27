@@ -42,11 +42,6 @@ GtSmaCCVariableGroupResult >> grammarCoder: aGrammarCoder [
 	grammarCoder := aGrammarCoder
 ]
 
-{ #category : #enumerating }
-GtSmaCCVariableGroupResult >> itemsDo: aBlock [
-	self do: aBlock
-]
-
 { #category : #updating }
 GtSmaCCVariableGroupResult >> updateItems: nameCollection [
 	| names |
