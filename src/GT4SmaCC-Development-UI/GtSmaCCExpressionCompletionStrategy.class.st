@@ -5,7 +5,7 @@ Class {
 		'codeCompletionStrategy',
 		'token'
 	],
-	#category : 'GT4SmaCC-Development-UI-Completion'
+	#category : #'GT4SmaCC-Development-UI-Completion'
 }
 
 { #category : #'instance creation' }
@@ -16,22 +16,24 @@ GtSmaCCExpressionCompletionStrategy class >> onToken: aSmaCCToken [
 ]
 
 { #category : #accessing }
-GtSmaCCExpressionCompletionStrategy >> completionActionsFor: aText at: positionInteger max: maxSize [
-	| actions first last |
+GtSmaCCExpressionCompletionStrategy >> completionActionStreamFor: aText at: positionInteger requested: aBoolean [
+	| first last |
 	first := positionInteger.
 	[ first > 0
-		and: [ (aText attributesAt: first) anySatisfy: [ :each | each class = GtCompletionStrategyAttribute and: [ each strategy == self ] ] ] ]
+		and:
+			[ (aText attributesAt: first)
+				anySatisfy: [ :each | each class = GtCompletionStrategyAttribute and: [ each strategy == self ] ] ] ]
 		whileTrue: [ first := first - 1 ].
 	last := positionInteger.
 	[ last <= aText size
-		and: [ (aText attributesAt: last) anySatisfy: [ :each | each class = GtCompletionStrategyAttribute and: [ each strategy == self ] ] ] ]
+		and:
+			[ (aText attributesAt: last)
+				anySatisfy: [ :each | each class = GtCompletionStrategyAttribute and: [ each strategy == self ] ] ] ]
 		whileTrue: [ last := last + 1 ].
-	actions := codeCompletionStrategy
-		completionActionsFor: (aText from: first + 1 to: last - 1)
+	^ (codeCompletionStrategy
+		completionActionStreamFor: (aText from: first + 1 to: last - 1)
 		at: positionInteger - first
-		max: maxSize.
-	actions do: [ :each | each translateBy: first ].
-	^ actions
+		requested: aBoolean) relay: [ :each | each translateBy: first ]
 ]
 
 { #category : #testing }
