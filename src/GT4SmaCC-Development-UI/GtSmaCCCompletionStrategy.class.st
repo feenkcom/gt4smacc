@@ -4,14 +4,13 @@ Class {
 	#instVars : [
 		'enabled'
 	],
-	#category : 'GT4SmaCC-Development-UI-Completion'
+	#category : #'GT4SmaCC-Development-UI-Completion'
 }
 
 { #category : #accessing }
-GtSmaCCCompletionStrategy >> completionActionsFor: aText at: positionInteger max: maxSize [
-	self isEnabled
-		ifFalse: [ ^ #() ].
-	^ super completionActionsFor: aText at: positionInteger max: maxSize
+GtSmaCCCompletionStrategy >> completionActionStreamFor: aText at: positionInteger [
+	self isEnabled ifFalse: [ ^ #() asAsyncStream ].
+	^ super completionActionStreamFor: aText at: positionInteger
 ]
 
 { #category : #activation }
