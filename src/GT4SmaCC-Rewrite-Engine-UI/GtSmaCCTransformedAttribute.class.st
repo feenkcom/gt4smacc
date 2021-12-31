@@ -1,13 +1,14 @@
 Class {
-	#name : 'GtSmaCCTransformedAttribute',
-	#superclass : 'BlTextUnderlineAttribute',
-	#category : 'GT4SmaCC-Rewrite-Engine-UI'
+	#name : #GtSmaCCTransformedAttribute,
+	#superclass : #BlTextDecorationAttribute,
+	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCTransformedAttribute >> initialize [
 	super initialize.
-	self paint: Color black.
-	self width: 2.
+	self color: Color black.
+	self thickness: 2.
+	self underline.
 	self beNotOverwritableByStyler
 ]
