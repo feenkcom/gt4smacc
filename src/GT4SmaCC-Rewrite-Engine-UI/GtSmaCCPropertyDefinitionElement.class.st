@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCPropertyDefinitionElement',
-	#superclass : 'GtSmaCCRewriteAccordion',
-	#category : 'GT4SmaCC-Rewrite-Engine-UI'
+	#name : #GtSmaCCPropertyDefinitionElement,
+	#superclass : #GtSmaCCRewriteExpander,
+	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : 'ui' }
+{ #category : #ui }
 GtSmaCCPropertyDefinitionElement >> contentElement [
 	^ BlElement new
 ]
