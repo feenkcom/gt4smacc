@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCExpressionCompletionStrategy,
-	#superclass : #GtCompletionStrategy,
+	#superclass : #GtStreamedCompletionStrategy,
 	#instVars : [
 		'codeCompletionStrategy',
 		'token'
