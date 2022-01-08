@@ -1,85 +1,45 @@
 Class {
 	#name : #GtSmaCCRewriteFileElement,
-	#superclass : #GtSmaCCRewriteExpander,
+	#superclass : #GtSmaCCAbstractRewriteElement,
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #'initialize-release' }
-GtSmaCCRewriteFileElement >> contentElement [
-	^ BlElement new
-		layout: BlLinearLayout vertical;
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ];
-		addChild: self rewritesElement;
-		yourself
+{ #category : #building }
+GtSmaCCRewriteFileElement >> build [
+	self addChild: self parserElement.
+	self updateParserClass
 ]
 
-{ #category : #ui }
-GtSmaCCRewriteFileElement >> headerElement [
-	| header |
-	header := super headerElement.
-	header layout: BlFrameLayout new.
-	header addChild: self parserElement.
-	(header childNamed: #label)
-		constraintsDo: [ :c | c frame vertical alignCenter ].
-	^ header
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCRewriteFileElement >> parserDropDown [
-	^ GtSmaCCDropDownList new
-		selectedItem: rewrite parserClass;
-		items:
-			(SmaCCParser allSubclasses
-				asSortedCollection: [ :a :b | a name < b name ]);
-		when: BrSelectionChanged
-			do: [ :event | rewrite parserClass: event target selectedItem ]
-]
-
-{ #category : #'initialize-release' }
+{ #category : #building }
 GtSmaCCRewriteFileElement >> parserElement [
-	| label |
-	label := BrLabel new
-		text: 'Parser:';
-		aptitude: BrGlamorousLabelAptitude new;
-		padding: (BlInsets all: 5);
-		hFitContent;
-		yourself.
-	^ BlElement new
-		layout: BlLinearLayout horizontal;
-		constraintsDo: [ :c | 
-			c frame horizontal alignRight.
-			c horizontal fitContent.
-			c vertical fitContent ];
-		addChild: label;
-		addChild: self parserDropDown;
-		yourself
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCRewriteFileElement >> rewritesElement [
-	| list |
-	list := BrSimpleList vertical.
-	list vFitContent.
-	list hMatchParent.
-	list
-		stencil: [ :each :index | 
-			each element
-				margin:
-					(BlInsets
-						top: 2
-						left: 5
-						bottom: 5
-						right: 5);
-				yourself ].
-	list items: rewrite rewrites.
-	^ list
+	| element |
+	element := BrHorizontalPane new.
+	element hMatchParent.
+	element vFitContent.
+	element
+		addChild:
+			((BrLabel new)
+				margin: (BlInsets top: 5 right: 5);
+				fitContent;
+				aptitude: BrGlamorousLabelAptitude new;
+				text: 'Parser:').
+	element
+		addChild:
+			((GtSmaCCDropDownList new)
+				margin: (BlInsets top: 5);
+				items: (SmaCCParser allSubclasses asSortedCollection: [ :a :b | a name < b name ]);
+				when: BrSelectionChanged do: [ :event | rewrite parserClass: event target selectedItem ])
+		as: #parserClass.
+	^ element
 ]
 
 { #category : #updating }
-GtSmaCCRewriteFileElement >> updateContent [
-	rewrite isRoot
-		ifTrue: [ self expand ].
-	super updateContent
+GtSmaCCRewriteFileElement >> update: aSymbol [
+	aSymbol = #parserClass ifTrue: [ self updateParserClass ].
+	^ super update: aSymbol
+]
+
+{ #category : #updating }
+GtSmaCCRewriteFileElement >> updateParserClass [
+	self childNamed: #parserClass ifFound: [ :list | list selectedItem: rewrite parserClass ]
 ]

@@ -7,8 +7,8 @@ Class {
 { #category : #'initialize-release' }
 GtSmaCCTransformedAttribute >> initialize [
 	super initialize.
-	self color: Color black.
-	self thickness: 2.
+	self color: BrGlamorousColors textHighlightColor.
+	self thickness: 3.
 	self underline.
 	self beNotOverwritableByStyler
 ]

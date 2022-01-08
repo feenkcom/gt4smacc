@@ -1,161 +1,179 @@
 Class {
 	#name : #GtSmaCCRewriteElement,
-	#superclass : #GtSmaCCRewriteExpander,
-	#instVars : [
-		'matchElement',
-		'matchEditor',
-		'transformationElement',
-		'transformationEditor'
-	],
+	#superclass : #GtSmaCCAbstractRewriteElement,
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #ui }
-GtSmaCCRewriteElement >> contentElement [
-	^ BrVerticalFlow new
-		vFitContent;
-		hMatchParent;
-		addChild: self matchElement;
-		addChild: self transformationElement;
-		yourself
-]
-
-{ #category : #private }
-GtSmaCCRewriteElement >> editorElementFor: anEditor [
-	^ BrEditorElement new
-		effect: (BlGaussianShadowEffect color: Color black width: 3 offset: 0 @ 0);
-		background: Color white;
-		margin: (BlInsets all: 10);
-		padding:
-			(BlInsets
-				top: 5
-				left: 10
-				bottom: 5
-				right: 10);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ];
-		editor: anEditor;
-		yourself
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCRewriteElement >> initialize [
-	super initialize.
-	matchEditor := BrTextEditor new.
-	matchEditor
-		when: BrTextEditorInsertedEvent do: [ :event | self matchChanged ];
-		when: BrTextEditorDeletedEvent do: [ :event | self matchChanged ].
-	transformationEditor := BrTextEditor new.
-	transformationEditor
-		when: BrTextEditorInsertedEvent
-			do: [ :event | self transformationChanged ];
-		when: BrTextEditorDeletedEvent do: [ :event | self transformationChanged ]
-]
-
-{ #category : #testing }
-GtSmaCCRewriteElement >> isCodeTransformation [
-	^ rewrite transformation isKindOf: SmaCCRewriteCodeTransformation
-]
-
-{ #category : #testing }
-GtSmaCCRewriteElement >> isPatternMatch [
-	^ rewrite match isKindOf: SmaCCRewriteTreeMatch
-]
-
-{ #category : #changes }
-GtSmaCCRewriteElement >> matchChanged [
-	| string |
-	string := matchEditor text asString.
-	self isPatternMatch
-		ifTrue: [ rewrite match source: string ]
-		ifFalse: [ rewrite match code: string ]
-]
-
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> matchElement [
-	matchElement := BrVerticalFlow new
-		vFitContent;
-		hMatchParent.
+{ #category : #building }
+GtSmaCCRewriteElement >> build [
+	| matchLabel matchTabGroup transformationLabel transformationTabGroup |
+	super build.
+	matchLabel := (BrLabel new)
+		fitContent;
+		aptitude: BrGlamorousLabelAptitude new;
+		text: 'Match:'.
+	self addChild: matchLabel.
+	matchTabGroup := (BrTabGroup new)
+		matchParent;
+		margin: (BlInsets bottom: 5);
+		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude + BrGlamorousWithVerticalResizerAptitude new beBottom;
+		background: Color white.
+	matchTabGroup
+		addTab:
+			((BrTab new)
+				aptitude: BrGlamorousTabAptitude new;
+				label: 'Code';
+				stencil: [ self matchCodeElement ]).
+	matchTabGroup
+		addTab:
+			((BrTab new)
+				aptitude: BrGlamorousTabAptitude new;
+				label: 'Pattern';
+				stencil: [ self matchPatternElement ]).
+	self addChild: matchTabGroup as: #matchTabGroup.
+	transformationLabel := (BrLabel new)
+		fitContent;
+		aptitude: BrGlamorousLabelAptitude new;
+		text: 'Transformation:'.
+	self addChild: transformationLabel.
+	transformationTabGroup := (BrTabGroup new)
+		matchParent;
+		margin: (BlInsets top: 5);
+		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
+		background: Color white.
+	transformationTabGroup
+		addTab:
+			((BrTab new)
+				aptitude: BrGlamorousTabAptitude new;
+				label: 'Code';
+				stencil: [ self transformationCodeElement ]).
+	transformationTabGroup
+		addTab:
+			((BrTab new)
+				aptitude: BrGlamorousTabAptitude new;
+				label: 'Pattern';
+				stencil: [ self transformationPatternElement ]).
+	self addChild: transformationTabGroup as: #transformationTabGroup.
 	self updateMatch.
-	^ matchElement
+	self updateTransformation
 ]
 
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> matchHeaderElement [
-	| typeLabel patternLabel toggle |
-	typeLabel := self labelFor: 'Match: Type'.
-	toggle := BrToggle new
-		aptitude: BrHydraSwitchWithTrackAptitude new;
-		margin: (BlInsets all: 3);
-		activated: (rewrite match isKindOf: SmaCCRewriteTypeMatch);
-		when: BrToggleActivatedEvent
-			do:
-				[ :anEvent | rewrite match: (SmaCCRewriteTypeMatch on: SmaCCParseNode) ];
-		when: BrToggleDeactivatedEvent
-			do: [ :anEvent | rewrite match: SmaCCRewriteTreeMatch new ];
+{ #category : #building }
+GtSmaCCRewriteElement >> matchCodeElement [
+	| label nodeList editor |
+	label := (BrLabel new)
+		margin: (BlInsets top: 5 right: 5);
+		fitContent;
+		aptitude: BrGlamorousLabelAptitude new;
+		text: 'Match nodes of type:'.
+	nodeList := (GtSmaCCDropDownList new)
+		margin: (BlInsets top: 3);
+		items: self nodeClasses;
+		when: BrSelectionChanged do: [ :event | rewrite match nodeClass: event target selectedItem ];
 		yourself.
-	patternLabel := self labelFor: 'Pattern'.
-	^ BrHorizontalPane new
-		vFitContent;
-		hMatchParent;
-		background: (Color veryLightGray alpha: 0.2);
-		addChild: typeLabel;
-		addChild: toggle;
-		addChild: patternLabel;
-		yourself
+	editor := BrEditor new.
+	editor
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		matchParent;
+		aptitude: BrGlamorousRegularEditorAptitude new;
+		beEditable;
+		padding:
+				(BlInsets
+						top: 5
+						left: 10
+						bottom: 5
+						right: 10);
+		matchParent.
+	editor editor styler: self sourceStyler.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match code: editor editor text asString ].
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		matchParent;
+		addChild:
+				((BrHorizontalPane new)
+						margin: (BlInsets bottom: 5);
+						vFitContent;
+						hMatchParent;
+						addChild: label;
+						addChild: nodeList as: #nodeList);
+		addChild: editor as: #matchCode
 ]
 
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> matchNodeClassElement [
-	| classLabel classList |
-	classLabel := self labelFor: 'Class:'.
-	classList := GtSmaCCDropDownList new
-		items:
-			(SmaCCParseNode withAllSubclasses
-				asSortedCollection: [ :a :b | a name < b name ]);
-		selectedItem: rewrite match nodeClass;
-		when: BrSelectionChanged
-			do: [ :event | rewrite match nodeClass: event target selectedItem ];
+{ #category : #building }
+GtSmaCCRewriteElement >> matchPatternElement [
+	| label stateList editor |
+	label := (BrLabel new)
+		margin: (BlInsets top: 5 right: 5);
+		fitContent;
+		aptitude: BrGlamorousLabelAptitude new;
+		text: 'Starting state for parser:'.
+	stateList := (GtSmaCCDropDownList new)
+		margin: (BlInsets top: 3);
+		items: (rewrite parserClass ifNil: [ #() ] ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
+		when: BrSelectionChanged do: [ :event | rewrite match startingState: event target selectedItem ];
 		yourself.
-	^ BlElement new
-		layout: BlLinearLayout horizontal;
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
-		addChild: classLabel;
-		addChild: classList;
-		yourself
+	editor := BrEditor new.
+	editor
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		matchParent;
+		aptitude: BrGlamorousRegularEditorAptitude new;
+		beEditable;
+		padding:
+				(BlInsets
+						top: 5
+						left: 10
+						bottom: 5
+						right: 10);
+		matchParent.
+	editor editor styler: self patternStyler.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match source: editor editor text asString ].
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		matchParent;
+		addChild:
+				((BrHorizontalPane new)
+						margin: (BlInsets bottom: 5);
+						vFitContent;
+						hMatchParent;
+						addChild: label;
+						addChild: stateList as: #stateList);
+		addChild: editor as: #matchPattern
 ]
 
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> matchStateElement [
-	| stateLabel stateList |
-	stateLabel := self labelFor: 'State:'.
-	stateList := GtSmaCCDropDownList new
-		items:
-			(rewrite parserClass
-				ifNil: [ #() ]
-				ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
-		selectedItem: rewrite match startingState;
-		when: BrSelectionChanged
-			do: [ :event | rewrite match startingState: event target selectedItem ];
-		yourself.
-	^ BlElement new
-		layout: BlLinearLayout horizontal;
-		constraintsDo: [ :c | 
-			c horizontal fitContent.
-			c vertical fitContent ];
-		addChild: stateLabel;
-		addChild: stateList;
-		yourself
+{ #category : #building }
+GtSmaCCRewriteElement >> nodeClasses [
+	| classes parserNodeClasses |
+	classes := SmaCCParseNode allSubclasses.
+	parserNodeClasses := self parserNodeClasses.
+	^ classes
+		asSortedCollection:
+			[ :a :b | 
+			| aSortAtTop |
+			(aSortAtTop := parserNodeClasses includes: a) = (parserNodeClasses includes: b)
+				ifTrue: [ a name < b name ]
+				ifFalse: [ aSortAtTop ] ]
 ]
 
-{ #category : #private }
+{ #category : #building }
+GtSmaCCRewriteElement >> parserNodeClasses [
+	rewrite parserClass
+		ifNotNil:
+			[ :pc | 
+			pc symbolTypes
+				do:
+					[ :each | 
+					| cls supers |
+					(each ~= #SmaCCParseNode and: [ (cls := Smalltalk at: each) includesBehavior: SmaCCParseNode ])
+						ifTrue:
+							[ supers := cls withAllSuperclasses.
+							^ (supers at: supers size - SmaCCParseNode withAllSuperclasses size) withAllSubclasses asSet ] ] ].
+	^ #()
+]
+
+{ #category : #building }
 GtSmaCCRewriteElement >> patternStyler [
 	| styler |
-	(rewrite parserClass notNil and: [ (styler := rewrite parserClass gtStyler) notNil ])
-		ifFalse: [ ^ matchEditor defaultStyler ].
+	(rewrite parserClass notNil and: [ (styler := rewrite parserClass gtStyler) notNil ]) ifFalse: [ ^ BlTextNullStyler new ].
 	styler startingState: rewrite match startingStateIndex.
 	styler
 		addStylerRule:
@@ -169,142 +187,110 @@ GtSmaCCRewriteElement >> patternStyler [
 	^ styler
 ]
 
-{ #category : #private }
+{ #category : #building }
 GtSmaCCRewriteElement >> sourceStyler [
-	^ BrRBTextStyler new
+	^ (BrRBTextStyler new)
 		classOrMetaClass: SmaCCRewriteMatchContext;
 		workspace: GtLocalVariablesBindings new;
 		yourself
 ]
 
-{ #category : #private }
-GtSmaCCRewriteElement >> subscribeEvents [
-	rewrite announcer weak
-		when: #match send: #updateMatch to: self;
-		when: #transformation send: #updateTransformation to: self
+{ #category : #building }
+GtSmaCCRewriteElement >> transformationCodeElement [
+	| editor |
+	editor := BrEditor new.
+	editor
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		matchParent;
+		aptitude: BrGlamorousRegularEditorAptitude new;
+		beEditable;
+		padding:
+				(BlInsets
+						top: 5
+						left: 10
+						bottom: 5
+						right: 10);
+		matchParent.
+	editor editor styler: self sourceStyler.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite transformation code: editor editor text asString ].
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		matchParent;
+		addChild: editor as: #transformationCode
 ]
 
-{ #category : #changes }
-GtSmaCCRewriteElement >> transformationChanged [
-	| string |
-	string := transformationEditor text asString.
-	self isCodeTransformation
-		ifTrue: [ rewrite transformation code: string ]
-		ifFalse: [ rewrite transformation string: string ]
+{ #category : #building }
+GtSmaCCRewriteElement >> transformationPatternElement [
+	| editor |
+	editor := BrEditor new.
+	editor
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		matchParent;
+		aptitude: BrGlamorousRegularEditorAptitude new;
+		beEditable;
+		padding:
+				(BlInsets
+						top: 5
+						left: 10
+						bottom: 5
+						right: 10);
+		matchParent.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite transformation string: editor editor text asString ].
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		matchParent;
+		addChild: editor as: #transformationPattern
 ]
 
-{ #category : #'transformation ui' }
-GtSmaCCRewriteElement >> transformationElement [
-	transformationElement := BrVerticalFlow new
-		vFitContent;
-		hMatchParent.
-	self updateTransformation.
-	^ transformationElement
+{ #category : #updating }
+GtSmaCCRewriteElement >> update: aSymbol [
+	aSymbol = #match ifTrue: [ self updateMatch ].
+	aSymbol = #transformation ifTrue: [ self updateTransformation ].
+	^ super update: aSymbol
 ]
 
-{ #category : #'transformation ui' }
-GtSmaCCRewriteElement >> transformationHeaderElement [
-	| codeLabel stringLabel toggle |
-	codeLabel := self labelFor: 'Transformation: Code'.
-	toggle := BrToggle new
-		aptitude: BrHydraSwitchWithTrackAptitude new;
-		margin: (BlInsets all: 3);
-		activated: (rewrite transformation isKindOf: SmaCCRewriteCodeTransformation);
-		when: BrToggleActivatedEvent
-			do: [ :anEvent | 
-			rewrite
-				transformation: (SmaCCRewriteCodeTransformation on: 'self continue') ];
-		when: BrToggleDeactivatedEvent
-			do:
-				[ :anEvent | rewrite transformation: SmaCCRewriteStringTransformation new ];
-		yourself.
-	stringLabel := self labelFor: 'String'.
-	^ BrHorizontalPane new
-		vFitContent;
-		hMatchParent;
-		background: (Color veryLightGray alpha: 0.2);
-		addChild: codeLabel;
-		addChild: toggle;
-		addChild: stringLabel;
-		yourself
-]
-
-{ #category : #'transformation ui' }
-GtSmaCCRewriteElement >> updateCodeTransformation [
-	transformationEditor text: rewrite transformation code asRopedText.
-	transformationEditor text attributes: self defaultTextAttributes.
-	transformationElement addChild: (self editorElementFor: transformationEditor).
-	transformationEditor styler: self sourceStyler.
-]
-
-{ #category : #'match ui' }
+{ #category : #updating }
 GtSmaCCRewriteElement >> updateMatch [
-	matchElement isNil
-		ifTrue: [ ^ self ].
-	matchElement removeChildren.
-	matchElement addChild: self matchHeaderElement.
-	matchEditor styler: matchEditor defaultStyler.
-	self isPatternMatch
-		ifTrue: [ self updatePatternMatch ]
-		ifFalse: [ self updateTypeMatch ]
+	self
+		childNamed: #matchTabGroup
+		ifFound:
+			[ :tg | 
+			tg viewModel selectedTab == tg tabs first
+				ifTrue: [ rewrite match class type = #Pattern ifTrue: [ tg viewModel selectTab: tg tabs last ] ]
+				ifFalse: [ rewrite match class type ~= #Pattern ifTrue: [ tg viewModel selectTab: tg tabs first ] ].
+			self updateMatchContents ]
 ]
 
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> updatePatternMatch [
-	matchElement addChild: self matchStateElement.
-	matchEditor text: rewrite match source asRopedText.
-	matchEditor text attributes: self defaultTextAttributes.
-	matchElement addChild: (self editorElementFor: matchEditor).
-	matchEditor styler: self patternStyler
-]
-
-{ #category : #'transformation ui' }
-GtSmaCCRewriteElement >> updateStringTransformation [
-	transformationEditor text: rewrite transformation string asRopedText.
-	transformationEditor text attributes: self defaultTextAttributes.
-	transformationElement addChild: (self editorElementFor: transformationEditor)
-]
-
-{ #category : #'transformation ui' }
-GtSmaCCRewriteElement >> updateTransformation [
-	transformationElement removeChildren.
-	transformationElement addChild: self transformationHeaderElement.
-	transformationEditor styler: transformationEditor defaultStyler.
-	self isCodeTransformation
-		ifTrue: [ self updateCodeTransformation ]
-		ifFalse: [ self updateStringTransformation ]
-]
-
-{ #category : #'match ui' }
-GtSmaCCRewriteElement >> updateTypeMatch [
-	| element variablesList editorElement |
-	matchElement addChild: self matchNodeClassElement.
-	matchEditor text: rewrite match code asRopedText.
-	matchEditor text attributes: self defaultTextAttributes.
-	element := BrHorizontalPane new vFitContent hMatchParent.
-	editorElement := self editorElementFor: matchEditor.
-	editorElement constraintsDo: [ :c | c vertical matchParent ].
-	element addChild: editorElement.
-	rewrite match nodeClass notNil
+{ #category : #updating }
+GtSmaCCRewriteElement >> updateMatchContents [
+	rewrite match class type = #Pattern
 		ifTrue:
-			[ variablesList := BrGridList new.
-			variablesList
-				vMatchParent;
-				margin: (BlInsets all: 10);
-				border: (BlBorder paint: Color lightGray width: 1);
-				stencil:
-						[ :each :index | 
-							(BlTextElement new)
-								text: each asRopedText;
-								constraintsDo: [ :c | c horizontal matchParent ];
-								padding: (BlInsets all: 5) ];
-				items:
-						((Set new)
-								addAll: rewrite match nodeClass allInstVarNames;
-								removeAll: SmaCCParseNode allInstVarNames;
-								yourself) asSortedCollection.
-			element addChild: variablesList.
-			element constraintsDo: [ :c | c minHeight: 100 ] ].
-	matchElement addChild: element.
-	matchEditor styler: self sourceStyler
+			[ self childNamed: #stateList ifFound: [ :dropdown | dropdown selectedItem: rewrite match startingState ].
+			self childNamed: #matchPattern ifFound: [ :editor | editor editor text: rewrite match source asRopedText ] ]
+		ifFalse:
+			[ self childNamed: #nodeList ifFound: [ :dropdown | dropdown selectedItem: rewrite match nodeClass ].
+			self childNamed: #matchCode ifFound: [ :editor | editor editor text: rewrite match code asRopedText ] ]
+]
+
+{ #category : #updating }
+GtSmaCCRewriteElement >> updateTransformation [
+	self
+		childNamed: #transformationTabGroup
+		ifFound:
+			[ :tg | 
+			tg viewModel selectedTab == tg tabs first
+				ifTrue: [ rewrite transformation class type = #String ifTrue: [ tg viewModel selectTab: tg tabs last ] ]
+				ifFalse: [ rewrite transformation class type ~= #String ifTrue: [ tg viewModel selectTab: tg tabs first ] ].
+			self updateTransformationContents ]
+]
+
+{ #category : #updating }
+GtSmaCCRewriteElement >> updateTransformationContents [
+	rewrite transformation class type = #String
+		ifTrue:
+			[ self
+				childNamed: #transformationPattern
+				ifFound: [ :editor | editor editor text: rewrite transformation string asRopedText ] ]
+		ifFalse:
+			[ self childNamed: #transformationCode ifFound: [ :editor | editor editor text: rewrite transformation code asRopedText ] ]
 ]
