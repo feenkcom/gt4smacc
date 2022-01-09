@@ -123,6 +123,61 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 		padding: (BlInsets all: 20)
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> addRewrite: newRewrite [
+	| selected |
+	selected := self selectedRewrite.
+	selected isComposite
+		ifTrue: [ selected addTransformation: newRewrite ]
+		ifFalse: [ selected parent notNil ifTrue: [ selected parent addTransformation: newRewrite before: selected ] ].
+	self updateRewrites.
+	transformationsTree selectAndScrollTo: newRewrite.
+	self displayRewrite: newRewrite
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> addRewriteButton [
+	^ self class
+		dropDown: 'Add'
+		icon: BrGlamorousIcons add
+		content:
+			[ :button | 
+			(BrVerticalPane new)
+				padding: (BlInsets all: 5);
+				fitContent;
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Rewrite';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewrite newInstance ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Method';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewriteMethodDefinition new ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Properties';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewritePropertyDefinition new ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'File';
+								action: [  ]);
+				yourself ]
+]
+
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
 	| items |
@@ -268,6 +323,49 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 	^ (filename notNil and: [ filename parent exists ]) ifTrue: [ filename parent ] ifFalse: [ FileLocator workingDirectory ]
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> deleteRewrite [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent notNil
+				ifTrue:
+					[ rewrite parent removeTransformation: rewrite.
+					self updateRewrites.
+					self displayRewrite: self selectedRewrite ] ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> deleteRewriteButton [
+	^ self class
+		dropDown: 'remove'
+		icon: BrGlamorousIcons remove
+		content:
+			[ :button | 
+			| rewrite |
+			rewrite := self selectedRewrite.
+			(rewrite isNil or: [ rewrite parent isNil ])
+				ifTrue:
+					[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+					BlElement new size: 0 @ 0 ]
+				ifFalse:
+					[ (BrVerticalPane new)
+						padding: (BlInsets all: 5);
+						fitContent;
+						addChild:
+								((BrLabel new)
+										fitContent;
+										aptitude: BrGlamorousLabelAptitude new;
+										text: 'Delete ' , rewrite displayString , '?');
+						addChild:
+								(self class
+										createToolbarButton: 'Delete'
+										icon: BrGlamorousIcons remove
+										action:
+											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self deleteRewrite ]) ] ]
+]
+
 { #category : #private }
 GtSmaCCTransformationToolkit >> disconnectModel [
 	model announcer unsubscribe: self
@@ -286,7 +384,7 @@ GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
 	transformationElement ifNil: [ ^ self ].
 	transformationElement removeChildren.
-	transformationElement addChild: aRewrite asElement
+	aRewrite ifNotNil: [ transformationElement addChild: aRewrite asElement ]
 ]
 
 { #category : #'ui-preview' }
@@ -652,6 +750,12 @@ GtSmaCCTransformationToolkit >> resultsElement [
 	^ element
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> rewriteToolbarItems [
+	^ {self addRewriteButton.
+		self deleteRewriteButton}
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> run [
 	self model runOn: self selectedFiles
@@ -703,6 +807,12 @@ GtSmaCCTransformationToolkit >> selectedFiles [
 	^ (filesList selectedIndices collect: [ :i | filesList items at: i ifAbsent: [  ] ]) reject: [ :each | each isNil ]
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> selectedRewrite [
+	transformationsTree selectedNodeDo: [ :node | node value ifNotNil: [ :value | ^ value ] ].
+	^ model rewrites
+]
+
 { #category : #ui }
 GtSmaCCTransformationToolkit >> separatorToolbarItem [
 	^ BlElement new
@@ -720,7 +830,7 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> transformationsElement [
-	| element leftElement |
+	| element leftElement toolbar |
 	element := BrHorizontalPane new.
 	element matchParent.
 	leftElement := (BrVerticalPane new)
@@ -729,12 +839,22 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 		margin: (BlInsets all: 5);
 		padding: (BlInsets all: 5);
 		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight.
+	toolbar := (BrToolbar new)
+		aptitude: BrGlamorousToolbarAptitude new;
+		fitContent;
+		addItems: self rewriteToolbarItems.
 	leftElement
 		addChild:
-			((BrLabel new)
-				fitContent;
-				aptitude: BrGlamorousLabelAptitude new;
-				text: 'Rewrites:').
+			((BrHorizontalPane new)
+				vFitContent;
+				hMatchParent;
+				addChild:
+						((BrLabel new)
+								vFitContent;
+								hMatchParent;
+								aptitude: BrGlamorousLabelAptitude new;
+								text: 'Rewrites:');
+				addChild: toolbar).
 	transformationsTree := BrSimpleTree new.
 	transformationsTree
 		matchParent;
@@ -746,7 +866,7 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 						vFitContent;
 						hMatchParent ];
 		nodeDataBinder: [ :label :rewrite | label text: rewrite displayString ];
-		when: BrSelectionChanged do: [ :event | transformationsTree selectedNodeDo: [ :node | self displayRewrite: node value ] ].
+		when: BrSelectionChanged do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
 	leftElement addChild: transformationsTree.
 	element addChild: leftElement.
 	transformationElement := BlElement new.

@@ -50,6 +50,6 @@ GtSmaCCMethodDefinitionElement >> update: aSymbol [
 
 { #category : #updating }
 GtSmaCCMethodDefinitionElement >> updateSource [
-	editor editor text asString = rewrite source ifTrue: [ ^ self ].
-	editor editor text: rewrite source asRopedText
+	editor text asString = rewrite source ifTrue: [ ^ self ].
+	editor text: rewrite source asRopedText
 ]

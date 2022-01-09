@@ -1,6 +1,12 @@
 Class {
 	#name : #GtSmaCCRewriteElement,
 	#superclass : #GtSmaCCAbstractRewriteElement,
+	#instVars : [
+		'matchCode',
+		'matchPattern',
+		'transformationCode',
+		'transformationPattern'
+	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
@@ -55,7 +61,18 @@ GtSmaCCRewriteElement >> build [
 				stencil: [ self transformationPatternElement ]).
 	self addChild: transformationTabGroup as: #transformationTabGroup.
 	self updateMatch.
-	self updateTransformation
+	self updateTransformation.
+	matchTabGroup when: BrTabSelectedEvent do: [ :event | self matchTabSwitched ].
+	transformationTabGroup when: BrTabSelectedEvent do: [ :event | self transformationTabSwitched ]
+]
+
+{ #category : #initialization }
+GtSmaCCRewriteElement >> initialize [
+	super initialize.
+	matchCode := SmaCCRewriteTypeMatch new.
+	matchPattern := SmaCCRewriteTreeMatch new.
+	transformationCode := SmaCCRewriteCodeTransformation new.
+	transformationPattern := SmaCCRewriteStringTransformation new
 ]
 
 { #category : #building }
@@ -84,7 +101,6 @@ GtSmaCCRewriteElement >> matchCodeElement [
 						bottom: 5
 						right: 10);
 		matchParent.
-	editor editor styler: self sourceStyler.
 	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match code: editor editor text asString ].
 	^ (BrVerticalPane new)
 		padding: (BlInsets all: 5);
@@ -125,7 +141,6 @@ GtSmaCCRewriteElement >> matchPatternElement [
 						bottom: 5
 						right: 10);
 		matchParent.
-	editor editor styler: self patternStyler.
 	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match source: editor editor text asString ].
 	^ (BrVerticalPane new)
 		padding: (BlInsets all: 5);
@@ -138,6 +153,25 @@ GtSmaCCRewriteElement >> matchPatternElement [
 						addChild: label;
 						addChild: stateList as: #stateList);
 		addChild: editor as: #matchPattern
+]
+
+{ #category : #building }
+GtSmaCCRewriteElement >> matchTabSwitched [
+	self
+		childNamed: #matchTabGroup
+		ifFound:
+			[ :tg | 
+			tg viewModel selectedTab == tg tabs first
+				ifTrue:
+					[ rewrite match class type = #Pattern
+						ifTrue:
+							[ matchPattern := rewrite match copy.
+							rewrite match: matchCode ] ]
+				ifFalse:
+					[ rewrite match class type ~= #Pattern
+						ifTrue:
+							[ matchCode := rewrite match copy.
+							rewrite match: matchPattern ] ] ]
 ]
 
 { #category : #building }
@@ -185,6 +219,17 @@ GtSmaCCRewriteElement >> patternStyler [
 								foreground: BrGlamorousColors linkColor;
 								bold ]).
 	^ styler
+]
+
+{ #category : #accessing }
+GtSmaCCRewriteElement >> rewrite: aRewrite [
+	super rewrite: aRewrite.
+	rewrite notNil
+		ifTrue:
+			[ rewrite match class type = #Pattern ifTrue: [ matchPattern := rewrite match ] ifFalse: [ matchCode := rewrite match ].
+			rewrite transformation class type = #String
+				ifTrue: [ transformationPattern := rewrite transformation ]
+				ifFalse: [ transformationCode := rewrite transformation ] ]
 ]
 
 { #category : #building }
@@ -242,6 +287,25 @@ GtSmaCCRewriteElement >> transformationPatternElement [
 		addChild: editor as: #transformationPattern
 ]
 
+{ #category : #building }
+GtSmaCCRewriteElement >> transformationTabSwitched [
+	self
+		childNamed: #transformationTabGroup
+		ifFound:
+			[ :tg | 
+			tg viewModel selectedTab == tg tabs first
+				ifTrue:
+					[ rewrite transformation class type = #String
+						ifTrue:
+							[ transformationPattern := rewrite transformation copy.
+							rewrite transformation: transformationCode ] ]
+				ifFalse:
+					[ rewrite transformation class type ~= #String
+						ifTrue:
+							[ transformationCode := rewrite transformation copy.
+							rewrite transformation: transformationPattern ] ] ]
+]
+
 { #category : #updating }
 GtSmaCCRewriteElement >> update: aSymbol [
 	aSymbol = #match ifTrue: [ self updateMatch ].
@@ -266,10 +330,20 @@ GtSmaCCRewriteElement >> updateMatchContents [
 	rewrite match class type = #Pattern
 		ifTrue:
 			[ self childNamed: #stateList ifFound: [ :dropdown | dropdown selectedItem: rewrite match startingState ].
-			self childNamed: #matchPattern ifFound: [ :editor | editor editor text: rewrite match source asRopedText ] ]
+			self
+				childNamed: #matchPattern
+				ifFound:
+					[ :editor | 
+					editor editor styler: self patternStyler.
+					editor text: rewrite match source asRopedText ] ]
 		ifFalse:
 			[ self childNamed: #nodeList ifFound: [ :dropdown | dropdown selectedItem: rewrite match nodeClass ].
-			self childNamed: #matchCode ifFound: [ :editor | editor editor text: rewrite match code asRopedText ] ]
+			self
+				childNamed: #matchCode
+				ifFound:
+					[ :editor | 
+					editor editor styler: self sourceStyler.
+					editor text: rewrite match code asRopedText ] ]
 ]
 
 { #category : #updating }
@@ -288,9 +362,7 @@ GtSmaCCRewriteElement >> updateTransformation [
 GtSmaCCRewriteElement >> updateTransformationContents [
 	rewrite transformation class type = #String
 		ifTrue:
-			[ self
-				childNamed: #transformationPattern
-				ifFound: [ :editor | editor editor text: rewrite transformation string asRopedText ] ]
+			[ self childNamed: #transformationPattern ifFound: [ :editor | editor text: rewrite transformation string asRopedText ] ]
 		ifFalse:
-			[ self childNamed: #transformationCode ifFound: [ :editor | editor editor text: rewrite transformation code asRopedText ] ]
+			[ self childNamed: #transformationCode ifFound: [ :editor | editor text: rewrite transformation code asRopedText ] ]
 ]
