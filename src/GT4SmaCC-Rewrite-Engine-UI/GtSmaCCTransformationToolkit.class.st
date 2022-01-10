@@ -131,8 +131,7 @@ GtSmaCCTransformationToolkit >> addRewrite: newRewrite [
 		ifTrue: [ selected addTransformation: newRewrite ]
 		ifFalse: [ selected parent notNil ifTrue: [ selected parent addTransformation: newRewrite before: selected ] ].
 	self updateRewrites.
-	transformationsTree selectAndScrollTo: newRewrite.
-	self displayRewrite: newRewrite
+	self selectAndScrollToRewrite: newRewrite
 ]
 
 { #category : #'ui-transformations' }
@@ -323,6 +322,27 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 	^ (filename notNil and: [ filename parent exists ]) ifTrue: [ filename parent ] ifFalse: [ FileLocator workingDirectory ]
 ]
 
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite [
+	| block |
+	aSmaCCRewrite isNil
+		ifTrue: [ ^ self ].
+	block := [ :rewrite :node | rewrite == aSmaCCRewrite ].
+	self debugUsingSeachBlock: block andTransformationBlock: block
+]
+
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> debugUsingSeachBlock: searchBlock andTransformationBlock: transformationBlock [
+	self
+		openResultFor: self selectedFile
+		before:
+			[ SmaCCRewriteMatch haltBlock: searchBlock.
+			SmaCCRewriteTransformation haltBlock: transformationBlock ]
+		after:
+			[ SmaCCRewriteMatch haltBlock: nil.
+			SmaCCRewriteTransformation haltBlock: nil ]
+]
+
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> deleteRewrite [
 	self selectedRewrite
@@ -476,6 +496,12 @@ GtSmaCCTransformationToolkit >> gotoPreviewTab [
 	self previewTab select
 ]
 
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
+	windowElement viewModel selectTab: windowElement tabs second.
+	self selectAndScrollToRewrite: aRewrite
+]
+
 { #category : #'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
@@ -552,20 +578,33 @@ GtSmaCCTransformationToolkit >> open [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> openResultFor: aFilename [
-	| result processor |
-	aFilename isNil
-		ifTrue: [ ^ self ].
-	Cursor wait
-		showWhile: [ result := SmaCCRewriteCompleteResult new.
-			processor := SmaCCRewriteProcessor new.
-			processor rules: self model rewrites.
-			processor parserClass: self model inputParserClass.
-			processor validationParserClass: self model validationParserClass.
-			processor debug: true.
-			[ processor processFile: aFilename usingResult: result ]
-				ensure: [ processor debug: false ].
-			self displayPreviewResult: result.
-			self gotoPreviewTab ]
+	self
+		openResultFor: aFilename
+		before: [  ]
+		after: [  ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock after: afterBlock [
+	aFilename ifNil: [ ^ self ].
+	[ | result processor |
+	result := SmaCCRewriteCompleteResult new.
+	processor := SmaCCRewriteProcessor new.
+	processor rules: self model rewrites.
+	processor parserClass: self model inputParserClass.
+	processor validationParserClass: self model validationParserClass.
+	processor debug: true.
+	beforeBlock value.
+	[ processor processFile: aFilename usingResult: result ]
+		ensure:
+			[ afterBlock value.
+			processor debug: false ].
+	windowElement
+		enqueueTask:
+			(BlTaskAction new
+				action:
+					[ self displayPreviewResult: result.
+					self gotoPreviewTab ]) ] fork
 ]
 
 { #category : #'configuration-actions' }
@@ -666,7 +705,23 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
 	(list column)
 		title: 'Rewrite';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: each rewrite displayString ].
+		stencil:
+				[ :each | 
+					(BrHorizontalPane new)
+						fitContent;
+						addChild:
+								((BrButton new)
+										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+										label: each rewrite displayString;
+										action: [ self gotoRewrite: each rewrite ]);
+						addChild:
+								((BrButton new)
+										beSmallSize;
+										aptitude: BrGlamorousButtonWithIconAptitude;
+										label: 'Debug';
+										icon: BrGlamorousVectorIcons debug asElement;
+										margin: (BlInsets all: 2);
+										action: [ self debugRewrite: each rewrite ]) ].
 	(list column)
 		title: 'Node';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: each nodeClass displayString ].
@@ -794,6 +849,12 @@ GtSmaCCTransformationToolkit >> saveConfigurationTo: aFileReference [
 	file := aFileReference extension = 'rwc' ifTrue: [ aFileReference ] ifFalse: [ aFileReference withExtension: 'rwc' ].
 	self model saveTo: file.
 	filename := file
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> selectAndScrollToRewrite: aRewrite [
+	transformationsTree selectAndScrollTo: aRewrite.
+	self displayRewrite: aRewrite
 ]
 
 { #category : #private }
