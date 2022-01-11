@@ -9,7 +9,8 @@ Class {
 		'previewElement',
 		'previewResult',
 		'transformationsTree',
-		'transformationElement'
+		'transformationElement',
+		'rewriteFilter'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -199,6 +200,13 @@ GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
 				addAll: (previewResult transformedString annotationsInOriginalRange: each) ].
 	^ items
 		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> applyFilter: aString [
+	rewriteFilter := aString.
+	self updateRewrites.
+	self displayRewrite: self selectedRewrite
 ]
 
 { #category : #ui }
@@ -491,6 +499,54 @@ GtSmaCCTransformationToolkit >> filesToolbar [
 		addItems: self fileToolbarItems
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> filterRewritesButton [
+	^ self class
+		dropDown: 'Filter'
+		icon: BrGlamorousIcons filter
+		content:
+			[ :button | 
+			| editor |
+			editor := BrEditor new.
+			editor editor text: rewriteFilter asRopedText.
+			editor selecter all select.
+			editor
+				addShortcut:
+						((BlShortcutWithAction new)
+								combination: BlKeyCombination return;
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self applyFilter: editor editor text asString ]);
+				requestFocus;
+				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+				margin:
+						(BlInsets
+								top: 2
+								left: 4
+								bottom: 6
+								right: 4);
+				width: 250;
+				vFitContent.
+			(BrVerticalPane new)
+				padding: (BlInsets all: 5);
+				fitContent;
+				addChild:
+						((BrLabel new)
+								margin: (BlInsets all: 4);
+								vFitContent;
+								aptitude: BrGlamorousLabelAptitude;
+								text: 'Filter:');
+				addChild: editor;
+				addChild:
+						(self class
+								createToolbarButton: 'Filter'
+								icon: BrGlamorousIcons filter
+								action:
+									[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									self applyFilter: editor editor text asString ]);
+				yourself ]
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> gotoPreviewTab [
 	self previewTab select
@@ -505,7 +561,8 @@ GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
 { #category : #'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
-	self model: SmaCCTransformationToolkitModel new
+	self model: SmaCCTransformationToolkitModel new.
+	rewriteFilter := ''
 ]
 
 { #category : #'ui-configuration' }
@@ -807,13 +864,21 @@ GtSmaCCTransformationToolkit >> resultsElement [
 
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> rewriteToolbarItems [
-	^ {self addRewriteButton.
+	^ {self filterRewritesButton.
+		self addRewriteButton.
 		self deleteRewriteButton}
 ]
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> run [
 	self model runOn: self selectedFiles
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> satisfiesRewriteFilter: aSmaCCRewrite [
+	rewriteFilter = '' ifTrue: [ ^ true ].
+	^ (aSmaCCRewrite matches: rewriteFilter)
+		or: [ aSmaCCRewrite rewrites anySatisfy: [ :rw | self satisfiesRewriteFilter: rw ] ]
 ]
 
 { #category : #'ui-configuration' }
@@ -1001,7 +1066,9 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> updateRewrites [
 	transformationsTree ifNil: [ ^ self ].
-	transformationsTree items: {model rewrites} lazy: [ :each | each rewrites ].
+	transformationsTree
+		items: {model rewrites}
+		lazy: [ :each | each rewrites select: [ :rw | self satisfiesRewriteFilter: rw ] ].
 	transformationsTree expandAll
 ]
 

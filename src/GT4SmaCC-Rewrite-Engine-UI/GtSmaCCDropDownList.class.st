@@ -59,14 +59,19 @@ GtSmaCCDropDownList >> labelFor: anObject [
 GtSmaCCDropDownList >> popupList [
 	| list |
 	list := BrSimpleList new.
-	list vExact: 200.
+	list vExact: 204.
 	list hFitContent.
 	list
 		stencil:
 			[ :each :index | 
 			(BrLabel new)
 				aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
-				padding: (BlInsets all: 5);
+				padding:
+						(BlInsets
+								top: 3
+								left: 3
+								bottom: 3
+								right: 8);
 				text: (self labelFor: each);
 				hMatchParent;
 				when: BlClickEvent
