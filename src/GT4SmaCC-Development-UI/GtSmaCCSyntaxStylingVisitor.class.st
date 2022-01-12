@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCSyntaxStylingVisitor,
 	#superclass : #GtSmaCCStylingVisitor,
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #private }
@@ -28,7 +28,7 @@ GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 			{(BrGlamorousTrangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
-						stencil: [ (GtPharoMethodCoder forMethod: aCompiledMethod) asCoderUIModel 								expanded: true;
+						stencil: [ (GtPharoMethodCoder forMethod: aCompiledMethod) asCoderViewModel 								expanded: true;
 								asElement ] ])}
 		from: aToken stopPosition
 		to: aToken stopPosition
