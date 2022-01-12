@@ -10,7 +10,8 @@ Class {
 		'previewResult',
 		'transformationsTree',
 		'transformationElement',
-		'rewriteFilter'
+		'rewriteFilter',
+		'results'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -122,6 +123,12 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 					self addDirectory: file ];
 		buttonLabel: 'Add all files';
 		padding: (BlInsets all: 20)
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> addResult: aResult [
+	results add: aResult.
+	self updateResults
 ]
 
 { #category : #'ui-transformations' }
@@ -307,22 +314,24 @@ GtSmaCCTransformationToolkit >> configureElement [
 { #category : #private }
 GtSmaCCTransformationToolkit >> connectModel [
 	| announcer |
+	model addDependent: self.
 	announcer := model announcer weak.
 	#(
 		#(#createSubdirectories #updateCreateSubdirectories)
-		#(#files #updateFiles)
-		#(#inputParserClass #updateInputParserClass)
-		#(#outputDirectory #updateOutputDirectory)
-		#(#rewrites #updateRewrites)
-		#(#runOnServer #updateRunOnServer)
-		#(#server #updateServer)
+		#(#files #updateFiles) 
+		#(#inputParserClass #updateInputParserClass) 
+		#(#outputDirectory #updateOutputDirectory) 
+		#(#rewrites #updateRewrites) 
+		#(#runOnServer #updateRunOnServer) 
+		#(#server #updateServer) 
 		#(#validationParserClass #updateValidationParserClass)
-	) do: [ :each | 
-		announcer when: each first send: each last to: self.
-		self perform: each last ].
-"		#(#addTransformation:under:)
-		#(#resultAdded #addedResult:)
-		#(#removedTransformation:)"
+	)
+		do:
+			[ :each | 
+			announcer
+				when: each first
+				send: each last
+				to: self ]
 ]
 
 { #category : #'ui-configuration' }
@@ -396,7 +405,8 @@ GtSmaCCTransformationToolkit >> deleteRewriteButton [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> disconnectModel [
-	model announcer unsubscribe: self
+	model announcer unsubscribe: self.
+	model removeDependent: self
 ]
 
 { #category : #'ui-preview' }
@@ -419,17 +429,16 @@ GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
 GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
 	| editor element |
 	editor := BrTextEditor new.
-	editor text: aString asRopedText.
+	editor text: (aString ifNil: [ '' ]) asRopedText.
 	element := BrEditorElement new.
 	element
 		editor: editor;
 		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	aClass notNil
-		ifTrue:
-			[ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
+		constraintsDo:
+				[ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+	aClass notNil ifTrue: [ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
 	^ element
 ]
 
@@ -562,7 +571,8 @@ GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
 	self model: SmaCCTransformationToolkitModel new.
-	rewriteFilter := ''
+	rewriteFilter := ''.
+	results := OrderedCollection new
 ]
 
 { #category : #'ui-configuration' }
@@ -583,9 +593,11 @@ GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> loadConfiguration: aFileReference [
-	self model: (SmaCCTransformationToolkitModel new loadFile: aFileReference).
-"	self fileResults removeAll.
-	self result: SmaCCRewriteCompleteResult new"
+	self model: SmaCCTransformationToolkitModel new.
+	self model loadFile: aFileReference.
+	results removeAll.
+	self updateResults.
+	self displayPreviewResult: SmaCCRewriteCompleteResult new
 ]
 
 { #category : #'ui-configuration' }
@@ -691,7 +703,7 @@ GtSmaCCTransformationToolkit >> previewFilesElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputFilename [
-	^ previewResult notNil
+	^ (previewResult notNil and: [ previewResult filename notNil ])
 		ifTrue: [ previewResult filename asFileReference basename ]
 		ifFalse: [ 'Input' ]
 ]
@@ -724,7 +736,7 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputFilename [
-	^ previewResult notNil
+	^ (previewResult notNil and: [ previewResult outputFilename notNil ])
 		ifTrue: [ previewResult outputFilename asFileReference basename ]
 		ifFalse: [ 'Output' ]
 ]
@@ -858,7 +870,7 @@ GtSmaCCTransformationToolkit >> resultsElement [
 	(resultsList column)
 		title: 'Column';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startColumn ifNil: [ '' ]) ].
-	element addChild: resultsList.
+	element addChild: resultsList as: #resultsList.
 	^ element
 ]
 
@@ -871,6 +883,13 @@ GtSmaCCTransformationToolkit >> rewriteToolbarItems [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> run [
+	self runOn: self selectedFiles
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> runOn: aCollection [
+	results := results removeAllSuchThat: [ :each | aCollection includes: each filename ].
+	self updateResults.
 	self model runOn: self selectedFiles
 ]
 
@@ -1007,6 +1026,13 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 	^ element
 ]
 
+{ #category : #updating }
+GtSmaCCTransformationToolkit >> update: aSymbol with: aValue [
+	super update: aSymbol with: aValue.
+	aSymbol = #resultAdded
+		ifTrue: [ self addResult: aValue ]
+]
+
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
 ]
@@ -1061,6 +1087,11 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 			element
 				deselectAll;
 				items: aCollection ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> updateResults [
+	windowElement childNamed: #resultsList ifFound: [ :list | list items: results ]
 ]
 
 { #category : #'ui-transformations' }
