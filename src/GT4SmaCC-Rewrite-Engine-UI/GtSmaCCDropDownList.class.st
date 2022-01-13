@@ -6,7 +6,7 @@ Class {
 		'items',
 		'withDropdownLook'
 	],
-	#category : 'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
 { #category : #'initialize-release' }
@@ -59,26 +59,44 @@ GtSmaCCDropDownList >> labelFor: anObject [
 GtSmaCCDropDownList >> popupList [
 	| list |
 	list := BrSimpleList new.
-	list vExact: 200.
+	list vExact: 204.
 	list hFitContent.
 	list
-		stencil: [ :each :index | 
-			BrLabel new
-				aptitude: BrGlamorousLabelAptitude new;
-				padding: (BlInsets all: 5);
+		stencil:
+			[ :each :index | 
+			(BrLabel new)
+				aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
+				padding:
+						(BlInsets
+								top: 3
+								left: 3
+								bottom: 3
+								right: 8);
 				text: (self labelFor: each);
 				hMatchParent;
 				when: BlClickEvent
-					do: [ :anEvent | 
-					anEvent consumed: true.
-					self selectedItem: each.
-					list selectOne: index.
-					withDropdownLook hide ];
+					do:
+						[ :anEvent | 
+							anEvent consumed: true.
+							self selectedItem: each.
+							list selectOne: index.
+							withDropdownLook hide ];
 				yourself ].
-	list
-		when: BrSelectionChanged
-		do: [ :event | self dispatchEvent: event ].
+	list when: BrSelectionChanged do: [ :event | self dispatchEvent: event ].
 	list items: self items.
+	selectedItem notNil
+		ifTrue:
+			[ (list viewModel itemsProvider preloadUntilFoundSuchThat: [ :each | each = selectedItem ])
+				then:
+					[ :index | 
+					index > 0
+						ifTrue:
+							[ self
+								enqueueTask:
+									(BlTaskAction new
+										action:
+											[ list selectOne: index.
+											list scrollToIndex: index ]) ] ] ].
 	^ list
 ]
 

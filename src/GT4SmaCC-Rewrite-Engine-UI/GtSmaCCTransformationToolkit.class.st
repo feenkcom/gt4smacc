@@ -8,10 +8,47 @@ Class {
 		'filesList',
 		'previewElement',
 		'previewResult',
-		'transformationsElement'
+		'transformationsTree',
+		'transformationElement',
+		'rewriteFilter',
+		'results'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit class >> createToolbarButton: aString icon: anIcon action: aBlock [
+	^ BrButton new
+		beSmallSize;
+		aptitude: BrGlamorousButtonWithIconAptitude;
+		label: aString;
+		icon: anIcon asElement;
+		margin: (BlInsets all: 2);
+		action: aBlock
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit class >> dropDown: aString icon: anIcon content: aBlock [
+	| button |
+	button := BrButton new.
+	button icon: anIcon.
+	button aptitude: BrGlamorousButtonWithIconAptitude.
+	button label: aString.
+	button beSmallSize.
+	button margin: (BlInsets all: 2).
+	button
+		addAptitude:
+			(BrGlamorousWithDropdownAptitude
+				handle:
+					[ (BrButton new)
+						beSmallSize;
+						icon: anIcon;
+						label: aString;
+						aptitude:
+								BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude - BrGlamorousButtonExteriorAptitude ]
+				content: [ aBlock cull: button ]).
+	^ button
+]
 
 { #category : #'world menu' }
 GtSmaCCTransformationToolkit class >> menuCommandOn: aBuilder [
@@ -88,6 +125,66 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 		padding: (BlInsets all: 20)
 ]
 
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> addResult: aResult [
+	results add: aResult.
+	self updateResults
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> addRewrite: newRewrite [
+	| selected |
+	selected := self selectedRewrite.
+	selected isComposite
+		ifTrue: [ selected addTransformation: newRewrite ]
+		ifFalse: [ selected parent notNil ifTrue: [ selected parent addTransformation: newRewrite before: selected ] ].
+	self updateRewrites.
+	self selectAndScrollToRewrite: newRewrite
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> addRewriteButton [
+	^ self class
+		dropDown: 'Add'
+		icon: BrGlamorousIcons add
+		content:
+			[ :button | 
+			(BrVerticalPane new)
+				padding: (BlInsets all: 5);
+				fitContent;
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Rewrite';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewrite newInstance ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Method';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewriteMethodDefinition new ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Properties';
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self addRewrite: SmaCCRewritePropertyDefinition new ]);
+				addChild:
+						((BrButton new)
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'File';
+								action: [  ]);
+				yourself ]
+]
+
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
 	| items |
@@ -110,6 +207,13 @@ GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
 				addAll: (previewResult transformedString annotationsInOriginalRange: each) ].
 	^ items
 		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> applyFilter: aString [
+	rewriteFilter := aString.
+	self updateRewrites.
+	self displayRewrite: self selectedRewrite
 ]
 
 { #category : #ui }
@@ -148,6 +252,7 @@ GtSmaCCTransformationToolkit >> configurationElement [
 		padding: (BlInsets all: 5);
 		addChild: self configurationToolbar;
 		addChild: self filesElement;
+		addChild: self resultsElement;
 		yourself
 ]
 
@@ -168,7 +273,7 @@ GtSmaCCTransformationToolkit >> configurationToolbarItems [
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> configureButton [
-	^ self
+	^ self class
 		dropDown: 'Configure'
 		icon: BrGlamorousIcons hamburger
 		content: [ :button | self configureElement ]
@@ -209,33 +314,24 @@ GtSmaCCTransformationToolkit >> configureElement [
 { #category : #private }
 GtSmaCCTransformationToolkit >> connectModel [
 	| announcer |
+	model addDependent: self.
 	announcer := model announcer weak.
 	#(
 		#(#createSubdirectories #updateCreateSubdirectories)
-		#(#files #updateFiles)
-		#(#inputParserClass #updateInputParserClass)
-		#(#outputDirectory #updateOutputDirectory)
-		#(#rewrites #updateRewrites)
-		#(#runOnServer #updateRunOnServer)
-		#(#server #updateServer)
+		#(#files #updateFiles) 
+		#(#inputParserClass #updateInputParserClass) 
+		#(#outputDirectory #updateOutputDirectory) 
+		#(#rewrites #updateRewrites) 
+		#(#runOnServer #updateRunOnServer) 
+		#(#server #updateServer) 
 		#(#validationParserClass #updateValidationParserClass)
-	) do: [ :each | 
-		announcer when: each first send: each last to: self.
-		self perform: each last ].
-"		#(#addTransformation:under:)
-		#(#resultAdded #addedResult:)
-		#(#removedTransformation:)"
-]
-
-{ #category : #ui }
-GtSmaCCTransformationToolkit >> createToolbarButton: aString icon: anIcon action: aBlock [
-	^ BrButton new
-		beSmallSize;
-		aptitude: BrGlamorousButtonWithIconAptitude;
-		label: aString;
-		icon: anIcon asElement;
-		margin: (BlInsets all: 2);
-		action: aBlock
+	)
+		do:
+			[ :each | 
+			announcer
+				when: each first
+				send: each last
+				to: self ]
 ]
 
 { #category : #'ui-configuration' }
@@ -243,9 +339,74 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 	^ (filename notNil and: [ filename parent exists ]) ifTrue: [ filename parent ] ifFalse: [ FileLocator workingDirectory ]
 ]
 
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite [
+	| block |
+	aSmaCCRewrite isNil
+		ifTrue: [ ^ self ].
+	block := [ :rewrite :node | rewrite == aSmaCCRewrite ].
+	self debugUsingSeachBlock: block andTransformationBlock: block
+]
+
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> debugUsingSeachBlock: searchBlock andTransformationBlock: transformationBlock [
+	self
+		openResultFor: self selectedFile
+		before:
+			[ SmaCCRewriteMatch haltBlock: searchBlock.
+			SmaCCRewriteTransformation haltBlock: transformationBlock ]
+		after:
+			[ SmaCCRewriteMatch haltBlock: nil.
+			SmaCCRewriteTransformation haltBlock: nil ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> deleteRewrite [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent notNil
+				ifTrue:
+					[ rewrite parent removeTransformation: rewrite.
+					self updateRewrites.
+					self displayRewrite: self selectedRewrite ] ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> deleteRewriteButton [
+	^ self class
+		dropDown: 'remove'
+		icon: BrGlamorousIcons remove
+		content:
+			[ :button | 
+			| rewrite |
+			rewrite := self selectedRewrite.
+			(rewrite isNil or: [ rewrite parent isNil ])
+				ifTrue:
+					[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+					BlElement new size: 0 @ 0 ]
+				ifFalse:
+					[ (BrVerticalPane new)
+						padding: (BlInsets all: 5);
+						fitContent;
+						addChild:
+								((BrLabel new)
+										fitContent;
+										aptitude: BrGlamorousLabelAptitude new;
+										text: 'Delete ' , rewrite displayString , '?');
+						addChild:
+								(self class
+										createToolbarButton: 'Delete'
+										icon: BrGlamorousIcons remove
+										action:
+											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self deleteRewrite ]) ] ]
+]
+
 { #category : #private }
 GtSmaCCTransformationToolkit >> disconnectModel [
-	model announcer unsubscribe: self
+	model announcer unsubscribe: self.
+	model removeDependent: self
 ]
 
 { #category : #'ui-preview' }
@@ -257,66 +418,49 @@ GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 		addChild: self previewOutputSourceElement
 ]
 
-{ #category : #ui }
-GtSmaCCTransformationToolkit >> dropDown: aString icon: anIcon content: aBlock [
-	| button |
-	button := BrButton new.
-	button icon: anIcon.
-	button aptitude: BrGlamorousButtonWithIconAptitude.
-	button label: aString.
-	button beSmallSize.
-	button margin: (BlInsets all: 2).
-	button
-		addAptitude:
-			(BrGlamorousWithDropdownAptitude
-				handle:
-					[ (BrButton new)
-						beSmallSize;
-						icon: anIcon;
-						label: aString;
-						aptitude:
-								BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude - BrGlamorousButtonExteriorAptitude ]
-				content: [ aBlock cull: button ]).
-	^ button
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
+	transformationElement ifNil: [ ^ self ].
+	transformationElement removeChildren.
+	aRewrite ifNotNil: [ transformationElement addChild: aRewrite asElement ]
 ]
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
 	| editor element |
 	editor := BrTextEditor new.
-	editor text: aString asRopedText.
+	editor text: (aString ifNil: [ '' ]) asRopedText.
 	element := BrEditorElement new.
 	element
 		editor: editor;
 		padding: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	aClass notNil
-		ifTrue:
-			[ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
+		constraintsDo:
+				[ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+	aClass notNil ifTrue: [ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
 	^ element
 ]
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> fileToolbarItems [
-	^ {self
+	^ {self class
 			createToolbarButton: 'Preview'
 			icon: BrGlamorousVectorIcons playinspect
 			action: [ self preview ].
-		self
+		self class
 			createToolbarButton: 'Run'
 			icon: BrGlamorousVectorIcons play
 			action: [ self run ].
-		self
+		self class
 			dropDown: 'Add Files from Directory'
 			icon: BrGlamorousVectorIcons folder
 			content: [ :button | self addFilesDirectoryElement: button ].
-		self
+		self class
 			dropDown: 'Add File'
 			icon: BrGlamorousVectorIcons add
 			content: [ :button | self addFileElement: button ].
-		self
+		self class
 			createToolbarButton: 'Remove File'
 			icon: BrGlamorousVectorIcons remove
 			action: [ self removeFiles ]}
@@ -326,6 +470,7 @@ GtSmaCCTransformationToolkit >> fileToolbarItems [
 GtSmaCCTransformationToolkit >> filesElement [
 	| element label filesSection |
 	element := (BlElement new)
+		aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
 		layout: BlLinearLayout vertical;
 		padding: (BlInsets all: 5);
 		constraintsDo:
@@ -337,12 +482,7 @@ GtSmaCCTransformationToolkit >> filesElement [
 		aptitude: BrGlamorousLabelAptitude new;
 		text: 'Files'.
 	element addChild: label.
-	filesSection := (BlElement new)
-		layout: BlLinearLayout horizontal;
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
+	filesSection := BrHorizontalPane new matchParent.
 	filesList := (BrSimpleList new)
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		margin: (BlInsets right: 5);
@@ -350,8 +490,7 @@ GtSmaCCTransformationToolkit >> filesElement [
 		itemStencil:
 				[ (BrLabel new)
 						hMatchParent;
-						aptitude:
-								BrGlamorousLabelAptitude new + (BrStyleCommonAptitude new selected: [ :aStyle | aStyle background: Color veryVeryLightGray ]);
+						aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
 						padding: (BlInsets all: 5) ];
 		itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ].
 	filesSection addChild: filesList.
@@ -369,15 +508,71 @@ GtSmaCCTransformationToolkit >> filesToolbar [
 		addItems: self fileToolbarItems
 ]
 
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> filterRewritesButton [
+	^ self class
+		dropDown: 'Filter'
+		icon: BrGlamorousIcons filter
+		content:
+			[ :button | 
+			| editor |
+			editor := BrEditor new.
+			editor editor text: rewriteFilter asRopedText.
+			editor selecter all select.
+			editor
+				addShortcut:
+						((BlShortcutWithAction new)
+								combination: BlKeyCombination return;
+								action:
+										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											self applyFilter: editor editor text asString ]);
+				requestFocus;
+				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+				margin:
+						(BlInsets
+								top: 2
+								left: 4
+								bottom: 6
+								right: 4);
+				width: 250;
+				vFitContent.
+			(BrVerticalPane new)
+				padding: (BlInsets all: 5);
+				fitContent;
+				addChild:
+						((BrLabel new)
+								margin: (BlInsets all: 4);
+								vFitContent;
+								aptitude: BrGlamorousLabelAptitude;
+								text: 'Filter:');
+				addChild: editor;
+				addChild:
+						(self class
+								createToolbarButton: 'Filter'
+								icon: BrGlamorousIcons filter
+								action:
+									[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									self applyFilter: editor editor text asString ]);
+				yourself ]
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> gotoPreviewTab [
 	self previewTab select
 ]
 
+{ #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
+	windowElement viewModel selectTab: windowElement tabs second.
+	self selectAndScrollToRewrite: aRewrite
+]
+
 { #category : #'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
-	self model: SmaCCTransformationToolkitModel new
+	self model: SmaCCTransformationToolkitModel new.
+	rewriteFilter := ''.
+	results := OrderedCollection new
 ]
 
 { #category : #'ui-configuration' }
@@ -398,14 +593,16 @@ GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> loadConfiguration: aFileReference [
-	self model: (SmaCCTransformationToolkitModel new loadFile: aFileReference).
-"	self fileResults removeAll.
-	self result: SmaCCRewriteCompleteResult new"
+	self model: SmaCCTransformationToolkitModel new.
+	self model loadFile: aFileReference.
+	results removeAll.
+	self updateResults.
+	self displayPreviewResult: SmaCCRewriteCompleteResult new
 ]
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> loadConfigurationButton [
-	^ self
+	^ self class
 		dropDown: 'Load Configuration'
 		icon: BrGlamorousIcons loadfromdisk
 		content:
@@ -450,20 +647,33 @@ GtSmaCCTransformationToolkit >> open [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> openResultFor: aFilename [
-	| result processor |
-	aFilename isNil
-		ifTrue: [ ^ self ].
-	Cursor wait
-		showWhile: [ result := SmaCCRewriteCompleteResult new.
-			processor := SmaCCRewriteProcessor new.
-			processor rules: self model rewrites.
-			processor parserClass: self model inputParserClass.
-			processor validationParserClass: self model validationParserClass.
-			processor debug: true.
-			[ processor processFile: aFilename usingResult: result ]
-				ensure: [ processor debug: false ].
-			self displayPreviewResult: result.
-			self gotoPreviewTab ]
+	self
+		openResultFor: aFilename
+		before: [  ]
+		after: [  ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock after: afterBlock [
+	aFilename ifNil: [ ^ self ].
+	[ | result processor |
+	result := SmaCCRewriteCompleteResult new.
+	processor := SmaCCRewriteProcessor new.
+	processor rules: self model rewrites.
+	processor parserClass: self model inputParserClass.
+	processor validationParserClass: self model validationParserClass.
+	processor debug: true.
+	beforeBlock value.
+	[ processor processFile: aFilename usingResult: result ]
+		ensure:
+			[ afterBlock value.
+			processor debug: false ].
+	windowElement
+		enqueueTask:
+			(BlTaskAction new
+				action:
+					[ self displayPreviewResult: result.
+					self gotoPreviewTab ]) ] fork
 ]
 
 { #category : #'configuration-actions' }
@@ -484,12 +694,8 @@ GtSmaCCTransformationToolkit >> previewElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewFilesElement [
-	^ (BlElement new)
-		layout: (BlGridLayout horizontal columnCount: 2);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
+	^ (BrHorizontalPane new)
+		matchParent;
 		addChild: self previewInputSourceElement;
 		addChild: self previewOutputSourceElement;
 		yourself
@@ -497,7 +703,7 @@ GtSmaCCTransformationToolkit >> previewFilesElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewInputFilename [
-	^ previewResult notNil
+	^ (previewResult notNil and: [ previewResult filename notNil ])
 		ifTrue: [ previewResult filename asFileReference basename ]
 		ifFalse: [ 'Input' ]
 ]
@@ -506,7 +712,7 @@ GtSmaCCTransformationToolkit >> previewInputFilename [
 GtSmaCCTransformationToolkit >> previewInputSourceElement [
 	previewResult ifNil: [ ^ BlElement new ].
 	^ (BrTabGroup new)
-		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
+		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight + BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
 		addTab:
@@ -530,7 +736,7 @@ GtSmaCCTransformationToolkit >> previewInputSourceElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputFilename [
-	^ previewResult notNil
+	^ (previewResult notNil and: [ previewResult outputFilename notNil ])
 		ifTrue: [ previewResult outputFilename asFileReference basename ]
 		ifFalse: [ 'Output' ]
 ]
@@ -565,28 +771,43 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 GtSmaCCTransformationToolkit >> previewRulesElement [
 	| list |
 	list := BrColumnedList new.
+	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
 	(list column)
 		title: 'Rewrite';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: each rewrite displayString ].
+		stencil:
+				[ :each | 
+					(BrHorizontalPane new)
+						fitContent;
+						addChild:
+								((BrButton new)
+										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+										label: each rewrite displayString;
+										action: [ self gotoRewrite: each rewrite ]);
+						addChild:
+								((BrButton new)
+										beSmallSize;
+										aptitude: BrGlamorousButtonWithIconAptitude;
+										label: 'Debug';
+										icon: BrGlamorousVectorIcons debug asElement;
+										margin: (BlInsets all: 2);
+										action: [ self debugRewrite: each rewrite ]) ].
 	(list column)
 		title: 'Node';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: each nodeClass displayString ].
 	(list column)
 		title: 'Location';
 		stencil:
-				[ :each | BrColumnCellLabelStencil matchParent: each nodeInterval first printString , ':' , each nodeInterval last printString ].
+				[ :each | BrColumnCellLabelStencil matchParent: each nodeInterval first printString , '-' , each nodeInterval last printString ].
 	list
 		when: BrSelectionChanged
-		do: [ :event | event selectedDo: [ :each | self updateEditorsForAnnotation: (list items at: each first) ] ].
+		do: [ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | list items at: each first ]) ].
 	^ (BlElement new)
+		height: 200;
 		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
 		margin: (BlInsets all: 10);
 		padding: (BlInsets all: 5);
 		border: (BlBorder paint: Color lightGray width: 1);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
+		constraintsDo: [ :c | c horizontal matchParent ];
 		addChild: list as: #previewRewrites;
 		yourself
 ]
@@ -613,14 +834,75 @@ GtSmaCCTransformationToolkit >> removeFiles [
 	self updateFiles
 ]
 
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> resultsElement [
+	| element label resultsList |
+	element := (BlElement new)
+		layout: BlLinearLayout vertical;
+		padding: (BlInsets all: 5);
+		constraintsDo:
+				[ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+	label := (BrLabel new)
+		fitContent;
+		aptitude: BrGlamorousLabelAptitude new;
+		text: 'Results'.
+	element addChild: label.
+	resultsList := (BrColumnedList new)
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		margin: (BlInsets right: 5);
+		matchParent;
+		rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
+	(resultsList column)
+		title: 'File';
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: each filename ].
+	(resultsList column)
+		title: 'Error';
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each errorString ifNil: [ '' ]) ].
+	(resultsList column)
+		title: 'Transformation';
+		stencil:
+				[ :each | BrColumnCellLabelStencil matchParent: (each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ]) ].
+	(resultsList column)
+		title: 'Line';
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startLine ifNil: [ '' ]) ].
+	(resultsList column)
+		title: 'Column';
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startColumn ifNil: [ '' ]) ].
+	element addChild: resultsList as: #resultsList.
+	^ element
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> rewriteToolbarItems [
+	^ {self filterRewritesButton.
+		self addRewriteButton.
+		self deleteRewriteButton}
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> run [
+	self runOn: self selectedFiles
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> runOn: aCollection [
+	results := results removeAllSuchThat: [ :each | aCollection includes: each filename ].
+	self updateResults.
 	self model runOn: self selectedFiles
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> satisfiesRewriteFilter: aSmaCCRewrite [
+	rewriteFilter = '' ifTrue: [ ^ true ].
+	^ (aSmaCCRewrite matches: rewriteFilter)
+		or: [ aSmaCCRewrite rewrites anySatisfy: [ :rw | self satisfiesRewriteFilter: rw ] ]
 ]
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> saveConfigurationButton [
-	^ self
+	^ self class
 		dropDown: 'Save Configuration'
 		icon: BrGlamorousIcons savetodisk
 		content: [ :button | self saveConfigurationDropDownElementFrom: button ]
@@ -654,6 +936,12 @@ GtSmaCCTransformationToolkit >> saveConfigurationTo: aFileReference [
 ]
 
 { #category : #private }
+GtSmaCCTransformationToolkit >> selectAndScrollToRewrite: aRewrite [
+	transformationsTree selectAndScrollTo: aRewrite.
+	self displayRewrite: aRewrite
+]
+
+{ #category : #private }
 GtSmaCCTransformationToolkit >> selectedFile [
 	filesList selectedIndices do: [ :i | ^ filesList items at: i ifAbsent: [  ] ].
 	^ nil
@@ -662,6 +950,12 @@ GtSmaCCTransformationToolkit >> selectedFile [
 { #category : #private }
 GtSmaCCTransformationToolkit >> selectedFiles [
 	^ (filesList selectedIndices collect: [ :i | filesList items at: i ifAbsent: [  ] ]) reject: [ :each | each isNil ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> selectedRewrite [
+	transformationsTree selectedNodeDo: [ :node | node value ifNotNil: [ :value | ^ value ] ].
+	^ model rewrites
 ]
 
 { #category : #ui }
@@ -681,14 +975,62 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> transformationsElement [
-	^ transformationsElement
-		ifNil: [ transformationsElement := BlElement new
-				layout: BlLinearLayout vertical;
-				padding: (BlInsets all: 5);
-				constraintsDo: [ :c | 
+	| element leftElement toolbar |
+	element := BrHorizontalPane new.
+	element matchParent.
+	leftElement := (BrVerticalPane new)
+		width: 250;
+		vMatchParent;
+		margin: (BlInsets all: 5);
+		padding: (BlInsets all: 5);
+		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight.
+	toolbar := (BrToolbar new)
+		aptitude: BrGlamorousToolbarAptitude new;
+		fitContent;
+		addItems: self rewriteToolbarItems.
+	leftElement
+		addChild:
+			((BrHorizontalPane new)
+				vFitContent;
+				hMatchParent;
+				addChild:
+						((BrLabel new)
+								vFitContent;
+								hMatchParent;
+								aptitude: BrGlamorousLabelAptitude new;
+								text: 'Rewrites:');
+				addChild: toolbar).
+	transformationsTree := BrSimpleTree new.
+	transformationsTree
+		matchParent;
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		rowStencil: BrGlamorousSimpleTreeSelectableRowElementStencilBuilder new;
+		nodeStencil:
+				[ (BrLabel new)
+						aptitude: BrGlamorousLabelAptitude;
+						vFitContent;
+						hMatchParent ];
+		nodeDataBinder: [ :label :rewrite | label text: rewrite displayString ];
+		when: BrSelectionChanged do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
+	leftElement addChild: transformationsTree.
+	element addChild: leftElement.
+	transformationElement := BlElement new.
+	transformationElement
+		constraintsDo:
+				[ :c | 
 					c horizontal matchParent.
 					c vertical matchParent ];
-				yourself ]
+		margin: (BlInsets all: 5).
+	element addChild: transformationElement.
+	self updateRewrites.
+	^ element
+]
+
+{ #category : #updating }
+GtSmaCCTransformationToolkit >> update: aSymbol with: aValue [
+	super update: aSymbol with: aValue.
+	aSymbol = #resultAdded
+		ifTrue: [ self addResult: aValue ]
 ]
 
 { #category : #private }
@@ -697,36 +1039,30 @@ GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
-	annotation isNil
-		ifTrue: [ ^ self ].
 	(self previewElement childNamed: #inputSource)
-		ifNotNil: [ :element | 
-			element editor text
-				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
-			(element editor text
-				from: annotation nodeInterval first
-				to: annotation nodeInterval last)
-				attributes: {GtSmaCCTransformedAttribute new}.
-			element
-				scrollToPosition:
-					(self
-						lineNumberFor: annotation nodeInterval first
-						in: previewResult inputSource) ].
+		ifNotNil:
+			[ :element | 
+			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+			annotation
+				ifNotNil:
+					[ (element editor text from: annotation nodeInterval first to: annotation nodeInterval last)
+						attributes: {GtSmaCCTransformedAttribute new}.
+					element scrollToPosition: (self lineNumberFor: annotation nodeInterval first in: previewResult inputSource) ] ].
 	(self previewElement childNamed: #outputSource)
-		ifNotNil: [ :element | 
-			| firstIndex |
-			firstIndex := SmallInteger maxVal.
-			element editor text
-				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
-			(previewResult transformedString annotationRangesFor: annotation)
-				do: [ :each | 
-					firstIndex := firstIndex min: each first.
-					(element editor text from: each first to: each last)
-						attributes: {GtSmaCCTransformedAttribute new} ].
-			firstIndex < SmallInteger maxVal
-				ifTrue: [ element
-						scrollToPosition:
-							(self lineNumberFor: firstIndex in: previewResult outputSource) ] ]
+		ifNotNil:
+			[ :element | 
+			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+			annotation
+				ifNotNil:
+					[ | firstIndex |
+					firstIndex := SmallInteger maxVal.
+					(previewResult transformedString annotationRangesFor: annotation)
+						do:
+							[ :each | 
+							firstIndex := firstIndex min: each first.
+							(element editor text from: each first to: each last) attributes: {GtSmaCCTransformedAttribute new} ].
+					firstIndex < SmallInteger maxVal
+						ifTrue: [ element scrollToPosition: (self lineNumberFor: firstIndex in: previewResult outputSource) ] ] ]
 ]
 
 { #category : #private }
@@ -753,13 +1089,18 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 				items: aCollection ]
 ]
 
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> updateResults [
+	windowElement childNamed: #resultsList ifFound: [ :list | list items: results ]
+]
+
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> updateRewrites [
-	| rewritesElement |
-	self transformationsElement removeChildren.
-	rewritesElement := model rewrites element.
-	self transformationsElement
-		addChild: rewritesElement asScrollableElement
+	transformationsTree ifNil: [ ^ self ].
+	transformationsTree
+		items: {model rewrites}
+		lazy: [ :each | each rewrites select: [ :rw | self satisfiesRewriteFilter: rw ] ].
+	transformationsTree expandAll
 ]
 
 { #category : #private }
