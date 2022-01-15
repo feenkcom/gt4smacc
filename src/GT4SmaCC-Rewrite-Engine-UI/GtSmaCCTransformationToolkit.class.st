@@ -127,7 +127,7 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> addResult: aResult [
-	results add: aResult.
+	results addFirst: aResult.
 	self updateResults
 ]
 
@@ -308,7 +308,46 @@ GtSmaCCTransformationToolkit >> configureElement [
 				hFitContent;
 				yourself).
 	element addChild: self validationParserElement.
-	^ element
+	element
+		addChild:
+			((BrLabel new)
+				text: 'Output Directory:';
+				aptitude: BrGlamorousLabelAptitude new;
+				padding: (BlInsets all: 5);
+				hFitContent;
+				yourself).
+	element addChild: self outputDirectoryElement.
+	element
+		addChild:
+			((BrLabel new)
+				text: 'Create Subdirectories:';
+				aptitude: BrGlamorousLabelAptitude new;
+				padding: (BlInsets all: 5);
+				hFitContent;
+				yourself).
+	element addChild: self createSubdirectoriesElement.
+	element
+		addChild:
+			((BrLabel new)
+				text: 'Server:';
+				aptitude: BrGlamorousLabelAptitude new;
+				padding: (BlInsets all: 5);
+				hFitContent;
+				yourself).
+	element addChild: self serverElement.
+	element
+		addChild:
+			((BrLabel new)
+				text: 'Run on Server:';
+				aptitude: BrGlamorousLabelAptitude new;
+				padding: (BlInsets all: 5);
+				hFitContent;
+				yourself).
+	element addChild: self runOnServerElement.
+	^ (BrHorizontalPane new)
+		id: #dropdown;
+		fitContent;
+		addChild: element
 ]
 
 { #category : #private }
@@ -332,6 +371,19 @@ GtSmaCCTransformationToolkit >> connectModel [
 				when: each first
 				send: each last
 				to: self ]
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> createSubdirectoriesElement [
+	| check |
+	check := BrCheckbox new.
+	check
+		margin: (BlInsets top: 7);
+		aptitude: BrGlamorousCheckboxAptitude;
+		checked: model createSubdirectories;
+		whenCheckedDo: [ model createSubdirectories: true ];
+		whenUncheckedDo: [ model createSubdirectories: false ].
+	^ check
 ]
 
 { #category : #'ui-configuration' }
@@ -449,9 +501,9 @@ GtSmaCCTransformationToolkit >> fileToolbarItems [
 			icon: BrGlamorousVectorIcons playinspect
 			action: [ self preview ].
 		self class
-			createToolbarButton: 'Run'
+			dropDown: 'Run'
 			icon: BrGlamorousVectorIcons play
-			action: [ self run ].
+			content: [ :button | self runElement: button ].
 		self class
 			dropDown: 'Add Files from Directory'
 			icon: BrGlamorousVectorIcons folder
@@ -493,7 +545,7 @@ GtSmaCCTransformationToolkit >> filesElement [
 						aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
 						padding: (BlInsets all: 5) ];
 		itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ].
-	filesSection addChild: filesList.
+	filesSection addChild: filesList as: #filesList.
 	filesSection addChild: self filesToolbar.
 	element addChild: filesSection.
 	^ element
@@ -620,6 +672,15 @@ GtSmaCCTransformationToolkit >> loadConfigurationButton [
 				padding: (BlInsets all: 20) ]
 ]
 
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> localFilename: aString [
+	| name |
+	name := model createSubdirectories
+		ifTrue: [ aString asFileReference pathString allButFirst: model commonParentDirectory size ]
+		ifFalse: [ aString asFileReference basename ].
+	^ name
+]
+
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> model [
 	^ model
@@ -674,6 +735,50 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock aft
 				action:
 					[ self displayPreviewResult: result.
 					self gotoPreviewTab ]) ] fork
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> outputDirectoryElement [
+	| editor button |
+	editor := (BrEditor new)
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		hMatchParent;
+		vFitContent;
+		aptitude: BrGlamorousRegularEditorAptitude new.
+	editor editor text: model outputDirectory asRopedText.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | model outputDirectory: editor editor text asString ].
+	button := self class
+		createToolbarButton: 'Select Output Directory'
+		icon: BrGlamorousVectorIcons folder
+		action:
+			[ button
+				allParentsDetect: [ :each | each id = #dropdown asBlocElementId ]
+				ifFound:
+					[ :element | 
+					element childrenCount < 2
+						ifTrue:
+							[ element
+								addChild:
+									((BrFileSelector new)
+										size: 400 @ 250;
+										folder:
+												(model outputDirectory ifNil: [ '.' ] ifNotNil: [ :dir | dir asFileReference exists ifTrue: [ dir ] ifFalse: [ '.' ] ])
+														asFileReference;
+										fileFilterBlock: [ :file | false ];
+										okAction:
+												[ :file :btn | 
+													element children last removeFromParent.
+													model outputDirectory: file asFileReference pathString.
+													editor editor text: model outputDirectory asRopedText ];
+										buttonLabel: 'Select Directory';
+										padding: (BlInsets all: 20)) ]
+						ifFalse: [ element children last removeFromParent ] ]
+				ifNone: [  ] ].
+	^ (BrHorizontalPane new)
+		hMatchParent;
+		vFitContent;
+		addChild: editor;
+		addChild: button
 ]
 
 { #category : #'configuration-actions' }
@@ -771,6 +876,8 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 GtSmaCCTransformationToolkit >> previewRulesElement [
 	| list |
 	list := BrColumnedList new.
+	list padding: (BlInsets all: 5).
+	list border: (BlBorder paint: Color lightGray width: 1).
 	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
 	(list column)
 		title: 'Rewrite';
@@ -804,9 +911,12 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 	^ (BlElement new)
 		height: 200;
 		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
-		margin: (BlInsets all: 10);
-		padding: (BlInsets all: 5);
-		border: (BlBorder paint: Color lightGray width: 1);
+		margin:
+				(BlInsets
+						top: 0
+						left: 10
+						bottom: 10
+						right: 10);
 		constraintsDo: [ :c | c horizontal matchParent ];
 		addChild: list as: #previewRewrites;
 		yourself
@@ -856,7 +966,7 @@ GtSmaCCTransformationToolkit >> resultsElement [
 		rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
 	(resultsList column)
 		title: 'File';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: each filename ].
+		stencil: [ :each | BrColumnCellLabelStencil matchParent: (self localFilename: each filename) ].
 	(resultsList column)
 		title: 'Error';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each errorString ifNil: [ '' ]) ].
@@ -870,6 +980,30 @@ GtSmaCCTransformationToolkit >> resultsElement [
 	(resultsList column)
 		title: 'Column';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startColumn ifNil: [ '' ]) ].
+	resultsList
+		when: BrSelectionChanged
+		do:
+			[ :event | 
+			windowElement
+				childNamed: #filesList
+				ifFound:
+					[ :files | 
+					event selectedInterval
+						ifNotNil:
+							[ :each | 
+							| value |
+							value := (resultsList items at: each first) filename.
+							(files viewModel itemsProvider preloadUntilFoundSuchThat: [ :fn | fn = value ])
+								then:
+									[ :index | 
+									index > 0
+										ifTrue:
+											[ files
+												enqueueTask:
+													(BlTaskAction new
+														action:
+															[ files selectOne: index.
+															files scrollToIndex: index ]) ] ] ] ] ].
 	element addChild: resultsList as: #resultsList.
 	^ element
 ]
@@ -887,10 +1021,52 @@ GtSmaCCTransformationToolkit >> run [
 ]
 
 { #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> runAll [
+	self runOn: model files
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> runElement: button [
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		fitContent;
+		addChild:
+				((BrButton new)
+						beSmallSize;
+						aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+						label: 'Run Selected';
+						action:
+								[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									self run ]);
+		addChild:
+				((BrButton new)
+						beSmallSize;
+						aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+						label: 'Run All';
+						action:
+								[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									self runAll ]);
+		yourself
+]
+
+{ #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> runOn: aCollection [
 	results := results removeAllSuchThat: [ :each | aCollection includes: each filename ].
 	self updateResults.
-	self model runOn: self selectedFiles
+	[ self model runOn: aCollection ] fork
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> runOnServerElement [
+	| check |
+	check := BrCheckbox new.
+	check
+		margin: (BlInsets top: 7);
+		aptitude: BrGlamorousCheckboxAptitude;
+		checked: model runOnServer;
+		whenCheckedDo: [ model runOnServer: true ];
+		whenUncheckedDo: [ model runOnServer: false ].
+	^ check
 ]
 
 { #category : #'ui-transformations' }
@@ -971,6 +1147,19 @@ GtSmaCCTransformationToolkit >> separatorToolbarItem [
 		constraintsDo: [ :c | 
 			c horizontal exact: 1.
 			c vertical matchParent ]
+]
+
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> serverElement [
+	| editor |
+	editor := (BrEditor new)
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		hMatchParent;
+		vFitContent;
+		aptitude: BrGlamorousRegularEditorAptitude new.
+	editor editor text: model server asRopedText.
+	editor editor when: BrTextEditorModifiedEvent do: [ :event | model server: editor editor text asString ].
+	^ editor
 ]
 
 { #category : #'ui-transformations' }
@@ -1091,7 +1280,8 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> updateResults [
-	windowElement childNamed: #resultsList ifFound: [ :list | list items: results ]
+	windowElement
+		enqueueTask: (BlTaskAction new action: [ windowElement childNamed: #resultsList ifFound: [ :list | list items: results ] ])
 ]
 
 { #category : #'ui-transformations' }

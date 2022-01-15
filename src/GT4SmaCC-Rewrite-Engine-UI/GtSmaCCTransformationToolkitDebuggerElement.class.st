@@ -1,6 +1,10 @@
 Class {
 	#name : #GtSmaCCTransformationToolkitDebuggerElement,
 	#superclass : #GtDebuggerElement,
+	#instVars : [
+		'nodeHighlight',
+		'codeHighlight'
+	],
 	#classInstVars : [
 		'availableAutomatically'
 	],
@@ -53,17 +57,18 @@ GtSmaCCTransformationToolkitDebuggerElement >> buildUI [
 	self addChild: self tabGroupElement.
 	self updateStack.
 	self updateOriginalSource.
-	self updateNewSource.
-	self updateCode
+	self updateNewSource
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> codeObjectForSelection: anArray [
-	(anArray first isKindOf: SmaCCRewriteMethodDefinition)
-		ifTrue: [ ^ anArray first ].
-	^ (self isTransformation: anArray)
-		ifTrue: [ anArray first transformation ]
-		ifFalse: [ anArray first match ]
+GtSmaCCTransformationToolkitDebuggerElement >> codeObjectForContext: aContext andRewrite: aRewrite [
+	(aRewrite isKindOf: SmaCCRewriteMethodDefinition) ifTrue: [ ^ aRewrite ].
+	^ (self isTransformation: aContext andRewrite: aRewrite) ifTrue: [ aRewrite transformation ] ifFalse: [ aRewrite match ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> currentContext [
+	^ self interruptedContext
 ]
 
 { #category : #ui }
@@ -73,11 +78,9 @@ GtSmaCCTransformationToolkitDebuggerElement >> detailsElement [
 		padding: (BlInsets all: 5);
 		matchParent.
 	top := (BrHorizontalPane new)
-		height: 250;
-		hMatchParent;
+		matchParent;
 		aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom.
 	top addChild: self stackElement.
-	top addChild: self sourceElement as: #code.
 	top addChild: self inspectorElement.
 	bottom := BrHorizontalPane new matchParent.
 	bottom addChild: self originalSourceElement as: #originalSource.
@@ -88,14 +91,50 @@ GtSmaCCTransformationToolkitDebuggerElement >> detailsElement [
 	^ element
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> equivalentNodeTo: aNode in: otherTree [
+	| equivParent nodeIndex equivNode |
+	aNode isMethod ifTrue: [ ^ otherTree ].
+	(aNode parent isReturn and: [ aNode parent parent parent isMethod ])
+		ifTrue:
+			[ equivNode := otherTree isSequence ifTrue: [ otherTree statements last ] ifFalse: [ otherTree ].
+			^ equivNode isReturn ifTrue: [ equivNode value ] ifFalse: [ equivNode ] ].
+	aNode parent isMethod ifTrue: [ otherTree isSequence ifTrue: [ ^ otherTree ] ifFalse: [ ^ otherTree parent ] ].
+	equivParent := self equivalentNodeTo: aNode parent in: otherTree.
+	equivParent ifNil: [ ^ nil ].
+	nodeIndex := aNode parent children identityIndexOf: aNode.
+	^ equivParent children at: nodeIndex ifAbsent: [ nil ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> highlightAndScroll: editor interval: interval using: attribute [
+	| lineNumber |
+	editor text clearAttributes: [ :each | each == attribute ].
+	interval notEmpty
+		ifTrue:
+			[ editor text
+				attributes: {attribute}
+				from: interval first
+				to: interval last ].
+	lineNumber := editor text asString lineNumberCorrespondingToIndex: interval first.
+	editor scrollToPosition: lineNumber
+]
+
 { #category : #initialization }
 GtSmaCCTransformationToolkitDebuggerElement >> initialize [
 	super initialize.
 	self
 		layout: BlLinearLayout vertical;
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ]
+		constraintsDo:
+				[ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+	codeHighlight := (BlTextDecorationAttribute new)
+		underline;
+		color: BrGlamorousColors textHighlightColor;
+		thickness: 3;
+		beNotOverwritableByStyler.
+	nodeHighlight := codeHighlight
 ]
 
 { #category : #ui }
@@ -115,8 +154,17 @@ GtSmaCCTransformationToolkitDebuggerElement >> inspectorElement [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> isTransformation: selection [
-	^ selection first transformation method == selection last method
+GtSmaCCTransformationToolkitDebuggerElement >> intervalFromMethodNode: aNode inSource: aString [
+	| otherTree otherNode |
+	otherTree := RBParser parseExpression: aString onError: [ :msg :pos | ^ 1 to: 0 ].
+	otherNode := self equivalentNodeTo: aNode in: otherTree.
+	otherNode ifNil: [ ^ 1 to: 0 ].
+	^ otherNode start to: otherNode stop
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> isTransformation: aContext andRewrite: aRewrite [
+	^ aRewrite transformation method == aContext method
 ]
 
 { #category : #ui }
@@ -136,6 +184,18 @@ GtSmaCCTransformationToolkitDebuggerElement >> originalSourceElement [
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> outputSelectionIntervalFor: selection [
+	| source stop context match start |
+	selection isNil ifTrue: [ ^ 1 to: 0 ].
+	context := selection last receiver.
+	source := context source.
+	match := context match.
+	start := context startIndexFor: match.
+	stop := context stopIndexFor: match.
+	^ (source stringIndexFor: start) to: (source stringIndexFor: stop)
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> sourceElement [
 	^ (BrEditor new)
 		margin: (BlInsets all: 5);
@@ -144,36 +204,85 @@ GtSmaCCTransformationToolkitDebuggerElement >> sourceElement [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> sourceForSelection: anArray [
-	anArray isNil
-		ifTrue: [ ^ '' ].
-	^ (self codeObjectForSelection: anArray) source
+GtSmaCCTransformationToolkitDebuggerElement >> sourceForContext: aContext andRewrite: aRewrite [
+	aContext ifNil: [ ^ '' ].
+	^ (self codeObjectForContext: aContext andRewrite: aRewrite) source
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> sourceSelectionIntervalForContext: aContext andRewrite: aRewrite [
+	aContext ifNil: [ ^ 1 to: 0 ].
+	^ self
+		intervalFromMethodNode: (aContext method sourceNodeForPC: aContext pc)
+		inSource: (self sourceForContext: aContext andRewrite: aRewrite)
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 	| list |
 	list := (BrSimpleList new)
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		padding: (BlInsets all: 5);
 		matchParent;
-		when: BrSelectionChanged do: [ :event | self updateCode ];
+		when: BrSelectionChanged
+			do:
+				[ :event | 
+					self
+						updateOriginalSourceHighlight;
+						updateNewSourceHighlight ];
 		itemStencil:
-				[ (BrLabel new)
-						vFitContent;
+				[ (BrExpander new)
+						margin:
+								(BlInsets
+										top: 3
+										left: 3
+										bottom: 3
+										right: 8);
+						padding: (BlInsets all: 3);
+						aptitude:
+								((GtCoderExpanderAptitude new)
+										borderWidth: 0;
+										padding:
+												(BlInsets
+														top: 1
+														left: 10
+														bottom: 1
+														right: 10));
 						hMatchParent;
-						aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude;
-						padding: (BlInsets all: 3) ];
+						vFitContent ];
 		itemDataBinder:
-				[ :label :each | 
-					| isBlock |
+				[ :expander :each :index | 
+					| isBlock labelString |
 					isBlock := each last isBlockContext.
-					label
-						text: (isBlock ifTrue: [ '[' ] ifFalse: [ '' ]) , each first displayString , (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) ].
+					labelString := ((isBlock ifTrue: [ '[' ] ifFalse: [ '' ]) , each first displayString
+						, (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) gtDisplayString) asRopedText bold.
+					expander
+						header:
+								[ (BrLabel new)
+										aptitude: BrGlamorousLabelAptitude;
+										vFitContent;
+										hMatchParent;
+										text: labelString ];
+						content:
+								[ | editor |
+									editor := self textElementForContext: each last andRewrite: each first.
+									editor enqueueTask: (BlTaskAction new action: [ editor requestFocus ]).
+									(BrVerticalPane new)
+										hMatchParent;
+										vFitContent;
+										addChild:
+												((BrLabel new)
+														aptitude: BrGlamorousLabelAptitude;
+														vFitContent;
+														hMatchParent;
+														text: labelString);
+										addChild: editor ];
+						expanded: index = 1 ].
 	^ (BlElement new)
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight;
 		margin: (BlInsets all: 5);
-		width: 200;
-		constraintsDo: [ :c | c vertical matchParent ];
+		constraintsDo:
+				[ :c | 
+					c vertical matchParent.
+					c horizontal matchParent ];
 		addChild: list as: #stack;
 		yourself
 ]
@@ -222,6 +331,21 @@ GtSmaCCTransformationToolkitDebuggerElement >> tabGroupElement [
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> textElementForContext: aContext andRewrite: aRewrite [
+	| element |
+	element := BrEditor new.
+	element editor text: (self sourceForContext: aContext andRewrite: aRewrite) asRopedText.
+	element margin: (BlInsets all: 3).
+	element matchParent.
+	element border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
+	self
+		highlightAndScroll: element
+		interval: (self sourceSelectionIntervalForContext: aContext andRewrite: aRewrite)
+		using: codeHighlight.
+	^ element
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 	| buttons |
 	buttons := (self actionsForPragmas: #(gtSmaCCTransformationStack))
@@ -233,7 +357,6 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 				label: aDebuggingAction label;
 				action:
 						[ aDebuggingAction execute.
-							self halt.
 							aDebuggingAction needsUpdate ifTrue: [ self updateContents ] ].
 			aDebuggingAction icon ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
 			actionButton ].
@@ -241,18 +364,49 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> updateCode [
-	self childNamed: #code ifFound: [ :editor | editor editor text: (self sourceForSelection: self stackSelection) asRopedText ]
+GtSmaCCTransformationToolkitDebuggerElement >> updateContents [
+	self updateStack.
+	self updateNewSourceHighlight
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateNewSource [
-	self childNamed: #newSource ifFound: [ :editor | editor editor text: self session newSource asRopedText ]
+	self childNamed: #newSource ifFound: [ :editor | editor editor text: self session newSource asRopedText ].
+	self updateNewSourceHighlight
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> updateNewSourceHighlight [
+	self
+		childNamed: #newSource
+		ifFound:
+			[ :editor | 
+			| interval |
+			interval := self outputSelectionIntervalFor: self stackSelection.
+			self
+				highlightAndScroll: editor
+				interval: interval
+				using: nodeHighlight ]
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSource [
-	self childNamed: #originalSource ifFound: [ :editor | editor editor text: self session originalSource asRopedText ]
+	self childNamed: #originalSource ifFound: [ :editor | editor editor text: self session originalSource asRopedText ].
+	self updateOriginalSourceHighlight
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSourceHighlight [
+	self
+		childNamed: #originalSource
+		ifFound:
+			[ :editor | 
+			| interval |
+			interval := self stackSelection ifNil: [ 1 to: 0 ] ifNotNil: [ :sel | sel last receiver match sourceInterval ].
+			self
+				highlightAndScroll: editor
+				interval: interval
+				using: nodeHighlight ]
 ]
 
 { #category : #ui }
