@@ -3,7 +3,8 @@ Class {
 	#superclass : #GtDebuggerElement,
 	#instVars : [
 		'nodeHighlight',
-		'codeHighlight'
+		'codeHighlight',
+		'currentContext'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -68,7 +69,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> codeObjectForContext: aContext an
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> currentContext [
-	^ self interruptedContext
+	^ currentContext ifNil: [ self interruptedContext ]
 ]
 
 { #category : #ui }
@@ -184,14 +185,14 @@ GtSmaCCTransformationToolkitDebuggerElement >> originalSourceElement [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> outputSelectionIntervalFor: selection [
-	| source stop context match start |
-	selection isNil ifTrue: [ ^ 1 to: 0 ].
-	context := selection last receiver.
-	source := context source.
-	match := context match.
-	start := context startIndexFor: match.
-	stop := context stopIndexFor: match.
+GtSmaCCTransformationToolkitDebuggerElement >> outputSelectionIntervalFor: aContext [
+	| source stop matchContext match start |
+	(aContext isNil or: [ (aContext receiver isKindOf: SmaCCRewriteMatchContext) not ]) ifTrue: [ ^ 1 to: 0 ].
+	matchContext := aContext receiver.
+	source := matchContext source.
+	match := matchContext match.
+	start := matchContext startIndexFor: match.
+	stop := matchContext stopIndexFor: match.
 	^ (source stringIndexFor: start) to: (source stringIndexFor: stop)
 ]
 
@@ -211,10 +212,12 @@ GtSmaCCTransformationToolkitDebuggerElement >> sourceForContext: aContext andRew
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> sourceSelectionIntervalForContext: aContext andRewrite: aRewrite [
+	| node |
 	aContext ifNil: [ ^ 1 to: 0 ].
-	^ self
-		intervalFromMethodNode: (aContext method sourceNodeForPC: aContext pc)
-		inSource: (self sourceForContext: aContext andRewrite: aRewrite)
+	node := aContext method sourceNodeForPC: aContext pc.
+	^ (aRewrite isKindOf: SmaCCRewriteMethodDefinition)
+		ifTrue: [ node sourceInterval ]
+		ifFalse: [ self intervalFromMethodNode: node inSource: (self sourceForContext: aContext andRewrite: aRewrite) ]
 ]
 
 { #category : #ui }
@@ -223,12 +226,6 @@ GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 	list := (BrSimpleList new)
 		padding: (BlInsets all: 5);
 		matchParent;
-		when: BrSelectionChanged
-			do:
-				[ :event | 
-					self
-						updateOriginalSourceHighlight;
-						updateNewSourceHighlight ];
 		itemStencil:
 				[ (BrExpander new)
 						margin:
@@ -288,12 +285,6 @@ GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationToolkitDebuggerElement >> stackSelection [
-	self childNamed: #stack ifFound: [ :list | list selectedItemDo: [ :each | ^ each ] ].
-	^ nil
-]
-
-{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> tabGroupElement [
 	| tab tabGroup |
 	tab := BrTab new.
@@ -338,6 +329,12 @@ GtSmaCCTransformationToolkitDebuggerElement >> textElementForContext: aContext a
 	element margin: (BlInsets all: 3).
 	element matchParent.
 	element border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
+	element
+		when: BlFocusInEvent
+		do:
+			[ currentContext := aContext.
+			self updateNewSourceHighlight.
+			self updateOriginalSourceHighlight ].
 	self
 		highlightAndScroll: element
 		interval: (self sourceSelectionIntervalForContext: aContext andRewrite: aRewrite)
@@ -366,12 +363,15 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateContents [
 	self updateStack.
-	self updateNewSourceHighlight
+	self updateNewSource
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateNewSource [
-	self childNamed: #newSource ifFound: [ :editor | editor editor text: self session newSource asRopedText ].
+	self
+		childNamed: #newSource
+		ifFound:
+			[ :editor | editor editor text asString ~= self session newSource ifTrue: [ editor editor text: self session newSource asRopedText ] ].
 	self updateNewSourceHighlight
 ]
 
@@ -382,7 +382,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateNewSourceHighlight [
 		ifFound:
 			[ :editor | 
 			| interval |
-			interval := self outputSelectionIntervalFor: self stackSelection.
+			interval := self outputSelectionIntervalFor: self currentContext.
 			self
 				highlightAndScroll: editor
 				interval: interval
@@ -402,7 +402,9 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSourceHighlight [
 		ifFound:
 			[ :editor | 
 			| interval |
-			interval := self stackSelection ifNil: [ 1 to: 0 ] ifNotNil: [ :sel | sel last receiver match sourceInterval ].
+			interval := (self currentContext receiver isKindOf: SmaCCRewriteMatchContext)
+				ifTrue: [ self currentContext receiver match sourceInterval ]
+				ifFalse: [ 1 to: 0 ].
 			self
 				highlightAndScroll: editor
 				interval: interval
@@ -411,6 +413,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSourceHighlight [
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
+	currentContext := nil.
 	self
 		childNamed: #stack
 		ifFound:
