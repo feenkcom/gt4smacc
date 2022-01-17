@@ -676,7 +676,12 @@ GtSmaCCTransformationToolkit >> loadConfigurationButton [
 GtSmaCCTransformationToolkit >> localFilename: aString [
 	| name |
 	name := model createSubdirectories
-		ifTrue: [ aString asFileReference pathString allButFirst: model commonParentDirectory size ]
+		ifTrue:
+			[ | commonParentDir |
+			commonParentDir := model commonParentDirectory.
+			(commonParentDir notEmpty and: [ commonParentDir last ~= FileSystem disk delimiter ])
+				ifTrue: [ commonParentDir := commonParentDir , '/' ].
+			aString asFileReference pathString allButFirst: commonParentDir size ]
 		ifFalse: [ aString asFileReference basename ].
 	^ name
 ]
@@ -947,13 +952,9 @@ GtSmaCCTransformationToolkit >> removeFiles [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> resultsElement [
 	| element label resultsList |
-	element := (BlElement new)
-		layout: BlLinearLayout vertical;
+	element := (BrVerticalPane new)
 		padding: (BlInsets all: 5);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
+		matchParent.
 	label := (BrLabel new)
 		fitContent;
 		aptitude: BrGlamorousLabelAptitude new;
