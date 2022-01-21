@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'nodeHighlight',
 		'codeHighlight',
-		'currentContext'
+		'currentContext',
+		'topContext'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -272,7 +273,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 														vFitContent;
 														hMatchParent;
 														text: labelString);
-										addChild: editor ];
+										addChild: editor as: #editor ];
 						expanded: index = 1 ].
 	^ (BlElement new)
 		margin: (BlInsets all: 5);
@@ -414,20 +415,38 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSourceHighlight [
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 	currentContext := nil.
-	self
-		childNamed: #stack
-		ifFound:
-			[ :list | 
-			| stream |
-			stream := ((GtSmaCCTransformationStackStream onContext: debuggingSession context)
-				collect:
-					[ :each | 
-					{debuggingSession rewriteForContext: each.
-						each} ]) select: [ :each | each first notNil ].
-			list
-				itemsProvider:
-					((BrListStreamItemsProvider new)
-						stream: stream asyncSimilarCopy;
-						preloadAmount: 1).
-			list selectOne: 1 ]
+	self interruptedContext == topContext
+		ifTrue:
+			[ self
+				childNamed: #stack
+				ifFound:
+					[ :list | 
+					list
+						childNamed: #editor
+						ifFound:
+							[ :editor | 
+							self
+								highlightAndScroll: editor
+								interval:
+									(self sourceSelectionIntervalForContext: topContext andRewrite: (debuggingSession rewriteForContext: topContext))
+								using: codeHighlight ] ] ]
+		ifFalse:
+			[ topContext := nil.
+			self
+				childNamed: #stack
+				ifFound:
+					[ :list | 
+					| stream contextStream |
+					contextStream := GtSmaCCTransformationStackStream onContext: debuggingSession context.
+					(contextStream asyncSimilarCopy next then: [ :value | topContext := value value ]) await.
+					stream := (contextStream
+						collect:
+							[ :each | 
+							{debuggingSession rewriteForContext: each.
+								each} ]) select: [ :each | each first notNil ].
+					list
+						itemsProvider:
+							((BrListStreamItemsProvider new)
+								stream: stream asyncSimilarCopy;
+								preloadAmount: 1) ] ]
 ]
