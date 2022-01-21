@@ -109,6 +109,12 @@ GtSmaCCTransformationToolkitDebuggerElement >> equivalentNodeTo: aNode in: other
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> executeAction: aDebuggingAction [
+	aDebuggingAction execute.
+	aDebuggingAction needsUpdate ifTrue: [ self updateContents ]
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> highlightAndScroll: editor interval: interval using: attribute [
 	| lineNumber |
 	editor text clearAttributes: [ :each | each == attribute ].
@@ -136,7 +142,22 @@ GtSmaCCTransformationToolkitDebuggerElement >> initialize [
 		color: BrGlamorousColors textHighlightColor;
 		thickness: 3;
 		beNotOverwritableByStyler.
-	nodeHighlight := codeHighlight
+	nodeHighlight := codeHighlight.
+	self
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										key: BlKeyboardKey F10;
+										build);
+						action: [ :anEvent :aShortcut | self executeAction: (SmaCCStepRuleDebugAction gtActionFor: self) ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										key: BlKeyboardKey F11;
+										build);
+						action: [ :anEvent :aShortcut | self executeAction: (SmaCCSendRuleDebugAction gtActionFor: self) ])
 ]
 
 { #category : #ui }
@@ -353,9 +374,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 			actionButton := (BrButton new)
 				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: aDebuggingAction label;
-				action:
-						[ aDebuggingAction execute.
-							aDebuggingAction needsUpdate ifTrue: [ self updateContents ] ].
+				action: [ self executeAction: aDebuggingAction ].
 			aDebuggingAction icon ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
 			actionButton ].
 	^ buttons
