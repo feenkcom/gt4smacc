@@ -401,6 +401,16 @@ GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite [
 ]
 
 { #category : #'preview-actions' }
+GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite forNode: aClass at: anInterval [
+	| block |
+	aSmaCCRewrite ifNil: [ ^ self ].
+	block := [ :rewrite :node | 
+	rewrite == aSmaCCRewrite
+		and: [ node class == aClass and: [ node startPosition = anInterval first and: [ node stopPosition = anInterval last ] ] ] ].
+	self debugUsingSeachBlock: block andTransformationBlock: block
+]
+
+{ #category : #'preview-actions' }
 GtSmaCCTransformationToolkit >> debugUsingSeachBlock: searchBlock andTransformationBlock: transformationBlock [
 	self
 		openResultFor: self selectedFile
@@ -902,7 +912,11 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 										label: 'Debug';
 										icon: BrGlamorousVectorIcons debug asElement;
 										margin: (BlInsets all: 2);
-										action: [ self debugRewrite: each rewrite ]) ].
+										action:
+												[ self
+														debugRewrite: each rewrite
+														forNode: each nodeClass
+														at: each nodeInterval ]) ].
 	(list column)
 		title: 'Node';
 		stencil: [ :each | BrColumnCellLabelStencil matchParent: each nodeClass displayString ].
