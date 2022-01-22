@@ -139,8 +139,7 @@ GtSmaCCTransformationToolkit >> addRewrite: newRewrite [
 	selected isComposite
 		ifTrue: [ selected addTransformation: newRewrite ]
 		ifFalse: [ selected parent notNil ifTrue: [ selected parent addTransformation: newRewrite before: selected ] ].
-	self updateRewrites.
-	self selectAndScrollToRewrite: newRewrite
+	self updateAndSelectRewrite: newRewrite
 ]
 
 { #category : #'ui-transformations' }
@@ -364,22 +363,14 @@ GtSmaCCTransformationToolkit >> connectModel [
 	| announcer |
 	model addDependent: self.
 	announcer := model announcer weak.
-	#(
-		#(#createSubdirectories #updateCreateSubdirectories)
-		#(#files #updateFiles) 
-		#(#inputParserClass #updateInputParserClass) 
-		#(#outputDirectory #updateOutputDirectory) 
-		#(#rewrites #updateRewrites) 
-		#(#runOnServer #updateRunOnServer) 
-		#(#server #updateServer) 
-		#(#validationParserClass #updateValidationParserClass)
-	)
-		do:
-			[ :each | 
-			announcer
-				when: each first
-				send: each last
-				to: self ]
+	announcer
+		when: #files
+		send: #updateFiles
+		to: self.
+	announcer
+		when: #rewrites
+		send: #updateRewrites
+		to: self
 ]
 
 { #category : #'ui-configuration' }
@@ -485,8 +476,8 @@ GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 	previewResult := aResult.
 	(self previewElement childNamed: #previewFiles)
 		removeChildren;
-		addChild: self previewInputSourceElement;
-		addChild: self previewOutputSourceElement
+		addChild: self newPreviewInputSourceElement;
+		addChild: self newPreviewOutputSourceElement
 ]
 
 { #category : #'ui-transformations' }
@@ -745,6 +736,222 @@ GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
 		ifTrue: [ self connectModel ]
 ]
 
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteDown [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					| index |
+					index := parent rewrites identityIndexOf: rewrite.
+					index = parent rewrites size
+						ifFalse:
+							[ parent removeTransformation: rewrite.
+							index < parent rewrites size
+								ifTrue: [ parent addTransformation: rewrite before: (parent rewrites at: index + 1) ]
+								ifFalse: [ parent addTransformation: rewrite ].
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteInto [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					| index newParent |
+					index := parent rewrites identityIndexOf: rewrite.
+					(index > 1 and: [ (newParent := parent rewrites at: index - 1) isComposite ])
+						ifTrue:
+							[ parent removeTransformation: rewrite.
+							newParent addTransformation: rewrite.
+							self updateAndSelectRewrite: rewrite ].
+					(index < parent rewrites size and: [ (newParent := parent rewrites at: index + 1) isComposite ])
+						ifTrue:
+							[ parent removeTransformation: rewrite.
+							newParent rewrites isEmpty
+								ifTrue: [ newParent addTransformation: rewrite ]
+								ifFalse: [ newParent addTransformation: rewrite before: newParent rewrites first ].
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteOut [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					parent parent
+						ifNotNil:
+							[ :grandparent | 
+							parent removeTransformation: rewrite.
+							grandparent addTransformation: rewrite before: parent.
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteToBottom [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					parent rewrites last == rewrite
+						ifFalse:
+							[ parent removeTransformation: rewrite.
+							parent addTransformation: rewrite.
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteToTop [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					parent rewrites first == rewrite
+						ifFalse:
+							[ parent removeTransformation: rewrite.
+							parent addTransformation: rewrite before: parent rewrites first.
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> moveRewriteUp [
+	self selectedRewrite
+		ifNotNil:
+			[ :rewrite | 
+			rewrite parent
+				ifNotNil:
+					[ :parent | 
+					| index |
+					index := parent rewrites identityIndexOf: rewrite.
+					index > 1
+						ifTrue:
+							[ parent removeTransformation: rewrite.
+							parent addTransformation: rewrite before: (parent rewrites at: index - 1).
+							self updateAndSelectRewrite: rewrite ] ] ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> newPreviewFilesElement [
+	^ (BrHorizontalPane new)
+		matchParent;
+		addChild: self newPreviewInputSourceElement;
+		addChild: self newPreviewOutputSourceElement;
+		yourself
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
+	previewResult ifNil: [ ^ BlElement new ].
+	^ (BrTabGroup new)
+		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight + BrGlamorousTabGroupAptitude + BrShadowAptitude;
+		background: Color white;
+		padding: (BlInsets all: 5);
+		addTab:
+				((BrTab new)
+						aptitude: BrGlamorousTabAptitude new;
+						label: self previewInputFilename;
+						stencil:
+								[ | editorElement |
+									editorElement := self editorFor: previewResult inputSource parser: model inputParserClass.
+									self
+										whenCursorEventsIn: editorElement editor
+										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
+									(BlElement new)
+										constraintsDo:
+												[ :c | 
+													c horizontal matchParent.
+													c vertical matchParent ];
+										addChild: editorElement asScrollableElement as: #inputSource;
+										yourself ])
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
+	previewResult ifNil: [ ^ BlElement new ].
+	^ (BrTabGroup new)
+		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
+		background: Color white;
+		padding: (BlInsets all: 5);
+		addTab:
+				((BrTab new)
+						aptitude: BrGlamorousTabAptitude new;
+						label: self previewOutputFilename;
+						stencil:
+								[ | editorElement |
+									editorElement := self editorFor: previewResult outputSource parser: model validationParserClass.
+									self
+										whenCursorEventsIn: editorElement editor
+										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
+									(BlElement new)
+										constraintsDo:
+												[ :c | 
+													c horizontal matchParent.
+													c vertical matchParent ];
+										addChild: editorElement asScrollableElement as: #outputSource;
+										yourself ])
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> newPreviewRulesElement [
+	| list |
+	list := ((GtPhlowProtoView new columnedList)
+		column: 'Rewrite'
+			stencil:
+				[ :each | 
+					(BrHorizontalPane new)
+						fitContent;
+						addChild:
+								((BrButton new)
+										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+										label: each rewrite displayString;
+										action: [ self gotoRewrite: each rewrite ]);
+						addChild:
+								((BrButton new)
+										beSmallSize;
+										aptitude: BrGlamorousButtonWithIconAptitude;
+										label: 'Debug';
+										icon: BrGlamorousVectorIcons debug asElement;
+										margin: (BlInsets all: 2);
+										action:
+												[ self
+														debugRewrite: each rewrite
+														forNode: each nodeClass
+														at: each nodeInterval ]) ];
+		column: 'Node' text: [ :each | each nodeClass displayString ];
+		column: 'Location' text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
+		asElement.
+	list padding: (BlInsets all: 5).
+	list border: (BlBorder paint: Color lightGray width: 1).
+	list children last
+		when: BrSelectionChanged
+		do:
+			[ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | event target items at: each first ]) ].
+	^ (BlElement new)
+		height: 200;
+		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
+		margin:
+				(BlInsets
+						top: 0
+						left: 10
+						bottom: 10
+						right: 10);
+		constraintsDo: [ :c | c horizontal matchParent ];
+		addChild: list as: #previewRewrites;
+		yourself
+]
+
 { #category : #ui }
 GtSmaCCTransformationToolkit >> open [
 	| space |
@@ -842,18 +1049,9 @@ GtSmaCCTransformationToolkit >> previewElement [
 		ifNil:
 			[ previewElement := (BrVerticalPane new)
 				matchParent;
-				addChild: self previewFilesElement as: #previewFiles;
-				addChild: self previewRulesElement;
+				addChild: self newPreviewFilesElement as: #previewFiles;
+				addChild: self newPreviewRulesElement;
 				yourself ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewFilesElement [
-	^ (BrHorizontalPane new)
-		matchParent;
-		addChild: self previewInputSourceElement;
-		addChild: self previewOutputSourceElement;
-		yourself
 ]
 
 { #category : #'ui-preview' }
@@ -864,111 +1062,10 @@ GtSmaCCTransformationToolkit >> previewInputFilename [
 ]
 
 { #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewInputSourceElement [
-	previewResult ifNil: [ ^ BlElement new ].
-	^ (BrTabGroup new)
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight + BrGlamorousTabGroupAptitude + BrShadowAptitude;
-		background: Color white;
-		padding: (BlInsets all: 5);
-		addTab:
-				((BrTab new)
-						aptitude: BrGlamorousTabAptitude new;
-						label: self previewInputFilename;
-						stencil:
-								[ | editorElement |
-									editorElement := self editorFor: previewResult inputSource parser: model inputParserClass.
-									self
-										whenCursorEventsIn: editorElement editor
-										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
-									(BlElement new)
-										constraintsDo:
-												[ :c | 
-													c horizontal matchParent.
-													c vertical matchParent ];
-										addChild: editorElement asScrollableElement as: #inputSource;
-										yourself ])
-]
-
-{ #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewOutputFilename [
 	^ (previewResult notNil and: [ previewResult outputFilename notNil ])
 		ifTrue: [ previewResult outputFilename asFileReference basename ]
 		ifFalse: [ 'Output' ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewOutputSourceElement [
-	previewResult ifNil: [ ^ BlElement new ].
-	^ (BrTabGroup new)
-		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
-		background: Color white;
-		padding: (BlInsets all: 5);
-		addTab:
-				((BrTab new)
-						aptitude: BrGlamorousTabAptitude new;
-						label: self previewOutputFilename;
-						stencil:
-								[ | editorElement |
-									editorElement := self editorFor: previewResult outputSource parser: model validationParserClass.
-									self
-										whenCursorEventsIn: editorElement editor
-										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
-									(BlElement new)
-										constraintsDo:
-												[ :c | 
-													c horizontal matchParent.
-													c vertical matchParent ];
-										addChild: editorElement asScrollableElement as: #outputSource;
-										yourself ])
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewRulesElement [
-	| list |
-	list := ((GtPhlowProtoView new columnedList)
-		column: 'Rewrite'
-			stencil:
-				[ :each | 
-					(BrHorizontalPane new)
-						fitContent;
-						addChild:
-								((BrButton new)
-										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-										label: each rewrite displayString;
-										action: [ self gotoRewrite: each rewrite ]);
-						addChild:
-								((BrButton new)
-										beSmallSize;
-										aptitude: BrGlamorousButtonWithIconAptitude;
-										label: 'Debug';
-										icon: BrGlamorousVectorIcons debug asElement;
-										margin: (BlInsets all: 2);
-										action:
-												[ self
-														debugRewrite: each rewrite
-														forNode: each nodeClass
-														at: each nodeInterval ]) ];
-		column: 'Node' text: [ :each | each nodeClass displayString ];
-		column: 'Location' text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
-		asElement.
-	list padding: (BlInsets all: 5).
-	list border: (BlBorder paint: Color lightGray width: 1).
-	list children last
-		when: BrSelectionChanged
-		do:
-			[ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | event target items at: each first ]) ].
-	^ (BlElement new)
-		height: 200;
-		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
-		margin:
-				(BlInsets
-						top: 0
-						left: 10
-						bottom: 10
-						right: 10);
-		constraintsDo: [ :c | c horizontal matchParent ];
-		addChild: list as: #previewRewrites;
-		yourself
 ]
 
 { #category : #'configuration-actions' }
@@ -1275,6 +1372,57 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 						hMatchParent ];
 		nodeDataBinder: [ :label :rewrite | label text: rewrite displayString ];
 		when: BrSelectionChanged do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
+	transformationsTree
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										key: BlKeyboardKey arrowUp;
+										build);
+						action: [ self moveRewriteUp ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										key: BlKeyboardKey arrowDown;
+										build);
+						action: [ self moveRewriteDown ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										key: BlKeyboardKey arrowLeft;
+										build);
+						action: [ self moveRewriteOut ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										key: BlKeyboardKey arrowRight;
+										build);
+						action: [ self moveRewriteInto ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										shift;
+										key: BlKeyboardKey arrowUp;
+										build);
+						action: [ self moveRewriteToTop ]);
+		addShortcut:
+				((BlShortcutWithAction new)
+						combination:
+								((BlKeyCombination builder)
+										primary;
+										shift;
+										key: BlKeyboardKey arrowDown;
+										build);
+						action: [ self moveRewriteToBottom ]).
 	leftElement addChild: transformationsTree.
 	element addChild: leftElement.
 	transformationElement := BlElement new.
@@ -1296,8 +1444,10 @@ GtSmaCCTransformationToolkit >> update: aSymbol with: aValue [
 		ifTrue: [ self addResult: aValue ]
 ]
 
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateCreateSubdirectories [
+{ #category : #'transformation-actions' }
+GtSmaCCTransformationToolkit >> updateAndSelectRewrite: rewrite [
+	self updateRewrites.
+	self selectAndScrollToRewrite: rewrite
 ]
 
 { #category : #'ui-preview' }
@@ -1334,14 +1484,6 @@ GtSmaCCTransformationToolkit >> updateFiles [
 		ifTrue: [ filesList items: model files ]
 ]
 
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateInputParserClass [
-]
-
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateOutputDirectory [
-]
-
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 	(self previewElement childNamed: #previewRewrites)
@@ -1367,18 +1509,6 @@ GtSmaCCTransformationToolkit >> updateRewrites [
 		items: {model rewrites}
 		lazy: [ :each | each rewrites select: [ :rw | self satisfiesRewriteFilter: rw ] ].
 	transformationsTree expandAll
-]
-
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateRunOnServer [
-]
-
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateServer [
-]
-
-{ #category : #private }
-GtSmaCCTransformationToolkit >> updateValidationParserClass [
 ]
 
 { #category : #'ui-configuration' }
