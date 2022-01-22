@@ -194,6 +194,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> isTransformation: aContext andRew
 GtSmaCCTransformationToolkitDebuggerElement >> newSourceElement [
 	^ (BrEditor new)
 		margin: (BlInsets all: 5);
+		aptitude: BrGlamorousCodeEditorAptitude;
 		matchParent;
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1)
 ]
@@ -202,6 +203,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> newSourceElement [
 GtSmaCCTransformationToolkitDebuggerElement >> originalSourceElement [
 	^ (BrEditor new)
 		margin: (BlInsets all: 5);
+		aptitude: BrGlamorousCodeEditorAptitude;
 		matchParent;
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1)
 ]
@@ -347,6 +349,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> tabGroupElement [
 GtSmaCCTransformationToolkitDebuggerElement >> textElementForContext: aContext andRewrite: aRewrite [
 	| element |
 	element := BrEditor new.
+	element aptitude: BrGlamorousCodeEditorAptitude.
 	element editor text: (self sourceForContext: aContext andRewrite: aRewrite) asRopedText.
 	element margin: (BlInsets all: 3).
 	element matchParent.

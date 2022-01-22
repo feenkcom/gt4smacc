@@ -92,7 +92,7 @@ GtSmaCCRewriteElement >> matchCodeElement [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
-		aptitude: BrGlamorousRegularEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
 		padding:
 				(BlInsets
@@ -132,7 +132,7 @@ GtSmaCCRewriteElement >> matchPatternElement [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
-		aptitude: BrGlamorousRegularEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
 		padding:
 				(BlInsets
@@ -234,9 +234,9 @@ GtSmaCCRewriteElement >> rewrite: aRewrite [
 
 { #category : #building }
 GtSmaCCRewriteElement >> sourceStyler [
-	^ (BrRBTextStyler new)
-		classOrMetaClass: SmaCCRewriteMatchContext;
-		workspace: GtLocalVariablesBindings new;
+	^ (GtCompositeSmaCCASTStyler forParser: GtPharoParser)
+		startingState: GtPharoParser startingStateForMethodSequence;
+		stylers: {GtSmaCCPharoStyler new};
 		yourself
 ]
 
@@ -247,7 +247,7 @@ GtSmaCCRewriteElement >> transformationCodeElement [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
-		aptitude: BrGlamorousRegularEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
 		padding:
 				(BlInsets
@@ -271,7 +271,7 @@ GtSmaCCRewriteElement >> transformationPatternElement [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
-		aptitude: BrGlamorousRegularEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
 		padding:
 				(BlInsets
