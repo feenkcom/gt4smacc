@@ -10,6 +10,7 @@ Class {
 		'previewResult',
 		'transformationsTree',
 		'transformationElement',
+		'filesFilter',
 		'rewriteFilter',
 		'results'
 	],
@@ -210,7 +211,7 @@ GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
 ]
 
 { #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> applyFilter: aString [
+GtSmaCCTransformationToolkit >> applyRewriteFilter: aString [
 	rewriteFilter := aString.
 	self updateRewrites.
 	self displayRewrite: self selectedRewrite
@@ -238,6 +239,14 @@ GtSmaCCTransformationToolkit >> asElement [
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Preview';
 				stencil: [ self previewElement ]).
+	windowElement
+		addShortcut:
+			((BlShortcutWithAction new)
+				combination:
+						((BlKeyCombination builder)
+								key: BlKeyboardKey F5;
+								build);
+				action: [ :anEvent :aShortcut | self preview ]).
 	^ windowElement
 ]
 
@@ -437,7 +446,7 @@ GtSmaCCTransformationToolkit >> deleteRewrite [
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> deleteRewriteButton [
 	^ self class
-		dropDown: 'remove'
+		dropDown: 'Delete'
 		icon: BrGlamorousIcons remove
 		content:
 			[ :button | 
@@ -489,18 +498,14 @@ GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
-	| editor element |
-	editor := BrTextEditor new.
-	editor text: (aString ifNil: [ '' ]) asRopedText.
-	element := BrEditorElement new.
+	| element |
+	element := BrEditor new.
 	element
-		editor: editor;
+		aptitude: BrGlamorousCodeEditorAptitude;
 		padding: (BlInsets all: 5);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-	aClass notNil ifTrue: [ aClass gtStyler ifNotNil: [ :styler | editor styler: styler ] ].
+		matchParent.
+	element editor text: (aString ifNil: [ '' ]) asRopedText.
+	aClass notNil ifTrue: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
 	^ element
 ]
 
@@ -523,14 +528,14 @@ GtSmaCCTransformationToolkit >> fileToolbarItems [
 			icon: BrGlamorousVectorIcons add
 			content: [ :button | self addFileElement: button ].
 		self class
-			createToolbarButton: 'Remove File'
+			dropDown: 'Remove File'
 			icon: BrGlamorousVectorIcons remove
-			action: [ self removeFiles ]}
+			content: [ :button | self removeFileElement: button ]}
 ]
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> filesElement [
-	| element label filesSection |
+	| element label filesSection filesLabelLine |
 	element := (BlElement new)
 		aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
 		layout: BlLinearLayout vertical;
@@ -541,9 +546,14 @@ GtSmaCCTransformationToolkit >> filesElement [
 					c vertical matchParent ].
 	label := (BrLabel new)
 		fitContent;
+		margin: (BlInsets top: 2 right: 5);
 		aptitude: BrGlamorousLabelAptitude new;
 		text: 'Files'.
-	element addChild: label.
+	filesLabelLine := (BrHorizontalPane new)
+		fitContent;
+		addChild: label;
+		addChild: (self filterButton: [ :string | self filterFiles: string ]).
+	element addChild: filesLabelLine.
 	filesSection := BrHorizontalPane new matchParent.
 	filesList := (BrSimpleList new)
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
@@ -571,7 +581,9 @@ GtSmaCCTransformationToolkit >> filesToolbar [
 ]
 
 { #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> filterRewritesButton [
+GtSmaCCTransformationToolkit >> filterButton: aBlock [
+	| currentValue |
+	currentValue := ''.
 	^ self class
 		dropDown: 'Filter'
 		icon: BrGlamorousIcons filter
@@ -579,7 +591,7 @@ GtSmaCCTransformationToolkit >> filterRewritesButton [
 			[ :button | 
 			| editor |
 			editor := BrEditor new.
-			editor editor text: rewriteFilter asRopedText.
+			editor editor text: currentValue asRopedText.
 			editor selecter all select.
 			editor
 				addShortcut:
@@ -587,7 +599,8 @@ GtSmaCCTransformationToolkit >> filterRewritesButton [
 								combination: BlKeyCombination return;
 								action:
 										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self applyFilter: editor editor text asString ]);
+											currentValue := editor editor text asString.
+											aBlock value: currentValue ]);
 				requestFocus;
 				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 				margin:
@@ -610,12 +623,34 @@ GtSmaCCTransformationToolkit >> filterRewritesButton [
 				addChild: editor;
 				addChild:
 						(self class
-								createToolbarButton: 'Filter'
+								createToolbarButton: 'Apply Filter'
 								icon: BrGlamorousIcons filter
 								action:
 									[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-									self applyFilter: editor editor text asString ]);
+									currentValue := editor editor text asString.
+									aBlock value: currentValue ]);
 				yourself ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> filterFiles: aString [
+	| selectBlock |
+	filesList ifNil: [ ^ self ].
+	selectBlock := aString isEmpty
+		ifTrue: [ [ :each | true ] ]
+		ifFalse:
+			[ [ :each | 
+			(each
+				findString: aString
+				startingAt: 1
+				caseSensitive: false) > 0 ] ].
+	filesList items: (model files select: selectBlock).
+	(self selectedFile isNil and: [ filesList items notEmpty ]) ifTrue: [ filesList selectOne: 1 ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> filterRewritesButton [
+	^ self filterButton: [ :text | self applyRewriteFilter: text ]
 ]
 
 { #category : #'configuration-actions' }
@@ -890,13 +925,9 @@ GtSmaCCTransformationToolkit >> previewOutputSourceElement [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewRulesElement [
 	| list |
-	list := BrColumnedList new.
-	list padding: (BlInsets all: 5).
-	list border: (BlBorder paint: Color lightGray width: 1).
-	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
-	(list column)
-		title: 'Rewrite';
-		stencil:
+	list := ((GtPhlowProtoView new columnedList)
+		column: 'Rewrite'
+			stencil:
 				[ :each | 
 					(BrHorizontalPane new)
 						fitContent;
@@ -916,17 +947,16 @@ GtSmaCCTransformationToolkit >> previewRulesElement [
 												[ self
 														debugRewrite: each rewrite
 														forNode: each nodeClass
-														at: each nodeInterval ]) ].
-	(list column)
-		title: 'Node';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: each nodeClass displayString ].
-	(list column)
-		title: 'Location';
-		stencil:
-				[ :each | BrColumnCellLabelStencil matchParent: each nodeInterval first printString , '-' , each nodeInterval last printString ].
-	list
+														at: each nodeInterval ]) ];
+		column: 'Node' text: [ :each | each nodeClass displayString ];
+		column: 'Location' text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
+		asElement.
+	list padding: (BlInsets all: 5).
+	list border: (BlBorder paint: Color lightGray width: 1).
+	list children last
 		when: BrSelectionChanged
-		do: [ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | list items at: each first ]) ].
+		do:
+			[ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | event target items at: each first ]) ].
 	^ (BlElement new)
 		height: 200;
 		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
@@ -955,6 +985,37 @@ GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
 		preview: nil
 ]
 
+{ #category : #'ui-configuration' }
+GtSmaCCTransformationToolkit >> removeFileElement: button [
+	| selectedFiles |
+	selectedFiles := self selectedFiles.
+	selectedFiles isEmpty
+		ifTrue:
+			[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+			^ BlElement new size: 0 @ 0 ].
+	^ (BrVerticalPane new)
+		padding: (BlInsets all: 5);
+		fitContent;
+		addChild:
+				((BrLabel new)
+						fitContent;
+						aptitude: BrGlamorousLabelAptitude new;
+						text:
+								'Remove ' , selectedFiles first asFileReference basenameWithoutExtension
+										,
+											(selectedFiles size > 1
+												ifTrue:
+													[ ' and ' , (selectedFiles size - 1) printString , ' other' , (selectedFiles size > 2 ifTrue: [ 's' ] ifFalse: [ '' ]) ]
+												ifFalse: [ '' ]) , '?');
+		addChild:
+				(self class
+						createToolbarButton: 'Delete'
+						icon: BrGlamorousIcons remove
+						action:
+							[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+							self removeFiles ])
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> removeFiles [
 	| files |
@@ -972,30 +1033,24 @@ GtSmaCCTransformationToolkit >> resultsElement [
 	label := (BrLabel new)
 		fitContent;
 		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Results'.
+		text: 'Results:'.
 	element addChild: label.
-	resultsList := (BrColumnedList new)
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		margin: (BlInsets right: 5);
-		matchParent;
-		rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
-	(resultsList column)
-		title: 'File';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: (self localFilename: each filename) ].
-	(resultsList column)
-		title: 'Error';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each errorString ifNil: [ '' ]) ].
-	(resultsList column)
-		title: 'Transformation';
-		stencil:
-				[ :each | BrColumnCellLabelStencil matchParent: (each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ]) ].
-	(resultsList column)
-		title: 'Line';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startLine ifNil: [ '' ]) ].
-	(resultsList column)
-		title: 'Column';
-		stencil: [ :each | BrColumnCellLabelStencil matchParent: (each startColumn ifNil: [ '' ]) ].
+	resultsList := ((GtPhlowProtoView new columnedList)
+		column: 'File' text: [ :each | self localFilename: each filename ];
+		column: 'Error' text: [ :each | each errorString ifNil: [ '' ] ];
+		column: 'Transformation' text: [ :each | each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ] ];
+		column: 'Location'
+			text:
+				[ :each | each startLine ifNil: [ '' ] ifNotNil: [ :line | line asString , ':' , (each startColumn ifNil: [ '' ]) asString ] ]
+			width: 55) asElement.
 	resultsList
+		margin: (BlInsets right: 5);
+		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+		constraintsDo:
+				[ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+	resultsList children last
 		when: BrSelectionChanged
 		do:
 			[ :event | 
@@ -1007,7 +1062,7 @@ GtSmaCCTransformationToolkit >> resultsElement [
 						ifNotNil:
 							[ :each | 
 							| value |
-							value := (resultsList items at: each first) filename.
+							value := (event target items at: each first) filename.
 							(files viewModel itemsProvider preloadUntilFoundSuchThat: [ :fn | fn = value ])
 								then:
 									[ :index | 
@@ -1025,8 +1080,7 @@ GtSmaCCTransformationToolkit >> resultsElement [
 
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> rewriteToolbarItems [
-	^ {self filterRewritesButton.
-		self addRewriteButton.
+	^ {self addRewriteButton.
 		self deleteRewriteButton}
 ]
 
@@ -1198,11 +1252,16 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 				vFitContent;
 				hMatchParent;
 				addChild:
-						((BrLabel new)
+						((BrHorizontalPane new)
 								vFitContent;
 								hMatchParent;
-								aptitude: BrGlamorousLabelAptitude new;
-								text: 'Rewrites:');
+								addChild:
+										((BrLabel new)
+												fitContent;
+												margin: (BlInsets top: 2 right: 5);
+												aptitude: BrGlamorousLabelAptitude new;
+												text: 'Rewrites');
+								addChild: self filterRewritesButton);
 				addChild: toolbar).
 	transformationsTree := BrSimpleTree new.
 	transformationsTree
@@ -1288,7 +1347,7 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 	(self previewElement childNamed: #previewRewrites)
 		ifNotNil:
 			[ :element | 
-			element
+			(element children last)
 				deselectAll;
 				items: aCollection ]
 ]
@@ -1296,7 +1355,9 @@ GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> updateResults [
 	windowElement
-		enqueueTask: (BlTaskAction new action: [ windowElement childNamed: #resultsList ifFound: [ :list | list items: results ] ])
+		enqueueTask:
+			(BlTaskAction new
+				action: [ windowElement childNamed: #resultsList ifFound: [ :element | element children last items: results ] ])
 ]
 
 { #category : #'ui-transformations' }

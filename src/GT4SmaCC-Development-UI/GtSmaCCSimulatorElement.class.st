@@ -9,7 +9,7 @@ Class {
 		'AcceptAttributes',
 		'ErrorAttributes'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'class initialization' }
@@ -120,6 +120,7 @@ GtSmaCCSimulatorElement >> testElement [
 	element := BrEditorElement new.
 	element
 		constraintsDo: [ :c | 
+			c maxHeight: 350.
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element

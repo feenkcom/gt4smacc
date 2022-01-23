@@ -15,7 +15,7 @@ GtSmaCCMethodDefinitionElement >> build [
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		hMatchParent;
 		vFitContent;
-		aptitude: BrGlamorousRegularEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
 		padding:
 				(BlInsets
@@ -37,8 +37,8 @@ GtSmaCCMethodDefinitionElement >> sourceChanged [
 
 { #category : #private }
 GtSmaCCMethodDefinitionElement >> styler [
-	^ BrRBTextStyler new
-		classOrMetaClass: SmaCCRewriteMatchContext;
+	^ (GtCompositeSmaCCASTStyler forParser: GtPharoParser)
+		stylers: {GtSmaCCPharoStyler new};
 		yourself
 ]
 

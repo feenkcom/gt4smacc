@@ -59,36 +59,35 @@ SmaCCParseNode >> gtExploreFor: aView [
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
-	| highlighter highlightAttribute |
-	highlighter := GtTextNodeHighlighter
-		on: anEditor
-		source: self topParent completeSource asString.
-	highlightAttribute := BlTextDecorationAttribute new underline
+	| highlightAttribute |
+	highlightAttribute := (BlTextDecorationAttribute new underline)
 		beNotOverwritableByStyler;
 		color: BrGlamorousColors textHighlightColor;
 		thickness: 3.
 	aTree
 		when: BrSelectionChanged
-		do: [ :anEvent | 
+		do:
+			[ :anEvent | 
 			aTree
-				selectedNodeDo: [ :aNode | 
+				selectedNodeDo:
+					[ :aNode | 
 					| item |
 					item := aNode value last.
-					((item isKindOf: SmaCCParseNode)
-						or: [ item isKindOf: SmaCCToken ])
-						ifTrue: [ anEditor editor text
-								clearAttributes: [ :attr | attr == highlightAttribute ].
-							highlighter highlight: item with: highlightAttribute.
+					((item isKindOf: SmaCCParseNode) or: [ item isKindOf: SmaCCToken ])
+						ifTrue:
+							[ anEditor editor text clearAttributes: [ :attr | attr == highlightAttribute ].
+							anEditor editor text
+								attributes: {highlightAttribute}
+								from: item startPosition
+								to: item stopPosition.
 							self gtScrollToPosition: item startPosition inEditor: anEditor ] ] ].
 	anEditor editor
 		when: BrTextEditorCursorMovedEvent
-		do: [ :event | 
+		do:
+			[ :event | 
 			| position |
 			anEditor cursors do: [ :each | position := each position ].
-			position notNil
-				ifTrue: [ self
-						gtSelectItemIn: aTree
-						at: (highlighter stringPositionFor: position) ] ]
+			position notNil ifTrue: [ self gtSelectItemIn: aTree at: position ] ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
