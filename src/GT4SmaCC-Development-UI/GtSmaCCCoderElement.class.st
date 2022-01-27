@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'coder'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'instance creation' }
@@ -148,10 +148,8 @@ GtSmaCCCoderElement >> sourceEditor [
 	| element |
 	element := BrEditor new.
 	element padding: (BlInsets all: 2).
-	element
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
+	element hMatchParent.
+	element vFitContent.
 	element editor: coder sourceEditor.
 	element styler: element editor styler.
 	element editor styleText.

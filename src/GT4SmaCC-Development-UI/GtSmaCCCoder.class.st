@@ -12,7 +12,7 @@ Class {
 		'sourceEditor',
 		'attributes'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #private }
@@ -497,6 +497,12 @@ GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
 	| coderIntervalMap |
 	coderIntervalMap := self coderRenamePositionsForToken: aSmaCCToken.
 	self installRenameActionOn: anElement forCoders: coderIntervalMap
+]
+
+{ #category : #editor }
+GtSmaCCCoder >> resetEditors [
+	collapsedEditor := nil.
+	sourceEditor := nil
 ]
 
 { #category : #private }
