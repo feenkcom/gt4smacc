@@ -1,17 +1,12 @@
 Extension { #name : #SmaCCParser }
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> debug: aString from: anElement [
+SmaCCParser class >> debug: aString startingAt: anInteger from: anElement [
 	| process context debuggingSession |
-	context := [ self parse: aString ] asContext.
-	process := Process
-		forContext: context
-		priority: Processor userInterruptPriority.
-	debuggingSession := process
-		newDebugSessionNamed: 'Debug parse'
-		startedAt: process suspendedContext.
-	[ SmaCCParserDebugSession handlesContext: debuggingSession context ]
-		whileFalse: [ debuggingSession stepInto ].
+	context := [ self parse: aString startingAt: anInteger ] asContext.
+	process := Process forContext: context priority: Processor userInterruptPriority.
+	debuggingSession := process newDebugSessionNamed: 'Debug parse' startedAt: process suspendedContext.
+	[ SmaCCParserDebugSession handlesContext: debuggingSession context ] whileFalse: [ debuggingSession stepInto ].
 	process debug
 ]
 
@@ -68,47 +63,93 @@ SmaCCParser class >> gtSourceFor: aView [
 
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtTestElement [
-	| element editor actionBar editorElement text |
-	element := BlElement new.
-	element layout: BlLinearLayout vertical.
+	| element actionBar editorElement startingStateButton currentState |
+	currentState := #defaultStartingState.
+	element := BrVerticalPane new.
 	element margin: (BlInsets all: 5).
-	element
-		constraintsDo: [ :c | 
-			c vertical matchParent.
-			c horizontal matchParent ].
+	element matchParent.
 	editorElement := BrEditor new.
 	editorElement padding: (BlInsets all: 2).
-	editorElement
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	editor := BrTextEditor new.
-	text := '' asRopedText.
-	text attributes: GtSmaCCCoder defaultTextAttributes.
-	editor text: text.
-	self gtStyler ifNotNil: [ :styler | editor styler: styler ].
-	editorElement editor: editor.
-	actionBar := BrToolbar new
+	editorElement matchParent.
+	editorElement aptitude: BrGlamorousCodeEditorAptitude.
+	self gtStyler ifNotNil: [ :styler | editorElement editor styler: styler ].
+	actionBar := (BrToolbar new)
 		aptitude: BrGlamorousToolbarAptitude new;
 		addItem:
-			(BrButton new
-				beSmallSize;
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				label: 'Inspect';
-				icon: BrGlamorousVectorIcons inspect;
-				action: [ :button | 
-					text
-						clearAttributes: [ :each | each isKindOf: GtSourceCoderErrorAttribute ].
-					[ button phlow spawnObject: (self parse: editor text asString) ]
-						on: SmaCCParserError
-						do: [ :ex | ex gtDisplayErrorIn: editor ] ]);
+				((BrButton new)
+						beSmallSize;
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						label: 'Inspect';
+						icon: BrGlamorousVectorIcons inspect;
+						action:
+								[ :button | 
+									editorElement editor text clearAttributes: [ :each | each isKindOf: GtSourceCoderErrorAttribute ].
+									[ button phlow
+										spawnObject: (self parse: editorElement editor text asString startingAt: (self perform: currentState)) ]
+										on: SmaCCParserError
+										do: [ :ex | ex gtDisplayErrorIn: editorElement editor ] ]);
 		addItem:
-			(BrButton new
-				beSmallSize;
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				label: 'Debug';
-				icon: BrGlamorousVectorIcons debug;
-				action: [ :button | self debug: editor text asString from: button ]).
+				((BrButton new)
+						beSmallSize;
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						label: 'Debug';
+						icon: BrGlamorousVectorIcons debug;
+						action:
+								[ :button | 
+									self
+										debug: editorElement editor text asString
+										startingAt: (self perform: currentState)
+										from: button ]).
+	self startingStateNames size > 1
+		ifTrue:
+			[ currentState := ('startingStateFor'
+				,
+					(self startingStateNames
+						detect: [ :each | (self perform: ('startingStateFor' , each) asSymbol) = 1 ]
+						ifNone: [ self startingStateNames first ])) asSymbol.
+			startingStateButton := BrButton new.
+			startingStateButton aptitude: BrGlamorousButtonWithLabelAptitude.
+			startingStateButton label: (currentState allButFirst: 16).
+			startingStateButton beSmallSize.
+			startingStateButton margin: (BlInsets all: 2).
+			startingStateButton
+				addAptitude:
+					(BrGlamorousWithDropdownAptitude
+						handle:
+							[ (BrButton new)
+								beSmallSize;
+								label: (currentState allButFirst: 16);
+								aptitude:
+										BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonWithLabelTooltipAptitude - BrGlamorousButtonExteriorAptitude ]
+						content:
+							[ | list |
+							list := BrSimpleList new.
+							list fitContent.
+							list
+								stencil:
+									[ :each | 
+									(BrLabel new)
+										aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
+										padding:
+												(BlInsets
+														top: 3
+														left: 3
+														bottom: 3
+														right: 8);
+										text: each;
+										hMatchParent;
+										vFitContent;
+										when: BlClickEvent
+											do:
+												[ :anEvent | 
+													anEvent consumed: true.
+													currentState := ('startingStateFor' , each) asSymbol.
+													startingStateButton label: each.
+													startingStateButton dispatchEvent: (BrDropdownHideWish new anchor: startingStateButton) ];
+										yourself ].
+							list items: self startingStateNames.
+							list ]).
+			actionBar addChild: startingStateButton ].
 	element addChild: editorElement as: #parserTestInput.
 	element addChild: actionBar as: #parserTestActions.
 	^ element
