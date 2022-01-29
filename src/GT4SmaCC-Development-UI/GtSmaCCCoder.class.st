@@ -201,6 +201,11 @@ GtSmaCCCoder >> completionStrategy [
 	^ nil
 ]
 
+{ #category : #copying }
+GtSmaCCCoder >> copy [
+	^ self class on: grammarItem in: owner
+]
+
 { #category : #editor }
 GtSmaCCCoder >> defaultTextAttributes [
 	^ self class defaultTextAttributes
