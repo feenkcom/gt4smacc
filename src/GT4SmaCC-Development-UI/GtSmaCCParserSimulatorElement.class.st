@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'parseTreeElement'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'class initialization' }
@@ -150,15 +150,17 @@ GtSmaCCParserSimulatorElement >> phlowSelection: aNode [
 	node := aNode.
 	[ value := node value.
 	name := nil.
-	(value isKindOf: SmaCCReducedItem)
-		ifTrue: [ name := value rhs productionSymbol name ].
-	(value isKindOf: SmaCCToken)
-		ifTrue: [ name := simulator symbolNameFor: value ids first ].
+	(value isKindOf: SmaCCReducedItem) ifTrue: [ name := value rhs productionSymbol name ].
+	(value isKindOf: SmaCCToken) ifTrue: [ name := simulator symbolNameFor: value ids first ].
 	name notNil
-		ifTrue: [ (grammarCoder coderNamed: name)
-				ifNotNil: [ :coder | 
-					coder expanded: true.
-					^ self parseTreeElement phlow selectObject: coder asElement ] ].
+		ifTrue:
+			[ (grammarCoder coderNamed: name)
+				ifNotNil:
+					[ :coder | 
+					| newCoder |
+					newCoder := coder copy.
+					newCoder expanded: true.
+					^ self parseTreeElement phlow selectObject: newCoder asElement ] ].
 	node := node parent.
 	node notNil ] whileTrue
 ]

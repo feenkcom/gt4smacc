@@ -12,7 +12,7 @@ Class {
 		'sourceEditor',
 		'attributes'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #private }
@@ -199,6 +199,11 @@ GtSmaCCCoder >> completionStrategy [
 	grammarItem isTokenRule
 		ifTrue: [ ^ self tokenCompletionStrategy ].
 	^ nil
+]
+
+{ #category : #copying }
+GtSmaCCCoder >> copy [
+	^ self class on: grammarItem in: owner
 ]
 
 { #category : #editor }
@@ -497,6 +502,12 @@ GtSmaCCCoder >> renameTokenNamed: aSmaCCToken in: anElement [
 	| coderIntervalMap |
 	coderIntervalMap := self coderRenamePositionsForToken: aSmaCCToken.
 	self installRenameActionOn: anElement forCoders: coderIntervalMap
+]
+
+{ #category : #editor }
+GtSmaCCCoder >> resetEditors [
+	collapsedEditor := nil.
+	sourceEditor := nil
 ]
 
 { #category : #private }

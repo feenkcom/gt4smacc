@@ -6,7 +6,7 @@ Class {
 		'elementsByCoder',
 		'lookBlock'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #ui }
@@ -59,9 +59,11 @@ GtSmaCCGroupCoderDataSource >> onCreateHolder: anInfiniteElement type: anItemTyp
 { #category : #updating }
 GtSmaCCGroupCoderDataSource >> updateCoders [
 	| cachedCodersToRemove |
-	cachedCodersToRemove := elementsByCoder keys
-		select: [ :aCoder | (group coders includes: aCoder) not ].
+	cachedCodersToRemove := elementsByCoder keys reject: [ :aCoder | group coders includes: aCoder ].
 	cachedCodersToRemove
-		do: [ :aCoder | elementsByCoder removeKey: aCoder ifAbsent: [  ] ].
+		do:
+			[ :aCoder | 
+			elementsByCoder removeKey: aCoder ifAbsent: [  ].
+			aCoder resetEditors ].
 	self notifyChanged
 ]
