@@ -1,1 +1,1 @@
-Package { #name : 'GT4SmaCC-Debugger' }
+Package { #name : #'GT4SmaCC-Debugger' }
