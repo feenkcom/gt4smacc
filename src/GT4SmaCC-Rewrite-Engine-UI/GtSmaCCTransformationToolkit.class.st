@@ -149,7 +149,9 @@ GtSmaCCTransformationToolkit >> addRewriteButton [
 		icon: BrGlamorousIcons add
 		content:
 			[ :button | 
-			(BrVerticalPane new)
+			| element |
+			element := BrVerticalPane new.
+			element
 				padding: (BlInsets all: 5);
 				fitContent;
 				addChild:
@@ -181,7 +183,23 @@ GtSmaCCTransformationToolkit >> addRewriteButton [
 								beSmallSize;
 								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
 								label: 'File';
-								action: [  ]);
+								action:
+										[ element removeChildren.
+											element
+												addChild:
+													((BrFileSelectOrCreate new)
+														size: 500 @ 350;
+														folder: self currentConfigurationDirectory;
+														fileFilterBlock: [ :file | file extension = 'rw' ];
+														okAction:
+																[ :file :btn | 
+																	| fn |
+																	button dispatchEvent: (BrDropdownHideWish new anchor: button).
+																	fn := file asFileReference.
+																	fn extension = 'rw' ifFalse: [ fn := fn withExtension: 'rw' ].
+																	self addRewrite: (model openRewriteFile: fn) ];
+														buttonLabel: 'Add File';
+														padding: (BlInsets all: 20)) ]);
 				yourself ]
 ]
 
@@ -679,6 +697,25 @@ GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
 	^ stream lineNumber
 ]
 
+{ #category : #private }
+GtSmaCCTransformationToolkit >> loadButton: aString forExtension: extensionString do: aBlock [
+	^ self class
+		dropDown: aString
+		icon: BrGlamorousIcons loadfromdisk
+		content:
+			[ :button | 
+			(BrFileSelector new)
+				size: 500 @ 350;
+				folder: self currentConfigurationDirectory;
+				fileFilterBlock: [ :file | file extension = extensionString ];
+				okAction:
+						[ :file :btn | 
+							button dispatchEvent: (BrDropdownHideWish new anchor: button).
+							aBlock value: file asFileReference ];
+				buttonLabel: 'Load';
+				padding: (BlInsets all: 20) ]
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> loadConfiguration: aFileReference [
 	self model: SmaCCTransformationToolkitModel new.
@@ -690,22 +727,24 @@ GtSmaCCTransformationToolkit >> loadConfiguration: aFileReference [
 
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> loadConfigurationButton [
-	^ self class
-		dropDown: 'Load Configuration'
-		icon: BrGlamorousIcons loadfromdisk
-		content:
-			[ :button | 
-			(BrFileSelector new)
-				size: 500 @ 350;
-				folder: self currentConfigurationDirectory;
-				fileFilterBlock: [ :file | file extension = 'rwc' ];
-				okAction:
-						[ :file :btn | 
-							button dispatchEvent: (BrDropdownHideWish new anchor: button).
-							self loadConfiguration: file asFileReference.
-							filename := file asFileReference ];
-				buttonLabel: 'Load';
-				padding: (BlInsets all: 20) ]
+	^ self
+		loadButton: 'Load Configuration'
+		forExtension: 'rwc'
+		do:
+			[ :file | 
+			self loadConfiguration: file.
+			filename := file ]
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> loadRewritesButton [
+	^ self
+		loadButton: 'Load Rewrites'
+		forExtension: 'rw'
+		do:
+			[ :file | 
+			model loadRewriteFile: file.
+			self updateRewrites ]
 ]
 
 { #category : #'ui-configuration' }
@@ -1178,7 +1217,9 @@ GtSmaCCTransformationToolkit >> resultsElement [
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> rewriteToolbarItems [
 	^ {self addRewriteButton.
-		self deleteRewriteButton}
+		self deleteRewriteButton.
+		self loadRewritesButton.
+		self saveRewritesButton}
 ]
 
 { #category : #'configuration-actions' }
@@ -1242,39 +1283,82 @@ GtSmaCCTransformationToolkit >> satisfiesRewriteFilter: aSmaCCRewrite [
 		or: [ aSmaCCRewrite rewrites anySatisfy: [ :rw | self satisfiesRewriteFilter: rw ] ]
 ]
 
-{ #category : #'ui-configuration' }
-GtSmaCCTransformationToolkit >> saveConfigurationButton [
+{ #category : #private }
+GtSmaCCTransformationToolkit >> saveButton: aString forExtension: extensionString current: currentValueBlock do: aBlock [
 	^ self class
-		dropDown: 'Save Configuration'
+		dropDown: aString
 		icon: BrGlamorousIcons savetodisk
-		content: [ :button | self saveConfigurationDropDownElementFrom: button ]
+		content:
+			[ :button | 
+			| element fileSelectElement |
+			fileSelectElement := (BrFileSelectOrCreate new)
+				size: 500 @ 350;
+				folder: self currentConfigurationDirectory;
+				fileFilterBlock: [ :file | file extension = extensionString ];
+				okAction:
+						[ :file :btn | 
+							| fn |
+							button dispatchEvent: (BrDropdownHideWish new anchor: button).
+							fn := file asFileReference.
+							fn extension = extensionString ifFalse: [ fn := fn withExtension: extensionString ].
+							aBlock value: fn ];
+				buttonLabel: 'Save';
+				padding: (BlInsets all: 20).
+			element := BrVerticalPane new.
+			element fitContent.
+			currentValueBlock value
+				ifNil:
+					[ element.
+					element addChild: fileSelectElement ]
+				ifNotNil:
+					[ :file | 
+					element
+						addChild:
+								((BrButton new)
+										beSmallSize;
+										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+										label: 'Save ' , file basename;
+										action:
+												[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+													aBlock value: file ]);
+						addChild:
+								((BrButton new)
+										beSmallSize;
+										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+										label: 'Save as';
+										action:
+												[ element removeChildren.
+													element addChild: fileSelectElement ]);
+						yourself ].
+			element ]
 ]
 
 { #category : #'ui-configuration' }
-GtSmaCCTransformationToolkit >> saveConfigurationDropDownElementFrom: button [
-	| element |
-	element := BlElement new.
-	element size: 500 @ 350.
-	element
-		addChild:
-			((BrFileSelectOrCreate new)
-				folder: self currentConfigurationDirectory;
-				fileFilterBlock: [ :file | file extension = 'rwc' ];
-				okAction:
-						[ :file :btn | 
-							button dispatchEvent: (BrDropdownHideWish new anchor: button).
-							self saveConfigurationTo: file asFileReference ];
-				buttonLabel: 'Save';
-				padding: (BlInsets all: 20)).
-	^ element
+GtSmaCCTransformationToolkit >> saveConfigurationButton [
+	^ self
+		saveButton: 'Save Configuration'
+		forExtension: 'rwc'
+		current: [ filename ]
+		do: [ :file | self saveConfigurationTo: file ]
 ]
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> saveConfigurationTo: aFileReference [
-	| file |
-	file := aFileReference extension = 'rwc' ifTrue: [ aFileReference ] ifFalse: [ aFileReference withExtension: 'rwc' ].
-	self model saveTo: file.
-	filename := file
+	self model saveTo: aFileReference.
+	filename := aFileReference
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> saveRewritesButton [
+	^ self
+		saveButton: 'Save Rewrites'
+		forExtension: 'rw'
+		current: [ model rewrites filename ]
+		do:
+			[ :file | 
+			model rewrites filename: file.
+			model saveRewrites.
+			self updateRewrites ]
 ]
 
 { #category : #private }
@@ -1508,7 +1592,8 @@ GtSmaCCTransformationToolkit >> updateRewrites [
 	transformationsTree
 		items: {model rewrites}
 		lazy: [ :each | each rewrites select: [ :rw | self satisfiesRewriteFilter: rw ] ].
-	transformationsTree expandAll
+	transformationsTree expandAll.
+	self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ]
 ]
 
 { #category : #'ui-configuration' }
