@@ -57,15 +57,39 @@ GtSmaCCTransformationToolkitDebuggerElement >> actOnDebugSessionChanged [
 GtSmaCCTransformationToolkitDebuggerElement >> buildUI [
 	self removeChildren.
 	self addChild: self tabGroupElement.
-	self updateStack.
 	self updateOriginalSource.
-	self updateNewSource
+	self updateContents
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> codeObjectForContext: aContext andRewrite: aRewrite [
 	(aRewrite isKindOf: SmaCCRewriteMethodDefinition) ifTrue: [ ^ aRewrite ].
 	^ (self isTransformation: aContext andRewrite: aRewrite) ifTrue: [ aRewrite transformation ] ifFalse: [ aRewrite match ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> contextVariables [
+	| stackPosition vars receiver |
+	receiver := self currentContext receiver.
+	vars := receiver class allInstVarNames
+		collect: [ :each | each -> ([ receiver instVarNamed: each ] on: Error do: [ :ex | ex return ]) ].
+	vars := vars asOrderedCollection.
+	self currentContext tempNames
+		do: [ :each | vars add: each -> ([ self currentContext tempNamed: each ] on: Error do: [ :ex | ex return ]) ].
+	vars sort: [ :a :b | a key < b key ].
+	vars addFirst: 'self' -> receiver.
+	stackPosition := 0.
+	self currentContext stackPtr
+		to: self currentContext numTemps + 1
+		by: -1
+		do:
+			[ :i | 
+			vars
+				add:
+					('stack top' , (stackPosition > 0 ifTrue: [ ' - ' , stackPosition printString ] ifFalse: [ '' ]))
+						-> (self currentContext at: i).
+			stackPosition := stackPosition + 1 ].
+	^ vars
 ]
 
 { #category : #ui }
@@ -162,18 +186,67 @@ GtSmaCCTransformationToolkitDebuggerElement >> initialize [
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> inspectorElement [
+	^ (BrTabGroup new)
+		aptitude: BrGlamorousTabGroupAptitude new + BrGlamorousWithHorizontalResizerAptitude new beLeft;
+		margin: (BlInsets all: 5);
+		width: 250;
+		addTab:
+				((BrTab new)
+						aptitude: BrGlamorousTabAptitude new;
+						label: 'Variables';
+						stencil: [ self variableInspectorElement ]);
+		addTab:
+				((BrTab new)
+						aptitude: BrGlamorousTabAptitude new;
+						label: 'Properties';
+						stencil: [ self propertyInspectorElement ])
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> inspectorListElement [
 	| list |
-	list := (BrColumnedList new)
-		margin: (BlInsets all: 5);
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		matchParent.
-	^ (BlElement new)
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beLeft;
-		margin: (BlInsets all: 5);
-		width: 200;
-		constraintsDo: [ :c | c vertical matchParent ];
-		addChild: list as: #inspector;
-		yourself
+	list := BrColumnedList new.
+	list margin: (BlInsets all: 5).
+	list border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
+	list addEventHandler: (GtPhlowListToSelectHandler new transformation: [ :variableNode | variableNode value ]).
+	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
+	(list column)
+		title: 'Name';
+		cellStencil:
+				[ (BrLabel new)
+						aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
+						hMatchParent;
+						vFitContent;
+						margin:
+								(BlInsets
+										top: 3
+										left: 10
+										bottom: 3
+										right: 0) ];
+		dataBinder: [ :aCellElement :aVariableNode | aCellElement text: aVariableNode key asRopedText ].
+	(list column)
+		title: 'Value';
+		cellStencil:
+				[ (BrLabel new)
+						aptitude: BrGlamorousLabelAptitude new;
+						hMatchParent;
+						vFitContent;
+						margin:
+								(BlInsets
+										top: 3
+										left: 10
+										bottom: 3
+										right: 0) ];
+		dataBinder:
+				[ :aCellElement :aVariableNode | 
+					| aRawValue |
+					aRawValue := aVariableNode value.
+					aCellElement
+						text:
+							([ aRawValue gtDisplayString asRopedText ]
+								on: Error , Halt
+								do: [ :error | error messageText asRopedText foreground: Color red ]) ].
+	^ list
 ]
 
 { #category : #ui }
@@ -218,6 +291,27 @@ GtSmaCCTransformationToolkitDebuggerElement >> outputSelectionIntervalFor: aCont
 	start := matchContext startIndexFor: match.
 	stop := matchContext stopIndexFor: match.
 	^ (source stringIndexFor: start) to: (source stringIndexFor: stop)
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> propertyInspectorElement [
+	| list |
+	list := self inspectorListElement.
+	list items: self propertyVariables.
+	^ (BlElement new)
+		constraintsDo:
+				[ :c | 
+					c vertical matchParent.
+					c horizontal matchParent ];
+		addChild: list as: #propertyInspector;
+		yourself
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> propertyVariables [
+	| receiver |
+	receiver := self currentContext receiver.
+	^ receiver class classPool associations asSortedCollection: [ :a :b | a key < b key ]
 ]
 
 { #category : #ui }
@@ -386,7 +480,14 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateContents [
 	self updateStack.
-	self updateNewSource
+	self updateNewSource.
+	self updateInspectors
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> updateInspectors [
+	self updateVariableInspector.
+	self updatePropertyInspector
 ]
 
 { #category : #ui }
@@ -435,6 +536,11 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSourceHighlight [
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> updatePropertyInspector [
+	self childNamed: #propertyInspector ifFound: [ :list | list items: self propertyVariables ]
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 	currentContext := nil.
 	self interruptedContext == topContext
@@ -471,4 +577,29 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 							((BrListStreamItemsProvider new)
 								stream: stream asyncSimilarCopy;
 								preloadAmount: 1) ] ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> updateVariableInspector [
+	self
+		childNamed: #variableInspector
+		ifFound:
+			[ :list | 
+			| vars |
+			vars := self contextVariables.
+			list items: vars ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> variableInspectorElement [
+	| list |
+	list := self inspectorListElement.
+	list items: self contextVariables.
+	^ (BlElement new)
+		constraintsDo:
+				[ :c | 
+					c vertical matchParent.
+					c horizontal matchParent ];
+		addChild: list as: #variableInspector;
+		yourself
 ]
