@@ -918,8 +918,10 @@ GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
+	| tabGroup |
 	previewResult ifNil: [ ^ BlElement new ].
-	^ (BrTabGroup new)
+	tabGroup := BrTabGroup new.
+	tabGroup
 		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
@@ -939,7 +941,26 @@ GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
 													c horizontal matchParent.
 													c vertical matchParent ];
 										addChild: editorElement asScrollableElement as: #outputSource;
-										yourself ])
+										yourself ]).
+	previewResult additionalFiles
+		keysAndValuesDo:
+			[ :key :value | 
+			tabGroup
+				addTab:
+					((BrTab new)
+						aptitude: BrGlamorousTabAptitude new;
+						label: key asFileReference basename;
+						stencil:
+								[ | editorElement |
+									editorElement := self editorFor: value asString parser: model validationParserClass.
+									(BlElement new)
+										constraintsDo:
+												[ :c | 
+													c horizontal matchParent.
+													c vertical matchParent ];
+										addChild: editorElement asScrollableElement;
+										yourself ]) ].
+	^ tabGroup
 ]
 
 { #category : #'ui-preview' }
