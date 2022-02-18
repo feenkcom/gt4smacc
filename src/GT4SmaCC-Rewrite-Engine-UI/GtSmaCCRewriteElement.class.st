@@ -66,6 +66,13 @@ GtSmaCCRewriteElement >> build [
 	transformationTabGroup when: BrTabSelectedEvent do: [ :event | self transformationTabSwitched ]
 ]
 
+{ #category : #private }
+GtSmaCCRewriteElement >> format: aString [
+	| ast |
+	ast := RBParser parseExpression: aString onError: [ :e :p | ^ aString ].
+	^ ast formattedCode
+]
+
 { #category : #initialization }
 GtSmaCCRewriteElement >> initialize [
 	super initialize.
@@ -102,6 +109,15 @@ GtSmaCCRewriteElement >> matchCodeElement [
 						right: 10);
 		matchParent.
 	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match code: editor editor text asString ].
+	editor
+		addShortcut:
+			((BlShortcutWithAction new)
+				combination: BlKeyCombination primaryShiftF;
+				action:
+						[ | source |
+							source := self format: editor editor text asString.
+							rewrite match code: source.
+							editor editor text: source asRopedText ]).
 	^ (BrVerticalPane new)
 		padding: (BlInsets all: 5);
 		matchParent;
@@ -258,6 +274,15 @@ GtSmaCCRewriteElement >> transformationCodeElement [
 		matchParent.
 	editor editor styler: self sourceStyler.
 	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite transformation code: editor editor text asString ].
+	editor
+		addShortcut:
+			((BlShortcutWithAction new)
+				combination: BlKeyCombination primaryShiftF;
+				action:
+						[ | source |
+							source := self format: editor editor text asString.
+							rewrite transformation code: source.
+							editor editor text: source asRopedText ]).
 	^ (BrVerticalPane new)
 		padding: (BlInsets all: 5);
 		matchParent;
