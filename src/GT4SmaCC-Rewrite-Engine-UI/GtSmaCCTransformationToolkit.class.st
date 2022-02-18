@@ -1557,8 +1557,9 @@ GtSmaCCTransformationToolkit >> updateAndSelectRewrite: rewrite [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
-	(self previewElement childNamed: #inputSource)
-		ifNotNil:
+	self previewElement
+		childNamed: #inputSource
+		ifFound:
 			[ :element | 
 			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
 			annotation
@@ -1566,8 +1567,9 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 					[ (element editor text from: annotation nodeInterval first to: annotation nodeInterval last)
 						attributes: {GtSmaCCTransformedAttribute new}.
 					element scrollToPosition: (self lineNumberFor: annotation nodeInterval first in: previewResult inputSource) ] ].
-	(self previewElement childNamed: #outputSource)
-		ifNotNil:
+	self previewElement
+		childNamed: #outputSource
+		ifFound:
 			[ :element | 
 			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
 			annotation
@@ -1591,8 +1593,9 @@ GtSmaCCTransformationToolkit >> updateFiles [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
-	(self previewElement childNamed: #previewRewrites)
-		ifNotNil:
+	self previewElement
+		childNamed: #previewRewrites
+		ifFound:
 			[ :element | 
 			(element children last)
 				deselectAll;

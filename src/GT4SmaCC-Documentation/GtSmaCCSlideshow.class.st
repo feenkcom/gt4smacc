@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCSlideshow,
 	#superclass : #GtSmaCCSlides,
-	#category : 'GT4SmaCC-Documentation'
+	#category : #'GT4SmaCC-Documentation'
 }
 
 { #category : #private }
@@ -220,8 +220,9 @@ GtSmaCCSlideshow >> filterSlideElement [
 			[ :each | 
 			(each isKindOf: GtSmaCCCoderElement)
 				ifTrue:
-					[ (each childNamed: #badges)
-						ifNotNil:
+					[ each
+						childNamed: #badges
+						ifFound:
 							[ :badges | badges children notEmpty ifTrue: [ badges children first addChild: (self yellowExplanationTargetCircleFor: #badges) ] ] ] ].
 	^ coderElement
 ]
