@@ -127,7 +127,48 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 ]
 
 { #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> addOverlay [
+	| element |
+	element := BrVerticalPane new.
+	element alignCenter.
+	element matchParent.
+	element background: (Color gray alpha: 0.5).
+	windowElement addChild: element as: #progress
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> addPercentage: anInteger forProcess: aProcess [
+	windowElement
+		childNamed: #progress
+		ifFound:
+			[ :overlay | 
+			| progress element button |
+			element := BrVerticalPane new.
+			element padding: (BlInsets all: 10).
+			element border: (BlBorder paint: Color black width: 1).
+			element background: Color white.
+			element alignCenter.
+			element fitContent.
+			progress := BrProgress new.
+			progress aptitude: BrGlamorousProgressWithBarAptitude.
+			progress width: 250.
+			progress amount: 0 total: anInteger.
+			element addChild: progress as: #percent.
+			button := BrButton new.
+			button margin: (BlInsets top: 10).
+			button
+				aptitude: BrGlamorousButtonWithLabelAptitude;
+				action:
+						[ self removeOverlay.
+							aProcess terminate ];
+				label: 'Cancel'.
+			element addChild: button.
+			overlay addChild: element ]
+]
+
+{ #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> addResult: aResult [
+	self incrementPercent.
 	results addFirst: aResult.
 	self updateResults
 ]
@@ -236,21 +277,28 @@ GtSmaCCTransformationToolkit >> applyRewriteFilter: aString [
 
 { #category : #ui }
 GtSmaCCTransformationToolkit >> asElement [
-	windowElement := BrTabGroup new.
-	windowElement aptitude: BrGlamorousTabGroupAptitude.
+	| tabGroup |
+	windowElement := BlElement new.
 	windowElement
+		constraintsDo:
+			[ :c | 
+			c vertical matchParent.
+			c horizontal matchParent ].
+	tabGroup := BrTabGroup new.
+	tabGroup aptitude: BrGlamorousTabGroupAptitude.
+	tabGroup
 		addTab:
 			((BrTab new)
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Configuration';
 				stencil: [ self configurationElement ]).
-	windowElement
+	tabGroup
 		addTab:
 			((BrTab new)
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Transformations';
 				stencil: [ self transformationsElement ]).
-	windowElement
+	tabGroup
 		addTab:
 			((BrTab new)
 				aptitude: BrGlamorousTabAptitude;
@@ -264,6 +312,7 @@ GtSmaCCTransformationToolkit >> asElement [
 								key: BlKeyboardKey F5;
 								build);
 				action: [ :anEvent :aShortcut | self preview ]).
+	windowElement addChild: tabGroup as: #tabGroup.
 	^ windowElement
 ]
 
@@ -410,21 +459,15 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 ]
 
 { #category : #'preview-actions' }
-GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite [
-	| block |
-	aSmaCCRewrite isNil
-		ifTrue: [ ^ self ].
-	block := [ :rewrite :node | rewrite == aSmaCCRewrite ].
-	self debugUsingSeachBlock: block andTransformationBlock: block
-]
-
-{ #category : #'preview-actions' }
 GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite forNode: aClass at: anInterval [
 	| block |
 	aSmaCCRewrite ifNil: [ ^ self ].
 	block := [ :rewrite :node | 
-	rewrite == aSmaCCRewrite
-		and: [ node class == aClass and: [ node startPosition = anInterval first and: [ node stopPosition = anInterval last ] ] ] ].
+	| debug |
+	debug := rewrite == aSmaCCRewrite
+		and: [ node class == aClass and: [ node startPosition = anInterval first and: [ node stopPosition = anInterval last ] ] ].
+	debug ifTrue: [ self removeOverlay ].
+	debug ].
 	self debugUsingSeachBlock: block andTransformationBlock: block
 ]
 
@@ -669,8 +712,23 @@ GtSmaCCTransformationToolkit >> gotoPreviewTab [
 
 { #category : #'preview-actions' }
 GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
-	windowElement viewModel selectTab: windowElement tabs second.
-	self selectAndScrollToRewrite: aRewrite
+	windowElement
+		childNamed: #tabGroup
+		ifFound:
+			[ :tabGroup | 
+			tabGroup viewModel selectTab: tabGroup tabs second.
+			self selectAndScrollToRewrite: aRewrite ]
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> incrementPercent [
+	windowElement
+		enqueueTask:
+			(BlTaskAction new
+				action:
+					[ windowElement
+						childNamed: #percent
+						ifFound: [ :element | element amount: (element amount + 1 min: element total) total: element total ] ])
 ]
 
 { #category : #'initialize-release' }
@@ -1034,6 +1092,7 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename [
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock after: afterBlock [
 	aFilename ifNil: [ ^ self ].
+	self addOverlay.
 	[ | result processor |
 	result := SmaCCRewriteCompleteResult new.
 	processor := SmaCCRewriteProcessor new.
@@ -1042,9 +1101,15 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock aft
 	processor validationParserClass: self model validationParserClass.
 	processor debug: true.
 	beforeBlock value.
-	[ processor processFile: aFilename usingResult: result ]
+	[ [ processor processFile: aFilename usingResult: result ]
+		on: Error , Halt
+		do:
+			[ :ex | 
+			self removeOverlay.
+			ex pass ] ]
 		ensure:
 			[ afterBlock value.
+			self removeOverlay.
 			processor debug: false ].
 	windowElement
 		enqueueTask:
@@ -1130,7 +1195,8 @@ GtSmaCCTransformationToolkit >> previewOutputFilename [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> previewTab [
-	^ windowElement viewModel tabs at: 3
+	windowElement childNamed: #tabGroup ifFound: [ :tabGroup | ^ tabGroup viewModel tabs at: 3 ].
+	^ nil
 ]
 
 { #category : #'configuration-actions' }
@@ -1179,6 +1245,20 @@ GtSmaCCTransformationToolkit >> removeFiles [
 	files := self selectedFiles asSet.
 	model files: (model files reject: [ :each | files includes: each ]).
 	self updateFiles
+]
+
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> removeOverlay [
+	windowElement
+		enqueueTask:
+			(BlTaskAction new
+				action:
+					[ windowElement
+						childNamed: #progress
+						ifFound:
+							[ :element | 
+							element removeChildren.
+							element removeFromParent ] ])
 ]
 
 { #category : #'ui-configuration' }
@@ -1279,9 +1359,13 @@ GtSmaCCTransformationToolkit >> runElement: button [
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> runOn: aCollection [
+	| process |
+	process := [ [ self model runOn: aCollection ] ensure: [ self removeOverlay ] ] newProcess.
 	results := results removeAllSuchThat: [ :each | aCollection includes: each filename ].
 	self updateResults.
-	[ self model runOn: aCollection ] fork
+	self addOverlay.
+	aCollection size > 1 ifTrue: [ self addPercentage: aCollection size forProcess: process ].
+	process resume
 ]
 
 { #category : #'ui-configuration' }
