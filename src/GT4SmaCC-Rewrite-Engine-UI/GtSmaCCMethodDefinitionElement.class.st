@@ -24,10 +24,22 @@ GtSmaCCMethodDefinitionElement >> build [
 						bottom: 5
 						right: 10);
 		matchParent.
+	editor
+		addShortcut:
+			((BlShortcutWithAction new)
+				combination: BlKeyCombination primaryShiftF;
+				action: [ self format ]).
 	editor editor styler: self styler.
 	editor editor when: BrTextEditorModifiedEvent do: [ :event | self sourceChanged ].
 	self updateSource.
 	self addChild: editor
+]
+
+{ #category : #actions }
+GtSmaCCMethodDefinitionElement >> format [
+	| ast |
+	ast := RBParser parseMethod: editor editor text asString onError: [ :e :p | ^ self ].
+	rewrite source: ast formattedCode
 ]
 
 { #category : #updating }
