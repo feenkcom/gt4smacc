@@ -1,39 +1,39 @@
 Class {
-	#name : 'GtSmaCCStylerRule',
-	#superclass : 'Object',
+	#name : #GtSmaCCStylerRule,
+	#superclass : #Object,
 	#instVars : [
 		'styleBlock'
 	],
 	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCStylerRule class >> styleBlock: aBlock [
 	^ self new
 		styleBlock: aBlock;
 		yourself
 ]
 
-{ #category : 'applying' }
+{ #category : #applying }
 GtSmaCCStylerRule >> applyTo: anObject on: aText [
 	self style: anObject on: aText
 ]
 
-{ #category : 'initialize-release' }
+{ #category : #'initialize-release' }
 GtSmaCCStylerRule >> initializeForParser: parserClass [
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCStylerRule >> shouldApplyToNode: aSmaCCParseNode [
 	^ false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCStylerRule >> shouldApplyToToken: aSmaCCToken [
 	^ false
 ]
 
-{ #category : 'applying' }
+{ #category : #applying }
 GtSmaCCStylerRule >> style: anObject on: aText [
 	[ (anObject isKindOf: Collection)
 		ifTrue: [ anObject do: [ :each | self style: each on: aText ] ]
@@ -45,12 +45,12 @@ GtSmaCCStylerRule >> style: anObject on: aText [
 		do: [ :ex | ex return ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCStylerRule >> styleBlock [
 	^ styleBlock
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCStylerRule >> styleBlock: aBlock [
 	styleBlock := aBlock
 ]

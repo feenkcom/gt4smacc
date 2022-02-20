@@ -252,7 +252,9 @@ GtSmaCCRewriteElement >> rewrite: aRewrite [
 GtSmaCCRewriteElement >> sourceStyler [
 	^ (GtCompositeSmaCCASTStyler forParser: GtPharoParser)
 		startingState: GtPharoParser startingStateForMethodSequence;
-		stylers: {GtSmaCCPharoStyler new};
+		stylers:
+				{GtSmaCCPharoStyler new.
+						GtPharoDynamicHighlightStyler new};
 		yourself
 ]
 

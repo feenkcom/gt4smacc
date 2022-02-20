@@ -1,13 +1,13 @@
 Class {
-	#name : 'GtSmaCCParserStyler',
-	#superclass : 'GtSmaCCASTStyler',
+	#name : #GtSmaCCParserStyler,
+	#superclass : #GtSmaCCASTStyler,
 	#instVars : [
 		'stylerRules'
 	],
 	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> clojureStyler: aParserClass [
 	<smaccStyler: #ClojureParser priority: 50>
 	| colors |
@@ -49,7 +49,7 @@ GtSmaCCParserStyler class >> clojureStyler: aParserClass [
 								foreground: Color purple ] ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> cppStyler: aParserClass [
 	<smaccStyler: #CPPParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -76,7 +76,7 @@ GtSmaCCParserStyler class >> cppStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 	<smaccStyler: #CSharpParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -106,7 +106,7 @@ GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 	<smaccStyler: #DelphiParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -133,7 +133,7 @@ GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> javaStyler: aParserClass [
 	<smaccStyler: #JavaParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -163,7 +163,7 @@ GtSmaCCParserStyler class >> javaStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> jsStyler: aParserClass [
 	<smaccStyler: #JSParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -197,7 +197,7 @@ GtSmaCCParserStyler class >> jsStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 	<smaccStyler: #JSONParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -223,7 +223,7 @@ GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> pythonStyler: aParserClass [
 	<smaccStyler: #PythonParser priority: 50>
 	
@@ -249,7 +249,7 @@ GtSmaCCParserStyler class >> pythonStyler: aParserClass [
 					styleBlock: [ :styler | styler foreground: Color red ]}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> rubyStyler: aParserClass [
 	<smaccStyler: #RubyParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -283,7 +283,7 @@ GtSmaCCParserStyler class >> rubyStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 	"This is a generic styler that does a little formatting for any parser"
 
@@ -303,7 +303,7 @@ GtSmaCCParserStyler class >> smaccStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> teradataStyler: aParserClass [
 	<smaccStyler: #TeradataParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -330,7 +330,7 @@ GtSmaCCParserStyler class >> teradataStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'instances' }
+{ #category : #instances }
 GtSmaCCParserStyler class >> vbnetStyler: aParserClass [
 	<smaccStyler: #VBNetParser priority: 50>
 	^ (self forParser: aParserClass)
@@ -354,13 +354,13 @@ GtSmaCCParserStyler class >> vbnetStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserStyler >> addStylerRule: aStylerRule [
 	self stylerRules add: aStylerRule.
 	aStylerRule initializeForParser: parserClass
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCParserStyler >> styleAST: anAST [
 	anAST
 		withAllNodesDo: [ :node | self styleNode: node ]
@@ -368,7 +368,7 @@ GtSmaCCParserStyler >> styleAST: anAST [
 		includesErrors: true
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCParserStyler >> styleNode: aSmaCCParseNode [
 	stylerRules
 		do: [ :each | 
@@ -376,7 +376,7 @@ GtSmaCCParserStyler >> styleNode: aSmaCCParseNode [
 				ifTrue: [ ^ each applyTo: aSmaCCParseNode on: text ] ]
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCParserStyler >> styleToken: aSmaCCToken [
 	stylerRules
 		do: [ :each | 
@@ -384,12 +384,12 @@ GtSmaCCParserStyler >> styleToken: aSmaCCToken [
 				ifTrue: [ ^ each applyTo: aSmaCCToken on: text ] ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserStyler >> stylerRules [
 	^ stylerRules ifNil: [ stylerRules := OrderedCollection new ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCParserStyler >> stylerRules: aCollection [
 	stylerRules := aCollection asOrderedCollection.
 	stylerRules do: [ :each | each initializeForParser: parserClass ]

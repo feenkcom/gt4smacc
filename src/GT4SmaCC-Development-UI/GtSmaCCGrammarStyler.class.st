@@ -6,7 +6,7 @@ Class {
 		'originalGrammar',
 		'completions'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #'instance creation' }
@@ -60,7 +60,7 @@ GtSmaCCGrammarStyler >> originalGrammar: anObject [
 GtSmaCCGrammarStyler >> privateStyle: aText [
 	^ self
 		style: aText
-		using: (SmaCCDefinitionParser parseWithErrors: aText asString)
+		ast: (SmaCCDefinitionParser parseWithErrors: aText asString)
 ]
 
 { #category : #accessing }
@@ -74,7 +74,7 @@ GtSmaCCGrammarStyler >> scannerClass: anObject [
 ]
 
 { #category : #accessing }
-GtSmaCCGrammarStyler >> style: aText using: anAST [
+GtSmaCCGrammarStyler >> style: aText ast: anAST [
 	[ | stylingVisitor |
 	text := aText.
 	stylingVisitor := GtSmaCCGrammarStylingVisitor new.

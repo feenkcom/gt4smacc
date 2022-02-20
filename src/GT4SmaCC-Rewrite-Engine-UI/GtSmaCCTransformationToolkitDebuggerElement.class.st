@@ -403,6 +403,19 @@ GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> stylerFor: aRewrite [
+	| styler |
+	styler := GtCompositeSmaCCASTStyler forParser: GtPharoParser.
+	styler
+		stylers:
+			{GtSmaCCPharoStyler new.
+				GtPharoDynamicHighlightStyler new}.
+	(aRewrite isKindOf: SmaCCRewriteMethodDefinition)
+		ifFalse: [ styler startingState: GtPharoParser startingStateForMethodSequence ].
+	^ styler
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> tabGroupElement [
 	| tab tabGroup |
 	tab := BrTab new.
@@ -452,8 +465,10 @@ GtSmaCCTransformationToolkitDebuggerElement >> textElementForContext: aContext a
 		when: BlFocusInEvent
 		do:
 			[ currentContext := aContext.
+			self updateInspectors.
 			self updateNewSourceHighlight.
 			self updateOriginalSourceHighlight ].
+	element editor styler: (self stylerFor: aRewrite).
 	self
 		highlightAndScroll: element
 		interval: (self sourceSelectionIntervalForContext: aContext andRewrite: aRewrite)
