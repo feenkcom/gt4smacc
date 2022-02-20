@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtSmaCCNodeStylerRule',
-	#superclass : 'GtSmaCCStylerRule',
+	#name : #GtSmaCCNodeStylerRule,
+	#superclass : #GtSmaCCStylerRule,
 	#instVars : [
 		'nodeClassName',
 		'nodeClass'
@@ -8,29 +8,29 @@ Class {
 	#category : 'GT4SmaCC-Stylers'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtSmaCCNodeStylerRule class >> nodeClassName: aSymbol styleBlock: aBlock [
 	^ (self styleBlock: aBlock)
 		nodeClassName: aSymbol;
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeStylerRule >> nodeClass [
 	^ nodeClass ifNil: [ nodeClass := Smalltalk at: nodeClassName ifAbsent: [ self class ] ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeStylerRule >> nodeClassName [
 	^ nodeClassName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeStylerRule >> nodeClassName: aSymbol [
 	nodeClassName := aSymbol
 ]
 
-{ #category : 'asserting' }
+{ #category : #asserting }
 GtSmaCCNodeStylerRule >> shouldApplyToNode: aSmaCCParseNode [
 	^ aSmaCCParseNode isKindOf: self nodeClass
 ]

@@ -4,11 +4,6 @@ Class {
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
 
-{ #category : #private }
-GtSmaCCPharoStyler >> style: aText using: anAST [
-	^ self style: aText ast: anAST
-]
-
 { #category : #visiting }
 GtSmaCCPharoStyler >> visitNamedVariable: aNamedVariable [
 	| isDeclaredVariable |

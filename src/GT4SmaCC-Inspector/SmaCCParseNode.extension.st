@@ -149,7 +149,7 @@ SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 	self parserClass
 		ifNotNil: [ :class | 
 			class gtStyler
-				ifNotNil: [ :styler | styler style: source using: self topParent ] ].
+				ifNotNil: [ :styler | styler style: source ast: self topParent ] ].
 	self stopPosition isZero
 		ifFalse: [ (source from: self startPosition to: self stopPosition)
 				attributes:

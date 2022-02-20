@@ -50,7 +50,9 @@ GtSmaCCMethodDefinitionElement >> sourceChanged [
 { #category : #private }
 GtSmaCCMethodDefinitionElement >> styler [
 	^ (GtCompositeSmaCCASTStyler forParser: GtPharoParser)
-		stylers: {GtSmaCCPharoStyler new};
+		stylers:
+				{GtSmaCCPharoStyler new.
+						GtPharoDynamicHighlightStyler new};
 		yourself
 ]
 

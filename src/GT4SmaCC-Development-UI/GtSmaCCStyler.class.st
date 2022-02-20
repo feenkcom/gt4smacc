@@ -5,7 +5,7 @@ Class {
 		'startingState',
 		'coder'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #formatting }
@@ -129,7 +129,7 @@ GtSmaCCStyler >> startingState: anInteger [
 ]
 
 { #category : #private }
-GtSmaCCStyler >> style: aText using: anAST [
+GtSmaCCStyler >> style: aText ast: anAST [
 	text := aText.
 	[ [ coder highlighter ifNotNil: [ :highlighter | highlighter styleNode: anAST using: self ].
 	self syntaxStylingVisitor styleNode: anAST using: self ] on: Error do: [ :ex | ex return ] ] ensure: [ text := nil ]
