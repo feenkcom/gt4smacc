@@ -5,7 +5,7 @@ Class {
 		'grammar',
 		'completionStrategy'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'instance creation' }
@@ -43,11 +43,13 @@ GtSmaCCGrammarElement >> buildInterface [
 
 { #category : #private }
 GtSmaCCGrammarElement >> displayError: aString at: anIndex [
-	| index |
-	index := (anIndex - 1 max: 1) min: self sourceEditor text size.
-	(self sourceEditor text from: index to: index)
-		attributes: { (GtSourceCoderErrorAttribute for: aString) }.
-	self sourceEditor moveCursorTo: index
+	| index editor |
+	editor := self sourceEditor.
+	index := (anIndex - 1 max: 1) min: editor text size.
+	self sourceEditor text clearAttributes: [ :each | each class == GtSourceCoderErrorAttribute ].
+	(self sourceEditor text from: index to: index) attributes: {GtSourceCoderErrorAttribute for: aString}.
+	editor moveCursorTo: index.
+	self sourceElement scrollToPosition: (editor text asString lineNumberCorrespondingToIndex: index)
 ]
 
 { #category : #accessing }
