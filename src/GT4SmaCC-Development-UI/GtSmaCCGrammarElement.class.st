@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCGrammarElement,
-	#superclass : #BlElement,
+	#superclass : #BrVerticalPane,
 	#instVars : [
 		'grammar',
 		'completionStrategy'
@@ -31,12 +31,8 @@ GtSmaCCGrammarElement >> actionBar [
 
 { #category : #ui }
 GtSmaCCGrammarElement >> buildInterface [
-	self layout: BlLinearLayout vertical.
 	self padding: (BlInsets all: 5).
-	self
-		constraintsDo: [ :c | 
-			c vertical matchParent.
-			c horizontal matchParent ].
+	self matchParent.
 	self addChild: self sourceEditorElement as: #source.
 	self addChild: self actionBar
 ]
@@ -93,17 +89,12 @@ GtSmaCCGrammarElement >> sourceEditor [
 GtSmaCCGrammarElement >> sourceEditorElement [
 	| completionController element |
 	element := BrEditor new.
-	element background: Color white.
+	element border: (BlBorder paint: (Color lightGray alpha: 0.5)).
 	element padding: (BlInsets all: 10).
-	element
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
+	element matchParent.
 	element aptitude: BrGlamorousCodeEditorAptitude new.
 	completionStrategy := GtWeightedStringsCompletionStrategy new.
-	completionController := GtCompletionController
-		on: element
-		strategy: completionStrategy.
+	completionController := GtCompletionController on: element strategy: completionStrategy.
 	completionController closeOnEmptyCompletion: false.
 	completionController install.
 	^ element

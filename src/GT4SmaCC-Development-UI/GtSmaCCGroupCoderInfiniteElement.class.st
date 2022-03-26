@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCGroupCoderInfiniteElement,
 	#superclass : #BlInfiniteElement,
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #initialization }
@@ -12,5 +12,5 @@ GtSmaCCGroupCoderInfiniteElement >> defaultLayout [
 { #category : #initialization }
 GtSmaCCGroupCoderInfiniteElement >> initialize [
 	super initialize.
-	self clipChildren: false
+	self padding: (BlInsets right: 10)
 ]

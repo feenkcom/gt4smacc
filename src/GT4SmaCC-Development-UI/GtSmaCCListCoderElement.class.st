@@ -1,10 +1,10 @@
 Class {
 	#name : #GtSmaCCListCoderElement,
-	#superclass : #BlElement,
+	#superclass : #BrVerticalPane,
 	#instVars : [
 		'grammarCoder'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'instance creation' }
@@ -46,16 +46,12 @@ GtSmaCCListCoderElement >> actions [
 
 { #category : #ui }
 GtSmaCCListCoderElement >> buildElement [
-	self layout: BlLinearLayout vertical.
-	self
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
+	self matchParent.
 	self
 		addChild:
-			(self coderListElementClass new
-				group: self group;
-				yourself)
+				((self coderListElementClass new)
+						group: self group;
+						yourself)
 			as: #list;
 		addChild: self compilationBar
 ]
