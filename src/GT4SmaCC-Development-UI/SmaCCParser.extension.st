@@ -69,11 +69,13 @@ SmaCCParser class >> gtTestElement [
 	element margin: (BlInsets all: 5).
 	element matchParent.
 	editorElement := BrEditor new.
+	editorElement border: (BlBorder paint: (Color lightGray alpha: 0.5)).
 	editorElement padding: (BlInsets all: 2).
 	editorElement matchParent.
 	editorElement aptitude: BrGlamorousCodeEditorAptitude.
 	self gtStyler ifNotNil: [ :styler | editorElement editor styler: styler ].
 	actionBar := (BrToolbar new)
+		padding: (BlInsets top: 3 left: 3);
 		aptitude: BrGlamorousToolbarAptitude new;
 		addItem:
 				((BrButton new)

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'badgeTypes'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #filtering }
@@ -28,12 +28,10 @@ GtSmaCCCoderListElement >> badgeFilter [
 { #category : #ui }
 GtSmaCCCoderListElement >> filterElement [
 	| element |
-	element := BlElement new.
-	element layout: BlLinearLayout vertical.
-	element
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
+	element := BrVerticalPane new.
+	element padding: (BlInsets right: 10).
+	element hMatchParent.
+	element vFitContent.
 	element addChild: self textSearchElement as: #textSearch.
 	element addChild: self typeFilterElement as: #toggles.
 	^ element

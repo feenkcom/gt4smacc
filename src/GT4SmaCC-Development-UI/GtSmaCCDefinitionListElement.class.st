@@ -1,11 +1,11 @@
 Class {
 	#name : #GtSmaCCDefinitionListElement,
-	#superclass : #BlElement,
+	#superclass : #BrVerticalPane,
 	#instVars : [
 		'group',
 		'listElement'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #ui }
@@ -14,21 +14,16 @@ GtSmaCCDefinitionListElement >> addItemLookTo: dataSource [
 
 { #category : #ui }
 GtSmaCCDefinitionListElement >> buildElement [
-	self layout: BlLinearLayout vertical.
-	self
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
+	self matchParent.
 	self
 		padding:
 			(BlInsets
 				top: 0
 				left: 10
 				bottom: 10
-				right: 10).
+				right: 0).
 	self margin: (BlInsets all: 0).
-	self filterElement
-		ifNotNil: [ :filter | self addChild: filter as: #filter ].
+	self filterElement ifNotNil: [ :filter | self addChild: filter as: #filter ].
 	self addChild: self listElement.
 	self updateList
 ]

@@ -60,20 +60,15 @@ GtSmaCCCoderElement >> coder: aCoder [
 { #category : #ui }
 GtSmaCCCoderElement >> collapsedElement [
 	| element label |
-	element := BlElement new.
-	element layout: BlLinearLayout vertical.
+	element := BrVerticalPane new.
 	element margin: (BlInsets left: 5).
-	element
-		constraintsDo: [ :c | 
-			c vertical fitContent.
-			c horizontal matchParent ].
+	element vFitContent.
+	element hMatchParent.
 	label := BrEditor new.
 	label beReadOnlyWithoutSelection.
 	label padding: (BlInsets all: 2).
-	label
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
+	label hMatchParent.
+	label vFitContent.
 	label editor: coder collapsedEditor.
 	element addChild: label.
 	^ element
@@ -82,14 +77,10 @@ GtSmaCCCoderElement >> collapsedElement [
 { #category : #ui }
 GtSmaCCCoderElement >> contentElement [
 	| element |
-	element := BlElement new.
-	element layout: BlLinearLayout vertical.
+	element := BrVerticalPane new.
 	element margin: (BlInsets left: 5).
-	element
-		constraintsDo:
-			[ :c | 
-			c vertical fitContent.
-			c horizontal matchParent ].
+	element vFitContent.
+	element hMatchParent.
 	element addChild: self sourceEditor as: #editor.
 	element addChild: self actionBar as: #actionBar.
 	^ element
@@ -124,23 +115,23 @@ GtSmaCCCoderElement >> initialize [
 	self
 		background: Color white;
 		aptitude:
-			(GtCoderExpanderAptitude new
-				borderWidth: 0;
-				padding:
-					(BlInsets
-						top: 1
-						left: 10
-						bottom: 1
-						right: 10)).
+				((GtCoderExpanderAptitude new)
+						borderWidth: 0;
+						padding:
+								(BlInsets
+										top: 1
+										left: 10
+										bottom: 1
+										right: 10)).
 	self
 		addShortcut:
-			(BlShortcutWithAction new
+			((BlShortcutWithAction new)
 				combination:
-					(BlKeyCombination builder
-						primary;
-						return;
-						build);
-				action: [ self toggle ])
+						((BlKeyCombination builder)
+								primary;
+								return;
+								build);
+				action: [ self toggleExpanded ])
 ]
 
 { #category : #ui }

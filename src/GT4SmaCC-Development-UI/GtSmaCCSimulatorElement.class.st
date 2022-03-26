@@ -1,6 +1,6 @@
 Class {
 	#name : #GtSmaCCSimulatorElement,
-	#superclass : #BlElement,
+	#superclass : #BrVerticalPane,
 	#instVars : [
 		'simulator',
 		'grammarCoder'
@@ -32,20 +32,16 @@ GtSmaCCSimulatorElement class >> onSimulator: aSimulator [
 
 { #category : #ui }
 GtSmaCCSimulatorElement >> buildElement [
-	self layout: BlLinearLayout vertical.
 	self buildInputElement.
 	self buildResultsElement
 ]
 
 { #category : #ui }
 GtSmaCCSimulatorElement >> buildInputElement [
-	self
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
+	self matchParent.
 	self
 		addChild:
-			(BrLabel new
+			((BrLabel new)
 				text: simulator ruleName , ' input:';
 				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
