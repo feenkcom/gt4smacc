@@ -10,7 +10,6 @@ Class {
 		'previewResult',
 		'transformationsTree',
 		'transformationElement',
-		'filesFilter',
 		'rewriteFilter',
 		'results'
 	],
@@ -1197,15 +1196,6 @@ GtSmaCCTransformationToolkit >> previewOutputFilename [
 GtSmaCCTransformationToolkit >> previewTab [
 	windowElement childNamed: #tabGroup ifFound: [ :tabGroup | ^ tabGroup viewModel tabs at: 3 ].
 	^ nil
-]
-
-{ #category : #'configuration-actions' }
-GtSmaCCTransformationToolkit >> promptForFile: aTitle extensions: anArray [
-	^ UIManager default
-		chooseExistingFileReference: aTitle
-		extensions: anArray
-		path: FileSystem workingDirectory
-		preview: nil
 ]
 
 { #category : #'ui-configuration' }
