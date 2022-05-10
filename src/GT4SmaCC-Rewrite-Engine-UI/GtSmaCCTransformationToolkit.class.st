@@ -1638,8 +1638,10 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
 			annotation
 				ifNotNil:
-					[ (element editor text from: annotation nodeInterval first to: annotation nodeInterval last)
-						attributes: {GtSmaCCTransformedAttribute new}.
+					[ element editor text
+						attributes: {GtSmaCCTransformedAttribute new}
+						from: annotation nodeInterval first
+						to: annotation nodeInterval last.
 					element scrollToPosition: (self lineNumberFor: annotation nodeInterval first in: previewResult inputSource) ] ].
 	self previewElement
 		childNamed: #outputSource
@@ -1654,7 +1656,10 @@ GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
 						do:
 							[ :each | 
 							firstIndex := firstIndex min: each first.
-							(element editor text from: each first to: each last) attributes: {GtSmaCCTransformedAttribute new} ].
+							element editor text
+								attributes: {GtSmaCCTransformedAttribute new}
+								from: each first
+								to: each last ].
 					firstIndex < SmallInteger maxVal
 						ifTrue: [ element scrollToPosition: (self lineNumberFor: firstIndex in: previewResult outputSource) ] ] ]
 ]

@@ -9,7 +9,7 @@ Class {
 		'itemName',
 		'expanded'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #'instance creation' }
@@ -116,41 +116,39 @@ GtSmaCCVariableCoder >> owner: aGrammarCoder [
 GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	| ruleText position styler |
 	ruleText := (String
-		streamContents: [ :stream | 
+		streamContents:
+			[ :stream | 
 			stream
 				nextPutAll: aProduction name;
 				nextPutAll: ' : ';
 				nextPutAll:
-					(aProduction source
-						copyFrom: (node parentOfType: SmaCCProductionExpressionNode) startPosition
-						to: node name stopPosition).
+						(aProduction source copyFrom: (node parentOfType: SmaCCProductionExpressionNode) startPosition to: node name stopPosition).
 			position := stream position.
 			stream
 				nextPut: $ ;
 				nextPutAll:
-					(aProduction source
-						copyFrom: node stopPosition + 1
-						to: (node parentOfType: SmaCCProductionExpressionNode) stopPosition);
+						(aProduction source copyFrom: node stopPosition + 1 to: (node parentOfType: SmaCCProductionExpressionNode) stopPosition);
 				nextPut: $; ]) asRopedText.
-	styler := GtSmaCCGrammarStyler
-		for: owner scannerClass
-		grammar: owner grammar ast.
+	styler := GtSmaCCGrammarStyler for: owner scannerClass grammar: owner grammar ast.
 	ruleText attributes: GtSmaCCCoder defaultTextAttributes.
 	ruleText := styler privateStyle: ruleText.
+	ruleText clearAttributes: [ :each | each class = BrGlamorousTrangleExpanderTextAttribute ].
 	ruleText
-		clearAttributes: [ :each | each class = BrGlamorousTrangleExpanderTextAttribute ].
-	(ruleText from: position - node name value size + 1 to: position)
 		attributes:
-			{(BlTextDecorationAttribute new
-				underline;
-				color: Color veryLightGray;
-				thickness: 3)}.
-	(ruleText from: position to: position)
+			{(BlTextDecorationAttribute new)
+					underline;
+					color: Color veryLightGray;
+					thickness: 3}
+		from: position - node name value size + 1
+		to: position.
+	ruleText
 		attributes:
-			{(GtSmaCCVariableNameAnnotationAttribute
-				for: self
-				at: index
-				named: node variableName)}.
+			{GtSmaCCVariableNameAnnotationAttribute
+					for: self
+					at: index
+					named: node variableName}
+		from: position
+		to: position.
 	^ ruleText
 ]
 
