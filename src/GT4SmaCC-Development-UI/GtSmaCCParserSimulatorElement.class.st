@@ -186,10 +186,8 @@ GtSmaCCParserSimulatorElement >> selected: aNode [
 
 { #category : #private }
 GtSmaCCParserSimulatorElement >> selectionIntervalFor: anObject [
-	(anObject isKindOf: Association)
-		ifTrue: [ ^ 1 to: self testEditor text size ].
-	^ (anObject respondsTo: #sourceInterval)
-		ifTrue: [ anObject sourceInterval ]
+	(anObject isKindOf: Association) ifTrue: [ ^ 1 to: self testEditor text size ].
+	^ [ anObject sourceInterval ] onDNU: #sourceInterval do: [ :ex | nil ]
 ]
 
 { #category : #'initialize-release' }

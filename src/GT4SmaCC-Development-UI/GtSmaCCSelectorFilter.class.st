@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'selector'
 	],
-	#category : 'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
 { #category : #'instance creation' }
@@ -16,7 +16,7 @@ GtSmaCCSelectorFilter class >> selector: aString [
 
 { #category : #testing }
 GtSmaCCSelectorFilter >> matches: anObject [
-	^ (anObject respondsTo: selector) and: [ anObject perform: selector ]
+	^ [ anObject perform: selector ] onDNU: selector do: [ :ex | false ]
 ]
 
 { #category : #accessing }
