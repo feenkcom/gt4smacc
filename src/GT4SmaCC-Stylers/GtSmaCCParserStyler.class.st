@@ -133,6 +133,21 @@ GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
+{ #category : #view }
+GtSmaCCParserStyler class >> gtParsersFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Parsers';
+		items: [ (Pragma allNamed: #smaccStyler:priority: in: self class) collect: #method ];
+		sendTool: [ :aMethod | GtMethodCoderTool compiledMethod: aMethod  ]
+]
+
+{ #category : #accessing }
+GtSmaCCParserStyler class >> itself [
+	<gtExample>
+	^ self
+]
+
 { #category : #instances }
 GtSmaCCParserStyler class >> javaStyler: aParserClass [
 	<smaccStyler: #JavaParser priority: 50>
