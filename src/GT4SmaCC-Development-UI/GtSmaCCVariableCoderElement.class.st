@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'coder'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #'instance creation' }
@@ -204,7 +204,7 @@ GtSmaCCVariableCoderElement >> referenceElements [
 					c vertical fitContent ].
 			editorElement
 				editor:
-					(BrTextEditor new
+					(BrTextEditorModel new
 						text: each readonly;
 						yourself).
 			editorElement ]

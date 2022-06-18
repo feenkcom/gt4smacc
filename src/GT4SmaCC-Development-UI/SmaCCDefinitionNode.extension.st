@@ -16,7 +16,7 @@ SmaCCDefinitionNode >> buildSourceInterfaceIn: presentation label: aString [
 			text := self source asRopedText.
 			text attributes: GtSmaCCCoder defaultTextAttributes.
 			styler := GtSmaCCGrammarStyler for: SmaCCScanner.
-			editor := BrTextEditor new.
+			editor := BrTextEditorModel new.
 			editor text: (styler style: text).
 			element := BrEditorElement new.
 			element editor: editor.
@@ -50,7 +50,7 @@ SmaCCDefinitionNode >> buildVariableNameInterfaceFor: aString in: presentation [
 					c horizontal matchParent.
 					c vertical matchParent ].
 			element layout: BlFlowLayout vertical.
-			defaultNameEditor := BrTextEditor new.
+			defaultNameEditor := BrTextEditorModel new.
 			defaultNameEditor text: commonName asRopedText.
 			refs size > 1
 				ifTrue: [ defaultNameElement := BlElement new

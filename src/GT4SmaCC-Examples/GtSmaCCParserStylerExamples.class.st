@@ -39,7 +39,7 @@ GtSmaCCParserStylerExamples >> jsStyler [
 GtSmaCCParserStylerExamples >> jsStylerTextElement [
 	<gtExample>
 	| editorElement textEditor |
-	textEditor := BrTextEditor new.
+	textEditor := BrTextEditorModel new.
 	textEditor styler: self jsStyler.
 	editorElement := BrEditorElement new.
 	editorElement editor: textEditor.

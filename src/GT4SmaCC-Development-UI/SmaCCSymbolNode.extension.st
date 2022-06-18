@@ -8,7 +8,7 @@ SmaCCSymbolNode >> buildVariableNameInterfaceElement: aBrTextEditor [
 	expression isNil
 		ifTrue: [ ^ nil ].
 	isCommon := self variableName = aBrTextEditor text asString.
-	textEditor := BrTextEditor new.
+	textEditor := BrTextEditorModel new.
 	commonNameBlock := [ :event | 
 	| newName |
 	newName := aBrTextEditor text asString.

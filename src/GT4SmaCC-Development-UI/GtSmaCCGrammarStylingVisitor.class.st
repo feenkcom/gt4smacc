@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'completions'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #accessing }
@@ -45,7 +45,7 @@ GtSmaCCGrammarStylingVisitor >> textEditorOn: aString usingStyler: aStyler [
 	| editor editorElement innerText |
 	innerText := aString asRopedText.
 	innerText attributes: GtSmaCCCoder defaultTextAttributes.
-	editor := BrTextEditor new.
+	editor := BrTextEditorModel new.
 	aStyler notNil
 		ifTrue: [ editor styler: aStyler ].
 	editor text: innerText.

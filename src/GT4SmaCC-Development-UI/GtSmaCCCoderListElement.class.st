@@ -106,7 +106,7 @@ GtSmaCCCoderListElement >> searchFilter [
 { #category : #ui }
 GtSmaCCCoderListElement >> textSearchElement [
 	| element editor |
-	editor := BrTextEditor new.
+	editor := BrTextEditorModel new.
 	editor
 		when: BrTextEditorInsertedEvent do: [ :event | self updateFilters ];
 		when: BrTextEditorDeletedEvent do: [ :event | self updateFilters ].
