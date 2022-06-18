@@ -28,7 +28,7 @@ SmaCCTokenRuleNode >> buildMethodInterfaceIn: presentation [
 			text attributes: { (BlFontSizeAttribute size: 14) beNotOverwritableByStyler}.
 			styler := BrRBTextStyler new.
 			styler classOrMetaClass: self scannerClass.
-			editor := BrTextEditor new.
+			editor := BrTextEditorModel new.
 			editor styler: styler.
 			editor text: text.
 			editorElement := BrEditorElement new.

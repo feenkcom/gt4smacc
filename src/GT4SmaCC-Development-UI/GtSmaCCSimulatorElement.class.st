@@ -105,7 +105,7 @@ GtSmaCCSimulatorElement >> testEditor [
 { #category : #ui }
 GtSmaCCSimulatorElement >> testElement [
 	| element editor |
-	editor := BrTextEditor new.
+	editor := BrTextEditorModel new.
 	editor
 		when: BrTextEditorDeletedEvent do: [ :event | self simulateInput ];
 		when: BrTextEditorInsertedEvent do: [ :event | self simulateInput ];

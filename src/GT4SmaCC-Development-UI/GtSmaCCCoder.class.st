@@ -364,12 +364,12 @@ GtSmaCCCoder >> name [
 
 { #category : #editor }
 GtSmaCCCoder >> newCollapsedEditor [
-	^ BrTextEditor new
+	^ BrTextEditorModel new
 ]
 
 { #category : #editor }
 GtSmaCCCoder >> newSourceEditor [
-	^ BrTextEditor new
+	^ BrTextEditorModel new
 		text: self sourceText;
 		styler: self newStyler;
 		when: BrTextEditorInsertedEvent do: [ :event | self sourceChanged ];

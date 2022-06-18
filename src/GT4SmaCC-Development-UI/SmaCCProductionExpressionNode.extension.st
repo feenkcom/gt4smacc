@@ -13,7 +13,7 @@ SmaCCProductionExpressionNode >> astNodeName: aString [
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCProductionExpressionNode >> buildASTNodeInterfaceElement [
 	| toggle element label textEditor editorElement textChangedBlock |
-	textEditor := BrTextEditor new.
+	textEditor := BrTextEditorModel new.
 	element := BlElement new.
 	element
 		constraintsDo: [ :c | 

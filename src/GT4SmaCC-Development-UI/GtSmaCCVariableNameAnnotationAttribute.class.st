@@ -6,7 +6,7 @@ Class {
 		'index',
 		'initialName'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #'instance creation' }
@@ -33,7 +33,7 @@ GtSmaCCVariableNameAnnotationAttribute >> affect: aTBrTextEditorTextualPiece in:
 			c horizontal fitContent.
 			c vertical fitContent ].
 	text := self initialNameText.
-	editor := BrTextEditor new
+	editor := BrTextEditorModel new
 		text: text;
 		yourself.
 	editorElement editor: editor.
