@@ -1,46 +1,6 @@
 Extension { #name : #SmaCCTokenRuleNode }
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCTokenRuleNode >> buildInterfaceIn: presentation [
-	self buildVariableNameInterfaceFor: name value in: presentation.
-	presentation list
-		title: 'References';
-		display: [ self ruleReferences ];
-		format: [ :each | each displayString ];
-		tags: [ :each | each tags ].
-	presentation list
-		title: 'Uses';
-		display: [ self uses ];
-		format: [ :each | each displayString ];
-		tags: [ :each | each tags ].
-	self buildSourceInterfaceIn: presentation label: 'Definition'.
-	self buildMethodInterfaceIn: presentation
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
-SmaCCTokenRuleNode >> buildMethodInterfaceIn: presentation [
-	self isMethod
-		ifFalse: [ ^ self ].
-	presentation bloc
-		title: 'Method';
-		element: [ | text styler editor editorElement |
-			text := ((self scannerClass whichClassIncludesSelector: self selector) sourceCodeAt: self selector) asRopedText.
-			text attributes: { (BlFontSizeAttribute size: 14) beNotOverwritableByStyler}.
-			styler := BrRBTextStyler new.
-			styler classOrMetaClass: self scannerClass.
-			editor := BrTextEditorModel new.
-			editor styler: styler.
-			editor text: text.
-			editorElement := BrEditorElement new.
-			editorElement
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-			editorElement editor: editor.
-			editorElement ]
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCTokenRuleNode >> displayString [
 	^ name value
 ]
