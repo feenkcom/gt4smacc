@@ -589,7 +589,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 								each} ]) select: [ :each | each first notNil ].
 					list
 						itemsProvider:
-							((BrListStreamItemsProvider new)
+							((BrStreamItemsProvider new)
 								stream: stream asyncSimilarCopy;
 								preloadAmount: 1) ] ]
 ]
