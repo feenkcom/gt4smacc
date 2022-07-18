@@ -20,7 +20,6 @@ GtSmaCCAbstractRewriteElement >> addCommentElement [
 	label := (BrLabel new)
 		margin: (BlInsets top: 5 right: 5);
 		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
 		text: 'Comment:'.
 	commentEditor := (BrEditor new)
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
