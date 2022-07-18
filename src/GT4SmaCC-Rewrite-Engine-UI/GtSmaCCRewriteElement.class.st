@@ -14,48 +14,43 @@ Class {
 GtSmaCCRewriteElement >> build [
 	| matchLabel matchTabGroup transformationLabel transformationTabGroup |
 	super build.
-	matchLabel := (BrLabel new)
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Match:'.
+	matchLabel := BrLabel new
+			fitContent;
+			text: 'Match:'.
 	self addChild: matchLabel.
-	matchTabGroup := (BrTabGroup new)
-		matchParent;
-		margin: (BlInsets bottom: 5);
-		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude + BrGlamorousWithVerticalResizerAptitude new beBottom;
-		background: Color white.
+	matchTabGroup := BrTabGroup new
+			matchParent;
+			margin: (BlInsets bottom: 5);
+			aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude
+					+ BrGlamorousWithVerticalResizerAptitude new beBottom;
+			background: Color white.
 	matchTabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude new;
 				label: 'Code';
 				stencil: [ self matchCodeElement ]).
 	matchTabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude new;
 				label: 'Pattern';
 				stencil: [ self matchPatternElement ]).
 	self addChild: matchTabGroup as: #matchTabGroup.
-	transformationLabel := (BrLabel new)
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Transformation:'.
+	transformationLabel := BrLabel new
+			fitContent;
+			text: 'Transformation:'.
 	self addChild: transformationLabel.
-	transformationTabGroup := (BrTabGroup new)
-		matchParent;
-		margin: (BlInsets top: 5);
-		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
-		background: Color white.
+	transformationTabGroup := BrTabGroup new
+			matchParent;
+			margin: (BlInsets top: 5);
+			aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
+			background: Color white.
 	transformationTabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude new;
 				label: 'Code';
 				stencil: [ self transformationCodeElement ]).
 	transformationTabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude new;
 				label: 'Pattern';
 				stencil: [ self transformationPatternElement ]).
@@ -63,7 +58,9 @@ GtSmaCCRewriteElement >> build [
 	self updateMatch.
 	self updateTransformation.
 	matchTabGroup when: BrTabSelectedEvent do: [ :event | self matchTabSwitched ].
-	transformationTabGroup when: BrTabSelectedEvent do: [ :event | self transformationTabSwitched ]
+	transformationTabGroup
+		when: BrTabSelectedEvent
+		do: [ :event | self transformationTabSwitched ]
 ]
 
 { #category : #private }
@@ -85,89 +82,89 @@ GtSmaCCRewriteElement >> initialize [
 { #category : #building }
 GtSmaCCRewriteElement >> matchCodeElement [
 	| label nodeList editor |
-	label := (BrLabel new)
-		margin: (BlInsets top: 5 right: 5);
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Match nodes of type:'.
-	nodeList := (GtSmaCCDropDownList new)
-		margin: (BlInsets top: 3);
-		items: self nodeClasses;
-		when: BrSelectionChanged do: [ :event | rewrite match nodeClass: event target selectedItem ];
-		yourself.
+	label := BrLabel new
+			margin: (BlInsets top: 5 right: 5);
+			fitContent;
+			text: 'Match nodes of type:'.
+	nodeList := GtSmaCCDropDownList new
+			margin: (BlInsets top: 3);
+			items: self nodeClasses;
+			when: BrSelectionChanged
+				do: [ :event | rewrite match nodeClass: event target selectedItem ];
+			yourself.
 	editor := BrEditor new.
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
 		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
+		padding: (BlInsets
+				top: 5
+				left: 10
+				bottom: 5
+				right: 10);
 		matchParent.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match code: editor editor text asString ].
+	editor editor
+		when: BrTextEditorModifiedEvent
+		do: [ :event | rewrite match code: editor editor text asString ].
 	editor
-		addShortcut:
-			((BlShortcutWithAction new)
+		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryShiftF;
-				action:
-						[ | source |
-							source := self format: editor editor text asString.
-							rewrite match code: source.
-							editor editor text: source asRopedText ]).
-	^ (BrVerticalPane new)
+				action: [ | source |
+					source := self format: editor editor text asString.
+					rewrite match code: source.
+					editor editor text: source asRopedText ]).
+	^ BrVerticalPane new
 		padding: (BlInsets all: 5);
 		matchParent;
-		addChild:
-				((BrHorizontalPane new)
-						margin: (BlInsets bottom: 5);
-						vFitContent;
-						hMatchParent;
-						addChild: label;
-						addChild: nodeList as: #nodeList);
+		addChild: (BrHorizontalPane new
+				margin: (BlInsets bottom: 5);
+				vFitContent;
+				hMatchParent;
+				addChild: label;
+				addChild: nodeList as: #nodeList);
 		addChild: editor as: #matchCode
 ]
 
 { #category : #building }
 GtSmaCCRewriteElement >> matchPatternElement [
 	| label stateList editor |
-	label := (BrLabel new)
-		margin: (BlInsets top: 5 right: 5);
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Starting state for parser:'.
-	stateList := (GtSmaCCDropDownList new)
-		margin: (BlInsets top: 3);
-		items: (rewrite parserClass ifNil: [ #() ] ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
-		when: BrSelectionChanged do: [ :event | rewrite match startingState: event target selectedItem ];
-		yourself.
+	label := BrLabel new
+			margin: (BlInsets top: 5 right: 5);
+			fitContent;
+			text: 'Starting state for parser:'.
+	stateList := GtSmaCCDropDownList new
+			margin: (BlInsets top: 3);
+			items: (rewrite parserClass
+					ifNil: [ #() ]
+					ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
+			when: BrSelectionChanged
+				do: [ :event | rewrite match startingState: event target selectedItem ];
+			yourself.
 	editor := BrEditor new.
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
 		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
+		padding: (BlInsets
+				top: 5
+				left: 10
+				bottom: 5
+				right: 10);
 		matchParent.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match source: editor editor text asString ].
-	^ (BrVerticalPane new)
+	editor editor
+		when: BrTextEditorModifiedEvent
+		do: [ :event | rewrite match source: editor editor text asString ].
+	^ BrVerticalPane new
 		padding: (BlInsets all: 5);
 		matchParent;
-		addChild:
-				((BrHorizontalPane new)
-						margin: (BlInsets bottom: 5);
-						vFitContent;
-						hMatchParent;
-						addChild: label;
-						addChild: stateList as: #stateList);
+		addChild: (BrHorizontalPane new
+				margin: (BlInsets bottom: 5);
+				vFitContent;
+				hMatchParent;
+				addChild: label;
+				addChild: stateList as: #stateList);
 		addChild: editor as: #matchPattern
 ]
 

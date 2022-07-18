@@ -360,65 +360,52 @@ GtSmaCCTransformationToolkit >> configureElement [
 	element layout: (BlGridLayout new columnCount: 2).
 	element padding: (BlInsets all: 5).
 	element
-		constraintsDo:
-			[ :c | 
+		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Input Parser:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self inputParserElement.
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Validation Parser:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self validationParserElement.
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Output Directory:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self outputDirectoryElement.
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Create Subdirectories:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self createSubdirectoriesElement.
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Server:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self serverElement.
 	element
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: 'Run on Server:';
-				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).
 	element addChild: self runOnServerElement.
-	^ (BrHorizontalPane new)
+	^ BrHorizontalPane new
 		id: #dropdown;
 		fitContent;
 		addChild: element
@@ -499,30 +486,23 @@ GtSmaCCTransformationToolkit >> deleteRewriteButton [
 	^ self class
 		dropDown: 'Delete'
 		icon: BrGlamorousIcons remove
-		content:
-			[ :button | 
+		content: [ :button | 
 			| rewrite |
 			rewrite := self selectedRewrite.
 			(rewrite isNil or: [ rewrite parent isNil ])
-				ifTrue:
-					[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+				ifTrue: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 					BlElement new size: 0 @ 0 ]
-				ifFalse:
-					[ (BrVerticalPane new)
+				ifFalse: [ BrVerticalPane new
 						padding: (BlInsets all: 5);
 						fitContent;
-						addChild:
-								((BrLabel new)
-										fitContent;
-										aptitude: BrGlamorousLabelAptitude new;
-										text: 'Delete ' , rewrite displayString , '?');
-						addChild:
-								(self class
-										createToolbarButton: 'Delete'
-										icon: BrGlamorousIcons remove
-										action:
-											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self deleteRewrite ]) ] ]
+						addChild: (BrLabel new
+								fitContent;
+								text: 'Delete ' , rewrite displayString , '?');
+						addChild: (self class
+								createToolbarButton: 'Delete'
+								icon: BrGlamorousIcons remove
+								action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									self deleteRewrite ]) ] ]
 ]
 
 { #category : #private }
@@ -587,35 +567,32 @@ GtSmaCCTransformationToolkit >> fileToolbarItems [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> filesElement [
 	| element label filesSection filesLabelLine |
-	element := (BlElement new)
-		aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
-		layout: BlLinearLayout vertical;
-		padding: (BlInsets all: 5);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-	label := (BrLabel new)
-		fitContent;
-		margin: (BlInsets top: 2 right: 5);
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Files'.
-	filesLabelLine := (BrHorizontalPane new)
-		fitContent;
-		addChild: label;
-		addChild: (self filterButton: [ :string | self filterFiles: string ]).
+	element := BlElement new
+			aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
+			layout: BlLinearLayout vertical;
+			padding: (BlInsets all: 5);
+			constraintsDo: [ :c | 
+				c horizontal matchParent.
+				c vertical matchParent ].
+	label := BrLabel new
+			fitContent;
+			margin: (BlInsets top: 2 right: 5);
+			text: 'Files'.
+	filesLabelLine := BrHorizontalPane new
+			fitContent;
+			addChild: label;
+			addChild: (self filterButton: [ :string | self filterFiles: string ]).
 	element addChild: filesLabelLine.
 	filesSection := BrHorizontalPane new matchParent.
-	filesList := (BrSimpleList new)
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		margin: (BlInsets right: 5);
-		matchParent;
-		itemStencil:
-				[ (BrLabel new)
-						hMatchParent;
-						aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
-						padding: (BlInsets all: 5) ];
-		itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ].
+	filesList := BrSimpleList new
+			border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+			margin: (BlInsets right: 5);
+			matchParent;
+			itemStencil: [ BrLabel new
+					hMatchParent;
+					aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
+					padding: (BlInsets all: 5) ];
+			itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ].
 	filesSection addChild: filesList as: #filesList.
 	filesSection addChild: self filesToolbar.
 	element addChild: filesSection.
@@ -638,48 +615,40 @@ GtSmaCCTransformationToolkit >> filterButton: aBlock [
 	^ self class
 		dropDown: 'Filter'
 		icon: BrGlamorousIcons filter
-		content:
-			[ :button | 
+		content: [ :button | 
 			| editor |
 			editor := BrEditor new.
 			editor editor text: currentValue asRopedText.
 			editor selecter all select.
 			editor
-				addShortcut:
-						((BlShortcutWithAction new)
-								combination: BlKeyCombination return;
-								action:
-										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											currentValue := editor editor text asString.
-											aBlock value: currentValue ]);
+				addShortcut: (BlShortcutWithAction new
+						combination: BlKeyCombination return;
+						action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+							currentValue := editor editor text asString.
+							aBlock value: currentValue ]);
 				requestFocus;
 				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-				margin:
-						(BlInsets
-								top: 2
-								left: 4
-								bottom: 6
-								right: 4);
+				margin: (BlInsets
+						top: 2
+						left: 4
+						bottom: 6
+						right: 4);
 				width: 250;
 				vFitContent.
-			(BrVerticalPane new)
+			BrVerticalPane new
 				padding: (BlInsets all: 5);
 				fitContent;
-				addChild:
-						((BrLabel new)
-								margin: (BlInsets all: 4);
-								vFitContent;
-								aptitude: BrGlamorousLabelAptitude;
-								text: 'Filter:');
+				addChild: (BrLabel new
+						margin: (BlInsets all: 4);
+						vFitContent;
+						text: 'Filter:');
 				addChild: editor;
-				addChild:
-						(self class
-								createToolbarButton: 'Apply Filter'
-								icon: BrGlamorousIcons filter
-								action:
-									[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-									currentValue := editor editor text asString.
-									aBlock value: currentValue ]);
+				addChild: (self class
+						createToolbarButton: 'Apply Filter'
+						icon: BrGlamorousIcons filter
+						action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+							currentValue := editor editor text asString.
+							aBlock value: currentValue ]);
 				yourself ]
 ]
 
@@ -1203,30 +1172,23 @@ GtSmaCCTransformationToolkit >> removeFileElement: button [
 	| selectedFiles |
 	selectedFiles := self selectedFiles.
 	selectedFiles isEmpty
-		ifTrue:
-			[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+		ifTrue: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 			^ BlElement new size: 0 @ 0 ].
-	^ (BrVerticalPane new)
+	^ BrVerticalPane new
 		padding: (BlInsets all: 5);
 		fitContent;
-		addChild:
-				((BrLabel new)
-						fitContent;
-						aptitude: BrGlamorousLabelAptitude new;
-						text:
-								'Remove ' , selectedFiles first asFileReference basenameWithoutExtension
-										,
-											(selectedFiles size > 1
-												ifTrue:
-													[ ' and ' , (selectedFiles size - 1) printString , ' other' , (selectedFiles size > 2 ifTrue: [ 's' ] ifFalse: [ '' ]) ]
-												ifFalse: [ '' ]) , '?');
-		addChild:
-				(self class
-						createToolbarButton: 'Delete'
-						icon: BrGlamorousIcons remove
-						action:
-							[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-							self removeFiles ])
+		addChild: (BrLabel new
+				fitContent;
+				text: 'Remove ' , selectedFiles first asFileReference basenameWithoutExtension
+						, (selectedFiles size > 1
+								ifTrue: [ ' and ' , (selectedFiles size - 1) printString , ' other'
+										, (selectedFiles size > 2 ifTrue: [ 's' ] ifFalse: [ '' ]) ]
+								ifFalse: [ '' ]) , '?');
+		addChild: (self class
+				createToolbarButton: 'Delete'
+				icon: BrGlamorousIcons remove
+				action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+					self removeFiles ])
 ]
 
 { #category : #'configuration-actions' }
@@ -1254,52 +1216,47 @@ GtSmaCCTransformationToolkit >> removeOverlay [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> resultsElement [
 	| element label resultsList |
-	element := (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent.
-	label := (BrLabel new)
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Results:'.
+	element := BrVerticalPane new
+			padding: (BlInsets all: 5);
+			matchParent.
+	label := BrLabel new
+			fitContent;
+			text: 'Results:'.
 	element addChild: label.
-	resultsList := ((GtPhlowProtoView new columnedList)
-		column: 'File' text: [ :each | self localFilename: each filename ];
-		column: 'Error' text: [ :each | each errorString ifNil: [ '' ] ];
-		column: 'Transformation' text: [ :each | each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ] ];
-		column: 'Location'
-			text:
-				[ :each | each startLine ifNil: [ '' ] ifNotNil: [ :line | line asString , ':' , (each startColumn ifNil: [ '' ]) asString ] ]
-			width: 55) asElement.
+	resultsList := (GtPhlowProtoView new columnedList
+			column: 'File' text: [ :each | self localFilename: each filename ];
+			column: 'Error' text: [ :each | each errorString ifNil: [ '' ] ];
+			column: 'Transformation'
+				text: [ :each | each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ] ];
+			column: 'Location'
+				text: [ :each | 
+					each startLine
+						ifNil: [ '' ]
+						ifNotNil: [ :line | line asString , ':' , (each startColumn ifNil: [ '' ]) asString ] ]
+				width: 55) asElement.
 	resultsList
 		margin: (BlInsets right: 5);
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
 	resultsList children last
 		when: BrSelectionChanged
-		do:
-			[ :event | 
+		do: [ :event | 
 			windowElement
 				childNamed: #filesList
-				ifFound:
-					[ :files | 
+				ifFound: [ :files | 
 					event selectedInterval
-						ifNotNil:
-							[ :each | 
+						ifNotNil: [ :each | 
 							| value |
 							value := (event target items at: each first) filename.
-							(files viewModel itemsProvider preloadUntilFoundSuchThat: [ :fn | fn = value ])
-								then:
-									[ :index | 
+							(files viewModel itemsProvider
+								preloadUntilFoundSuchThat: [ :fn | fn = value ])
+								then: [ :index | 
 									index > 0
-										ifTrue:
-											[ files
-												enqueueTask:
-													(BlTaskAction new
-														action:
-															[ files selectOne: index.
+										ifTrue: [ files
+												enqueueTask: (BlTaskAction new
+														action: [ files selectOne: index.
 															files scrollToIndex: index ]) ] ] ] ] ].
 	element addChild: resultsList as: #resultsList.
 	^ element
@@ -1512,104 +1469,86 @@ GtSmaCCTransformationToolkit >> transformationsElement [
 	| element leftElement toolbar |
 	element := BrHorizontalPane new.
 	element matchParent.
-	leftElement := (BrVerticalPane new)
-		width: 250;
-		vMatchParent;
-		margin: (BlInsets all: 5);
-		padding: (BlInsets all: 5);
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight.
-	toolbar := (BrToolbar new)
-		aptitude: BrGlamorousToolbarAptitude new;
-		fitContent;
-		addItems: self rewriteToolbarItems.
+	leftElement := BrVerticalPane new
+			width: 250;
+			vMatchParent;
+			margin: (BlInsets all: 5);
+			padding: (BlInsets all: 5);
+			aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight.
+	toolbar := BrToolbar new
+			aptitude: BrGlamorousToolbarAptitude new;
+			fitContent;
+			addItems: self rewriteToolbarItems.
 	leftElement
-		addChild:
-			((BrHorizontalPane new)
+		addChild: (BrHorizontalPane new
 				vFitContent;
 				hMatchParent;
-				addChild:
-						((BrHorizontalPane new)
-								vFitContent;
-								hMatchParent;
-								addChild:
-										((BrLabel new)
-												fitContent;
-												margin: (BlInsets top: 2 right: 5);
-												aptitude: BrGlamorousLabelAptitude new;
-												text: 'Rewrites');
-								addChild: self filterRewritesButton);
+				addChild: (BrHorizontalPane new
+						vFitContent;
+						hMatchParent;
+						addChild: (BrLabel new
+								fitContent;
+								margin: (BlInsets top: 2 right: 5);
+								text: 'Rewrites');
+						addChild: self filterRewritesButton);
 				addChild: toolbar).
 	transformationsTree := BrSimpleTree new.
 	transformationsTree
 		matchParent;
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		rowStencil: BrGlamorousSimpleTreeSelectableRowElementStencilBuilder new;
-		nodeStencil:
-				[ (BrLabel new)
-						aptitude: BrGlamorousLabelAptitude;
-						vFitContent;
-						hMatchParent ];
+		nodeStencil: [ BrLabel new
+				vFitContent;
+				hMatchParent ];
 		nodeDataBinder: [ :label :rewrite | label text: rewrite displayString ];
-		when: BrSelectionChanged do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
+		when: BrSelectionChanged
+			do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
 	transformationsTree
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowUp;
-										build);
-						action: [ self moveRewriteUp ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowDown;
-										build);
-						action: [ self moveRewriteDown ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowLeft;
-										build);
-						action: [ self moveRewriteOut ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowRight;
-										build);
-						action: [ self moveRewriteInto ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										shift;
-										key: BlKeyboardKey arrowUp;
-										build);
-						action: [ self moveRewriteToTop ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										shift;
-										key: BlKeyboardKey arrowDown;
-										build);
-						action: [ self moveRewriteToBottom ]).
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						key: BlKeyboardKey arrowUp;
+						build);
+				action: [ self moveRewriteUp ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						key: BlKeyboardKey arrowDown;
+						build);
+				action: [ self moveRewriteDown ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						key: BlKeyboardKey arrowLeft;
+						build);
+				action: [ self moveRewriteOut ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						key: BlKeyboardKey arrowRight;
+						build);
+				action: [ self moveRewriteInto ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						shift;
+						key: BlKeyboardKey arrowUp;
+						build);
+				action: [ self moveRewriteToTop ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						primary;
+						shift;
+						key: BlKeyboardKey arrowDown;
+						build);
+				action: [ self moveRewriteToBottom ]).
 	leftElement addChild: transformationsTree.
 	element addChild: leftElement.
 	transformationElement := BlElement new.
 	transformationElement
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ];
 		margin: (BlInsets all: 5).
 	element addChild: transformationElement.
 	self updateRewrites.
