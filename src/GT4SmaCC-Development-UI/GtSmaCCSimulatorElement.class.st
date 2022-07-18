@@ -40,8 +40,10 @@ GtSmaCCSimulatorElement >> buildElement [
 GtSmaCCSimulatorElement >> buildInputElement [
 	self matchParent.
 	self
-		addChild: (BrLabel new
+		addChild:
+			((BrLabel new)
 				text: simulator ruleName , ' input:';
+				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
 				hFitContent;
 				yourself).

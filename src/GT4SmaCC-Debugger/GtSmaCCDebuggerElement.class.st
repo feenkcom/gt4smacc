@@ -93,6 +93,7 @@ GtSmaCCDebuggerElement >> buildDetailsInspector [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildGLRStates [
 	^ glrLabel := BrLabel new
+		aptitude: BrGlamorousLabelAptitude new;
 		padding: (BlInsets all: 5);
 		text: self glrStateText;
 		hMatchParent;
@@ -102,8 +103,8 @@ GtSmaCCDebuggerElement >> buildGLRStates [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildParserActions [
 	stateActionsList := BrColumnedList new.
-	stateActionsList
-		margin: (BlInsets all: 10);
+	stateActionsList 
+		margin: (BlInsets all: 10); 
 		addAptitude: BrShadowAptitude;
 		background: Color white;
 		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new cellSpacing: 10).
@@ -113,24 +114,28 @@ GtSmaCCDebuggerElement >> buildParserActions [
 			| text |
 			text := each first asRopedText.
 			text
-				attributes: (each third
-						ifTrue: [ {BlTextForegroundAttribute paint: Color black.
-								BlFontWeightAttribute bold} ]
-						ifFalse: [ {BlTextForegroundAttribute paint: Color red} ]).
+				attributes:
+					(each third
+						ifTrue: [ {(BlTextForegroundAttribute paint: Color black).
+							BlFontWeightAttribute bold} ]
+						ifFalse: [ {(BlTextForegroundAttribute paint: Color red)} ]).
 			BrLabel new
+				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
-				margin: (BlInsets top: 5 bottom: 5) ].
+				margin: (BlInsets top: 5 bottom: 5)].
 	stateActionsList column
 		title: 'Action';
 		stencil: [ :each | 
 			| text |
 			text := each second asRopedText.
 			text
-				attributes: (each third
-						ifTrue: [ {BlTextForegroundAttribute paint: Color black.
-								BlFontWeightAttribute bold} ]
-						ifFalse: [ {BlTextForegroundAttribute paint: Color red} ]).
+				attributes:
+					(each third
+						ifTrue: [ {(BlTextForegroundAttribute paint: Color black).
+							BlFontWeightAttribute bold} ]
+						ifFalse: [ {(BlTextForegroundAttribute paint: Color red)} ]).
 			BrLabel new
+				aptitude: BrGlamorousLabelAptitude new;
 				text: text;
 				margin: (BlInsets top: 5 bottom: 5) ].
 	^ stateActionsList
@@ -161,26 +166,26 @@ GtSmaCCDebuggerElement >> buildParserStack [
 		background: Color white;
 		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new cellSpacing: 10).
 	parserStackList
-		addEventHandler: (GtPhlowListToSelectHandler new
-				transformation: [ :each | each first = '' ifFalse: [ each last ] ]).
+		addEventHandler: (GtPhlowListToSelectHandler new transformation: [ :each | each first = '' ifFalse: [ each last ] ]).
 	parserStackList
 		when: BrSelectionChanged
-		do: [ :event | 
-			event
-				selectedDo: [ :each | self selectedStackItem: (parserStackList items at: each first) last ] ].
-	parserStackList column
+		do: [ :event | event selectedDo: [ :each | self selectedStackItem: (parserStackList items at: each first) last ] ].
+	(parserStackList column)
 		title: 'Symbol';
-		stencil: [ :each | 
-			BrLabel new
-				aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
-				text: (each first ifNil: [ '' ]);
-				margin: (BlInsets top: 5 bottom: 5) ].
-	parserStackList column
+		stencil:
+				[ :each | 
+					(BrLabel new)
+						aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
+						text: (each first ifNil: [ '' ]);
+						margin: (BlInsets top: 5 bottom: 5) ].
+	(parserStackList column)
 		title: 'Value';
-		stencil: [ :each | 
-			BrLabel new
-				text: each last displayString;
-				margin: (BlInsets top: 5 bottom: 5) ].
+		stencil:
+				[ :each | 
+					(BrLabel new)
+						aptitude: BrGlamorousLabelAptitude new;
+						text: each last displayString;
+						margin: (BlInsets top: 5 bottom: 5) ].
 	^ parserStackList
 ]
 
@@ -222,8 +227,10 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 		title: 'Name';
 		stencil: [ :each | 
 			BrLabel new
+				aptitude: BrGlamorousLabelAptitude new;
 				text: each first;
-				margin: (BlInsets
+				margin:
+					(BlInsets
 						top: 3
 						left: 10
 						bottom: 3
@@ -232,8 +239,10 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 		title: 'Value';
 		stencil: [ :each | 
 			BrLabel new
+				aptitude: BrGlamorousLabelAptitude new;
 				text: each last displayString;
-				margin: (BlInsets
+				margin:
+					(BlInsets
 						top: 3
 						left: 10
 						bottom: 3

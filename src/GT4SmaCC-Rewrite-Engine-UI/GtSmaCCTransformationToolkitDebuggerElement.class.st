@@ -208,39 +208,44 @@ GtSmaCCTransformationToolkitDebuggerElement >> inspectorListElement [
 	list := BrColumnedList new.
 	list margin: (BlInsets all: 5).
 	list border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1).
-	list
-		addEventHandler: (GtPhlowListToSelectHandler new
-				transformation: [ :variableNode | variableNode value ]).
+	list addEventHandler: (GtPhlowListToSelectHandler new transformation: [ :variableNode | variableNode value ]).
 	list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
-	list column
+	(list column)
 		title: 'Name';
-		cellStencil: [ BrLabel new
-				aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
-				hMatchParent;
-				vFitContent;
-				margin: (BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ];
+		cellStencil:
+				[ (BrLabel new)
+						aptitude: (BrGlamorousLabelAptitude new foreground: Color black);
+						hMatchParent;
+						vFitContent;
+						margin:
+								(BlInsets
+										top: 3
+										left: 10
+										bottom: 3
+										right: 0) ];
 		dataBinder: [ :aCellElement :aVariableNode | aCellElement text: aVariableNode key asRopedText ].
-	list column
+	(list column)
 		title: 'Value';
-		cellStencil: [ BrLabel new
-				hMatchParent;
-				vFitContent;
-				margin: (BlInsets
-						top: 3
-						left: 10
-						bottom: 3
-						right: 0) ];
-		dataBinder: [ :aCellElement :aVariableNode | 
-			| aRawValue |
-			aRawValue := aVariableNode value.
-			aCellElement
-				text: ([ aRawValue gtDisplayString asRopedText ]
-						on: Error , Halt
-						do: [ :error | error messageText asRopedText foreground: Color red ]) ].
+		cellStencil:
+				[ (BrLabel new)
+						aptitude: BrGlamorousLabelAptitude new;
+						hMatchParent;
+						vFitContent;
+						margin:
+								(BlInsets
+										top: 3
+										left: 10
+										bottom: 3
+										right: 0) ];
+		dataBinder:
+				[ :aCellElement :aVariableNode | 
+					| aRawValue |
+					aRawValue := aVariableNode value.
+					aCellElement
+						text:
+							([ aRawValue gtDisplayString asRopedText ]
+								on: Error , Halt
+								do: [ :error | error messageText asRopedText foreground: Color red ]) ].
 	^ list
 ]
 
@@ -336,54 +341,63 @@ GtSmaCCTransformationToolkitDebuggerElement >> sourceSelectionIntervalForContext
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 	| list |
-	list := BrSimpleList new
-			padding: (BlInsets all: 5);
-			matchParent;
-			itemStencil: [ BrExpander new
-					margin: (BlInsets
-							top: 3
-							left: 3
-							bottom: 3
-							right: 8);
-					padding: (BlInsets all: 3);
-					aptitude: (GtCoderExpanderAptitude new
-							borderWidth: 0;
-							padding: (BlInsets
-									top: 1
-									left: 10
-									bottom: 1
-									right: 10));
-					hMatchParent;
-					vFitContent ];
-			itemDataBinder: [ :expander :each :index | 
-				| isBlock labelString |
-				isBlock := each last isBlockContext.
-				labelString := ((isBlock ifTrue: [ '[' ] ifFalse: [ '' ])
-						, each first displayString
-						, (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) gtDisplayString) asRopedText
-						bold.
-				expander
-					header: [ BrLabel new
-							vFitContent;
-							hMatchParent;
-							text: labelString ];
-					content: [ | editor |
-						editor := self textElementForContext: each last andRewrite: each first.
-						editor enqueueTask: (BlTaskAction new action: [ editor requestFocus ]).
-						BrVerticalPane new
-							hMatchParent;
-							vFitContent;
-							addChild: (BrLabel new
-									vFitContent;
-									hMatchParent;
-									text: labelString);
-							addChild: editor as: #editor ];
-					expanded: index = 1 ].
-	^ BlElement new
+	list := (BrSimpleList new)
+		padding: (BlInsets all: 5);
+		matchParent;
+		itemStencil:
+				[ (BrExpander new)
+						margin:
+								(BlInsets
+										top: 3
+										left: 3
+										bottom: 3
+										right: 8);
+						padding: (BlInsets all: 3);
+						aptitude:
+								((GtCoderExpanderAptitude new)
+										borderWidth: 0;
+										padding:
+												(BlInsets
+														top: 1
+														left: 10
+														bottom: 1
+														right: 10));
+						hMatchParent;
+						vFitContent ];
+		itemDataBinder:
+				[ :expander :each :index | 
+					| isBlock labelString |
+					isBlock := each last isBlockContext.
+					labelString := ((isBlock ifTrue: [ '[' ] ifFalse: [ '' ]) , each first displayString
+						, (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) gtDisplayString) asRopedText bold.
+					expander
+						header:
+								[ (BrLabel new)
+										aptitude: BrGlamorousLabelAptitude;
+										vFitContent;
+										hMatchParent;
+										text: labelString ];
+						content:
+								[ | editor |
+									editor := self textElementForContext: each last andRewrite: each first.
+									editor enqueueTask: (BlTaskAction new action: [ editor requestFocus ]).
+									(BrVerticalPane new)
+										hMatchParent;
+										vFitContent;
+										addChild:
+												((BrLabel new)
+														aptitude: BrGlamorousLabelAptitude;
+														vFitContent;
+														hMatchParent;
+														text: labelString);
+										addChild: editor as: #editor ];
+						expanded: index = 1 ].
+	^ (BlElement new)
 		margin: (BlInsets all: 5);
-		constraintsDo: [ :c | 
-			c vertical matchParent.
-			c horizontal matchParent ];
+		constraintsDo:
+				[ :c | 
+					c vertical matchParent.
+					c horizontal matchParent ];
 		addChild: list as: #stack;
 		yourself
 ]

@@ -17,16 +17,18 @@ GtSmaCCRewriteFileElement >> parserElement [
 	element hMatchParent.
 	element vFitContent.
 	element
-		addChild: (BrLabel new
+		addChild:
+			((BrLabel new)
 				margin: (BlInsets top: 5 right: 5);
 				fitContent;
+				aptitude: BrGlamorousLabelAptitude new;
 				text: 'Parser:').
 	element
-		addChild: (GtSmaCCDropDownList new
+		addChild:
+			((GtSmaCCDropDownList new)
 				margin: (BlInsets top: 5);
 				items: (SmaCCParser allSubclasses asSortedCollection: [ :a :b | a name < b name ]);
-				when: BrSelectionChanged
-					do: [ :event | rewrite parserClass: event target selectedItem ])
+				when: BrSelectionChanged do: [ :event | rewrite parserClass: event target selectedItem ])
 		as: #parserClass.
 	^ element
 ]

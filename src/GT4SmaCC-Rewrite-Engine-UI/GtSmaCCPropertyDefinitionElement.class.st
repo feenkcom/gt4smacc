@@ -9,33 +9,40 @@ GtSmaCCPropertyDefinitionElement >> addButton: aString [
 	^ GtSmaCCTransformationToolkit
 		dropDown: 'Add'
 		icon: BrGlamorousIcons add
-		content: [ :button | 
+		content:
+			[ :button | 
 			| editor |
-			editor := BrEditor new
-					border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-					hMatchParent;
-					vFitContent;
-					aptitude: BrGlamorousRegularEditorAptitude new.
-			BrVerticalPane new
+			editor := (BrEditor new)
+				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+				hMatchParent;
+				vFitContent;
+				aptitude: BrGlamorousRegularEditorAptitude new.
+			(BrVerticalPane new)
 				width: 300;
 				vFitContent;
 				padding: (BlInsets all: 5);
-				addChild: (BrHorizontalPane new
-						hMatchParent;
-						vFitContent;
-						addChild: (BrLabel new
-								margin: (BlInsets all: 4);
+				addChild:
+						((BrHorizontalPane new)
+								hMatchParent;
 								vFitContent;
-								text: 'Name:');
-						addChild: editor);
-				addChild: (GtSmaCCTransformationToolkit
-						createToolbarButton: 'Add'
-						icon: BrGlamorousIcons add
-						action: [ | variableName |
-							variableName := editor text asString.
-							(RBScanner isVariable: variableName)
-								ifTrue: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-									rewrite perform: ('add' , aString , ':') asSymbol with: variableName ] ]) ]
+								addChild:
+										((BrLabel new)
+												margin: (BlInsets all: 4);
+												vFitContent;
+												aptitude: BrGlamorousLabelAptitude;
+												text: 'Name:');
+								addChild: editor);
+				addChild:
+						(GtSmaCCTransformationToolkit
+								createToolbarButton: 'Add'
+								icon: BrGlamorousIcons add
+								action:
+									[ | variableName |
+									variableName := editor text asString.
+									(RBScanner isVariable: variableName)
+										ifTrue:
+											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											rewrite perform: ('add' , aString , ':') asSymbol with: variableName ] ]) ]
 ]
 
 { #category : #building }
