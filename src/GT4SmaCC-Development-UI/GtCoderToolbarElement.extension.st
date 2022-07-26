@@ -10,7 +10,7 @@ GtCoderToolbarElement >> addParserTab: look [
 			element := GtSmaCCCreateParserElement new.
 			element
 				behaviorBlock: [ :cls | 
-					look hide.
+					look fireEvent: BrDropdownHideWish new.
 					navigationModel selectClass: cls ].
 			navigationModel
 				selectedPackageDo: [ :package | element forPackage: package ].
