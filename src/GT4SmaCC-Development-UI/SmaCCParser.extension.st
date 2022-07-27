@@ -170,6 +170,21 @@ SmaCCParser class >> gtTestFor: aView [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParser class >> gtUnknownProductionType: aGtAdvice [
+	<gtAdvice>
+	| types names |
+	(self class includesSelector: #definitionComment) ifFalse: [ ^ aGtAdvice none ].
+	types := self symbolTypes.
+	names := self symbolNames.
+	^ aGtAdvice asyncStream
+		priority: 1;
+		description: [ :each | (each , ': type could not be determined.') asRopedText ];
+		compute: [ ((1 to: (types size min: names size)) asAsyncStream
+				select: [ :i | (types at: i) = #Object ]) collect: [ :i | names at: i ] ];
+		action: [ :each | GtSelectRuleAdviceAction forParser: self ruleName: each ]
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> simulateParse: inputString fromRule: ruleName [
 	| simulator |
 	simulator := SmaCCParserSimulator on: self parserDefinitionString.

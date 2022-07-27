@@ -58,6 +58,25 @@ GtSmaCCDefinitionListElement >> listElement [
 			listElement ]
 ]
 
+{ #category : #actions }
+GtSmaCCDefinitionListElement >> scrollAndOpenItem: aString [
+	1
+		to: self group coders size
+		do: [ :i | 
+			(self group coders at: i) name = aString
+				ifTrue: [ (self group coders at: i) expanded: true.
+					self listElement scrollToPosition: i.
+					self
+						enqueueTask: (BlTaskAction new
+								action: [ self
+										allChildrenBreadthFirstDetect: [ :each | 
+											(each isKindOf: GtSmaCCCoderElement)
+												and: [ each coder = (self group coders at: i) ] ]
+										ifFound: [ :each | each expand ] ]).
+					^ true ] ].
+	^ false
+]
+
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateFilters [
 	self updateList
