@@ -129,7 +129,7 @@ GtSmaCCCoderElement >> initialize [
 				combination:
 						((BlKeyCombination builder)
 								primary;
-								return;
+								enter;
 								build);
 				action: [ self toggleExpanded ])
 ]

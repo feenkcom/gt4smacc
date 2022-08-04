@@ -135,7 +135,7 @@ GtSmaCCVariableCoderElement >> initialize [
 				combination:
 					(BlKeyCombination builder
 						primary;
-						return;
+						enter;
 						build);
 				action: [ self toggle ]);
 		addShortcut:

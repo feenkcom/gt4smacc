@@ -647,7 +647,7 @@ GtSmaCCTransformationToolkit >> filterButton: aBlock [
 			editor
 				addShortcut:
 						((BlShortcutWithAction new)
-								combination: BlKeyCombination return;
+								combination: BlKeyCombination enter;
 								action:
 										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 											currentValue := editor editor text asString.
