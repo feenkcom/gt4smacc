@@ -48,12 +48,15 @@ GtSmaCCListCoderElement >> actions [
 GtSmaCCListCoderElement >> buildElement [
 	self matchParent.
 	self
-		addChild:
-				((self coderListElementClass new)
-						group: self group;
-						yourself)
+		addChild: (self coderListElementClass new
+					group: self group;
+					yourself)
 			as: #list;
-		addChild: self compilationBar
+		addChild: self compilationBar.
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryS;
+				action: [ self compileParser ])
 ]
 
 { #category : #accessing }

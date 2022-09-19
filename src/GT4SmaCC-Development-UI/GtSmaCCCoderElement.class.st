@@ -114,23 +114,16 @@ GtSmaCCCoderElement >> initialize [
 	self addChild: self deleteElement as: #deleteButton.
 	self
 		background: Color white;
-		aptitude:
-				((GtCoderExpanderAptitude new)
-						borderWidth: 0;
-						padding:
-								(BlInsets
-										top: 1
-										left: 10
-										bottom: 1
-										right: 10)).
+		aptitude: (GtCoderExpanderAptitude new
+				borderWidth: 0;
+				padding: (BlInsets
+						top: 1
+						left: 10
+						bottom: 1
+						right: 10)).
 	self
-		addShortcut:
-			((BlShortcutWithAction new)
-				combination:
-						((BlKeyCombination builder)
-								primary;
-								enter;
-								build);
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryReturn;
 				action: [ self toggleExpanded ])
 ]
 

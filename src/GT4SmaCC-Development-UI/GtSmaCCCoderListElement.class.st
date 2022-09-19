@@ -111,16 +111,16 @@ GtSmaCCCoderListElement >> textSearchElement [
 		when: BrTextEditorInsertedEvent do: [ :event | self updateFilters ];
 		when: BrTextEditorDeletedEvent do: [ :event | self updateFilters ].
 	element := BrEditorElement new.
-	element editor: editor.
 	element
-		border: (BlBorder paint: self theme editor borderColor width: 1).
+		addAptitude: (BrGlamorousWithLabelTooltipAptitude new text: 'Search Grammar').
+	element editor: editor.
+	element border: (BlBorder paint: self theme editor borderColor width: 1).
 	element
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent ].
 	element
-		margin:
-			(BlInsets
+		margin: (BlInsets
 				top: 10
 				left: 0
 				bottom: 0

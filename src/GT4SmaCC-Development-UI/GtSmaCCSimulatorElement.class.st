@@ -40,8 +40,7 @@ GtSmaCCSimulatorElement >> buildElement [
 GtSmaCCSimulatorElement >> buildInputElement [
 	self matchParent.
 	self
-		addChild:
-			((BrLabel new)
+		addChild: (BrLabel new
 				text: simulator ruleName , ' input:';
 				aptitude: BrGlamorousLabelAptitude new;
 				padding: (BlInsets all: 5);
@@ -109,18 +108,17 @@ GtSmaCCSimulatorElement >> testElement [
 	editor
 		when: BrTextEditorDeletedEvent do: [ :event | self simulateInput ];
 		when: BrTextEditorInsertedEvent do: [ :event | self simulateInput ];
-		when: BrTextEditorCursorMovedEvent
-			do: [ :event | self cursorMoved ].
-	editor
-		text: ('' asRopedText attributes: GtSmaCCCoder defaultTextAttributes).
+		when: BrTextEditorCursorMovedEvent do: [ :event | self cursorMoved ].
+	editor text: ('' asRopedText attributes: GtSmaCCCoder defaultTextAttributes).
 	element := BrEditorElement new.
+	element
+		addAptitude: (BrGlamorousWithLabelTooltipAptitude new text: 'Source To Simulate on').
 	element
 		constraintsDo: [ :c | 
 			c maxHeight: 350.
 			c horizontal matchParent.
 			c vertical fitContent ].
-	element
-		border: (BlBorder paint: self theme editor borderColor width: 1).
+	element border: (BlBorder paint: self theme editor borderColor width: 1).
 	element margin: (BlInsets all: 5).
 	element padding: (BlInsets all: 3).
 	element editor: editor.
