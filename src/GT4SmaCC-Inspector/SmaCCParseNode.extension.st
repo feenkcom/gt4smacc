@@ -176,14 +176,14 @@ SmaCCParseNode >> gtSourceFor: aView [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
-SmaCCParseNode >> gtSpotterNodeFor: aStep [
+SmaCCParseNode >> gtSpotterNodeFor: aSearch [
 	<gtSearch>
 	| source |
 	source := self topParent completeSource.
-	aStep listProcessor
+	^ aSearch list
 		priority: 10;
 		title: 'Nodes';
-		allCandidates: [ | nodes |
+		items: [ | nodes |
 			nodes := OrderedCollection with: self.
 			self allNodesDo: [ :each | nodes add: each ].
 			nodes ];
