@@ -183,10 +183,7 @@ SmaCCParseNode >> gtSpotterNodeFor: aSearch [
 	^ aSearch list
 		priority: 10;
 		title: 'Nodes';
-		items: [ | nodes |
-			nodes := OrderedCollection with: self.
-			self allNodesDo: [ :each | nodes add: each ].
-			nodes ];
+		items: [ AsyncDepthFirstTraversalStream root: self children: [ :each | each children ] ];
 		itemName: [ :node | 
 			[ | start stop |
 			start := node startPosition.
@@ -194,7 +191,7 @@ SmaCCParseNode >> gtSpotterNodeFor: aSearch [
 			(source copyFrom: start to: (stop min: start + 100)) asString ]
 				on: Error
 				do: [ :ex | ex return: node class name ] ];
-		filter: GtSmaCCASTFilter
+		filter: GtSmaCCASTFilter new
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
