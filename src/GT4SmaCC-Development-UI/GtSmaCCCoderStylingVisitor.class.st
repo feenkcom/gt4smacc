@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCoderStylingVisitor,
 	#superclass : #GtSmaCCSyntaxStylingVisitor,
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #private }
@@ -40,7 +40,7 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		ifFalse: [ ^ self ].
 	self text
 		attributes:
-			{(BrGlamorousTrangleExpanderTextAttribute new
+			{(BrGlamorousTriangleExpanderTextAttribute new
 				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
 						beAppend;
 						stencil: [ | element coder |
