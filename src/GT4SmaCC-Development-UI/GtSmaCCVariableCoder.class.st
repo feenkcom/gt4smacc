@@ -132,7 +132,7 @@ GtSmaCCVariableCoder >> referenceTextFor: node at: index in: aProduction [
 	styler := GtSmaCCGrammarStyler for: owner scannerClass grammar: owner grammar ast.
 	ruleText attributes: GtSmaCCCoder defaultTextAttributes.
 	ruleText := styler privateStyle: ruleText.
-	ruleText clearAttributes: [ :each | each class = BrGlamorousTrangleExpanderTextAttribute ].
+	ruleText clearAttributes: [ :each | each class = BrGlamorousTriangleExpanderTextAttribute ].
 	ruleText
 		attributes:
 			{(BlTextDecorationAttribute new)
