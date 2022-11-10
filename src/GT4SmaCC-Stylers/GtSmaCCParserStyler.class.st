@@ -133,6 +133,45 @@ GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
+{ #category : #instances }
+GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
+	<smaccStyler: #GraphQLParser priority: 50>
+	| colors |
+	colors := BrGlamorousColors distinctTenStrongColors allButFirst
+			collect: [ :each | each twiceDarker ].	"remove red"
+	^ (self forParser: aParserClass)
+		stylerRules: {GtSmaCCCommentStylerRule
+					styleBlock: [ :styler | styler foreground: Color lightGray ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #GraphQLLiteralNode
+					styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCKeywordTokensStylerRule
+					styleBlock: [ :styler | 
+						styler
+							bold;
+							foreground: Color purple ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #SmaCCErrorNode
+					variableNames: #(dismissedTokens errorToken)
+					styleBlock: [ :styler | styler foreground: Color red ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #GraphQLProgramNode
+					styleBlock: [ :styler :node :text | 
+						(node respondsTo: #description)
+							ifTrue: [ (text from: node description startPosition to: node description stopPosition)
+									foreground: Color lightGray ].
+						(node respondsTo: #leftBrace)
+							ifTrue: [ | color parents |
+								parents := node allParents
+										select: [ :each | each respondsTo: #leftBrace ].
+								color := colors at: parents size \\ colors size + 1.
+								(text from: node leftBrace startPosition to: node leftBrace stopPosition)
+									foreground: color.
+								(text
+									from: node rightBrace startPosition
+									to: node rightBrace stopPosition) foreground: color ] ]}
+]
+
 { #category : #view }
 GtSmaCCParserStyler class >> gtParsersFor: aView [
 	<gtView>
