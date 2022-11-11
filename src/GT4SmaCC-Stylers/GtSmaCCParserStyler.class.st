@@ -160,8 +160,22 @@ GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
 						(node respondsTo: #description)
 							ifTrue: [ (text from: node description startPosition to: node description stopPosition)
 									foreground: Color lightGray ].
+						(node respondsTo: #leftParen)
+							ifTrue: [ self
+									highlightParentheses: text
+									left: node leftParen
+									right: node rightParen ].
+						(node respondsTo: #leftBracket)
+							ifTrue: [ self
+									highlightParentheses: text
+									left: node leftBracket
+									right: node rightBracket ].
 						(node respondsTo: #leftBrace)
 							ifTrue: [ | color parents |
+								self
+									highlightParentheses: text
+									left: node leftBrace
+									right: node rightBrace.
 								parents := node allParents
 										select: [ :each | each respondsTo: #leftBrace ].
 								color := colors at: parents size \\ colors size + 1.
@@ -173,12 +187,52 @@ GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
 ]
 
 { #category : #view }
-GtSmaCCParserStyler class >> gtParsersFor: aView [
+GtSmaCCParserStyler class >> gtStylerMethodsFor: aView [
 	<gtView>
 	^ aView list
-		title: 'Parsers';
+		title: 'Stylers';
 		items: [ (Pragma allNamed: #smaccStyler:priority: in: self class) collect: #method ];
 		sendTool: [ :aMethod | GtMethodCoderTool compiledMethod: aMethod  ]
+]
+
+{ #category : #private }
+GtSmaCCParserStyler class >> highlightParentheses: aText left: leftToken right: rightToken [
+	| theParanthesesMarker cursorEnterAction cursorLeaveAction leftIndex rightIndex |
+	(leftToken isNil or: [ rightToken isNil ]) ifTrue: [ ^ self ].
+	leftIndex := leftToken startPosition.
+	rightIndex := rightToken stopPosition.
+	(leftIndex isNil or: [ rightIndex isNil or: [ leftIndex >= rightIndex ] ])
+		ifTrue: [ ^ self ].
+	theParanthesesMarker := BrTextInvisibleMarkerAttribute new.
+	aText
+		attribute: theParanthesesMarker
+		from: leftIndex + 1
+		to: rightIndex - 1.
+
+	cursorEnterAction := [ :aTextEditor | 
+		aTextEditor text
+			findAttribute: theParanthesesMarker
+			indicesDo: [ :aParanthesesStart :aParanthesesEnd | 
+				aTextEditor text
+					attribute: (GtPharoParenthesesHighlightAttribute
+							paint: BrGlamorousColors neutralBackgroundColor)
+					from: aParanthesesStart
+					to: aParanthesesEnd ] ].
+
+	cursorLeaveAction := [ :aTextEditor | 
+		aTextEditor text
+			findAttribute: theParanthesesMarker
+			indicesDo: [ :aParanthesesStart :aParanthesesEnd | 
+				(aTextEditor text from: aParanthesesStart to: aParanthesesEnd)
+					clearAttributesOfClass: GtPharoParenthesesHighlightAttribute ] ].
+
+	(aText from: leftIndex to: leftIndex)
+		onCursorEnter: cursorEnterAction
+		leave: cursorLeaveAction.
+
+	(aText from: rightIndex - 1 to: rightIndex - 1)
+		onCursorEnter: cursorEnterAction
+		leave: cursorLeaveAction
 ]
 
 { #category : #accessing }
