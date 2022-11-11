@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'styleBlock'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #'instance creation' }
@@ -37,12 +37,17 @@ GtSmaCCStylerRule >> shouldApplyToToken: aSmaCCToken [
 GtSmaCCStylerRule >> style: anObject on: aText [
 	[ (anObject isKindOf: Collection)
 		ifTrue: [ anObject do: [ :each | self style: each on: aText ] ]
-		ifFalse: [ ((anObject isKindOf: SmaCCToken)
-				or: [ anObject isKindOf: SmaCCParseNode ])
-				ifTrue: [ (aText from: anObject startPosition to: anObject stopPosition)
-						stylerDo: [ :styler | styleBlock cull: styler cull: anObject cull: aText ] ] ] ]
-		on: Error
-		do: [ :ex | ex return ]
+		ifFalse: [ ((anObject isKindOf: SmaCCToken) or: [ anObject isKindOf: SmaCCParseNode ])
+				ifTrue: [ | from to |
+					from := anObject startPosition.
+					to := anObject stopPosition.
+					(from <= to and: [ from > 0 and: [ to <= aText size ] ])
+						ifTrue: [ (aText from: from to: to)
+								stylerDo: [ :styler | 
+									styleBlock
+										cull: styler
+										cull: anObject
+										cull: aText ] ] ] ] ] on: Error do: [ :ex | ex return ]
 ]
 
 { #category : #accessing }
