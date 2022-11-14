@@ -145,6 +145,24 @@ GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
 				GtSmaCCNodeStylerRule
 					nodeClassName: #GraphQLLiteralNode
 					styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #GraphQLTypeNode
+					styleBlock: [ :styler | styler foreground: Color blue muchDarker ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #GraphQLArgumentNode
+					variableNames: #(name)
+					styleBlock: [ :styler | styler foreground: Color brown darker ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #GraphQLOperationDefinitionNode
+					variableNames: #(name)
+					styleBlock: [ :styler | styler foreground: Color cyan muchDarker ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #GraphQLVariableNode
+					styleBlock: [ :styler | styler foreground: Color purple ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #GraphQLDirectiveNode
+					variableNames: #(name atToken)
+					styleBlock: [ :styler | styler foreground: Color green muchDarker ].
 				GtSmaCCKeywordTokensStylerRule
 					styleBlock: [ :styler | 
 						styler
@@ -317,14 +335,6 @@ GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 				nodeClassName: #JSONMemberNode
 				variableNames: #(name)
 				styleBlock: [ :styler | styler foreground: Color purple ]).
-			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #JSONObjectNode
-				variableNames: #(leftBrace rightBrace commas)
-				styleBlock: [ :styler | styler bold ]).
-			(GtSmaCCNodeVariableStylerRule
-				nodeClassName: #JSONArrayNode
-				variableNames: #(leftBracket rightBracket commas)
-				styleBlock: [ :styler | styler bold ]).
 			(GtSmaCCNodeVariableStylerRule
 				nodeClassName: #SmaCCErrorNode
 				variableNames: #(dismissedTokens errorToken)
