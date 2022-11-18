@@ -118,7 +118,12 @@ GtSmaCCListCoderElement >> listElement [
 
 { #category : #ui }
 GtSmaCCListCoderElement >> showDefinition: aString [
-	grammarCoder grammar: (GtSmaCCGrammar forDefinition: aString).
+	| grammar |
+	grammar := GtSmaCCGrammar forDefinition: aString.
+	grammarCoder grammar notNil
+		ifTrue: [ grammar parserClassName: grammarCoder grammar parserClassName.
+			grammar scannerClassName: grammarCoder grammar scannerClassName ].
+	grammarCoder grammar: grammar.
 	self updateList
 ]
 
