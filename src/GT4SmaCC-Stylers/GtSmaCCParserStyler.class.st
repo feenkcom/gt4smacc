@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stylerRules'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #instances }
@@ -152,17 +152,19 @@ GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
 					nodeClassName: #GraphQLArgumentNode
 					variableNames: #(name)
 					styleBlock: [ :styler | styler foreground: Color brown darker ].
-				GtSmaCCNodeVariableStylerRule
+				(GtSmaCCNodeVariableStylerRule
 					nodeClassName: #GraphQLOperationDefinitionNode
 					variableNames: #(name)
-					styleBlock: [ :styler | styler foreground: Color cyan muchDarker ].
+					styleBlock: [ :styler | styler foreground: Color cyan muchDarker ])
+					continueOnMatch: true.
 				GtSmaCCNodeStylerRule
 					nodeClassName: #GraphQLVariableNode
 					styleBlock: [ :styler | styler foreground: Color purple ].
-				GtSmaCCNodeVariableStylerRule
+				(GtSmaCCNodeVariableStylerRule
 					nodeClassName: #GraphQLDirectiveNode
 					variableNames: #(name atToken)
-					styleBlock: [ :styler | styler foreground: Color green muchDarker ].
+					styleBlock: [ :styler | styler foreground: Color green muchDarker ])
+					continueOnMatch: true.
 				GtSmaCCKeywordTokensStylerRule
 					styleBlock: [ :styler | 
 						styler
@@ -521,7 +523,8 @@ GtSmaCCParserStyler >> styleNode: aSmaCCParseNode [
 	stylerRules
 		do: [ :each | 
 			(each shouldApplyToNode: aSmaCCParseNode)
-				ifTrue: [ ^ each applyTo: aSmaCCParseNode on: text ] ]
+				ifTrue: [ each applyTo: aSmaCCParseNode on: text.
+					each continueOnMatch ifFalse: [ ^ self ] ] ]
 ]
 
 { #category : #private }
@@ -529,7 +532,8 @@ GtSmaCCParserStyler >> styleToken: aSmaCCToken [
 	stylerRules
 		do: [ :each | 
 			(each shouldApplyToToken: aSmaCCToken)
-				ifTrue: [ ^ each applyTo: aSmaCCToken on: text ] ]
+				ifTrue: [ each applyTo: aSmaCCToken on: text.
+					each continueOnMatch ifFalse: [ ^ self ] ] ]
 ]
 
 { #category : #accessing }
