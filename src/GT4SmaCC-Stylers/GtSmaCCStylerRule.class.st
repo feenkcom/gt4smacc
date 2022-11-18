@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCStylerRule,
 	#superclass : #Object,
 	#instVars : [
-		'styleBlock'
+		'styleBlock',
+		'continueOnMatch'
 	],
 	#category : #'GT4SmaCC-Stylers'
 }
@@ -19,7 +20,23 @@ GtSmaCCStylerRule >> applyTo: anObject on: aText [
 	self style: anObject on: aText
 ]
 
-{ #category : #'initialize-release' }
+{ #category : #accessing }
+GtSmaCCStylerRule >> continueOnMatch [
+	^ continueOnMatch
+]
+
+{ #category : #accessing }
+GtSmaCCStylerRule >> continueOnMatch: aBoolean [
+	continueOnMatch := aBoolean
+]
+
+{ #category : #initialization }
+GtSmaCCStylerRule >> initialize [
+	super initialize.
+	continueOnMatch := false
+]
+
+{ #category : #initialization }
 GtSmaCCStylerRule >> initializeForParser: parserClass [
 ]
 
