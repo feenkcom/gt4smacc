@@ -8,8 +8,8 @@ Class {
 GtSmaCCSlideshow >> addButtonFor: coderElement [
 	^ coderElement
 		allChildrenBreadthFirstDetect:
-			[ :aChild | (aChild isKindOf: BrToolbar) and: [ aChild parent isKindOf: GtCoderToolbarElement ] ]
-		ifFound: [ :aChild | aChild childAt: 4 ]
+			[ :aChild | (aChild isKindOf: BrToolbar) ]
+		ifFound: [ :aChild | aChild childAt: 2 ]
 ]
 
 { #category : #'create parser slide' }
