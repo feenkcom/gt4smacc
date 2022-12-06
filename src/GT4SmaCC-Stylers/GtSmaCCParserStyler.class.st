@@ -142,6 +142,10 @@ GtSmaCCParserStyler class >> graphQLStyler: aParserClass [
 	^ (self forParser: aParserClass)
 		stylerRules: {GtSmaCCCommentStylerRule
 					styleBlock: [ :styler | styler foreground: Color lightGray ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #GraphQLFieldNode
+					variableNames: #(name)
+					styleBlock: [ :styler :token | token source = '__typename' ifTrue: [ styler foreground: Color lightGray ] ].
 				GtSmaCCNodeStylerRule
 					nodeClassName: #GraphQLLiteralNode
 					styleBlock: [ :styler | styler foreground: Color blue ].
