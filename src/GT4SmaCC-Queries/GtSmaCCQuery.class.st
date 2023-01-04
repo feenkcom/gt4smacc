@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtSmaCCQuery',
-	#superclass : 'Object',
+	#name : #GtSmaCCQuery,
+	#superclass : #Object,
 	#category : 'GT4SmaCC-Queries'
 }
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCQuery >> does: aName match: aString [
 	^ aName isSymbol
 		ifTrue: [ aName = aString ]
