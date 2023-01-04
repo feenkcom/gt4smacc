@@ -1,13 +1,13 @@
 Class {
-	#name : 'GtSmaCCNodeQuery',
-	#superclass : 'GtSmaCCQuery',
+	#name : #GtSmaCCNodeQuery,
+	#superclass : #GtSmaCCQuery,
 	#instVars : [
 		'nodes'
 	],
-	#category : 'GT4SmaCC-Queries'
+	#category : #'GT4SmaCC-Queries'
 }
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> / aName [
 	| result |
 	result := self class new.
@@ -20,20 +20,21 @@ GtSmaCCNodeQuery >> / aName [
 	^ result
 ]
 
-{ #category : 'querying' }
-GtSmaCCNodeQuery >> // aName [
-	| result |
+{ #category : #querying }
+GtSmaCCNodeQuery >> // aClassOrName [
+	| result name |
 	result := self class new.
+	name := aClassOrName isBehavior
+			ifTrue: [ aClassOrName name ]
+			ifFalse: [ aClassOrName ].
 	self
 		do: [ :node | 
 			node
-				allNodesDo: [ :each | 
-					(self does: aName match: each class name)
-						ifTrue: [ result addNode: each ] ] ].
+				allNodesDo: [ :each | (self does: name match: each class name) ifTrue: [ result addNode: each ] ] ].
 	^ result
 ]
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> //@ aName [
 	| result |
 	result := self class new.
@@ -45,7 +46,7 @@ GtSmaCCNodeQuery >> //@ aName [
 	^ result
 ]
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> /@ aName [
 	| result |
 	result := self class new.
@@ -54,7 +55,7 @@ GtSmaCCNodeQuery >> /@ aName [
 	^ result
 ]
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> @ anAttribute [
 	^ GtSmaCCAttributeQuery new
 		query: self;
@@ -62,7 +63,7 @@ GtSmaCCNodeQuery >> @ anAttribute [
 		yourself
 ]
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> \ anObject [
 	| result |
 	result := self class new.
@@ -81,7 +82,7 @@ GtSmaCCNodeQuery >> \ anObject [
 	^ result
 ]
 
-{ #category : 'querying' }
+{ #category : #querying }
 GtSmaCCNodeQuery >> \\ aName [
 	| result |
 	result := self class new.
@@ -99,12 +100,12 @@ GtSmaCCNodeQuery >> \\ aName [
 	^ result
 ]
 
-{ #category : 'adding' }
+{ #category : #adding }
 GtSmaCCNodeQuery >> addNode: aNode [
 	nodes add: aNode
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 GtSmaCCNodeQuery >> addNodeAttributesNamed: aName from: each into: result [
 	each nodeVariables
 		do: [ :selector | 
@@ -118,22 +119,22 @@ GtSmaCCNodeQuery >> addNodeAttributesNamed: aName from: each into: result [
 						ifNotNil: [ :nodes | nodes do: [ :node | result addNode: node ] ] ] ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCNodeQuery >> allSatisfy: aBlock [
 	^ nodes allSatisfy: aBlock
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeQuery >> anyOne [
 	^ nodes anyOne
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCNodeQuery >> anySatisfy: aBlock [
 	^ nodes anySatisfy: aBlock
 ]
 
-{ #category : 'conversion' }
+{ #category : #conversion }
 GtSmaCCNodeQuery >> asOrderedCollection [
 	| result |
 	result := OrderedCollection new.
@@ -141,17 +142,22 @@ GtSmaCCNodeQuery >> asOrderedCollection [
 	^ result
 ]
 
-{ #category : 'iterating' }
+{ #category : #iterating }
 GtSmaCCNodeQuery >> collect: aBlock [
 	^ nodes collect: aBlock
 ]
 
-{ #category : 'iterating' }
+{ #category : #iterating }
 GtSmaCCNodeQuery >> do: aBlock [
 	nodes do: aBlock
 ]
 
-{ #category : 'inspecting' }
+{ #category : #iterating }
+GtSmaCCNodeQuery >> groupedBy: aBlock [
+	^ nodes groupedBy: aBlock
+]
+
+{ #category : #inspecting }
 GtSmaCCNodeQuery >> gtAttributesFor: aView [
 	<gtView>
 	^ aView columnedList
@@ -161,28 +167,28 @@ GtSmaCCNodeQuery >> gtAttributesFor: aView [
 		column: 'Node' text: [ :each | each ]
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtSmaCCNodeQuery >> initialize [
 	super initialize.
 	nodes := IdentitySet new
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCNodeQuery >> isEmpty [
 	^ nodes isEmpty
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 GtSmaCCNodeQuery >> notEmpty [
 	^ nodes notEmpty
 ]
 
-{ #category : 'iterating' }
+{ #category : #iterating }
 GtSmaCCNodeQuery >> select: aBlock [
 	^ nodes select: aBlock
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtSmaCCNodeQuery >> size [
 	^ nodes size
 ]
