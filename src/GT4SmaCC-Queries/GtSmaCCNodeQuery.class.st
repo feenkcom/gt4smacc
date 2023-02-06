@@ -11,15 +11,11 @@ Class {
 GtSmaCCNodeQuery >> / aClassOrName [
 	| result name |
 	result := self class new.
-	name := aClassOrName isBehavior
-			ifTrue: [ aClassOrName name ]
-			ifFalse: [ aClassOrName ].
+	name := self nameFor: aClassOrName.
 	self
 		do: [ :node | 
 			node
-				nodesDo: [ :each | 
-					(self does: name match: each class name)
-						ifTrue: [ result addNode: each ] ] ].
+				nodesDo: [ :each | (self does: name match: each class name) ifTrue: [ result addNode: each ] ] ].
 	^ result
 ]
 
@@ -27,9 +23,7 @@ GtSmaCCNodeQuery >> / aClassOrName [
 GtSmaCCNodeQuery >> // aClassOrName [
 	| result name |
 	result := self class new.
-	name := aClassOrName isBehavior
-			ifTrue: [ aClassOrName name ]
-			ifFalse: [ aClassOrName ].
+	name := self nameFor: aClassOrName.
 	self
 		do: [ :node | 
 			node
@@ -68,38 +62,35 @@ GtSmaCCNodeQuery >> @ anAttribute [
 
 { #category : #querying }
 GtSmaCCNodeQuery >> \ anObject [
-	| result |
+	| result name |
 	result := self class new.
+	name := self nameFor: anObject.
 	self
 		do: [ :node | 
-			anObject isInteger
+			name isInteger
 				ifTrue: [ | current |
 					current := node.
-					anObject
-						timesRepeat: [ current notNil
-								ifTrue: [ current := current parent ] ].
-					current notNil
-						ifTrue: [ result addNode: current ] ]
-				ifFalse: [ (self does: anObject match: node parent class name)
+					name timesRepeat: [ current notNil ifTrue: [ current := current parent ] ].
+					current notNil ifTrue: [ result addNode: current ] ]
+				ifFalse: [ (self does: name match: node parent class name)
 						ifTrue: [ result addNode: node parent ] ] ].
 	^ result
 ]
 
 { #category : #querying }
 GtSmaCCNodeQuery >> \\ aName [
-	| result |
+	| result name |
 	result := self class new.
+	name := self nameFor: aName.
 	self
 		do: [ :node | 
 			| current found |
 			current := node.
 			found := false.
 			[ current notNil
-				ifTrue: [ found := self does: aName match: current class name ].
-			found or: [ current isNil ] ]
-				whileFalse: [ current := current parent ].
-			found
-				ifTrue: [ result addNode: current ] ].
+				ifTrue: [ found := self does: name match: current class name ].
+			found or: [ current isNil ] ] whileFalse: [ current := current parent ].
+			found ifTrue: [ result addNode: current ] ].
 	^ result
 ]
 
@@ -151,6 +142,11 @@ GtSmaCCNodeQuery >> collect: aBlock [
 ]
 
 { #category : #iterating }
+GtSmaCCNodeQuery >> detect: aBlock ifNone: noneBlock [
+	^ nodes detect: aBlock ifNone: noneBlock
+]
+
+{ #category : #iterating }
 GtSmaCCNodeQuery >> do: aBlock [
 	nodes do: aBlock
 ]
@@ -179,6 +175,13 @@ GtSmaCCNodeQuery >> initialize [
 { #category : #testing }
 GtSmaCCNodeQuery >> isEmpty [
 	^ nodes isEmpty
+]
+
+{ #category : #querying }
+GtSmaCCNodeQuery >> nameFor: aClassOrName [
+	^ aClassOrName isBehavior
+		ifTrue: [ aClassOrName name ]
+		ifFalse: [ aClassOrName ]
 ]
 
 { #category : #testing }
