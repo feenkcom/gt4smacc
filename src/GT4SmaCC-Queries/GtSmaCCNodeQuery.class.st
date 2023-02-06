@@ -8,14 +8,17 @@ Class {
 }
 
 { #category : #querying }
-GtSmaCCNodeQuery >> / aName [
-	| result |
+GtSmaCCNodeQuery >> / aClassOrName [
+	| result name |
 	result := self class new.
+	name := aClassOrName isBehavior
+			ifTrue: [ aClassOrName name ]
+			ifFalse: [ aClassOrName ].
 	self
 		do: [ :node | 
 			node
 				nodesDo: [ :each | 
-					(self does: aName match: each class name)
+					(self does: name match: each class name)
 						ifTrue: [ result addNode: each ] ] ].
 	^ result
 ]
