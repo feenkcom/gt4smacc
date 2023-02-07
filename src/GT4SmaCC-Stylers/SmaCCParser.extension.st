@@ -13,18 +13,12 @@ SmaCCParser class >> gtStyler [
 SmaCCParser class >> gtStylers [
 	| pragmas |
 	pragmas := OrderedCollection new.
-	Smalltalk
-		allClassesAndTraitsDo: [ :each | 
-			(Pragma allNamed: #smaccStyler:priority: in: each classSide)
-				do: [ :pragma | 
-					((self
-						includesBehavior: (Smalltalk at: pragma arguments first ifAbsent: [ Array ]))
-						and: [ pragma method numArgs = 1 ])
-						ifTrue: [ pragmas add: pragma ] ] ].
-	^ (pragmas
-		asSortedCollection: [ :a :b | a arguments last < b arguments last ])
-		collect: [ :each | 
-			each method methodClass instanceSide
-				perform: each method selector
-				with: self ]
+	(Pragma pragmaCache at: #smaccStyler:priority:)
+		do: [ :each | 
+			(each method methodClass isClassSide
+				and: [ (self
+						includesBehavior: (Smalltalk at: each arguments first ifAbsent: [ Array ]))
+						and: [ each method numArgs = 1 ] ]) ifTrue: [ pragmas add: each ] ].
+	^ (pragmas asSortedCollection: [ :a :b | a arguments last < b arguments last ])
+		collect: [ :each | each method methodClass instanceSide perform: each method selector with: self ]
 ]
