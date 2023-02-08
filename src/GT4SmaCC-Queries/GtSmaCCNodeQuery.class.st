@@ -136,6 +136,11 @@ GtSmaCCNodeQuery >> asOrderedCollection [
 	^ result
 ]
 
+{ #category : #accessing }
+GtSmaCCNodeQuery >> asSortedCollection: aBlock [
+	^ nodes asSortedCollection: aBlock
+]
+
 { #category : #iterating }
 GtSmaCCNodeQuery >> collect: aBlock [
 	^ nodes collect: aBlock
