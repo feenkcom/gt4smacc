@@ -8,6 +8,15 @@ Class {
 }
 
 { #category : #querying }
+GtSmaCCNodeQuery >> & aSmaCCNodeQuery [
+	| result |
+	result := self class new.
+	aSmaCCNodeQuery
+		do: [ :each | (self includes: each) ifTrue: [ result addNode: each ] ].
+	^ result
+]
+
+{ #category : #querying }
 GtSmaCCNodeQuery >> / aClassOrName [
 	| result name |
 	result := self class new.
@@ -171,6 +180,11 @@ GtSmaCCNodeQuery >> gtAttributesFor: aView [
 		column: 'Node' text: [ :each | each ]
 ]
 
+{ #category : #querying }
+GtSmaCCNodeQuery >> includes: aNode [
+	^ nodes includes: aNode
+]
+
 { #category : #initialization }
 GtSmaCCNodeQuery >> initialize [
 	super initialize.
@@ -194,6 +208,12 @@ GtSmaCCNodeQuery >> notEmpty [
 	^ nodes notEmpty
 ]
 
+{ #category : #copying }
+GtSmaCCNodeQuery >> postCopy [
+	super postCopy.
+	nodes := nodes copy
+]
+
 { #category : #iterating }
 GtSmaCCNodeQuery >> select: aBlock [
 	^ nodes select: aBlock
@@ -202,4 +222,12 @@ GtSmaCCNodeQuery >> select: aBlock [
 { #category : #accessing }
 GtSmaCCNodeQuery >> size [
 	^ nodes size
+]
+
+{ #category : #querying }
+GtSmaCCNodeQuery >> | aSmaCCNodeQuery [
+	| result |
+	result := self copy.
+	aSmaCCNodeQuery do: [ :each | result addNode: each ].
+	^ result
 ]

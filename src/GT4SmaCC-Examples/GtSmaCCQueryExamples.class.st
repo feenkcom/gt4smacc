@@ -25,6 +25,23 @@ GtSmaCCQueryExamples >> allNodesWithNameToken [
 ]
 
 { #category : #'grammar examples' }
+GtSmaCCQueryExamples >> andQuery [
+	<gtExample>
+	| ast productions tokens empty all anded |
+	ast := self grammarAST.
+	productions := ast / SmaCCProductionRuleNode.
+	tokens := ast / SmaCCTokenRuleNode.
+	empty := productions & tokens.
+	all := ast / ''.
+	anded := all & productions.
+	self assert: productions notEmpty.
+	self assert: tokens notEmpty.
+	self assert: empty isEmpty.
+	self assert: anded size equals: productions size.
+	^ anded
+]
+
+{ #category : #'grammar examples' }
 GtSmaCCQueryExamples >> grammarAST [
 	<gtExample>
 	^ SmaCCDefinitionParser definitionAST
@@ -102,6 +119,22 @@ GtSmaCCQueryExamples >> jsRecursiveFibCalls [
 	calls := self jsAST // 'function' // 'callexpression'.
 	self assert: calls size = 2.
 	^ calls
+]
+
+{ #category : #'grammar examples' }
+GtSmaCCQueryExamples >> orQuery [
+	<gtExample>
+	| ast productions tokens both all |
+	ast := self grammarAST.
+	productions := ast / SmaCCProductionRuleNode.
+	tokens := ast / SmaCCTokenRuleNode.
+	both := productions | tokens.
+	all := ast / ''.
+	self assert: productions notEmpty.
+	self assert: tokens notEmpty.
+	self assert: both size equals: productions size + tokens size.
+	self assert: (all | productions) size equals: all size.
+	^ both
 ]
 
 { #category : #'grammar examples' }
