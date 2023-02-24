@@ -1,16 +1,16 @@
 Extension { #name : #SmaCCString }
 
 { #category : #'*GT4SmaCC-Inspector' }
-SmaCCString >> gtIntervalsFor: aView [
+SmaCCString >> gtIntervalListFor: aView [
 	<gtView>
 
 	^ aView mondrian
-		title: 'Intervals';
+		title: 'Interval list';
 		painting: [ :aMondrian | 
 			aMondrian nodes
-				shape: [ :each | 
+				stencil: [ :each | 
 					BrLabel new
-						aptitude: BrLabelAptitude;
+						aptitude: BrGlamorousLabelAptitude;
 						text: (each printString allButFirst: 21);
 						fitContent;
 						border: (BlBorder paint: Color black) ];
@@ -30,6 +30,15 @@ SmaCCString >> gtIntervalsFor: aView [
 						toHead: (BlArrowheadSimpleArrow new border: (BlBorder paint: Color blue)) ];
 				connectTo: #previous.
 			aMondrian layout horizontal cellSpacing: 40  ]
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
+SmaCCString >> gtIntervalsFor: aView [
+	<gtView>
+
+	^ aView list 
+		title: 'Intervals';
+		items: self safeAllIntervals
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
