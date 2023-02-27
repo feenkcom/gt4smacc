@@ -45,7 +45,7 @@ GtSmaCCDebuggerElement class >> initialize [
 
 { #category : #'tools registry' }
 GtSmaCCDebuggerElement class >> registerToolsOn: registry [
-	registry registerDebugger: self withRank: 1100.
+	registry registerDebugger: self withRank: 900.
 ]
 
 { #category : #accessing }
