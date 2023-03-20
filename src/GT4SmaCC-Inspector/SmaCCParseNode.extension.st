@@ -1,6 +1,11 @@
 Extension { #name : #SmaCCParseNode }
 
 { #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> asyncWithAllNodesStream [
+	^ AsyncDepthFirstTraversalStream root: self children: [ :each | each children ]
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtAttributesFor: aView [
 	<gtView>
 	(attributes notNil and: [ attributes notEmpty ])
@@ -183,7 +188,7 @@ SmaCCParseNode >> gtSpotterNodeFor: aSearch [
 	^ aSearch list
 		priority: 10;
 		title: 'Nodes';
-		items: [ AsyncDepthFirstTraversalStream root: self children: [ :each | each children ] ];
+		items: [ self asyncWithAllNodesStream ];
 		itemName: [ :node | 
 			[ | start stop |
 			start := node startPosition.
