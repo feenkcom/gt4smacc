@@ -31,7 +31,7 @@ SmaCCString >> gtIntervalListFor: aView [
 						border: (BlBorder paint: Color blue);
 						toHead: (BlArrowheadSimpleArrow new border: (BlBorder paint: Color blue)) ];
 				connectTo: #previous.
-			m layout horizontal cellSpacing: 40  ]
+			m layout vertical cellSpacing: 20  ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }

@@ -6,6 +6,8 @@ SmaCCAnnotatedStringInterval >> gtStringFor: aView [
 	| text |
 	^ aView textEditor 
 		title: 'String';
+		priority: 1;
+		aptitude: BrGlamorousCodeEditorAptitude;
 		text: [ text := string asRopedText.
 (text from: start to: stop) highlight: BrGlamorousColors neutralBackgroundColor.
 text ]
