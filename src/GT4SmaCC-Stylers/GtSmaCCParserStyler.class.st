@@ -508,6 +508,32 @@ GtSmaCCParserStyler class >> vbnetStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color red ])}
 ]
 
+{ #category : #instances }
+GtSmaCCParserStyler class >> yamlStyler: aParserClass [
+	<smaccStyler: #YAMLParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules: {GtSmaCCNodeStylerRule
+					nodeClassName: #YAMLStringNode
+					styleBlock: [ :styler :node | 
+						((node parent isKindOf: YAMLMappingNode) and: [ node parent key == node ])
+							ifFalse: [ styler foreground: Color blue ] ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #YAMLNumberNode
+					styleBlock: [ :styler :node | 
+						((node parent isKindOf: YAMLMappingNode) and: [ node parent key == node ])
+							ifFalse: [ styler foreground: Color blue ] ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #YAMLMappingNode
+					variableNames: #(key)
+					styleBlock: [ :styler | styler foreground: Color purple ].
+				GtSmaCCCommentStylerRule
+					styleBlock: [ :styler | styler foreground: Color lightGray ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #SmaCCErrorNode
+					variableNames: #(dismissedTokens errorToken)
+					styleBlock: [ :styler | styler foreground: Color red ]}
+]
+
 { #category : #accessing }
 GtSmaCCParserStyler >> addStylerRule: aStylerRule [
 	self stylerRules add: aStylerRule.
