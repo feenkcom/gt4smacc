@@ -149,21 +149,24 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
+	^ self
+		gtSourceEditorWithHighlight: aColor
+		styler: (self parserClass ifNotNil: [ :class | class gtStyler ])
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> gtSourceEditorWithHighlight: aColor styler: styler [
 	| source editor |
 	source := self topParent completeSource asString asRopedText.
-	self parserClass
-		ifNotNil: [ :class | 
-			class gtStyler
-				ifNotNil: [ :styler | styler style: source ast: self topParent ] ].
+	styler ifNotNil: [ styler style: source ast: self topParent ].
 	self stopPosition isZero
 		ifFalse: [ (source from: self startPosition to: self stopPosition)
-				attributes:
-					{(BlTextHighlightAttribute new
-						beNotOverwritableByStyler;
-						paint: aColor)} ].
+				attributes: {BlTextHighlightAttribute new
+							beNotOverwritableByStyler;
+							paint: aColor} ].
 	editor := BrEditor new
-		text: source;
-		aptitude: BrGlamorousCodeEditorAptitude new.
+			text: source;
+			aptitude: BrGlamorousCodeEditorAptitude new.
 	self gtScrollToPosition: self startPosition inEditor: editor.
 	^ editor
 ]
