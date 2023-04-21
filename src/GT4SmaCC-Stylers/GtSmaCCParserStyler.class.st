@@ -534,6 +534,7 @@ GtSmaCCParserStyler class >> yamlAliasExpanderStyler: aParserClass [
 															ifFalse: [ editor hFitContent ].
 														editor vFitContentLimited.
 														editor padding: (BlInsets all: 5).
+														editor background: Color white.
 														editor
 															aptitude: BrGlamorousCodeEditorAptitude new + BrShadowAptitude new.
 														editor text: source asRopedText glamorousCodeFont ] ])
