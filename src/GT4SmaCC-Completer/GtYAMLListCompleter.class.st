@@ -9,6 +9,7 @@ Class {
 
 { #category : #accessing }
 GtYAMLListCompleter >> findCompleterFor: aYAMLNode [
+	(aYAMLNode isKindOf: YAMLFlowListNode) ifTrue: [ ^ value ].
 	^ (aYAMLNode isKindOf: YAMLListNode)
 		ifTrue: [ self ]
 		ifFalse: [ (aYAMLNode isKindOf: YAMLListItemNode)
