@@ -25,6 +25,24 @@ addresses:
 ]
 
 { #category : #accessing }
+GtYAMLCompletionExamples >> completionInsideOfFlowList [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self loadingCompletions.
+	text := '
+test: [one, f ]' asRopedText.
+	position := text size - 2.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: 'four'.
+	^ result
+]
+
+{ #category : #accessing }
 GtYAMLCompletionExamples >> completionInsideOfList [
 	<gtExample>
 	| strategy result items text position |
@@ -170,6 +188,7 @@ addresses:
 phones: - number:
           isPrimary: true,false
 primary: <address>?
+test: - one,two,three,four
 '.
 	^ strategy
 ]

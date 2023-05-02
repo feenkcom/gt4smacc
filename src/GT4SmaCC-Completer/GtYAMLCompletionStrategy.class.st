@@ -16,12 +16,16 @@ GtYAMLCompletionStrategy >> buildCompleterFrom: anObject [
 		ifTrue: [ result := GtYAMLMappingListCompleter new.
 			anObject
 				keysAndValuesDo: [ :key :value | 
-					| item |
-					item := GtYAMLMappingItemCompleter new.
-					item name: key.
-					item matchesAnything: ((key beginsWith: '<') and: [ key endsWith: '>' ]).
-					item value: (self buildCompleterFrom: value).
-					result addItem: item ].
+					| item itemValue |
+					itemValue := self buildCompleterFrom: value.
+					(self stringsIn: key)
+						do: [ :each | 
+							item := GtYAMLMappingItemCompleter new.
+							item name: each.
+							item
+								matchesAnything: ((each beginsWith: '<') and: [ each endsWith: '>' ]).
+							item value: itemValue.
+							result addItem: item ] ].
 			^ result ].
 	(anObject isString
 		and: [ (anObject beginsWith: '<') and: [ anObject endsWith: '>?' ] ])
