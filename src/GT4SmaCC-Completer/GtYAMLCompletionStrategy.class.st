@@ -93,8 +93,7 @@ GtYAMLCompletionStrategy >> hasCompletionsAt: anInteger in: aText [
 
 { #category : #initialization }
 GtYAMLCompletionStrategy >> loadCompleterFrom: aString [
-	ast := YAMLParser parse: aString.
-	completer := self buildCompleterFrom: ast object
+	completer := self buildCompleterFrom: (YAMLParser parse: aString) object
 ]
 
 { #category : #private }
