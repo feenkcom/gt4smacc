@@ -5,6 +5,18 @@ Class {
 }
 
 { #category : #accessing }
+GtJSONCompleter class >> labelFor: aString withSearch: subString [
+	| text attributes |
+	attributes := {BlTextDecorationAttribute new
+				color: BrGlamorousColors textHighlightColor;
+				thickness: 3;
+				underline}.
+	text := aString asRopedText glamorousCodeFont.
+	(text from: 1 to: subString size) attributes: attributes.
+	^ text
+]
+
+{ #category : #accessing }
 GtJSONCompleter >> complete: aString at: positionInteger [
 	^ #()
 ]
@@ -61,12 +73,5 @@ GtJSONCompleter >> findCompleterFor: aJSONNode [
 
 { #category : #accessing }
 GtJSONCompleter >> labelFor: aString withSearch: subString [
-	| text attributes |
-	attributes := {BlTextDecorationAttribute new
-				color: BrGlamorousColors textHighlightColor;
-				thickness: 3;
-				underline}.
-	text := aString asRopedText glamorousCodeFont.
-	(text from: 1 to: subString size) attributes: attributes.
-	^ text
+	^ self class labelFor: aString withSearch: subString
 ]

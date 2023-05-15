@@ -5,6 +5,42 @@ Class {
 }
 
 { #category : #examples }
+GtJSONCompletionExamples >> completeInsideValue [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "anything" : { "na }}' asRopedText.
+	position := text size - 3.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"name"'.
+	^ result
+]
+
+{ #category : #examples }
+GtJSONCompletionExamples >> completeInsideValueWithError [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "anything" : { "na' asRopedText.
+	position := text size.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"name"'.
+	^ result
+]
+
+{ #category : #examples }
 GtJSONCompletionExamples >> completeKey [
 	<gtExample>
 	| strategy result items text position |
@@ -236,23 +272,23 @@ GtJSONCompletionExamples >> completer [
 			yourself.
 	phone := GtJSONObjectCompleter new
 			addCheck: 'type' withValue: '"phone"';
-			addKey: 'number' withValue: GtJSONEmptyCompleter instance;
+			addKey: 'number';
 			addKey: 'primary' withValue: trueFalseCompleter;
 			yourself.
 	address := GtJSONObjectCompleter new
 			addCheck: 'type' withValue: '"address"';
-			addKey: 'city' withValue: GtJSONEmptyCompleter instance;
-			addKey: 'state' withValue: GtJSONEmptyCompleter instance;
-			addKey: 'zip' withValue: GtJSONEmptyCompleter instance;
-			addKey: 'primary' withValue: GtJSONEmptyCompleter instance;
+			addKey: 'city';
+			addKey: 'state';
+			addKey: 'zip';
+			addKey: 'primary';
 			yourself.
 	phone := GtJSONObjectCompleter new
 			addCheck: 'type' withValue: '"phone"';
-			addKey: 'number' withValue: GtJSONEmptyCompleter instance;
+			addKey: 'number';
 			addKey: 'primary' withValue: trueFalseCompleter;
 			yourself.
 	person := GtJSONObjectCompleter new
-			addKey: 'name' withValue: GtJSONEmptyCompleter instance;
+			addKey: 'name';
 			addKey: 'info'
 				withValue: (GtJSONListCompleter new
 						itemCompleter: (GtJSONUnionCompleter new
@@ -278,7 +314,8 @@ GtJSONCompletionExamples >> completer [
 										position: position
 										from: position - string size + 1} ]
 							ifFalse: [ #() ] ]);
-		addKey: 'team' withValue: (GtJSONListCompleter new itemCompleter: person).
+		addKey: 'team' withValue: (GtJSONListCompleter new itemCompleter: person);
+		valueCompleter: person.
 	^ completer
 ]
 
