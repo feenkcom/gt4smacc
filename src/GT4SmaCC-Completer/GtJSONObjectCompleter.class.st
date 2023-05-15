@@ -3,7 +3,8 @@ Class {
 	#superclass : #GtJSONCompleter,
 	#instVars : [
 		'items',
-		'checks'
+		'checks',
+		'valueCompleter'
 	],
 	#category : #'GT4SmaCC-Completer-JSON'
 }
@@ -14,8 +15,18 @@ GtJSONObjectCompleter >> addCheck: aString withValue: valueString [
 ]
 
 { #category : #accessing }
+GtJSONObjectCompleter >> addKey: aString [
+	self addKey: aString withValue: GtJSONEmptyCompleter instance
+]
+
+{ #category : #accessing }
 GtJSONObjectCompleter >> addKey: aString withValue: aCompleter [
 	items at: aString put: aCompleter
+]
+
+{ #category : #accessing }
+GtJSONObjectCompleter >> addKeys: aStringCollection [
+	aStringCollection do: [ :each | self addKey: each ]
 ]
 
 { #category : #accessing }
@@ -82,7 +93,8 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 							((token isKindOf: SmaCCToken) and: [ token value beginsWith: '"' ])
 								ifTrue: [ items
 										at: token value allButFirst allButLast
-										ifPresent: [ :completer | ^ completer ] ].
+										ifPresent: [ :completer | ^ completer ].
+									^ valueCompleter ].
 							^ GtJSONEmptyCompleter instance ] ].
 			^ self ].
 	(anErrorNode stackContents at: nextIndex - 1) = (SmaCCToken value: ':')
@@ -96,7 +108,7 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 						completerForErrorNode: anErrorNode
 						stackPointer: nextIndex
 						isLast: aBoolean ]
-				ifAbsentPut: [ ^ GtJSONEmptyCompleter instance ] ].
+				ifAbsentPut: [ ^ valueCompleter ] ].
 	^ self
 ]
 
@@ -116,7 +128,8 @@ GtJSONObjectCompleter >> completerForJSONNode: aJSONNode [
 	(aJSONNode isKindOf: JSONMemberNode)
 		ifTrue: [ items
 				at: (aJSONNode name value copyFrom: 2 to: aJSONNode name value size - 1)
-				ifPresent: [ :completer | ^ completer ] ].
+				ifPresent: [ :completer | ^ completer ].
+			^ valueCompleter ].
 	^ GtJSONEmptyCompleter instance
 ]
 
@@ -124,7 +137,8 @@ GtJSONObjectCompleter >> completerForJSONNode: aJSONNode [
 GtJSONObjectCompleter >> initialize [
 	super initialize.
 	items := Dictionary new.
-	checks := Dictionary new
+	checks := Dictionary new.
+	valueCompleter := GtJSONEmptyCompleter instance
 ]
 
 { #category : #accessing }
@@ -133,4 +147,14 @@ GtJSONObjectCompleter >> member: member equalsKey: key andValue: value [
 		and: [ value isNil
 				or: [ (member value isKindOf: JSONLiteralNode)
 						and: [ member value value value = value ] ] ]
+]
+
+{ #category : #accessing }
+GtJSONObjectCompleter >> valueCompleter [
+	^ valueCompleter
+]
+
+{ #category : #accessing }
+GtJSONObjectCompleter >> valueCompleter: anObject [
+	valueCompleter := anObject
 ]

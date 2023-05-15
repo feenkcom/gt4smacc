@@ -13,6 +13,11 @@ GtJSONValueCompleter >> addValue: aString [
 ]
 
 { #category : #accessing }
+GtJSONValueCompleter >> addValues: aCollection [
+	values addAll: aCollection
+]
+
+{ #category : #accessing }
 GtJSONValueCompleter >> complete: aString at: positionInteger [
 	^ (values select: [ :each | each beginsWith: aString ])
 		collect: [ :each | 
