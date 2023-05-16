@@ -71,6 +71,12 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 					indexOf: (SmaCCToken value: '{')
 					startingAt: anInteger + 1 ]
 			ifFalse: [ 0 ].
+	(aBoolean
+		and: [ objectIndex = 0
+				and: [ (anInteger > anErrorNode stackContents size
+						or: [ (anErrorNode stackContents at: anInteger) ~= (SmaCCToken value: '{') ])
+						and: [ anErrorNode parent isKindOf: JSONMemberNode ] ] ])
+		ifTrue: [ ^ GtJSONEmptyCompleter instance ].
 	arrayIndex := anErrorNode stackContents
 			indexOf: (SmaCCToken value: '[')
 			startingAt: anInteger.
