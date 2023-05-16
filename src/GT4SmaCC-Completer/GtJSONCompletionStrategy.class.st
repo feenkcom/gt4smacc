@@ -3,16 +3,17 @@ Class {
 	#superclass : #GtCompletionStrategy,
 	#instVars : [
 		'completer',
-		'ast'
+		'ast',
+		'node'
 	],
 	#category : #'GT4SmaCC-Completer-JSON'
 }
 
 { #category : #accessing }
-GtJSONCompletionStrategy >> completeNode: node at: positionInteger [
+GtJSONCompletionStrategy >> completeNodeAt: positionInteger [
 	node stopPosition = positionInteger
 		ifTrue: [ ^ (completer findCompleterFor: node)
-				complete: (self completionPrefixFor: node)
+				complete: self completionPrefix
 				at: positionInteger ].
 	^ #()
 ]
@@ -28,7 +29,7 @@ GtJSONCompletionStrategy >> completer: aGtJSONCompleter [
 ]
 
 { #category : #accessing }
-GtJSONCompletionStrategy >> completionPrefixFor: node [
+GtJSONCompletionStrategy >> completionPrefix [
 	(node isErrorNode and: [ node dismissedTokens notEmpty ])
 		ifTrue: [ ^ node completeSource asString
 				copyFrom: node dismissedTokens first startPosition
@@ -42,7 +43,10 @@ GtJSONCompletionStrategy >> completionResultFor: aText at: positionInteger reque
 	[ ast := JSONParser parseWithErrors: aText asString.
 	results := (ast nodeAt: positionInteger)
 			ifNil: [ #() ]
-			ifNotNil: [ :node | self completeNode: node at: positionInteger ] ]
-		ensure: [ ast := nil ].
+			ifNotNil: [ :n | 
+				node := n.
+				self completeNodeAt: positionInteger ] ]
+		ensure: [ ast := nil.
+			node := nil ].
 	^ GtStreamedCompletionResult onStream: results asAsyncStream
 ]
