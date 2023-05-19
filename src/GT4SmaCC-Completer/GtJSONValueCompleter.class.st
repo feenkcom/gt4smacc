@@ -18,12 +18,16 @@ GtJSONValueCompleter >> addValues: aCollection [
 ]
 
 { #category : #accessing }
-GtJSONValueCompleter >> complete: aString at: positionInteger [
+GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
 	^ (values select: [ :each | each beginsWith: aString ])
 		collect: [ :each | 
+			| name |
+			name := each.
+			(aBoolean and: [ name notEmpty and: [ name last = $" ] ])
+				ifTrue: [ name := name allButLast ].
 			GtInsertTextCompletionAction
-				labeled: (self labelFor: each withSearch: aString)
-				completion: (each allButFirst: aString size)
+				labeled: (self labelFor: name withSearch: aString)
+				completion: (name allButFirst: aString size)
 				position: positionInteger
 				from: positionInteger - aString size + 1 ]
 ]

@@ -18,6 +18,6 @@ GtJSONBlockCompleter >> block: aBlock [
 ]
 
 { #category : #accessing }
-GtJSONBlockCompleter >> complete: aString at: positionInteger [
-	^ block value: aString value: positionInteger
+GtJSONBlockCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
+	^ block cull: aString cull: positionInteger cull: aBoolean
 ]

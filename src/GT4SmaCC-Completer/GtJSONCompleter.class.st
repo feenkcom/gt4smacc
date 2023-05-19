@@ -17,7 +17,7 @@ GtJSONCompleter class >> labelFor: aString withSearch: subString [
 ]
 
 { #category : #accessing }
-GtJSONCompleter >> complete: aString at: positionInteger [
+GtJSONCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
 	^ #()
 ]
 

@@ -14,7 +14,21 @@ GtJSONCompletionStrategy >> completeNodeAt: positionInteger [
 	node stopPosition = positionInteger
 		ifTrue: [ ^ (completer findCompleterFor: node)
 				complete: self completionPrefix
-				at: positionInteger ].
+				at: positionInteger
+				hasQuote: false ].
+	(node stopPosition - 1 = positionInteger
+		and: [ (node isKindOf: JSONStringNode)
+				and: [ (node completeSource at: node stopPosition) = $" ] ])
+		ifTrue: [ ^ (completer findCompleterFor: node)
+				complete: node value source allButLast
+				at: positionInteger
+				hasQuote: true ].
+	((node isKindOf: JSONMemberNode)
+		and: [ node name stopPosition - 1 = positionInteger ])
+		ifTrue: [ ^ (completer findCompleterFor: node)
+				complete: node name source allButLast
+				at: positionInteger
+				hasQuote: true ].
 	^ #()
 ]
 
