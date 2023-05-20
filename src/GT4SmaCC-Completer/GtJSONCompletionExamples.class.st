@@ -113,6 +113,23 @@ GtJSONCompletionExamples >> completeKeyInListWithError [
 ]
 
 { #category : #examples }
+GtJSONCompletionExamples >> completeKeyInString [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '{ "del" : "true" }' asRopedText.
+	position := 6.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"deleted'.
+	^ result
+]
+
+{ #category : #examples }
 GtJSONCompletionExamples >> completeUnionKeyInList [
 	<gtExample>
 	| strategy result items text position |
@@ -234,6 +251,23 @@ GtJSONCompletionExamples >> completeValueInError [
 	items := (result stream asyncSimilarCopy take: 2) toArray wait.
 	self assert: items size equals: 1.
 	self assert: items first label equals: '"true"'.
+	^ result
+]
+
+{ #category : #examples }
+GtJSONCompletionExamples >> completeValueInString [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '{ "deleted" : "t"}' asRopedText.
+	position := text size - 2.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"true'.
 	^ result
 ]
 

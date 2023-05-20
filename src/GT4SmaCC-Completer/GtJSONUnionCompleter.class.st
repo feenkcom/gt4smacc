@@ -13,13 +13,16 @@ GtJSONUnionCompleter >> addCompleter: aCompleter [
 ]
 
 { #category : #accessing }
-GtJSONUnionCompleter >> complete: aString at: positionInteger [
+GtJSONUnionCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
 	| stream |
 	stream := #() asAsyncStream.
 	completers
 		do: [ :each | 
 			stream := stream
-					merge: (each complete: aString at: positionInteger) asAsyncStream ].
+					merge: (each
+							complete: aString
+							at: positionInteger
+							hasQuote: aBoolean) asAsyncStream ].
 	^ stream withoutDuplicates
 ]
 
