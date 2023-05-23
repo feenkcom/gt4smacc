@@ -572,6 +572,7 @@ GtSmaCCParserStyler class >> yamlStyler: aParserClass [
 GtSmaCCParserStyler class >> yamlStylerWithAliasExpander: aParserClass [
 	<smaccStyler: #YAMLParser priority: 49>
 	^ GtCompositeSmaCCASTStyler new
+		parserClass: YAMLParser;
 		stylers: {self yamlStyler: aParserClass.
 				self yamlAliasExpanderStyler: aParserClass}
 ]
