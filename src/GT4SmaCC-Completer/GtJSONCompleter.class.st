@@ -22,7 +22,7 @@ GtJSONCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
 ]
 
 { #category : #accessing }
-GtJSONCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger isLast: aBoolean [
+GtJSONCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger lastStackIndex: sizeInteger isLast: aBoolean [ 
 	^ aBoolean ifTrue: [ self ] ifFalse: [ GtJSONEmptyCompleter instance ]
 ]
 
@@ -32,11 +32,16 @@ GtJSONCompleter >> completerForFinalJSONNode: aJSONNode [
 ]
 
 { #category : #accessing }
-GtJSONCompleter >> completerForFinalNode: aJSONNode [
+GtJSONCompleter >> completerForFinalNode: aJSONNode at: positionInteger [
 	aJSONNode isErrorNode
-		ifTrue: [ ^ self
+		ifTrue: [ | lastIndex |
+			lastIndex := (aJSONNode stackContents size to: 1 by: -1)
+					detect: [ :i | (self endIndexOf: aJSONNode at: i) <= positionInteger ]
+					ifNone: [ aJSONNode stackContents size ].
+			^ self
 				completerForErrorNode: aJSONNode
 				stackPointer: 1
+				lastStackIndex: lastIndex
 				isLast: true ].
 	^ self completerForFinalJSONNode: aJSONNode
 ]
@@ -47,17 +52,34 @@ GtJSONCompleter >> completerForJSONNode: aJSONNode [
 ]
 
 { #category : #accessing }
-GtJSONCompleter >> completerForNode: aJSONNode [
+GtJSONCompleter >> completerForNode: aJSONNode at: positionInteger [
 	aJSONNode isErrorNode
-		ifTrue: [ ^ self
+		ifTrue: [ | lastIndex |
+			lastIndex := (aJSONNode stackContents size to: 1 by: -1)
+					detect: [ :i | (self endIndexOf: aJSONNode at: i) <= positionInteger ]
+					ifNone: [ aJSONNode stackContents size ].
+			^ self
 				completerForErrorNode: aJSONNode
 				stackPointer: 1
+				lastStackIndex: lastIndex
 				isLast: false ].
 	^ self completerForJSONNode: aJSONNode
 ]
 
 { #category : #accessing }
-GtJSONCompleter >> findCompleterFor: aJSONNode [
+GtJSONCompleter >> endIndexOf: anErrorNode at: anInteger [
+	| last |
+	anErrorNode
+		nodesAndTokensIn: (anErrorNode stackContents at: anInteger)
+		do: [ :each | 
+			last
+				ifNil: [ last := each stopPosition ]
+				ifNotNil: [ last := last max: each stopPosition ] ].
+	^ last ifNil: [ SmallInteger maxVal ]
+]
+
+{ #category : #accessing }
+GtJSONCompleter >> findCompleterFor: aJSONNode at: positionInteger [
 	| allParents current |
 	current := self.
 	allParents := aJSONNode withAllParents.
@@ -66,8 +88,8 @@ GtJSONCompleter >> findCompleterFor: aJSONNode [
 		by: -1
 		do: [ :i | 
 			current := i = 1
-					ifTrue: [ current completerForFinalNode: (allParents at: i) ]
-					ifFalse: [ current completerForNode: (allParents at: i) ] ].
+					ifTrue: [ current completerForFinalNode: (allParents at: i) at: positionInteger ]
+					ifFalse: [ current completerForNode: (allParents at: i) at: positionInteger ] ].
 	^ current
 ]
 

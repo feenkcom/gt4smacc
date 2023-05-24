@@ -8,42 +8,24 @@ Class {
 }
 
 { #category : #accessing }
-GtJSONListCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger isLast: aBoolean [
+GtJSONListCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger lastStackIndex: sizeInteger isLast: aBoolean [
 	| token |
 	token := SmaCCToken value: '['.
 	anInteger
-		to: anErrorNode stackContents size
+		to: sizeInteger
 		do: [ :i | 
 			token = (anErrorNode stackContents at: i)
 				ifTrue: [ ^ itemCompleter
 						completerForErrorNode: anErrorNode
 						stackPointer: i + 1
+						lastStackIndex: sizeInteger
 						isLast: aBoolean ] ].
-	^ GtJSONEmptyCompleter instance
-]
-
-{ #category : #accessing }
-GtJSONListCompleter >> completerForFinalNode: aJSONNode [
-	aJSONNode isErrorNode
-		ifTrue: [ (aJSONNode stackContents
-				anySatisfy: [ :each | (each isKindOf: SmaCCToken) and: [ each value = '[' ] ])
-				ifTrue: [ ^ itemCompleter ] ].
 	^ GtJSONEmptyCompleter instance
 ]
 
 { #category : #accessing }
 GtJSONListCompleter >> completerForJSONNode: aJSONNode [
 	(aJSONNode isKindOf: JSONArrayNode) ifTrue: [ ^ itemCompleter ].
-	^ GtJSONEmptyCompleter instance
-]
-
-{ #category : #accessing }
-GtJSONListCompleter >> completerForNode: aJSONNode [
-	(aJSONNode isKindOf: JSONArrayNode) ifTrue: [ ^ itemCompleter ].
-	aJSONNode isErrorNode
-		ifTrue: [ (aJSONNode stackContents
-				anySatisfy: [ :each | (each isKindOf: SmaCCToken) and: [ each value = '[' ] ])
-				ifTrue: [ ^ itemCompleter ] ].
 	^ GtJSONEmptyCompleter instance
 ]
 

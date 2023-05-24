@@ -59,6 +59,25 @@ GtJSONCompletionExamples >> completeKey [
 ]
 
 { #category : #examples }
+GtJSONCompletionExamples >> completeKeyBeforePair [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "de  
+"team" :  []}' asRopedText.
+	position := text asString indexOf: $e.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"deleted"'.
+	^ result
+]
+
+{ #category : #examples }
 GtJSONCompletionExamples >> completeKeyInError [
 	<gtExample>
 	| strategy result items text position |
@@ -226,6 +245,26 @@ GtJSONCompletionExamples >> completeValue [
 	text := '
 { "deleted" : "t  }' asRopedText.
 	position := text size - 3.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: '"true"'.
+	^ result
+]
+
+{ #category : #examples }
+GtJSONCompletionExamples >> completeValueBeforePair [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "computed"  : "",
+ "deleted": "tr
+"team" :  []}' asRopedText.
+	position := text asString indexOf: $r.
 	result := strategy
 			completionResultFor: text
 			at: position
