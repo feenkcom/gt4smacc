@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #accessing }
-GtJSONCompletionStrategy >> completeNodeAt: positionInteger [
+GtJSONCompletionStrategy >> completeNodeAt: positionInteger requested: aBoolean [
 	node stopPosition = positionInteger
 		ifTrue: [ ^ (completer findCompleterFor: node at: positionInteger)
 				complete: (self completionPrefixAt: positionInteger)
@@ -36,6 +36,11 @@ GtJSONCompletionStrategy >> completeNodeAt: positionInteger [
 				complete: node name source allButLast
 				at: positionInteger
 				hasQuote: true ].
+	(aBoolean and: [ node isKindOf: JSONObjectNode ])
+		ifTrue: [ ^ (completer findCompleterFor: node at: positionInteger)
+				complete: ''
+				at: positionInteger
+				hasQuote: false ].
 	^ #()
 ]
 
@@ -66,7 +71,7 @@ GtJSONCompletionStrategy >> completionResultFor: aText at: positionInteger reque
 			ifNil: [ #() ]
 			ifNotNil: [ :n | 
 				node := n.
-				self completeNodeAt: positionInteger ] ]
+				self completeNodeAt: positionInteger requested: aBoolean ] ]
 		ensure: [ ast := nil.
 			node := nil ].
 	^ GtStreamedCompletionResult onStream: results asAsyncStream
