@@ -64,16 +64,16 @@ GtJSONObjectCompleter >> complete: aString at: positionInteger hasQuote: aBoolea
 ]
 
 { #category : #accessing }
-GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger isLast: aBoolean [
+GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInteger lastStackIndex: sizeInteger isLast: aBoolean [
 	| objectIndex arrayIndex nextIndex token |
-	objectIndex := anInteger < anErrorNode stackContents size
+	objectIndex := anInteger < sizeInteger
 			ifTrue: [ anErrorNode stackContents
 					indexOf: (SmaCCToken value: '{')
 					startingAt: anInteger + 1 ]
 			ifFalse: [ 0 ].
 	(aBoolean
 		and: [ objectIndex = 0
-				and: [ (anInteger > anErrorNode stackContents size
+				and: [ (anInteger > sizeInteger
 						or: [ (anErrorNode stackContents at: anInteger) ~= (SmaCCToken value: '{') ])
 						and: [ anErrorNode parent isKindOf: JSONMemberNode ] ] ])
 		ifTrue: [ ^ GtJSONEmptyCompleter instance ].
@@ -84,18 +84,16 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 		ifTrue: [ nextIndex := objectIndex min: arrayIndex ]
 		ifFalse: [ nextIndex := objectIndex > 0
 					ifTrue: [ objectIndex ]
-					ifFalse: [ arrayIndex > 0
-							ifTrue: [ arrayIndex ]
-							ifFalse: [ anErrorNode stackContents size + 1 ] ] ].
+					ifFalse: [ arrayIndex > 0 ifTrue: [ arrayIndex ] ifFalse: [ sizeInteger + 1 ] ] ].
 	((aBoolean and: [ anErrorNode stackContents isEmpty ])
 		or: [ self
 				checkRequiredInErrorNode: anErrorNode
 				from: anInteger
 				to: nextIndex - 1 ]) ifFalse: [ ^ GtJSONEmptyCompleter instance ].
-	(nextIndex > anErrorNode stackContents size or: [ nextIndex < (anInteger + 2) ])
-		ifTrue: [ (aBoolean and: [ anInteger + 2 <= anErrorNode stackContents size ])
-				ifTrue: [ anErrorNode stackContents last = (SmaCCToken value: ':')
-						ifTrue: [ token := anErrorNode stackContents at: anErrorNode stackContents size - 1.
+	(nextIndex > sizeInteger or: [ nextIndex < (anInteger + 2) ])
+		ifTrue: [ (aBoolean and: [ anInteger + 2 <= sizeInteger ])
+				ifTrue: [ (anErrorNode stackContents at: sizeInteger) = (SmaCCToken value: ':')
+						ifTrue: [ token := anErrorNode stackContents at: sizeInteger - 1.
 							((token isKindOf: SmaCCToken) and: [ token value beginsWith: '"' ])
 								ifTrue: [ items
 										at: token value allButFirst allButLast
@@ -113,6 +111,7 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 					^ completer
 						completerForErrorNode: anErrorNode
 						stackPointer: nextIndex
+						lastStackIndex: sizeInteger
 						isLast: aBoolean ]
 				ifAbsentPut: [ ^ valueCompleter ] ].
 	^ self

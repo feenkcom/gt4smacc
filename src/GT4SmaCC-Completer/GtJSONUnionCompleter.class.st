@@ -27,10 +27,10 @@ GtJSONUnionCompleter >> complete: aString at: positionInteger hasQuote: aBoolean
 ]
 
 { #category : #accessing }
-GtJSONUnionCompleter >> completerForFinalNode: aJSONNode [
+GtJSONUnionCompleter >> completerForFinalNode: aJSONNode at: positionInteger [
 	| results |
 	results := (completers
-			collect: [ :each | each completerForFinalNode: aJSONNode ])
+			collect: [ :each | each completerForFinalNode: aJSONNode at: positionInteger ])
 			reject: [ :each | each == GtJSONEmptyCompleter instance ].
 	^ results isEmpty
 		ifTrue: [ GtJSONEmptyCompleter instance ]
@@ -38,9 +38,10 @@ GtJSONUnionCompleter >> completerForFinalNode: aJSONNode [
 ]
 
 { #category : #accessing }
-GtJSONUnionCompleter >> completerForNode: aJSONNode [
+GtJSONUnionCompleter >> completerForNode: aJSONNode at: positionInteger [
 	| results |
-	results := (completers collect: [ :each | each completerForNode: aJSONNode ])
+	results := (completers
+			collect: [ :each | each completerForNode: aJSONNode at: positionInteger ])
 			reject: [ :each | each == GtJSONEmptyCompleter instance ].
 	^ results isEmpty
 		ifTrue: [ GtJSONEmptyCompleter instance ]
