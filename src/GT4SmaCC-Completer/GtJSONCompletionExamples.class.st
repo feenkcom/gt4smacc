@@ -5,6 +5,23 @@ Class {
 }
 
 { #category : #examples }
+GtJSONCompletionExamples >> completeEmptyRequested [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '{  }' asRopedText.
+	position := 2.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: true.
+	items := (result stream asyncSimilarCopy take: 5) toArray wait.
+	self assert: items size equals: 3.
+	self assert: items first label equals: '"computed"'.
+	^ result
+]
+
+{ #category : #examples }
 GtJSONCompletionExamples >> completeInsideValue [
 	<gtExample>
 	| strategy result items text position |

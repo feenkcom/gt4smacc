@@ -52,6 +52,16 @@ GtJSONObjectCompleter >> checkRequiredInErrorNode: anErrorNode from: startIntege
 
 { #category : #accessing }
 GtJSONObjectCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
+	aString isEmpty
+		ifTrue: [ ^ items keys asSortedCollection
+				collect: [ :each | 
+					| text |
+					text := '"' , each , '"'.
+					GtInsertTextCompletionAction
+						labeled: (self labelFor: text withSearch: aString)
+						completion: text
+						position: positionInteger
+						from: positionInteger + 1 ] ].
 	^ (items keys select: [ :each | '"' , each beginsWith: aString ])
 		collect: [ :each | 
 			| text |
