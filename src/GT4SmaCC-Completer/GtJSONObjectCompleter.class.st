@@ -128,6 +128,22 @@ GtJSONObjectCompleter >> completerForErrorNode: anErrorNode stackPointer: anInte
 ]
 
 { #category : #accessing }
+GtJSONObjectCompleter >> completerForFinalNode: aJSONNode at: positionInteger [
+	((aJSONNode isKindOf: JSONMemberNode)
+		and: [ aJSONNode colon notNil
+				and: [ aJSONNode colon stopPosition <= positionInteger
+						and: [ aJSONNode value notNil
+								and: [ aJSONNode value startPosition > positionInteger ] ] ] ])
+		ifTrue: [ (aJSONNode value isKindOf: JSONStringNode)
+				ifFalse: [ ^ GtJSONEmptyCompleter instance ].
+			items
+				at: (aJSONNode name value copyFrom: 2 to: aJSONNode name value size - 1)
+				ifPresent: [ :completer | ^ completer ].
+			^ valueCompleter ].
+	^ super completerForFinalNode: aJSONNode at: positionInteger
+]
+
+{ #category : #accessing }
 GtJSONObjectCompleter >> completerForJSONNode: aJSONNode [
 	(aJSONNode isKindOf: JSONObjectNode)
 		ifTrue: [ checks

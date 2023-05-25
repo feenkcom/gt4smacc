@@ -19,7 +19,7 @@ GtJSONValueCompleter >> addValues: aCollection [
 
 { #category : #accessing }
 GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
-	^ (values select: [ :each | each beginsWith: aString ])
+	^ (values select: [ :each | aString isEmpty or: [ each beginsWith: aString ] ])
 		collect: [ :each | 
 			| name |
 			name := each.
