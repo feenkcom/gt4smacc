@@ -36,7 +36,8 @@ GtJSONCompletionStrategy >> completeNodeAt: positionInteger requested: aBoolean 
 				complete: node name source allButLast
 				at: positionInteger
 				hasQuote: true ].
-	(aBoolean and: [ node isKindOf: JSONObjectNode ])
+	(aBoolean
+		and: [ (node isKindOf: JSONObjectNode) or: [ node isKindOf: JSONMemberNode ] ])
 		ifTrue: [ ^ (completer findCompleterFor: node at: positionInteger)
 				complete: ''
 				at: positionInteger

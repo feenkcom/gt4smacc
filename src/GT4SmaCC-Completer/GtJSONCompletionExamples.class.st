@@ -22,6 +22,43 @@ GtJSONCompletionExamples >> completeEmptyRequested [
 ]
 
 { #category : #examples }
+GtJSONCompletionExamples >> completeEmptyValueBeforeNumber [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "deleted" :
+3}' asRopedText.
+	position := text asString indexOf: $:.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: true.
+	items := (result stream asyncSimilarCopy take: 5) toArray wait.
+	self assert: items size equals: 0.
+	^ result
+]
+
+{ #category : #examples }
+GtJSONCompletionExamples >> completeEmptyValueBeforePairRequested [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self completionStrategy.
+	text := '
+{ "deleted" :
+"team" :  []}' asRopedText.
+	position := text asString indexOf: $:.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: true.
+	items := (result stream asyncSimilarCopy take: 5) toArray wait.
+	self assert: items size equals: 2.
+	self assert: items first label equals: '"true"'.
+	^ result
+]
+
+{ #category : #examples }
 GtJSONCompletionExamples >> completeInsideValue [
 	<gtExample>
 	| strategy result items text position |
