@@ -549,15 +549,106 @@ GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
-	| element |
+	^ self
+		editorFor: aString
+		parser: aClass
+		scrollToError: false
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass scrollToError: aBoolean [
+	| element index |
 	element := BrEditor new.
 	element
 		aptitude: BrGlamorousCodeEditorAptitude;
 		padding: (BlInsets all: 5);
 		matchParent.
 	element editor text: (aString ifNil: [ '' ]) asRopedText.
-	aClass notNil ifTrue: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
+	aClass notNil
+		ifTrue: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
+	aBoolean
+		ifTrue: [ [ aClass parse: aString ]
+				on: SmaCCParserError
+				do: [ :ex | 
+					index := (ex parser position - 1 max: 1) min: aString size.
+					(element editor text from: index to: index)
+						attributes: {GtSourceCoderErrorAttribute for: ex messageText}.
+					element editor moveCursorTo: index.
+					element scrollToPosition: (aString lineNumberCorrespondingToIndex: index) ] ].
 	^ element
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> editorWrapperFor: editorElement [
+	| pane findText lineText updating |
+	updating := false.
+	pane := BrHorizontalPane new.
+	pane
+		padding: (BlInsets all: 3);
+		hMatchParent;
+		vFitContent.
+	findText := BrEditor new
+			aptitude: BrGlamorousRegularEditorAptitude new
+					+ (BrStyleCommonAptitude new
+							default: [ :aStyle | 
+								aStyle
+									border: (BlBorder paint: BrGlamorousColors disabledButtonBorderColor width: 1) ];
+							focused: [ :aStyle | 
+								aStyle
+									border: (BlBorder paint: BrGlamorousColors focusedEditorBorderColor width: 1) ]);
+			hMatchParent;
+			vFitContent;
+			addShortcut: (BlShortcutWithAction new
+					combination: BlKeyCombination enter;
+					action: [ self find: findText editor text asString in: editorElement ]).
+	lineText := BrEditor new
+			aptitude: BrGlamorousRegularEditorAptitude new
+					+ (BrStyleCommonAptitude new
+							default: [ :aStyle | 
+								aStyle
+									border: (BlBorder paint: BrGlamorousColors disabledButtonBorderColor width: 1) ];
+							focused: [ :aStyle | 
+								aStyle
+									border: (BlBorder paint: BrGlamorousColors focusedEditorBorderColor width: 1) ]);
+			hFitContent;
+			vFitContent;
+			text: '1';
+			addShortcut: (BlShortcutWithAction new
+					combination: BlKeyCombination enter;
+					action: [ [ | string position line |
+						updating := true.
+						[ line := lineText editor text asString asNumber.
+						string := editorElement editor text asString.
+						position := string intervalOfLine: line.
+						editorElement editor moveCursorTo: (position first - 1 max: 0).
+						editorElement scrollToPosition: line.
+						editorElement requestFocus ] ensure: [ updating := false ] ]
+							on: Error
+							do: [ :ex | ex return ] ]).
+	self
+		whenCursorEventsIn: editorElement editor
+		do: [ :intervals | 
+			(updating not and: [ intervals notEmpty ])
+				ifTrue: [ lineText editor
+						text: (editorElement editor text asString
+								lineNumberCorrespondingToIndex: intervals first first) printString
+								asRopedText glamorousRegularFont ] ].
+	pane
+		addChild: (BrLabel new
+				text: 'Find:';
+				padding: (BlInsets all: 3);
+				aptitude: BrGlamorousLabelAptitude new);
+		addChild: findText;
+		addChild: (BrLabel new
+				text: 'Line';
+				padding: (BlInsets all: 3);
+				aptitude: BrGlamorousLabelAptitude new);
+		addChild: lineText;
+		addChild: (BrLabel new
+				text: '/' , editorElement editor text asString lineCount printString;
+				padding: (BlInsets all: 3);
+				aptitude: BrGlamorousLabelAptitude new).
+	^ pane
 ]
 
 { #category : #'ui-configuration' }
@@ -702,6 +793,33 @@ GtSmaCCTransformationToolkit >> filterFiles: aString [
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> filterRewritesButton [
 	^ self filterButton: [ :text | self applyRewriteFilter: text ]
+]
+
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> find: aString in: editorElement [
+	| editorString cursorPosition index |
+	aString isEmpty ifTrue: [ ^ self ].
+	editorString := editorElement editor text asString.
+	editorElement editor cursors
+		do: [ :each | cursorPosition := each position + 1 ].
+	cursorPosition ifNil: [ cursorPosition := 1 ].
+	index := editorString
+			findString: aString
+			startingAt: (cursorPosition min: editorString size)
+			caseSensitive: false.
+	(index = 0 and: [ cursorPosition > 1 ])
+		ifTrue: [ index := editorString
+					findString: aString
+					startingAt: 1
+					caseSensitive: false ].
+	index > 0 ifFalse: [ ^ self ].
+	editorElement selecter
+		overwrite;
+		from: index - 1 to: index + aString size - 1;
+		select.
+	editorElement editor moveCursorTo: index + aString size - 1.
+	editorElement
+		scrollToPosition: (editorString lineNumberCorrespondingToIndex: index)
 ]
 
 { #category : #'configuration-actions' }
@@ -950,27 +1068,26 @@ GtSmaCCTransformationToolkit >> newPreviewFilesElement [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
 	previewResult ifNil: [ ^ BlElement new ].
-	^ (BrTabGroup new)
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight + BrGlamorousTabGroupAptitude + BrShadowAptitude;
+	^ BrTabGroup new
+		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight
+				+ BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
-		addTab:
-				((BrTab new)
-						aptitude: BrGlamorousTabAptitude new;
-						label: self previewInputFilename;
-						stencil:
-								[ | editorElement |
-									editorElement := self editorFor: previewResult inputSource parser: model inputParserClass.
-									self
-										whenCursorEventsIn: editorElement editor
-										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
-									(BlElement new)
-										constraintsDo:
-												[ :c | 
-													c horizontal matchParent.
-													c vertical matchParent ];
-										addChild: editorElement asScrollableElement as: #inputSource;
-										yourself ])
+		addTab: (BrTab new
+				aptitude: BrGlamorousTabAptitude new;
+				label: self previewInputFilename;
+				stencil: [ | editorElement |
+					editorElement := self
+							editorFor: previewResult inputSource
+							parser: model inputParserClass.
+					self
+						whenCursorEventsIn: editorElement editor
+						do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
+					BrVerticalPane new
+						matchParent;
+						addChild: editorElement asScrollableElement as: #inputSource;
+						addChild: (self editorWrapperFor: editorElement);
+						yourself ])
 ]
 
 { #category : #'ui-preview' }
@@ -982,41 +1099,38 @@ GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
 		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
 		background: Color white;
 		padding: (BlInsets all: 5);
-		addTab:
-				((BrTab new)
-						aptitude: BrGlamorousTabAptitude new;
-						label: self previewOutputFilename;
-						stencil:
-								[ | editorElement |
-									editorElement := self editorFor: previewResult outputSource parser: model validationParserClass.
-									self
-										whenCursorEventsIn: editorElement editor
-										do: [ :intervals | self updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
-									(BlElement new)
-										constraintsDo:
-												[ :c | 
-													c horizontal matchParent.
-													c vertical matchParent ];
-										addChild: editorElement asScrollableElement as: #outputSource;
-										yourself ]).
+		addTab: (BrTab new
+				aptitude: BrGlamorousTabAptitude new;
+				label: self previewOutputFilename;
+				stencil: [ | editorElement |
+					editorElement := self
+							editorFor: previewResult outputSource
+							parser: model validationParserClass
+							scrollToError: true.
+					self
+						whenCursorEventsIn: editorElement editor
+						do: [ :intervals | self updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
+					BrVerticalPane new
+						matchParent;
+						addChild: editorElement asScrollableElement as: #outputSource;
+						addChild: (self editorWrapperFor: editorElement);
+						yourself ]).
 	previewResult additionalFiles
-		keysAndValuesDo:
-			[ :key :value | 
+		keysAndValuesDo: [ :key :value | 
 			tabGroup
-				addTab:
-					((BrTab new)
+				addTab: (BrTab new
 						aptitude: BrGlamorousTabAptitude new;
 						label: key asFileReference basename;
-						stencil:
-								[ | editorElement |
-									editorElement := self editorFor: value asString parser: model validationParserClass.
-									(BlElement new)
-										constraintsDo:
-												[ :c | 
-													c horizontal matchParent.
-													c vertical matchParent ];
-										addChild: editorElement asScrollableElement;
-										yourself ]) ].
+						stencil: [ | editorElement |
+							editorElement := self
+									editorFor: value asString
+									parser: model validationParserClass
+									scrollToError: true.
+							BrVerticalPane new
+								matchParent;
+								addChild: editorElement asScrollableElement;
+								addChild: (self editorWrapperFor: editorElement);
+								yourself ]) ].
 	^ tabGroup
 ]
 
