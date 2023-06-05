@@ -1067,7 +1067,8 @@ GtSmaCCTransformationToolkit >> newPreviewFilesElement [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
-	previewResult ifNil: [ ^ BlElement new ].
+	(previewResult isNil or: [ previewResult inputSource isNil ])
+		ifTrue: [ ^ BlElement new ].
 	^ BrTabGroup new
 		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight
 				+ BrGlamorousTabGroupAptitude + BrShadowAptitude;
@@ -1093,7 +1094,8 @@ GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
 	| tabGroup |
-	previewResult ifNil: [ ^ BlElement new ].
+	(previewResult isNil or: [ previewResult outputSource isNil ])
+		ifTrue: [ ^ BlElement new ].
 	tabGroup := BrTabGroup new.
 	tabGroup
 		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
