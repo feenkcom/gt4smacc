@@ -15,7 +15,7 @@ GtSmaCCSlideshow >> addButtonFor: coderElement [
 { #category : #'create parser slide' }
 GtSmaCCSlideshow >> createSlideElement [
 	| coderElement buttonTarget |
-	coderElement := BlScripter new element: GtCoder new createInPager maximized; elementWithoutParent.
+	coderElement := BlScripter new element: GtCoderElement new createInPager maximized; elementWithoutParent.
 	buttonTarget := self addButtonFor: coderElement.
 	buttonTarget addChild: ((self yellowExplanationTargetCircleFor: #addButton) relocate: 2 @ 10).
 	^ (BlElement new)
