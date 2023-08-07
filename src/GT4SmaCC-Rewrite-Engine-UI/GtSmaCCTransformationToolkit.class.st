@@ -564,10 +564,10 @@ GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass scrollToError:
 		padding: (BlInsets all: 5);
 		matchParent.
 	element editor text: (aString ifNil: [ '' ]) asRopedText.
-	aClass notNil
-		ifTrue: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
+	aClass
+		ifNotNil: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
 	aBoolean
-		ifTrue: [ [ aClass parse: aString ]
+		ifTrue: [ [ aClass ifNotNil: [ aClass parse: aString ] ]
 				on: SmaCCParserError
 				do: [ :ex | 
 					index := (ex parser position - 1 max: 1) min: aString size.
