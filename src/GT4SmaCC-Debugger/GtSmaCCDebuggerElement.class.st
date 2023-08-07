@@ -192,20 +192,17 @@ GtSmaCCDebuggerElement >> buildParserStack [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildParserToolbarActions [
 	| buttons |
-	buttons := (self
-		actionsForPragmas: self parserDebuggingActionsPragmas)
-		, (self actionsForPragmas: self scannerDebuggingActionsPragmas)
-		collect: [ :aDebuggingAction | 
-			| actionButton |
-			actionButton := BrButton new
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				label: aDebuggingAction label;
-				action: [ aDebuggingAction execute.
-					aDebuggingAction needsUpdate
-						ifTrue: [ self updateContents ] ].
-			aDebuggingAction icon
-				ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
-			actionButton ].
+	buttons := self debuggerActions
+			collect: [ :aDebuggingAction | 
+				| actionButton |
+				actionButton := BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						label: aDebuggingAction name;
+						action: [ aDebuggingAction execute.
+							self updateContents ].
+				aDebuggingAction icon
+					ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
+				actionButton ].
 	^ buttons
 ]
 
@@ -343,6 +340,15 @@ GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 	sourceEditor cursors
 		do: [ :each | ^ each position + 1 to: each position + 1 ].
 	^ 1 to: 0
+]
+
+{ #category : #'building widgets' }
+GtSmaCCDebuggerElement >> debuggerActions [
+	^ {SmaCCParserStepThroughAction.
+		SmaCCParserStepToReduceAction.
+		SmaCCParserNextTokenAction.
+		SmaCCStepToNextCharacterAction.
+		SmaCCStepToCursorAction} collect: [ :each | each forDebugger: self ]
 ]
 
 { #category : #'building widgets' }

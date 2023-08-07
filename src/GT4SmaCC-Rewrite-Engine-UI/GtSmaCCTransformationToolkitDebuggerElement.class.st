@@ -98,6 +98,14 @@ GtSmaCCTransformationToolkitDebuggerElement >> currentContext [
 ]
 
 { #category : #ui }
+GtSmaCCTransformationToolkitDebuggerElement >> debuggerActions [
+	^ {SmaCCSendRuleDebugAction.
+		SmaCCStepRuleDebugAction.
+		SmaCCStepToNextNodeAction.
+		SmaCCStepToNextRewriteAction} collect: [ :each | each forDebugger: self ]
+]
+
+{ #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> detailsElement [
 	| element top bottom |
 	element := (BrVerticalPane new)
@@ -135,7 +143,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> equivalentNodeTo: aNode in: other
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> executeAction: aDebuggingAction [
 	aDebuggingAction execute.
-	aDebuggingAction needsUpdate ifTrue: [ self updateContents ]
+	self updateContents
 ]
 
 { #category : #ui }
@@ -174,14 +182,14 @@ GtSmaCCTransformationToolkitDebuggerElement >> initialize [
 								((BlKeyCombination builder)
 										key: BlKeyboardKey F10;
 										build);
-						action: [ :anEvent :aShortcut | self executeAction: (SmaCCStepRuleDebugAction gtActionFor: self) ]);
+						action: [ :anEvent :aShortcut | self executeAction: (SmaCCStepRuleDebugAction forDebugger: self) ]);
 		addShortcut:
 				((BlShortcutWithAction new)
 						combination:
 								((BlKeyCombination builder)
 										key: BlKeyboardKey F11;
 										build);
-						action: [ :anEvent :aShortcut | self executeAction: (SmaCCSendRuleDebugAction gtActionFor: self) ])
+						action: [ :anEvent :aShortcut | self executeAction: (SmaCCSendRuleDebugAction forDebugger: self) ])
 ]
 
 { #category : #ui }
@@ -479,16 +487,16 @@ GtSmaCCTransformationToolkitDebuggerElement >> textElementForContext: aContext a
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 	| buttons |
-	buttons := (self actionsForPragmas: #(gtSmaCCTransformationStack))
-		collect:
-			[ :aDebuggingAction | 
-			| actionButton |
-			actionButton := (BrButton new)
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				label: aDebuggingAction label;
-				action: [ self executeAction: aDebuggingAction ].
-			aDebuggingAction icon ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
-			actionButton ].
+	buttons := self debuggerActions
+			collect: [ :aDebuggingAction | 
+				| actionButton |
+				actionButton := BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						label: aDebuggingAction name;
+						action: [ self executeAction: aDebuggingAction ].
+				aDebuggingAction icon
+					ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
+				actionButton ].
 	^ buttons
 ]
 
