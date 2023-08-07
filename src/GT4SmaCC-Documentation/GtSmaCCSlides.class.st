@@ -1,6 +1,8 @@
 Class {
 	#name : #GtSmaCCSlides,
 	#superclass : #Object,
+	#traits : 'TGtSlideShow',
+	#classTraits : 'TGtSlideShow classTrait',
 	#category : #'GT4SmaCC-Documentation'
 }
 
