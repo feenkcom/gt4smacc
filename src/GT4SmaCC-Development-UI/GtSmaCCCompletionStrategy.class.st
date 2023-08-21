@@ -8,9 +8,9 @@ Class {
 }
 
 { #category : #accessing }
-GtSmaCCCompletionStrategy >> completionActionStreamFor: aText at: positionInteger [
+GtSmaCCCompletionStrategy >> completionActionStreamFor: aText at: positionInteger requested: aBoolean [
 	self isEnabled ifFalse: [ ^ #() asAsyncStream ].
-	^ super completionActionStreamFor: aText at: positionInteger
+	^ super completionActionStreamFor: aText at: positionInteger requested: aBoolean
 ]
 
 { #category : #activation }
