@@ -415,7 +415,6 @@ GtSmaCCParserStyler class >> rustStyler: aParserClass [
 			{(GtSmaCCKeywordTokensStylerRule
 				styleBlock: [ :styler | 
 					styler
-						bold;
 						foreground: Color purple ]).
 			(GtSmaCCCommentStylerRule
 				styleBlock: [ :styler | styler foreground: Color lightGray ]).
@@ -430,6 +429,13 @@ GtSmaCCParserStyler class >> rustStyler: aParserClass [
 				styleBlock: [ :styler | styler foreground: Color blue ]).
 			(GtSmaCCNodeStylerRule
 				nodeClassName: #RustAttributeNode
+				styleBlock: [ :styler | styler foreground: Color green muchDarker ]).
+			(GtSmaCCNodeStylerRule
+				nodeClassName: #RustTypePathNode
+				styleBlock: [ :styler | styler foreground: Color blue muchDarker ]).
+			(GtSmaCCNodeVariableStylerRule
+				nodeClassName: #RustFunctionNode
+				variableNames: #(name)
 				styleBlock: [ :styler | styler bold ]).
 			(GtSmaCCNodeVariableStylerRule
 				nodeClassName: #SmaCCErrorNode
