@@ -350,23 +350,31 @@ GtSmaCCParserStyler class >> jsonStyler: aParserClass [
 { #category : #instances }
 GtSmaCCParserStyler class >> pythonStyler: aParserClass [
 	<smaccStyler: #PythonParser priority: 50>
-	
 	^ (self forParser: aParserClass)
-		stylerRules:
-			{GtSmaCCKeywordTokensStylerRule
-					styleBlock:
-						[ :styler | 
+		stylerRules: {GtSmaCCKeywordTokensStylerRule
+					styleBlock: [ :styler | 
 						styler
 							bold;
 							foreground: Color purple ].
-				GtSmaCCCommentStylerRule styleBlock: [ :styler | styler foreground: Color lightGray ].
-				GtSmaCCNodeStylerRule nodeClassName: #PyStringNode styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCCommentStylerRule
+					styleBlock: [ :styler | styler foreground: Color lightGray ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #PyStringNode
+					styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #PySymbolNode
+					variableNames: #(nameToken)
+					styleBlock: [ :styler | styler foreground: Color blue muchDarker ].
 				GtSmaCCNodeVariableStylerRule
 					nodeClassName: #PyInterpolatedStringNode
 					variableNames: #(parts)
 					styleBlock: [ :styler | styler foreground: Color blue ].
-				GtSmaCCNodeStylerRule nodeClassName: #PyNumberNode styleBlock: [ :styler | styler foreground: Color blue ].
-				GtSmaCCNodeStylerRule nodeClassName: #PyDecoratorNode styleBlock: [ :styler | styler bold ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #PyNumberNode
+					styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #PyDecoratorNode
+					styleBlock: [ :styler | styler bold ].
 				GtSmaCCNodeVariableStylerRule
 					nodeClassName: #SmaCCErrorNode
 					variableNames: #(dismissedTokens errorToken)
