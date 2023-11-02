@@ -19,7 +19,7 @@ GtJSONValueCompleter >> addValues: aCollection [
 
 { #category : #accessing }
 GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
-	^ (values select: [ :each | aString isEmpty or: [ each beginsWith: aString ] ])
+	^ (values asyncStreamStartingWith: aString)
 		collect: [ :each | 
 			| name |
 			name := each.
@@ -35,5 +35,15 @@ GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean
 { #category : #accessing }
 GtJSONValueCompleter >> initialize [
 	super initialize.
-	values := OrderedCollection new
+	values := GtPrefixTree new
+]
+
+{ #category : #accessing }
+GtJSONValueCompleter >> values [
+	^ values
+]
+
+{ #category : #accessing }
+GtJSONValueCompleter >> values: aGtPrefixTree [
+	values := aGtPrefixTree
 ]

@@ -54,7 +54,9 @@ GtJSONCompletionExamples >> completeEmptyValueBeforePairRequested [
 			requested: true.
 	items := (result stream asyncSimilarCopy take: 5) toArray wait.
 	self assert: items size equals: 2.
-	self assert: items first label equals: '"true"'.
+	self
+		assert: (items collect: #label) sort
+		equals: #('"false"' '"true"').
 	^ result
 ]
 
