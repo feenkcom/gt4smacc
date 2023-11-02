@@ -2,7 +2,8 @@ Class {
 	#name : #GtJSONValueCompleter,
 	#superclass : #GtJSONCompleter,
 	#instVars : [
-		'values'
+		'values',
+		'useWeightedValues'
 	],
 	#category : #'GT4SmaCC-Completer-JSON'
 }
@@ -19,7 +20,9 @@ GtJSONValueCompleter >> addValues: aCollection [
 
 { #category : #accessing }
 GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean [
-	^ (values asyncStreamStartingWith: aString)
+	^ (useWeightedValues
+		ifTrue: [ values asyncWeightedStreamStartingWith: aString ]
+		ifFalse: [ values asyncStreamStartingWith: aString ])
 		collect: [ :each | 
 			| name |
 			name := each.
@@ -35,7 +38,18 @@ GtJSONValueCompleter >> complete: aString at: positionInteger hasQuote: aBoolean
 { #category : #accessing }
 GtJSONValueCompleter >> initialize [
 	super initialize.
-	values := GtPrefixTree new
+	values := GtPrefixTree new.
+	self useWeightedValues: false
+]
+
+{ #category : #accessing }
+GtJSONValueCompleter >> useWeightedValues [
+	^ useWeightedValues
+]
+
+{ #category : #accessing }
+GtJSONValueCompleter >> useWeightedValues: aBoolean [
+	useWeightedValues := aBoolean
 ]
 
 { #category : #accessing }
