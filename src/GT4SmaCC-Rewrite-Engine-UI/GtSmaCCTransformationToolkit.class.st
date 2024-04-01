@@ -125,6 +125,34 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 		padding: (BlInsets all: 20)
 ]
 
+{ #category : #'ui-preview' }
+GtSmaCCTransformationToolkit >> addMenuItemsFor: aSymbol to: editorElement [
+	| pragmas symbol parser options |
+	parser := self model inputParserClass.
+	parser isNil ifTrue: [ ^ self ].
+	options := OrderedCollection new.
+	symbol := #smaccTransformationToolkitMenu:for:parser:.
+	pragmas := Pragma allNamed: symbol.
+	pragmas
+		do: [ :pragma | 
+			(pragma selector = symbol
+				and: [ pragma arguments second = aSymbol
+						and: [ parser
+								includesBehavior: (Smalltalk at: pragma arguments third ifAbsent: [ self class ]) ] ])
+				ifTrue: [ options
+						add: pragma arguments first
+								-> [ pragma method methodClass instanceSide
+										perform: pragma method selector
+										with: editorElement
+										with: self ] ] ].
+	options isEmpty ifTrue: [ ^ self ].
+	editorElement
+		addAptitude: (BrGlamorousWithContextMenuAptitude
+				content: [ BrGlamorousSimpleContextMenuContent new
+						items: options;
+						yourself ])
+]
+
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> addOverlay [
 	| element |
@@ -1081,6 +1109,7 @@ GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
 					editorElement := self
 							editorFor: previewResult inputSource
 							parser: model inputParserClass.
+					self addMenuItemsFor: #previewInput to: editorElement.
 					self
 						whenCursorEventsIn: editorElement editor
 						do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
@@ -1306,6 +1335,11 @@ GtSmaCCTransformationToolkit >> previewOutputFilename [
 	^ (previewResult notNil and: [ previewResult outputFilename notNil ])
 		ifTrue: [ previewResult outputFilename asFileReference basename ]
 		ifFalse: [ 'Output' ]
+]
+
+{ #category : #accessing }
+GtSmaCCTransformationToolkit >> previewResult [
+	^ previewResult
 ]
 
 { #category : #'configuration-actions' }
