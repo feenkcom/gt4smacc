@@ -217,7 +217,10 @@ SmaCCParseNode >> gtTreeFor: aView [
 			text: [ :each | 
 			(each value at: 2) = #node
 				ifTrue: [ each value last class name ]
-				ifFalse: [ '' ] ];
+				ifFalse: [ (each value at: 2) = #token
+					ifTrue: [ ('token: "', each value last source asString, '"')
+						asRopedText foreground: BrGlamorousColors disabledButtonTextColor ]
+					ifFalse: [ '' ] ] ];
 		send: [ :each | 
 			each notNil
 				ifTrue: [ each last ] ]
