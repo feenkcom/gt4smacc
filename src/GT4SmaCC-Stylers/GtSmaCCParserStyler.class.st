@@ -358,22 +358,19 @@ GtSmaCCParserStyler class >> pythonStyler: aParserClass [
 							foreground: Color purple ].
 				GtSmaCCCommentStylerRule
 					styleBlock: [ :styler | styler foreground: Color lightGray ].
-				GtSmaCCNodeStylerRule
-					nodeClassName: #PyStringNode
-					styleBlock: [ :styler | styler foreground: Color blue ].
 				GtSmaCCNodeVariableStylerRule
-					nodeClassName: #PySymbolNode
+					nodeClassName: #PyVariableExpressionNode
 					variableNames: #(nameToken)
 					styleBlock: [ :styler | styler foreground: Color blue muchDarker ].
 				GtSmaCCNodeVariableStylerRule
-					nodeClassName: #PyInterpolatedStringNode
+					nodeClassName: #PyStringNode
 					variableNames: #(parts)
 					styleBlock: [ :styler | styler foreground: Color blue ].
 				GtSmaCCNodeStylerRule
 					nodeClassName: #PyNumberNode
 					styleBlock: [ :styler | styler foreground: Color blue ].
 				GtSmaCCNodeStylerRule
-					nodeClassName: #PyDecoratorNode
+					nodeClassName: #PyDecoratorExpressionNode
 					styleBlock: [ :styler | styler bold ].
 				GtSmaCCNodeVariableStylerRule
 					nodeClassName: #SmaCCErrorNode
