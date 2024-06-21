@@ -177,7 +177,9 @@ GtSmaCCNodeQuery >> gtAttributesFor: aView [
 		priority: 40;
 		title: 'Nodes';
 		items: [ self asOrderedCollection ];
-		column: 'Node' text: [ :each | each ]
+		column: 'Node' text: [ :each | each source ];
+		column: 'Range' text: [:each | each startPosition asString, '-', each stopPosition asString ] width: 100;
+		column: 'Type' text: [:each | each class name ] width: 200
 ]
 
 { #category : #querying }

@@ -90,6 +90,26 @@ GtSmaCCQueryExamples >> jsCallsWith10AsArg [
 ]
 
 { #category : #'js examples' }
+GtSmaCCQueryExamples >> jsExpressionsFoundInASubnodeExpressionOfAnIfStatement [
+	<gtExample>
+	| ifExpressions |
+	ifExpressions := self jsAST // 'ifstatement' / 'expression'.
+	self assert: ifExpressions size = 1.
+	self assert: (ifExpressions anyOne isKindOf: JSBinaryExpressionNode).
+	^ ifExpressions
+]
+
+{ #category : #'js examples' }
+GtSmaCCQueryExamples >> jsExpressionsFoundInTheVariableExpressionOfAnIfStatement [
+	<gtExample>
+	| ifExpressions |
+	ifExpressions := self jsAST // 'ifstatement' /@ 'expression'.
+	self assert: ifExpressions size = 1.
+	self assert: (ifExpressions anyOne isKindOf: JSBinaryExpressionNode).
+	^ ifExpressions
+]
+
+{ #category : #'js examples' }
 GtSmaCCQueryExamples >> jsFunctions [
 	<gtExample>
 	| functions |
@@ -100,16 +120,6 @@ GtSmaCCQueryExamples >> jsFunctions [
 	self
 		assert: (functions allSatisfy: [ :each | each isKindOf: JSFunctionNode ]).
 	^ functions
-]
-
-{ #category : #'js examples' }
-GtSmaCCQueryExamples >> jsIfExpressions [
-	<gtExample>
-	| ifExpressions |
-	ifExpressions := self jsAST // 'ifstatement' /@ 'expression'.
-	self assert: ifExpressions size = 1.
-	self assert: (ifExpressions anyOne isKindOf: JSBinaryExpressionNode).
-	^ ifExpressions
 ]
 
 { #category : #'js examples' }
