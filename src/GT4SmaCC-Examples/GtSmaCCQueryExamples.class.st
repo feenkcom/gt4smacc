@@ -123,6 +123,24 @@ GtSmaCCQueryExamples >> jsFunctions [
 ]
 
 { #category : #'js examples' }
+GtSmaCCQueryExamples >> jsLiterals [
+	<gtExample>
+	| calls |
+	calls := self jsAST // 'literal'.
+	self assert: calls size equals: 9.
+	^ calls
+]
+
+{ #category : #'js examples' }
+GtSmaCCQueryExamples >> jsLiteralsWithValue10 [
+	<gtExample>
+	| calls |
+	calls := self jsAST // 'literal' @ 'value' <- '10'.
+	self assert: calls size = 2.
+	^ calls
+]
+
+{ #category : #'js examples' }
 GtSmaCCQueryExamples >> jsRecursiveFibCalls [
 	<gtExample>
 	| calls |
