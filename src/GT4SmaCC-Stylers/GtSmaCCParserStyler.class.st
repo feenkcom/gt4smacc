@@ -107,6 +107,31 @@ GtSmaCCParserStyler class >> csharpStyler: aParserClass [
 ]
 
 { #category : #instances }
+GtSmaCCParserStyler class >> cssStyler: aParserClass [
+	<smaccStyler: #CSSParser priority: 50>
+	^ (self forParser: aParserClass)
+		stylerRules: {GtSmaCCCommentStylerRule
+					styleBlock: [ :styler | styler foreground: Color lightGray ].
+				GtSmaCCTokenStylerRule
+					tokenName: '";"'
+					styleBlock: [ :styler | 
+						styler
+							foreground: Color black;
+							bold ].
+				GtSmaCCNodeStylerRule
+					nodeClassName: #CSSValueNode
+					styleBlock: [ :styler | styler foreground: Color blue ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #CSSDeclarationNode
+					variableNames: #(name)
+					styleBlock: [ :styler | styler foreground: Color purple ].
+				GtSmaCCNodeVariableStylerRule
+					nodeClassName: #SmaCCErrorNode
+					variableNames: #(dismissedTokens errorToken)
+					styleBlock: [ :styler | styler foreground: Color red ]}
+]
+
+{ #category : #instances }
 GtSmaCCParserStyler class >> delphiStyler: aParserClass [
 	<smaccStyler: #DelphiParser priority: 50>
 	^ (self forParser: aParserClass)
