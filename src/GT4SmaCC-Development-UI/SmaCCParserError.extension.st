@@ -18,3 +18,12 @@ SmaCCParserError >> gtDisplayErrorIn: aBrTextEditor [
 		attributes: {(GtSourceCoderErrorAttribute for: self description)}.
 	aBrTextEditor moveCursorTo: index
 ]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
+SmaCCParserError >> gtStreamStateFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Stream';
+		object: [ self tag ];
+		view: #gtScannerStreamStateFor:
+]
