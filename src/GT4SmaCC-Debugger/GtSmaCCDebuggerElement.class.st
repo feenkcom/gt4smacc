@@ -55,7 +55,7 @@ GtSmaCCDebuggerElement class >> sessionClass [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> acceptAttributes [
-	^ {(BlTextHighlightAttribute paint: self theme status errorBackgroundColor)}
+	^ {(BlTextHighlightAttribute paint: BrGlamorousColors debuggerTextHighlightColor)}
 ]
 
 { #category : #callbacks }
