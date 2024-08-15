@@ -22,6 +22,10 @@ GtSmaCCASTStyler >> astForText: aText [
 		startingAt: self startingState
 ]
 
+{ #category : #styling }
+GtSmaCCASTStyler >> extraStyle: aText ast: anAST [
+]
+
 { #category : #accessing }
 GtSmaCCASTStyler >> parserClass [
 	^ parserClass
