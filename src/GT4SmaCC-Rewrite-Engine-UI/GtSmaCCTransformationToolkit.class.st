@@ -7,7 +7,6 @@ Class {
 		'windowElement',
 		'filesList',
 		'previewElement',
-		'previewResult',
 		'transformationsTree',
 		'transformationElement',
 		'rewriteFilter',
@@ -123,34 +122,6 @@ GtSmaCCTransformationToolkit >> addFilesDirectoryElement: button [
 					self addDirectory: file ];
 		buttonLabel: 'Add all files';
 		padding: (BlInsets all: 20)
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> addMenuItemsFor: aSymbol to: editorElement [
-	| pragmas symbol parser options |
-	parser := self model inputParserClass.
-	parser isNil ifTrue: [ ^ self ].
-	options := OrderedCollection new.
-	symbol := #smaccTransformationToolkitMenu:for:parser:.
-	pragmas := Pragma allNamed: symbol.
-	pragmas
-		do: [ :pragma | 
-			(pragma selector = symbol
-				and: [ pragma arguments second = aSymbol
-						and: [ parser
-								includesBehavior: (Smalltalk at: pragma arguments third ifAbsent: [ self class ]) ] ])
-				ifTrue: [ options
-						add: pragma arguments first
-								-> [ pragma method methodClass instanceSide
-										perform: pragma method selector
-										with: editorElement
-										with: self ] ] ].
-	options isEmpty ifTrue: [ ^ self ].
-	editorElement
-		addAptitude: (BrGlamorousWithContextMenuAptitude
-				content: [ BrGlamorousSimpleContextMenuContent new
-						items: options;
-						yourself ])
 ]
 
 { #category : #'configuration-actions' }
@@ -271,30 +242,6 @@ GtSmaCCTransformationToolkit >> addRewriteButton [
 				yourself ]
 ]
 
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> annotationsInNewRanges: intervals [
-	| items |
-	items := IdentitySet new.
-	intervals
-		do: [ :each | 
-			items
-				addAll: (previewResult transformedString annotationsInNewRange: each) ].
-	^ items
-		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> annotationsInOriginalRanges: intervals [
-	| items |
-	items := IdentitySet new.
-	intervals
-		do: [ :each | 
-			items
-				addAll: (previewResult transformedString annotationsInOriginalRange: each) ].
-	^ items
-		asSortedCollection: [ :a :b | a nodeInterval first < b nodeInterval first ]
-]
-
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> applyRewriteFilter: aString [
 	rewriteFilter := aString.
@@ -306,38 +253,35 @@ GtSmaCCTransformationToolkit >> applyRewriteFilter: aString [
 GtSmaCCTransformationToolkit >> asElement [
 	| tabGroup |
 	windowElement := BlElement new.
+	windowElement userData at: #transformationToolkit put: self.
 	windowElement
-		constraintsDo:
-			[ :c | 
+		constraintsDo: [ :c | 
 			c vertical matchParent.
 			c horizontal matchParent ].
 	tabGroup := BrTabGroup new.
 	tabGroup aptitude: BrGlamorousTabGroupAptitude.
 	tabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Configuration';
 				stencil: [ self configurationElement ]).
 	tabGroup
-		addTab:
-			((BrTab new)
+		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Transformations';
 				stencil: [ self transformationsElement ]).
-	tabGroup
-		addTab:
-			((BrTab new)
-				aptitude: BrGlamorousTabAptitude;
-				label: 'Preview';
-				stencil: [ self previewElement ]).
+	self previewElement
+		ifNotNil: [ :el | 
+			tabGroup
+				addTab: (BrTab new
+						aptitude: BrGlamorousTabAptitude;
+						label: 'Preview';
+						stencil: [ el ]) ].
 	windowElement
-		addShortcut:
-			((BlShortcutWithAction new)
-				combination:
-						((BlKeyCombination builder)
-								key: BlKeyboardKey F5;
-								build);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						key: BlKeyboardKey F5;
+						build);
 				action: [ :anEvent :aShortcut | self preview ]).
 	windowElement addChild: tabGroup as: #tabGroup.
 	^ windowElement
@@ -485,31 +429,6 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 	^ (filename notNil and: [ filename parent exists ]) ifTrue: [ filename parent ] ifFalse: [ FileLocator workingDirectory ]
 ]
 
-{ #category : #'preview-actions' }
-GtSmaCCTransformationToolkit >> debugRewrite: aSmaCCRewrite forNode: aClass at: anInterval [
-	| block |
-	aSmaCCRewrite ifNil: [ ^ self ].
-	block := [ :rewrite :node | 
-	| debug |
-	debug := rewrite == aSmaCCRewrite
-		and: [ node class == aClass and: [ node startPosition = anInterval first and: [ node stopPosition = anInterval last ] ] ].
-	debug ifTrue: [ self removeOverlay ].
-	debug ].
-	self debugUsingSeachBlock: block andTransformationBlock: block
-]
-
-{ #category : #'preview-actions' }
-GtSmaCCTransformationToolkit >> debugUsingSeachBlock: searchBlock andTransformationBlock: transformationBlock [
-	self
-		openResultFor: self selectedFile
-		before:
-			[ SmaCCRewriteMatch haltBlock: searchBlock.
-			SmaCCRewriteTransformation haltBlock: transformationBlock ]
-		after:
-			[ SmaCCRewriteMatch haltBlock: nil.
-			SmaCCRewriteTransformation haltBlock: nil ]
-]
-
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> deleteRewrite [
 	self selectedRewrite
@@ -561,11 +480,9 @@ GtSmaCCTransformationToolkit >> disconnectModel [
 
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
-	previewResult := aResult.
-	(self previewElement childNamed: #previewFiles)
-		removeChildren;
-		addChild: self newPreviewInputSourceElement;
-		addChild: self newPreviewOutputSourceElement
+	self previewElement
+		ifNil: [ windowElement phlow spawnObject: aResult ]
+		ifNotNil: [ self updatePreviewResult: aResult ]
 ]
 
 { #category : #'ui-transformations' }
@@ -573,110 +490,6 @@ GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
 	transformationElement ifNil: [ ^ self ].
 	transformationElement removeChildren.
 	aRewrite ifNotNil: [ transformationElement addChild: aRewrite asElement ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass [
-	^ self
-		editorFor: aString
-		parser: aClass
-		scrollToError: false
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> editorFor: aString parser: aClass scrollToError: aBoolean [
-	| element index |
-	element := BrEditor new.
-	element
-		aptitude: BrGlamorousCodeEditorAptitude;
-		padding: (BlInsets all: 5);
-		matchParent.
-	element editor text: (aString ifNil: [ '' ]) asRopedText.
-	aClass
-		ifNotNil: [ aClass gtStyler ifNotNil: [ :styler | element editor styler: styler ] ].
-	aBoolean
-		ifTrue: [ [ aClass ifNotNil: [ aClass parse: aString ] ]
-				on: SmaCCParserError
-				do: [ :ex | 
-					index := (ex parser position - 1 max: 1) min: aString size.
-					(element editor text from: index to: index)
-						attributes: {GtSourceCoderErrorAttribute for: ex messageText}.
-					element editor moveCursorTo: index.
-					element scrollToPosition: (aString lineNumberCorrespondingToIndex: index) ] ].
-	^ element
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> editorWrapperFor: editorElement [
-	| pane findText lineText updating |
-	updating := false.
-	pane := BrHorizontalPane new.
-	pane
-		padding: (BlInsets all: 3);
-		hMatchParent;
-		vFitContent.
-	findText := BrEditor new
-			aptitude: BrGlamorousRegularEditorAptitude new
-					+ (BrStyleCommonAptitude new
-							default: [ :aStyle | 
-								aStyle
-									border: (BlBorder paint: BrGlamorousColors disabledButtonBorderColor width: 1) ];
-							focused: [ :aStyle | 
-								aStyle
-									border: (BlBorder paint: BrGlamorousColors focusedEditorBorderColor width: 1) ]);
-			hMatchParent;
-			vFitContent;
-			addShortcut: (BlShortcutWithAction new
-					combination: BlKeyCombination enter;
-					action: [ self find: findText editor text asString in: editorElement ]).
-	lineText := BrEditor new
-			aptitude: BrGlamorousRegularEditorAptitude new
-					+ (BrStyleCommonAptitude new
-							default: [ :aStyle | 
-								aStyle
-									border: (BlBorder paint: BrGlamorousColors disabledButtonBorderColor width: 1) ];
-							focused: [ :aStyle | 
-								aStyle
-									border: (BlBorder paint: BrGlamorousColors focusedEditorBorderColor width: 1) ]);
-			hFitContent;
-			vFitContent;
-			text: '1';
-			addShortcut: (BlShortcutWithAction new
-					combination: BlKeyCombination enter;
-					action: [ [ | string position line |
-						updating := true.
-						[ line := lineText editor text asString asNumber.
-						string := editorElement editor text asString.
-						position := string intervalOfLine: line.
-						editorElement editor moveCursorTo: (position first - 1 max: 0).
-						editorElement scrollToPosition: line.
-						editorElement requestFocus ] ensure: [ updating := false ] ]
-							on: Error
-							do: [ :ex | ex return ] ]).
-	self
-		whenCursorEventsIn: editorElement editor
-		do: [ :intervals | 
-			(updating not and: [ intervals notEmpty ])
-				ifTrue: [ lineText editor
-						text: (editorElement editor text asString
-								lineNumberCorrespondingToIndex: intervals first first) printString
-								asRopedText glamorousRegularFont ] ].
-	pane
-		addChild: (BrLabel new
-				text: 'Find:';
-				padding: (BlInsets all: 3);
-				aptitude: BrGlamorousLabelAptitude new);
-		addChild: findText;
-		addChild: (BrLabel new
-				text: 'Line';
-				padding: (BlInsets all: 3);
-				aptitude: BrGlamorousLabelAptitude new);
-		addChild: lineText;
-		addChild: (BrLabel new
-				text: '/' , editorElement editor text asString lineCount printString;
-				padding: (BlInsets all: 3);
-				aptitude: BrGlamorousLabelAptitude new).
-	^ pane
 ]
 
 { #category : #'ui-configuration' }
@@ -706,35 +519,34 @@ GtSmaCCTransformationToolkit >> fileToolbarItems [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> filesElement [
 	| element label filesSection filesLabelLine |
-	element := (BlElement new)
-		aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
-		layout: BlLinearLayout vertical;
-		padding: (BlInsets all: 5);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-	label := (BrLabel new)
-		fitContent;
-		margin: (BlInsets top: 2 right: 5);
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Files'.
-	filesLabelLine := (BrHorizontalPane new)
-		fitContent;
-		addChild: label;
-		addChild: (self filterButton: [ :string | self filterFiles: string ]).
+	element := BlElement new
+			aptitude: BrGlamorousWithVerticalResizerAptitude new beBottom;
+			layout: BlLinearLayout vertical;
+			padding: (BlInsets all: 5);
+			constraintsDo: [ :c | 
+				c horizontal matchParent.
+				c vertical matchParent ].
+	label := BrLabel new
+			fitContent;
+			margin: (BlInsets top: 2 right: 5);
+			aptitude: BrGlamorousLabelAptitude new;
+			text: 'Files'.
+	filesLabelLine := BrHorizontalPane new
+			fitContent;
+			addChild: label;
+			addChild: (self filterButton: [ :string | self filterFiles: string ]).
 	element addChild: filesLabelLine.
 	filesSection := BrHorizontalPane new matchParent.
-	filesList := (BrSimpleList new)
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		margin: (BlInsets right: 5);
-		matchParent;
-		itemStencil:
-				[ (BrLabel new)
-						hMatchParent;
-						aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
-						padding: (BlInsets all: 5) ];
-		itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ].
+	filesList := BrSimpleList new
+			border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+			margin: (BlInsets right: 5);
+			matchParent;
+			itemStencil: [ BrLabel new
+					hMatchParent;
+					aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
+					padding: (BlInsets all: 5) ];
+			itemDataBinder: [ :lbl :file :i | lbl text: file asFileReference pathString ];
+			items: model files.
 	filesSection addChild: filesList as: #filesList.
 	filesSection addChild: self filesToolbar.
 	element addChild: filesSection.
@@ -823,36 +635,9 @@ GtSmaCCTransformationToolkit >> filterRewritesButton [
 	^ self filterButton: [ :text | self applyRewriteFilter: text ]
 ]
 
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> find: aString in: editorElement [
-	| editorString cursorPosition index |
-	aString isEmpty ifTrue: [ ^ self ].
-	editorString := editorElement editor text asString.
-	editorElement editor cursors
-		do: [ :each | cursorPosition := each position + 1 ].
-	cursorPosition ifNil: [ cursorPosition := 1 ].
-	index := editorString
-			findString: aString
-			startingAt: (cursorPosition min: editorString size)
-			caseSensitive: false.
-	(index = 0 and: [ cursorPosition > 1 ])
-		ifTrue: [ index := editorString
-					findString: aString
-					startingAt: 1
-					caseSensitive: false ].
-	index > 0 ifFalse: [ ^ self ].
-	editorElement selecter
-		overwrite;
-		from: index - 1 to: index + aString size - 1;
-		select.
-	editorElement editor moveCursorTo: index + aString size - 1.
-	editorElement
-		scrollToPosition: (editorString lineNumberCorrespondingToIndex: index)
-]
-
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> gotoPreviewTab [
-	self previewTab select
+	self previewTab ifNotNil: [ :tab | tab select ]
 ]
 
 { #category : #'preview-actions' }
@@ -879,9 +664,9 @@ GtSmaCCTransformationToolkit >> incrementPercent [
 { #category : #'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
-	self model: SmaCCTransformationToolkitModel new.
 	rewriteFilter := ''.
-	results := OrderedCollection new
+	results := OrderedCollection new.
+	self model: SmaCCTransformationToolkitModel new
 ]
 
 { #category : #'ui-configuration' }
@@ -890,14 +675,6 @@ GtSmaCCTransformationToolkit >> inputParserElement [
 		selectedItem: model inputParserClass;
 		items: (SmaCCParser allSubclasses asSortedCollection: [ :a :b | a name < b name ]);
 		when: BrSelectionChanged do: [ :event | model inputParserClass: event target selectedItem ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> lineNumberFor: anInteger in: aString [
-	| stream |
-	stream := SmaCCLineNumberStream on: aString readStream.
-	stream position: anInteger.
-	^ stream lineNumber
 ]
 
 { #category : #private }
@@ -923,9 +700,7 @@ GtSmaCCTransformationToolkit >> loadButton: aString forExtension: extensionStrin
 GtSmaCCTransformationToolkit >> loadConfiguration: aFileReference [
 	self model: SmaCCTransformationToolkitModel new.
 	self model loadFile: aFileReference.
-	results removeAll.
-	self updateResults.
-	self displayPreviewResult: SmaCCRewriteCompleteResult new
+	self updateModel
 ]
 
 { #category : #'ui-configuration' }
@@ -971,11 +746,11 @@ GtSmaCCTransformationToolkit >> model [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
-	model notNil
-		ifTrue: [ self disconnectModel ].
+	model notNil ifTrue: [ self disconnectModel ].
 	model := aSmaCCTransformationToolkitModel.
 	model notNil
-		ifTrue: [ self connectModel ]
+		ifTrue: [ self connectModel.
+			self updateModel ]
 ]
 
 { #category : #'transformation-actions' }
@@ -1084,136 +859,6 @@ GtSmaCCTransformationToolkit >> moveRewriteUp [
 							self updateAndSelectRewrite: rewrite ] ] ]
 ]
 
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> newPreviewFilesElement [
-	^ (BrHorizontalPane new)
-		matchParent;
-		addChild: self newPreviewInputSourceElement;
-		addChild: self newPreviewOutputSourceElement;
-		yourself
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> newPreviewInputSourceElement [
-	(previewResult isNil or: [ previewResult inputSource isNil ])
-		ifTrue: [ ^ BlElement new ].
-	^ BrTabGroup new
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight
-				+ BrGlamorousTabGroupAptitude + BrShadowAptitude;
-		background: Color white;
-		padding: (BlInsets all: 5);
-		addTab: (BrTab new
-				aptitude: BrGlamorousTabAptitude new;
-				label: self previewInputFilename;
-				stencil: [ | editorElement |
-					editorElement := self
-							editorFor: previewResult inputSource
-							parser: model inputParserClass.
-					self addMenuItemsFor: #previewInput to: editorElement.
-					self
-						whenCursorEventsIn: editorElement editor
-						do: [ :intervals | self updatePreviewAnnotations: (self annotationsInOriginalRanges: intervals) ].
-					BrVerticalPane new
-						matchParent;
-						addChild: editorElement asScrollableElement as: #inputSource;
-						addChild: (self editorWrapperFor: editorElement);
-						yourself ])
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> newPreviewOutputSourceElement [
-	| tabGroup |
-	(previewResult isNil or: [ previewResult outputSource isNil ])
-		ifTrue: [ ^ BlElement new ].
-	tabGroup := BrTabGroup new.
-	tabGroup
-		aptitude: BrGlamorousTabGroupAptitude + BrShadowAptitude;
-		background: Color white;
-		padding: (BlInsets all: 5);
-		addTab: (BrTab new
-				aptitude: BrGlamorousTabAptitude new;
-				label: self previewOutputFilename;
-				stencil: [ | editorElement |
-					editorElement := self
-							editorFor: previewResult outputSource
-							parser: model validationParserClass
-							scrollToError: true.
-					self
-						whenCursorEventsIn: editorElement editor
-						do: [ :intervals | self updatePreviewAnnotations: (self annotationsInNewRanges: intervals) ].
-					BrVerticalPane new
-						matchParent;
-						addChild: editorElement asScrollableElement as: #outputSource;
-						addChild: (self editorWrapperFor: editorElement);
-						yourself ]).
-	previewResult additionalFiles
-		keysAndValuesDo: [ :key :value | 
-			tabGroup
-				addTab: (BrTab new
-						aptitude: BrGlamorousTabAptitude new;
-						label: key asFileReference basename;
-						stencil: [ | editorElement |
-							editorElement := self
-									editorFor: value asString
-									parser: model validationParserClass
-									scrollToError: true.
-							BrVerticalPane new
-								matchParent;
-								addChild: editorElement asScrollableElement;
-								addChild: (self editorWrapperFor: editorElement);
-								yourself ]) ].
-	^ tabGroup
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> newPreviewRulesElement [
-	| list |
-	list := ((GtPhlowProtoView new columnedList)
-		column: 'Rewrite'
-			stencil:
-				[ :each | 
-					(BrHorizontalPane new)
-						fitContent;
-						addChild:
-								((BrButton new)
-										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-										label: each rewrite displayString;
-										action: [ self gotoRewrite: each rewrite ]);
-						addChild:
-								((BrButton new)
-										beSmallSize;
-										aptitude: BrGlamorousButtonWithIconAptitude;
-										label: 'Debug';
-										icon: BrGlamorousVectorIcons debug asElement;
-										margin: (BlInsets all: 2);
-										action:
-												[ self
-														debugRewrite: each rewrite
-														forNode: each nodeClass
-														at: each nodeInterval ]) ];
-		column: 'Node' text: [ :each | each nodeClass displayString ];
-		column: 'Location' text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
-		asElement.
-	list padding: (BlInsets all: 5).
-	list border: (BlBorder paint: Color lightGray width: 1).
-	list children last
-		when: BrSelectionChanged
-		do:
-			[ :event | self updateEditorsForAnnotation: (event selectedInterval ifNotNil: [ :each | event target items at: each first ]) ].
-	^ (BlElement new)
-		height: 200;
-		aptitude: BrGlamorousWithVerticalResizerAptitude new beTop;
-		margin:
-				(BlInsets
-						top: 0
-						left: 10
-						bottom: 10
-						right: 10);
-		constraintsDo: [ :c | c horizontal matchParent ];
-		addChild: list as: #previewRewrites;
-		yourself
-]
-
 { #category : #ui }
 GtSmaCCTransformationToolkit >> open [
 	| space |
@@ -1221,6 +866,7 @@ GtSmaCCTransformationToolkit >> open [
 	space withHalos.
 	space title: 'SmaCC Transformation Toolkit'.
 	space extent: 1200 @ 800.
+	previewElement := GtSmaCCPreviewElement new.
 	space root addChild: self asElement.
 	space show
 ]
@@ -1237,30 +883,16 @@ GtSmaCCTransformationToolkit >> openResultFor: aFilename [
 GtSmaCCTransformationToolkit >> openResultFor: aFilename before: beforeBlock after: afterBlock [
 	aFilename ifNil: [ ^ self ].
 	self addOverlay.
-	[ | result processor |
-	result := SmaCCRewriteCompleteResult new.
-	processor := SmaCCRewriteProcessor new.
-	processor rules: self model rewrites.
-	processor parserClass: self model inputParserClass.
-	processor validationParserClass: self model validationParserClass.
-	processor debug: true.
-	beforeBlock value.
-	[ [ processor processFile: aFilename usingResult: result ]
-		on: Error , Halt
-		do:
-			[ :ex | 
-			self removeOverlay.
-			ex pass ] ]
-		ensure:
-			[ afterBlock value.
-			self removeOverlay.
-			processor debug: false ].
+	[ | result |
+	result := self model
+			previewResultFor: aFilename
+			before: beforeBlock
+			after: [ afterBlock value.
+				self removeOverlay ]
+			onException: [ self removeOverlay ].
 	windowElement
-		enqueueTask:
-			(BlTaskAction new
-				action:
-					[ self displayPreviewResult: result.
-					self gotoPreviewTab ]) ] fork
+		enqueueTask: [ self displayPreviewResult: result.
+			self gotoPreviewTab ] asBlTask ] fork
 ]
 
 { #category : #'ui-configuration' }
@@ -1315,37 +947,14 @@ GtSmaCCTransformationToolkit >> preview [
 { #category : #'ui-preview' }
 GtSmaCCTransformationToolkit >> previewElement [
 	^ previewElement
-		ifNil:
-			[ previewElement := (BrVerticalPane new)
-				matchParent;
-				addChild: self newPreviewFilesElement as: #previewFiles;
-				addChild: self newPreviewRulesElement;
-				yourself ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewInputFilename [
-	^ (previewResult notNil and: [ previewResult filename notNil ])
-		ifTrue: [ previewResult filename asFileReference basename ]
-		ifFalse: [ 'Input' ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> previewOutputFilename [
-	^ (previewResult notNil and: [ previewResult outputFilename notNil ])
-		ifTrue: [ previewResult outputFilename asFileReference basename ]
-		ifFalse: [ 'Output' ]
-]
-
-{ #category : #accessing }
-GtSmaCCTransformationToolkit >> previewResult [
-	^ previewResult
 ]
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> previewTab [
-	windowElement childNamed: #tabGroup ifFound: [ :tabGroup | ^ tabGroup viewModel tabs at: 3 ].
-	^ nil
+	^ windowElement
+		childNamed: #tabGroup
+		ifFound: [ :tabGroup | tabGroup viewModel tabs at: 3 ifAbsent: [ nil ] ]
+		ifNone: [ nil ]
 ]
 
 { #category : #'ui-configuration' }
@@ -1404,52 +1013,48 @@ GtSmaCCTransformationToolkit >> removeOverlay [
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> resultsElement [
 	| element label resultsList |
-	element := (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent.
-	label := (BrLabel new)
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Results:'.
+	element := BrVerticalPane new
+			padding: (BlInsets all: 5);
+			matchParent.
+	label := BrLabel new
+			fitContent;
+			aptitude: BrGlamorousLabelAptitude new;
+			text: 'Results:'.
 	element addChild: label.
-	resultsList := ((GtPhlowProtoView new columnedList)
-		column: 'File' text: [ :each | self localFilename: each filename ];
-		column: 'Error' text: [ :each | each errorString ifNil: [ '' ] ];
-		column: 'Transformation' text: [ :each | each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ] ];
-		column: 'Location'
-			text:
-				[ :each | each startLine ifNil: [ '' ] ifNotNil: [ :line | line asString , ':' , (each startColumn ifNil: [ '' ]) asString ] ]
-			width: 55) asElement.
+	resultsList := (GtPhlowProtoView new columnedList
+			column: 'File' text: [ :each | self localFilename: each filename ];
+			column: 'Error' text: [ :each | each errorString ifNil: [ '' ] ];
+			column: 'Transformation'
+				text: [ :each | each transformation ifNil: [ '' ] ifNotNil: [ :t | t displayString ] ];
+			column: 'Location'
+				text: [ :each | 
+					each startLine
+						ifNil: [ '' ]
+						ifNotNil: [ :line | line asString , ':' , (each startColumn ifNil: [ '' ]) asString ] ]
+				width: 55) asElement.
 	resultsList
 		margin: (BlInsets right: 5);
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
 	resultsList children last
 		when: BrSelectionChanged
-		do:
-			[ :event | 
+		do: [ :event | 
 			windowElement
 				childNamed: #filesList
-				ifFound:
-					[ :files | 
+				ifFound: [ :files | 
 					event selectedInterval
-						ifNotNil:
-							[ :each | 
+						ifNotNil: [ :each | 
 							| value |
 							value := (event target items at: each first) filename.
-							(files viewModel itemsProvider preloadUntilFoundSuchThat: [ :fn | fn = value ])
-								then:
-									[ :index | 
+							(files viewModel itemsProvider
+								preloadUntilFoundSuchThat: [ :fn | fn = value ])
+								then: [ :index | 
 									index > 0
-										ifTrue:
-											[ files
-												enqueueTask:
-													(BlTaskAction new
-														action:
-															[ files selectOne: index.
+										ifTrue: [ files
+												enqueueTask: (BlTaskAction new
+														action: [ files selectOne: index.
 															files scrollToIndex: index ]) ] ] ] ] ].
 	element addChild: resultsList as: #resultsList.
 	^ element
@@ -1779,64 +1384,33 @@ GtSmaCCTransformationToolkit >> updateAndSelectRewrite: rewrite [
 	self selectAndScrollToRewrite: rewrite
 ]
 
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> updateEditorsForAnnotation: annotation [
-	self previewElement
-		childNamed: #inputSource
-		ifFound:
-			[ :element | 
-			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
-			annotation
-				ifNotNil:
-					[ element editor text
-						attributes: {GtSmaCCTransformedAttribute new}
-						from: annotation nodeInterval first
-						to: annotation nodeInterval last.
-					element scrollToPosition: (self lineNumberFor: annotation nodeInterval first in: previewResult inputSource) ] ].
-	self previewElement
-		childNamed: #outputSource
-		ifFound:
-			[ :element | 
-			element editor text clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
-			annotation
-				ifNotNil:
-					[ | firstIndex |
-					firstIndex := SmallInteger maxVal.
-					(previewResult transformedString annotationRangesFor: annotation)
-						do:
-							[ :each | 
-							firstIndex := firstIndex min: each first.
-							element editor text
-								attributes: {GtSmaCCTransformedAttribute new}
-								from: each first
-								to: each last ].
-					firstIndex < SmallInteger maxVal
-						ifTrue: [ element scrollToPosition: (self lineNumberFor: firstIndex in: previewResult outputSource) ] ] ]
-]
-
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateFiles [
 	filesList notNil
 		ifTrue: [ filesList items: model files ]
 ]
 
+{ #category : #'configuration-actions' }
+GtSmaCCTransformationToolkit >> updateModel [
+	self updateFiles.
+	results removeAll.
+	self updateResults.
+	self updatePreviewResult: (SmaCCRewriteCompleteResult model: self model)
+]
+
 { #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> updatePreviewAnnotations: aCollection [
-	self previewElement
-		childNamed: #previewRewrites
-		ifFound:
-			[ :element | 
-			(element children last)
-				deselectAll;
-				items: aCollection ]
+GtSmaCCTransformationToolkit >> updatePreviewResult: aResult [
+	self previewElement ifNotNil: [ :element | element previewResult: aResult ]
 ]
 
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> updateResults [
+	windowElement ifNil: [ ^ self ].
 	windowElement
-		enqueueTask:
-			(BlTaskAction new
-				action: [ windowElement childNamed: #resultsList ifFound: [ :element | element children last items: results ] ])
+		enqueueTask: (BlTaskAction new
+				action: [ windowElement
+						childNamed: #resultsList
+						ifFound: [ :element | element children last items: results ] ])
 ]
 
 { #category : #'ui-transformations' }
@@ -1855,21 +1429,4 @@ GtSmaCCTransformationToolkit >> validationParserElement [
 		selectedItem: model validationParserClass;
 		items: (SmaCCParser allSubclasses asSortedCollection: [ :a :b | a name < b name ]);
 		when: BrSelectionChanged do: [ :event | model validationParserClass: event target selectedItem ]
-]
-
-{ #category : #'ui-preview' }
-GtSmaCCTransformationToolkit >> whenCursorEventsIn: editor do: aBlock [
-	editor
-		when: BrTextEditorEvent
-		do: [ :event | 
-			| intervals |
-			intervals := OrderedCollection new.
-			editor selection
-				do: [ :each | 
-					each isNotEmpty
-						ifTrue: [ intervals add: (each from + 1 to: each to) ] ].
-			intervals isEmpty
-				ifTrue: [ editor cursors
-						do: [ :each | intervals add: (each position to: each position) ] ].
-			aBlock value: intervals ]
 ]
