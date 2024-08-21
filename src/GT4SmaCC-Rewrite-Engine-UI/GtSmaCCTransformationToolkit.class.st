@@ -7,10 +7,8 @@ Class {
 		'windowElement',
 		'filesList',
 		'previewElement',
-		'transformationsTree',
-		'transformationElement',
-		'rewriteFilter',
-		'results'
+		'results',
+		'transformationElement'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -171,84 +169,6 @@ GtSmaCCTransformationToolkit >> addResult: aResult [
 	self updateResults
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> addRewrite: newRewrite [
-	| selected |
-	selected := self selectedRewrite.
-	selected isComposite
-		ifTrue: [ selected addTransformation: newRewrite ]
-		ifFalse: [ selected parent notNil ifTrue: [ selected parent addTransformation: newRewrite before: selected ] ].
-	self updateAndSelectRewrite: newRewrite
-]
-
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> addRewriteButton [
-	^ self class
-		dropDown: 'Add'
-		icon: BrGlamorousIcons add
-		content:
-			[ :button | 
-			| element |
-			element := BrVerticalPane new.
-			element
-				padding: (BlInsets all: 5);
-				fitContent;
-				addChild:
-						((BrButton new)
-								beSmallSize;
-								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-								label: 'Rewrite';
-								action:
-										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self addRewrite: SmaCCRewrite newInstance ]);
-				addChild:
-						((BrButton new)
-								beSmallSize;
-								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-								label: 'Method';
-								action:
-										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self addRewrite: SmaCCRewriteMethodDefinition new ]);
-				addChild:
-						((BrButton new)
-								beSmallSize;
-								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-								label: 'Properties';
-								action:
-										[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self addRewrite: SmaCCRewritePropertyDefinition new ]);
-				addChild:
-						((BrButton new)
-								beSmallSize;
-								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-								label: 'File';
-								action:
-										[ element removeChildren.
-											element
-												addChild:
-													((BrFileSelectOrCreate new)
-														size: 500 @ 350;
-														folder: self currentConfigurationDirectory;
-														fileFilterBlock: [ :file | file extension = 'rw' ];
-														okAction:
-																[ :file :btn | 
-																	| fn |
-																	button dispatchEvent: (BrDropdownHideWish new anchor: button).
-																	fn := file asFileReference.
-																	fn extension = 'rw' ifFalse: [ fn := fn withExtension: 'rw' ].
-																	self addRewrite: (model openRewriteFile: fn) ];
-														buttonLabel: 'Add File';
-														padding: (BlInsets all: 20)) ]);
-				yourself ]
-]
-
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> applyRewriteFilter: aString [
-	rewriteFilter := aString.
-	self updateRewrites.
-	self displayRewrite: self selectedRewrite
-]
-
 { #category : #ui }
 GtSmaCCTransformationToolkit >> asElement [
 	| tabGroup |
@@ -269,7 +189,7 @@ GtSmaCCTransformationToolkit >> asElement [
 		addTab: (BrTab new
 				aptitude: BrGlamorousTabAptitude;
 				label: 'Transformations';
-				stencil: [ self transformationsElement ]).
+				stencil: [ self transformationElement ]).
 	self previewElement
 		ifNotNil: [ :el | 
 			tabGroup
@@ -429,49 +349,6 @@ GtSmaCCTransformationToolkit >> currentConfigurationDirectory [
 	^ (filename notNil and: [ filename parent exists ]) ifTrue: [ filename parent ] ifFalse: [ FileLocator workingDirectory ]
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> deleteRewrite [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent notNil
-				ifTrue:
-					[ rewrite parent removeTransformation: rewrite.
-					self updateRewrites.
-					self displayRewrite: self selectedRewrite ] ]
-]
-
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> deleteRewriteButton [
-	^ self class
-		dropDown: 'Delete'
-		icon: BrGlamorousIcons remove
-		content:
-			[ :button | 
-			| rewrite |
-			rewrite := self selectedRewrite.
-			(rewrite isNil or: [ rewrite parent isNil ])
-				ifTrue:
-					[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-					BlElement new size: 0 @ 0 ]
-				ifFalse:
-					[ (BrVerticalPane new)
-						padding: (BlInsets all: 5);
-						fitContent;
-						addChild:
-								((BrLabel new)
-										fitContent;
-										aptitude: BrGlamorousLabelAptitude new;
-										text: 'Delete ' , rewrite displayString , '?');
-						addChild:
-								(self class
-										createToolbarButton: 'Delete'
-										icon: BrGlamorousIcons remove
-										action:
-											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											self deleteRewrite ]) ] ]
-]
-
 { #category : #private }
 GtSmaCCTransformationToolkit >> disconnectModel [
 	model announcer unsubscribe: self.
@@ -487,9 +364,7 @@ GtSmaCCTransformationToolkit >> displayPreviewResult: aResult [
 
 { #category : #'ui-transformations' }
 GtSmaCCTransformationToolkit >> displayRewrite: aRewrite [
-	transformationElement ifNil: [ ^ self ].
-	transformationElement removeChildren.
-	aRewrite ifNotNil: [ transformationElement addChild: aRewrite asElement ]
+	self transformationElement displayRewrite: aRewrite
 ]
 
 { #category : #'ui-configuration' }
@@ -562,7 +437,7 @@ GtSmaCCTransformationToolkit >> filesToolbar [
 		addItems: self fileToolbarItems
 ]
 
-{ #category : #'ui-transformations' }
+{ #category : #ui }
 GtSmaCCTransformationToolkit >> filterButton: aBlock [
 	| currentValue |
 	currentValue := ''.
@@ -630,11 +505,6 @@ GtSmaCCTransformationToolkit >> filterFiles: aString [
 	(self selectedFile isNil and: [ filesList items notEmpty ]) ifTrue: [ filesList selectOne: 1 ]
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> filterRewritesButton [
-	^ self filterButton: [ :text | self applyRewriteFilter: text ]
-]
-
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> gotoPreviewTab [
 	self previewTab ifNotNil: [ :tab | tab select ]
@@ -644,10 +514,9 @@ GtSmaCCTransformationToolkit >> gotoPreviewTab [
 GtSmaCCTransformationToolkit >> gotoRewrite: aRewrite [
 	windowElement
 		childNamed: #tabGroup
-		ifFound:
-			[ :tabGroup | 
+		ifFound: [ :tabGroup | 
 			tabGroup viewModel selectTab: tabGroup tabs second.
-			self selectAndScrollToRewrite: aRewrite ]
+			self transformationElement selectAndScrollToRewrite: aRewrite ]
 ]
 
 { #category : #'configuration-actions' }
@@ -664,7 +533,6 @@ GtSmaCCTransformationToolkit >> incrementPercent [
 { #category : #'initialize-release' }
 GtSmaCCTransformationToolkit >> initialize [
 	super initialize.
-	rewriteFilter := ''.
 	results := OrderedCollection new.
 	self model: SmaCCTransformationToolkitModel new
 ]
@@ -714,17 +582,6 @@ GtSmaCCTransformationToolkit >> loadConfigurationButton [
 			filename := file ]
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> loadRewritesButton [
-	^ self
-		loadButton: 'Load Rewrites'
-		forExtension: 'rw'
-		do:
-			[ :file | 
-			model loadRewriteFile: file.
-			self updateRewrites ]
-]
-
 { #category : #'ui-configuration' }
 GtSmaCCTransformationToolkit >> localFilename: aString [
 	| name |
@@ -751,112 +608,6 @@ GtSmaCCTransformationToolkit >> model: aSmaCCTransformationToolkitModel [
 	model notNil
 		ifTrue: [ self connectModel.
 			self updateModel ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteDown [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					| index |
-					index := parent rewrites identityIndexOf: rewrite.
-					index = parent rewrites size
-						ifFalse:
-							[ parent removeTransformation: rewrite.
-							index < parent rewrites size
-								ifTrue: [ parent addTransformation: rewrite before: (parent rewrites at: index + 1) ]
-								ifFalse: [ parent addTransformation: rewrite ].
-							self updateAndSelectRewrite: rewrite ] ] ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteInto [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					| index newParent |
-					index := parent rewrites identityIndexOf: rewrite.
-					(index > 1 and: [ (newParent := parent rewrites at: index - 1) isComposite ])
-						ifTrue:
-							[ parent removeTransformation: rewrite.
-							newParent addTransformation: rewrite.
-							self updateAndSelectRewrite: rewrite ].
-					(index < parent rewrites size and: [ (newParent := parent rewrites at: index + 1) isComposite ])
-						ifTrue:
-							[ parent removeTransformation: rewrite.
-							newParent rewrites isEmpty
-								ifTrue: [ newParent addTransformation: rewrite ]
-								ifFalse: [ newParent addTransformation: rewrite before: newParent rewrites first ].
-							self updateAndSelectRewrite: rewrite ] ] ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteOut [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					parent parent
-						ifNotNil:
-							[ :grandparent | 
-							parent removeTransformation: rewrite.
-							grandparent addTransformation: rewrite before: parent.
-							self updateAndSelectRewrite: rewrite ] ] ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteToBottom [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					parent rewrites last == rewrite
-						ifFalse:
-							[ parent removeTransformation: rewrite.
-							parent addTransformation: rewrite.
-							self updateAndSelectRewrite: rewrite ] ] ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteToTop [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					parent rewrites first == rewrite
-						ifFalse:
-							[ parent removeTransformation: rewrite.
-							parent addTransformation: rewrite before: parent rewrites first.
-							self updateAndSelectRewrite: rewrite ] ] ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> moveRewriteUp [
-	self selectedRewrite
-		ifNotNil:
-			[ :rewrite | 
-			rewrite parent
-				ifNotNil:
-					[ :parent | 
-					| index |
-					index := parent rewrites identityIndexOf: rewrite.
-					index > 1
-						ifTrue:
-							[ parent removeTransformation: rewrite.
-							parent addTransformation: rewrite before: (parent rewrites at: index - 1).
-							self updateAndSelectRewrite: rewrite ] ] ]
 ]
 
 { #category : #ui }
@@ -1060,14 +811,6 @@ GtSmaCCTransformationToolkit >> resultsElement [
 	^ element
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> rewriteToolbarItems [
-	^ {self addRewriteButton.
-		self deleteRewriteButton.
-		self loadRewritesButton.
-		self saveRewritesButton}
-]
-
 { #category : #'configuration-actions' }
 GtSmaCCTransformationToolkit >> run [
 	self runOn: self selectedFiles
@@ -1126,60 +869,45 @@ GtSmaCCTransformationToolkit >> runOnServerElement [
 	^ check
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> satisfiesRewriteFilter: aSmaCCRewrite [
-	rewriteFilter = '' ifTrue: [ ^ true ].
-	^ (aSmaCCRewrite matches: rewriteFilter)
-		or: [ aSmaCCRewrite rewrites anySatisfy: [ :rw | self satisfiesRewriteFilter: rw ] ]
-]
-
 { #category : #private }
 GtSmaCCTransformationToolkit >> saveButton: aString forExtension: extensionString current: currentValueBlock do: aBlock [
 	^ self class
 		dropDown: aString
 		icon: BrGlamorousIcons savetodisk
-		content:
-			[ :button | 
+		content: [ :button | 
 			| element fileSelectElement |
-			fileSelectElement := (BrFileSelectOrCreate new)
-				size: 500 @ 350;
-				folder: self currentConfigurationDirectory;
-				fileFilterBlock: [ :file | file extension = extensionString ];
-				okAction:
-						[ :file :btn | 
-							| fn |
-							button dispatchEvent: (BrDropdownHideWish new anchor: button).
-							fn := file asFileReference.
-							fn extension = extensionString ifFalse: [ fn := fn withExtension: extensionString ].
-							aBlock value: fn ];
-				buttonLabel: 'Save';
-				padding: (BlInsets all: 20).
+			fileSelectElement := BrFileSelectOrCreate new
+					size: 500 @ 350;
+					folder: self currentConfigurationDirectory;
+					fileFilterBlock: [ :file | file extension = extensionString ];
+					okAction: [ :file :btn | 
+						| fn |
+						button dispatchEvent: (BrDropdownHideWish new anchor: button).
+						fn := file asFileReference.
+						fn extension = extensionString
+							ifFalse: [ fn := fn withExtension: extensionString ].
+						aBlock value: fn ];
+					buttonLabel: 'Save';
+					padding: (BlInsets all: 20).
 			element := BrVerticalPane new.
 			element fitContent.
 			currentValueBlock value
-				ifNil:
-					[ element.
+				ifNil: [ element.
 					element addChild: fileSelectElement ]
-				ifNotNil:
-					[ :file | 
+				ifNotNil: [ :file | 
 					element
-						addChild:
-								((BrButton new)
-										beSmallSize;
-										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-										label: 'Save ' , file basename;
-										action:
-												[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-													aBlock value: file ]);
-						addChild:
-								((BrButton new)
-										beSmallSize;
-										aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-										label: 'Save as';
-										action:
-												[ element removeChildren.
-													element addChild: fileSelectElement ]);
-						yourself ].
+						addChild: (BrButton new
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Save ' , file basename;
+								action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									aBlock value: file ]);
+						addChild: (BrButton new
+								beSmallSize;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+								label: 'Save as';
+								action: [ element removeChildren.
+									element addChild: fileSelectElement ]) ].
 			element ]
 ]
 
@@ -1198,25 +926,6 @@ GtSmaCCTransformationToolkit >> saveConfigurationTo: aFileReference [
 	filename := aFileReference
 ]
 
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> saveRewritesButton [
-	^ self
-		saveButton: 'Save Rewrites'
-		forExtension: 'rw'
-		current: [ model rewrites filename ]
-		do:
-			[ :file | 
-			model rewrites filename: file.
-			model saveRewrites.
-			self updateRewrites ]
-]
-
-{ #category : #private }
-GtSmaCCTransformationToolkit >> selectAndScrollToRewrite: aRewrite [
-	transformationsTree selectAndScrollTo: aRewrite.
-	self displayRewrite: aRewrite
-]
-
 { #category : #private }
 GtSmaCCTransformationToolkit >> selectedFile [
 	filesList selectedIndices do: [ :i | ^ filesList items at: i ifAbsent: [  ] ].
@@ -1226,27 +935,6 @@ GtSmaCCTransformationToolkit >> selectedFile [
 { #category : #private }
 GtSmaCCTransformationToolkit >> selectedFiles [
 	^ (filesList selectedIndices collect: [ :i | filesList items at: i ifAbsent: [  ] ]) reject: [ :each | each isNil ]
-]
-
-{ #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> selectedRewrite [
-	transformationsTree selectedNodeDo: [ :node | node value ifNotNil: [ :value | ^ value ] ].
-	^ model rewrites
-]
-
-{ #category : #ui }
-GtSmaCCTransformationToolkit >> separatorToolbarItem [
-	^ BlElement new
-		background: (Color gray alpha: 0.2);
-		margin:
-			(BlInsets
-				top: 5
-				left: 5
-				bottom: 5
-				right: 5);
-		constraintsDo: [ :c | 
-			c horizontal exact: 1.
-			c vertical matchParent ]
 ]
 
 { #category : #'ui-configuration' }
@@ -1263,112 +951,15 @@ GtSmaCCTransformationToolkit >> serverElement [
 ]
 
 { #category : #'ui-transformations' }
-GtSmaCCTransformationToolkit >> transformationsElement [
-	| element leftElement toolbar |
-	element := BrHorizontalPane new.
-	element matchParent.
-	leftElement := (BrVerticalPane new)
-		width: 250;
-		vMatchParent;
-		margin: (BlInsets all: 5);
-		padding: (BlInsets all: 5);
-		aptitude: BrGlamorousWithHorizontalResizerAptitude new beRight.
-	toolbar := (BrToolbar new)
-		aptitude: BrGlamorousToolbarAptitude new;
-		fitContent;
-		addItems: self rewriteToolbarItems.
-	leftElement
-		addChild:
-			((BrHorizontalPane new)
-				vFitContent;
-				hMatchParent;
-				addChild:
-						((BrHorizontalPane new)
-								vFitContent;
-								hMatchParent;
-								addChild:
-										((BrLabel new)
-												fitContent;
-												margin: (BlInsets top: 2 right: 5);
-												aptitude: BrGlamorousLabelAptitude new;
-												text: 'Rewrites');
-								addChild: self filterRewritesButton);
-				addChild: toolbar).
-	transformationsTree := BrSimpleTree new.
-	transformationsTree
-		matchParent;
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		rowStencil: BrGlamorousSimpleTreeSelectableRowElementStencilBuilder new;
-		nodeStencil:
-				[ (BrLabel new)
-						aptitude: BrGlamorousLabelAptitude;
-						vFitContent;
-						hMatchParent ];
-		nodeDataBinder: [ :label :rewrite | label text: rewrite displayString ];
-		when: BrSelectionChanged do: [ :event | self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ] ].
-	transformationsTree
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowUp;
-										build);
-						action: [ self moveRewriteUp ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowDown;
-										build);
-						action: [ self moveRewriteDown ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowLeft;
-										build);
-						action: [ self moveRewriteOut ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										key: BlKeyboardKey arrowRight;
-										build);
-						action: [ self moveRewriteInto ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										shift;
-										key: BlKeyboardKey arrowUp;
-										build);
-						action: [ self moveRewriteToTop ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										primary;
-										shift;
-										key: BlKeyboardKey arrowDown;
-										build);
-						action: [ self moveRewriteToBottom ]).
-	leftElement addChild: transformationsTree.
-	element addChild: leftElement.
-	transformationElement := BlElement new.
-	transformationElement
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
-		margin: (BlInsets all: 5).
-	element addChild: transformationElement.
-	self updateRewrites.
-	^ element
+GtSmaCCTransformationToolkit >> transformationElement [
+	^ transformationElement
+		ifNil: [ transformationElement := GtSmaCCTransformationElement new.
+			transformationElement rewrites: model rewrites.
+			transformationElement weak
+				when: GtSmaCCRewritesLoaded
+				send: #updateRewritesFile:
+				to: self.
+			transformationElement ]
 ]
 
 { #category : #updating }
@@ -1376,12 +967,6 @@ GtSmaCCTransformationToolkit >> update: aSymbol with: aValue [
 	super update: aSymbol with: aValue.
 	aSymbol = #resultAdded
 		ifTrue: [ self addResult: aValue ]
-]
-
-{ #category : #'transformation-actions' }
-GtSmaCCTransformationToolkit >> updateAndSelectRewrite: rewrite [
-	self updateRewrites.
-	self selectAndScrollToRewrite: rewrite
 ]
 
 { #category : #private }
@@ -1413,14 +998,15 @@ GtSmaCCTransformationToolkit >> updateResults [
 						ifFound: [ :element | element children last items: results ] ])
 ]
 
-{ #category : #'ui-transformations' }
+{ #category : #'as yet unclassified' }
 GtSmaCCTransformationToolkit >> updateRewrites [
-	transformationsTree ifNil: [ ^ self ].
-	transformationsTree
-		items: {model rewrites}
-		lazy: [ :each | each rewrites select: [ :rw | self satisfiesRewriteFilter: rw ] ].
-	transformationsTree expandAll.
-	self selectedRewrite ifNotNil: [ :value | self displayRewrite: value ]
+	self transformationElement rewrites: self model rewrites
+]
+
+{ #category : #'ui-transformations' }
+GtSmaCCTransformationToolkit >> updateRewritesFile: aGtSmaCCRewritesLoaded [
+	model rewrites == aGtSmaCCRewritesLoaded rewrites ifTrue: [ ^ self ].
+	model rewrites: aGtSmaCCRewritesLoaded rewrites
 ]
 
 { #category : #'ui-configuration' }
