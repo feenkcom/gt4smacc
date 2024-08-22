@@ -9,7 +9,6 @@ SmaCCAbstractRewrite >> asElement [
 SmaCCAbstractRewrite >> asElementInTree [
 	| topParent |
 	topParent := self topParent.
-	self == topParent ifTrue: [ ^ self asElement ].
 	^ GtSmaCCTransformationElement new
 		rewrites: topParent;
 		selectAndScrollToRewrite: self;
@@ -23,4 +22,12 @@ SmaCCAbstractRewrite >> gtDefaultInspectorTool [
 				name: self topParent displayString;
 				valuable: [ self asElementInTree ]);
 		addTool: super gtDefaultInspectorTool
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCAbstractRewrite >> gtEditorFor: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Editor';
+		stencil: [ self asElementInTree ]
 ]
