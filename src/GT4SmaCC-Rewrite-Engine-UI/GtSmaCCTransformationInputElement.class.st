@@ -91,15 +91,7 @@ GtSmaCCTransformationInputElement >> buildUI [
 		childNamed: #editor
 		ifFound: [ :each | each removeFromParent ]
 		ifNone: [  ].
-	self
-		childNamed: #filenameLabel
-		ifFound: [ :label | 
-			label
-				text: (model filename
-						ifNil: [ 'New file' ]
-						ifNotNil: [ :fn | fn asFileReference basenameWithoutExtension ])
-						asRopedText bold ]
-		ifNone: [  ].
+	self updateFilename.
 	self addEditor.
 	self addFiles
 ]
@@ -112,8 +104,11 @@ GtSmaCCTransformationInputElement >> connectToModel [
 	announcer := model announcer weak.
 	announcer
 		when: #files
-		send: #updateFiles
-		to: self
+			send: #updateFiles
+			to: self;
+		when: #filename
+			send: #updateFilename
+			to: self
 ]
 
 { #category : #'as yet unclassified' }
@@ -145,7 +140,7 @@ GtSmaCCTransformationInputElement >> filesElementDo: aBlock [
 
 { #category : #'as yet unclassified' }
 GtSmaCCTransformationInputElement >> initialize [
-	| header |
+	| header button |
 	super initialize.
 	self padding: (BlInsets all: 5).
 	self matchParent.
@@ -159,11 +154,45 @@ GtSmaCCTransformationInputElement >> initialize [
 			hMatchParent;
 			vFitContent;
 			yourself.
-	self
+	header
 		addChild: (BrLabel new
+				hMatchParent;
+				vFitContent;
 				aptitude: BrGlamorousLabelAptitude new glamorousRegularFontAndSize;
 				text: '')
 		as: #filenameLabel.
+	button := BrButton new
+			icon: BrGlamorousIcons savetodisk;
+			aptitude: BrGlamorousButtonWithIconAptitude;
+			label: 'Save configuration';
+			beSmallSize;
+			margin: (BlInsets all: 2);
+			addAptitude: (BrGlamorousWithDropdownAptitude
+					handle: [ BrButton new
+							beSmallSize;
+							icon: BrGlamorousIcons savetodisk;
+							label: 'Save configuration';
+							aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude
+									- BrGlamorousButtonExteriorAptitude ]
+					content: [ | element fileSelectElement |
+						fileSelectElement := BrFileSelectOrCreate new
+								size: 500 @ 350;
+								folder: (model filename ifNil: [ '.' asFileReference ] ifNotNil: [ :fn | fn parent ]);
+								fileFilterBlock: [ :file | file extension = 'rwc' ];
+								okAction: [ :file :btn | 
+									| fn |
+									button dispatchEvent: (BrDropdownHideWish new anchor: button).
+									fn := file asFileReference.
+									fn extension = 'rwc' ifFalse: [ fn := fn withExtension: 'rwc' ].
+									model saveTo: fn ];
+								buttonLabel: 'Save';
+								padding: (BlInsets all: 20).
+						model filename ifNotNil: [ :fn | fileSelectElement file: fn ].
+						element := BrVerticalPane new.
+						element fitContent.
+						element addChild: fileSelectElement.
+						element ]).
+	header addChild: button.
 	self addChild: header.
 	self model: SmaCCTransformationToolkitModel new.
 	self
@@ -240,6 +269,19 @@ GtSmaCCTransformationInputElement >> update: aSymbol with: aValue [
 	super update: aSymbol with: aValue.
 	aSymbol = #resultAdded
 		ifTrue: [ self addResult: aValue ]
+]
+
+{ #category : #accessing }
+GtSmaCCTransformationInputElement >> updateFilename [
+	self
+		childNamed: #filenameLabel
+		ifFound: [ :label | 
+			label
+				text: (model filename
+						ifNil: [ 'New file' ]
+						ifNotNil: [ :fn | fn asFileReference basenameWithoutExtension ])
+						asRopedText bold ]
+		ifNone: [  ]
 ]
 
 { #category : #'as yet unclassified' }
