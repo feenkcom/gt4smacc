@@ -21,6 +21,43 @@ SmaCCTransformationToolkitModel >> gtInputView: aView [
 ]
 
 { #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> gtTransformationsView: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Transformations';
+		priority: 10;
+		stencil: [ | transformationElement |
+			transformationElement := GtSmaCCTransformationElement new.
+			transformationElement rewrites: self rewrites.
+			transformationElement
+				when: GtSmaCCRewritesLoaded
+				do: (WeakMessageSend
+						receiver: self
+						selector: #gtUpdateRewritesFrom:
+						arguments: {transformationElement}).
+			self announcer
+				when: #rewrites
+				send: #value
+				to: (WeakMessageSend
+						receiver: self
+						selector: #gtUpdateElement:
+						arguments: {transformationElement}).
+			transformationElement ]
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> gtUpdateElement: element [
+	element ifNil: [ ^ self ].
+	element rewrites ~~ self rewrites ifTrue: [ element rewrites: self rewrites ]
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> gtUpdateRewritesFrom: element [
+	element ifNil: [ ^ self ].
+	element rewrites ~~ self rewrites ifTrue: [ self rewrites: element rewrites ]
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
 SmaCCTransformationToolkitModel >> inputParserClassDescription [
 	<magritteDescription>
 	^ MASingleOptionDescription new

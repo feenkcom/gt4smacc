@@ -195,6 +195,14 @@ GtSmaCCTransformationElement >> filterRewritesButton [
 	^ self filterButton: [ :text | self applyRewriteFilter: text ]
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationElement >> hideLoadButton [
+	self
+		childWithId: #loadRewritesButton
+		ifFound: [ :each | each visibility: BlVisibility gone ]
+		ifNone: [  ]
+]
+
 { #category : #initialization }
 GtSmaCCTransformationElement >> initialize [
 	| leftElement toolbar |
@@ -290,28 +298,23 @@ GtSmaCCTransformationElement >> initialize [
 ]
 
 { #category : #ui }
-GtSmaCCTransformationElement >> loadButton: aString forExtension: extensionString do: aBlock [
-	^ GtSmaCCTransformationToolkit
-		dropDown: aString
+GtSmaCCTransformationElement >> loadRewritesButton [
+	^ (GtSmaCCTransformationToolkit
+		dropDown: 'Load Rewrites'
 		icon: BrGlamorousIcons loadfromdisk
 		content: [ :button | 
 			BrFileSelector new
 				size: 500 @ 350;
 				folder: self currentDirectory;
-				fileFilterBlock: [ :file | file extension = extensionString ];
-				okAction: [ :file :btn | 
+				fileFilterBlock: [ :file1 | file1 extension = 'rw' ];
+				okAction: [ :file1 :btn | 
 					button dispatchEvent: (BrDropdownHideWish new anchor: button).
-					aBlock value: file asFileReference ];
+					[ :file | file ifNotNil: [ self rewrites: (SmaCCRewriteFile onFile: file) ] ]
+						value: file1 asFileReference ];
 				buttonLabel: 'Load';
-				padding: (BlInsets all: 20) ]
-]
-
-{ #category : #ui }
-GtSmaCCTransformationElement >> loadRewritesButton [
-	^ self
-		loadButton: 'Load Rewrites'
-		forExtension: 'rw'
-		do: [ :file | file ifNotNil: [ self rewrites: (SmaCCRewriteFile onFile: file) ] ]
+				padding: (BlInsets all: 20) ])
+		id: #loadRewritesButton;
+		yourself
 ]
 
 { #category : #actions }
@@ -415,6 +418,11 @@ GtSmaCCTransformationElement >> rewriteToolbarItems [
 		self deleteRewriteButton.
 		self loadRewritesButton.
 		self saveRewritesButton}
+]
+
+{ #category : #ui }
+GtSmaCCTransformationElement >> rewrites [
+	^ rewrites
 ]
 
 { #category : #ui }

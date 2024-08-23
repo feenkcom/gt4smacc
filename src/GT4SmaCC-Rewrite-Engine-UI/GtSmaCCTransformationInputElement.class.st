@@ -149,7 +149,7 @@ GtSmaCCTransformationInputElement >> initialize [
 				aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize
 						foreground: Color gray;
 						fontSize: 12);
-				text: 'SmaCC Transformations').
+				text: 'SmaCC Transformation Toolkit').
 	header := BrHorizontalPane new
 			hMatchParent;
 			vFitContent;
