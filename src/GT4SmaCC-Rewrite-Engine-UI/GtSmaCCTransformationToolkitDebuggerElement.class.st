@@ -150,31 +150,24 @@ GtSmaCCTransformationToolkitDebuggerElement >> initialize [
 	super initialize.
 	self
 		layout: BlLinearLayout vertical;
-		constraintsDo:
-				[ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-	codeHighlight := (BlTextDecorationAttribute new)
-		underline;
-		color: BrGlamorousColors textHighlightColor;
-		thickness: 3;
-		beNotOverwritableByStyler.
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+	codeHighlight := (BlTextHighlightAttribute
+			paint: BrGlamorousColors debuggerTextHighlightColor)
+			beNotOverwritableByStyler.
 	nodeHighlight := codeHighlight.
 	self
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										key: BlKeyboardKey F10;
-										build);
-						action: [ :anEvent :aShortcut | self executeAction: (SmaCCStepRuleDebugAction forDebugger: self) ]);
-		addShortcut:
-				((BlShortcutWithAction new)
-						combination:
-								((BlKeyCombination builder)
-										key: BlKeyboardKey F11;
-										build);
-						action: [ :anEvent :aShortcut | self executeAction: (SmaCCSendRuleDebugAction forDebugger: self) ])
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						key: BlKeyboardKey F10;
+						build);
+				action: [ :anEvent :aShortcut | self executeAction: (SmaCCStepRuleDebugAction forDebugger: self) ]);
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
+						key: BlKeyboardKey F11;
+						build);
+				action: [ :anEvent :aShortcut | self executeAction: (SmaCCSendRuleDebugAction forDebugger: self) ])
 ]
 
 { #category : #ui }
