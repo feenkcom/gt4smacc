@@ -73,6 +73,10 @@ GtSmaCCTransformationToolkit >> addFiles: aCollection [
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> addResult: aValue [
 	results at: aValue filename put: aValue.
+	self userData
+		at: #transformationJob
+		ifPresent: [ :job | job currentValue: job currentValue + 1 ]
+		ifAbsent: [  ].
 	self updateFiles
 ]
 
@@ -236,6 +240,16 @@ GtSmaCCTransformationToolkit >> filesView: aView [
 					ifNotNil: [ :t | t displayString ] ]
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> gtRulesByClassFor: aView [
+	<gtTransformationViews>
+	^ aView forward
+		title: 'Transformations by class';
+		priority: 30;
+		object: [ self model rewrites ];
+		view: #gtRulesByClassFor:
+]
+
 { #category : #initialization }
 GtSmaCCTransformationToolkit >> initialize [
 	| header button |
@@ -361,20 +375,34 @@ GtSmaCCTransformationToolkit >> resultFor: aFilename [
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> run [
-	self
-		filesElementDo: [ :el | 
-			| selections |
-			selections := el selectedItems.
-			selections notEmpty ifTrue: [ [ self model runOn: selections ] fork ] ]
+	self filesElementDo: [ :el | self runOn: el selectedItems ]
 ]
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> runAll [
-	self
-		filesElementDo: [ :el | 
-			| selections |
-			selections := el items.
-			selections notEmpty ifTrue: [ [ self model runOn: selections ] fork ] ]
+	self filesElementDo: [ :el | self runOn: self model files ]
+]
+
+{ #category : #actions }
+GtSmaCCTransformationToolkit >> runOn: aCollection [
+	| notification job |
+	aCollection isEmpty ifTrue: [ ^ self ].
+	aCollection size = 1 ifTrue: [ ^ self model runOn: aCollection ].
+	job := (GtJob
+			block: [ :j | 
+				| totalCount current |
+				j label: 'Transforming ' , aCollection size printString , ' files.'.
+				totalCount := aCollection size.
+				j max: totalCount.
+				current := 0.
+				self userData at: #transformationJob put: j.
+				[ self model runOn: aCollection ]
+					ensure: [ self userData removeKey: #transformationJob ifAbsent: [  ] ] ])
+			announcer: Announcer new.
+	notification := GtCompilationNotificationJob new.
+	notification job: job.
+	notification registerNotifications.
+	^ [ job run ] asAsyncPromise
 ]
 
 { #category : #actions }
@@ -418,10 +446,4 @@ GtSmaCCTransformationToolkit >> updateFilename [
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateFiles [
 	self filesElementDo: [ :element | element items: self files ]
-]
-
-{ #category : #ui }
-GtSmaCCTransformationToolkit >> updateRewritesFile: aGtSmaCCRewritesLoaded [
-	model rewrites == aGtSmaCCRewritesLoaded rewrites ifTrue: [ ^ self ].
-	model rewrites: aGtSmaCCRewritesLoaded rewrites
 ]
