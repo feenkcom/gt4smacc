@@ -6,43 +6,52 @@ Class {
 
 { #category : #building }
 GtSmaCCPropertyDefinitionElement >> addButton: aString [
-	^ GtSmaCCTransformationToolkit
-		dropDown: 'Add'
-		icon: BrGlamorousIcons add
-		content:
-			[ :button | 
-			| editor |
-			editor := (BrEditor new)
-				border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-				hMatchParent;
-				vFitContent;
-				aptitude: BrGlamorousRegularEditorAptitude new.
-			(BrVerticalPane new)
-				width: 300;
-				vFitContent;
-				padding: (BlInsets all: 5);
-				addChild:
-						((BrHorizontalPane new)
+	| button |
+	button := BrButton new.
+	button icon: BrGlamorousIcons add.
+	button aptitude: BrGlamorousButtonWithIconAptitude.
+	button label: 'Add'.
+	button beSmallSize.
+	button margin: (BlInsets all: 2).
+	button
+		addAptitude: (BrGlamorousWithDropdownAptitude
+				handle: [ BrButton new
+						beSmallSize;
+						icon: BrGlamorousIcons add;
+						label: 'Add';
+						aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude
+								- BrGlamorousButtonExteriorAptitude ]
+				content: [ | editor |
+					editor := BrEditor new
+							border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
+							hMatchParent;
+							vFitContent;
+							aptitude: BrGlamorousRegularEditorAptitude new.
+					BrVerticalPane new
+						width: 300;
+						vFitContent;
+						padding: (BlInsets all: 5);
+						addChild: (BrHorizontalPane new
 								hMatchParent;
 								vFitContent;
-								addChild:
-										((BrLabel new)
-												margin: (BlInsets all: 4);
-												vFitContent;
-												aptitude: BrGlamorousLabelAptitude;
-												text: 'Name:');
+								addChild: (BrLabel new
+										margin: (BlInsets all: 4);
+										vFitContent;
+										aptitude: BrGlamorousLabelAptitude;
+										text: 'Name:');
 								addChild: editor);
-				addChild:
-						(GtSmaCCTransformationToolkit
-								createToolbarButton: 'Add'
-								icon: BrGlamorousIcons add
-								action:
-									[ | variableName |
+						addChild: (BrButton new
+								beSmallSize;
+								aptitude: BrGlamorousButtonWithIconAptitude;
+								label: 'Add';
+								icon: BrGlamorousIcons add asElement;
+								margin: (BlInsets all: 2);
+								action: [ | variableName |
 									variableName := editor text asString.
 									(RBScanner isVariable: variableName)
-										ifTrue:
-											[ button dispatchEvent: (BrDropdownHideWish new anchor: button).
-											rewrite perform: ('add' , aString , ':') asSymbol with: variableName ] ]) ]
+										ifTrue: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+											rewrite perform: ('add' , aString , ':') asSymbol with: variableName ] ]) ]).
+	^ button
 ]
 
 { #category : #building }
@@ -62,12 +71,17 @@ GtSmaCCPropertyDefinitionElement >> build [
 
 { #category : #building }
 GtSmaCCPropertyDefinitionElement >> removeButton: aString list: list [
-	^ GtSmaCCTransformationToolkit
-		createToolbarButton: 'Remove'
-		icon: BrGlamorousIcons remove
-		action:
-			[ list selectedIndices
-				collect: [ :i | rewrite perform: ('remove' , aString , ':') asSymbol with: (list items at: i ifAbsent: [  ]) ] ]
+	^ BrButton new
+		beSmallSize;
+		aptitude: BrGlamorousButtonWithIconAptitude;
+		label: 'Remove';
+		icon: BrGlamorousIcons remove asElement;
+		margin: (BlInsets all: 2);
+		action: [ list selectedIndices
+				collect: [ :i | 
+					rewrite
+						perform: ('remove' , aString , ':') asSymbol
+						with: (list items at: i ifAbsent: [  ]) ] ]
 ]
 
 { #category : #updating }
