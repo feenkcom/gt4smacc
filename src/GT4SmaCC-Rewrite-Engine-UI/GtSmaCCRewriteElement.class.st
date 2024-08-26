@@ -5,7 +5,11 @@ Class {
 		'matchCode',
 		'matchPattern',
 		'transformationCode',
-		'transformationPattern'
+		'transformationPattern',
+		'transformationCodeElement',
+		'matchCodeElement',
+		'transformationPatternElement',
+		'matchPatternElement'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -66,13 +70,6 @@ GtSmaCCRewriteElement >> build [
 	transformationTabGroup when: BrTabSelectedEvent do: [ :event | self transformationTabSwitched ]
 ]
 
-{ #category : #private }
-GtSmaCCRewriteElement >> format: aString [
-	| ast |
-	ast := RBParser parseExpression: aString onError: [ :e :p | ^ aString ].
-	^ ast formattedCode
-]
-
 { #category : #initialization }
 GtSmaCCRewriteElement >> initialize [
 	super initialize.
@@ -84,91 +81,13 @@ GtSmaCCRewriteElement >> initialize [
 
 { #category : #building }
 GtSmaCCRewriteElement >> matchCodeElement [
-	| label nodeList editor |
-	label := (BrLabel new)
-		margin: (BlInsets top: 5 right: 5);
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Match nodes of type:'.
-	nodeList := (GtSmaCCDropDownList new)
-		margin: (BlInsets top: 3);
-		items: self nodeClasses;
-		when: BrSelectionChanged do: [ :event | rewrite match nodeClass: event target selectedItem ];
-		yourself.
-	editor := BrEditor new.
-	editor
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		matchParent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
-		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
-		matchParent.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match code: editor editor text asString ].
-	editor
-		addShortcut:
-			((BlShortcutWithAction new)
-				combination: BlKeyCombination primaryShiftF;
-				action:
-						[ | source |
-							source := self format: editor editor text asString.
-							rewrite match code: source.
-							editor editor text: source asRopedText ]).
-	^ (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent;
-		addChild:
-				((BrHorizontalPane new)
-						margin: (BlInsets bottom: 5);
-						vFitContent;
-						hMatchParent;
-						addChild: label;
-						addChild: nodeList as: #nodeList);
-		addChild: editor as: #matchCode
+	^ matchCodeElement ifNil: [ matchCodeElement := GtSmaCCMatchCodeElement new ]
 ]
 
 { #category : #building }
 GtSmaCCRewriteElement >> matchPatternElement [
-	| label stateList editor |
-	label := (BrLabel new)
-		margin: (BlInsets top: 5 right: 5);
-		fitContent;
-		aptitude: BrGlamorousLabelAptitude new;
-		text: 'Starting state for parser:'.
-	stateList := (GtSmaCCDropDownList new)
-		margin: (BlInsets top: 3);
-		items: (rewrite parserClass ifNil: [ #() ] ifNotNil: [ :cls | #(nil) , cls startingStateNames ]);
-		when: BrSelectionChanged do: [ :event | rewrite match startingState: event target selectedItem ];
-		yourself.
-	editor := BrEditor new.
-	editor
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		matchParent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
-		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
-		matchParent.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite match source: editor editor text asString ].
-	^ (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent;
-		addChild:
-				((BrHorizontalPane new)
-						margin: (BlInsets bottom: 5);
-						vFitContent;
-						hMatchParent;
-						addChild: label;
-						addChild: stateList as: #stateList);
-		addChild: editor as: #matchPattern
+	^ matchPatternElement
+		ifNil: [ matchPatternElement := GtSmaCCPatternMatchElement new ]
 ]
 
 { #category : #building }
@@ -190,53 +109,6 @@ GtSmaCCRewriteElement >> matchTabSwitched [
 							rewrite match: matchPattern ] ] ]
 ]
 
-{ #category : #building }
-GtSmaCCRewriteElement >> nodeClasses [
-	| classes parserNodeClasses |
-	classes := SmaCCParseNode allSubclasses.
-	parserNodeClasses := self parserNodeClasses.
-	^ classes
-		asSortedCollection:
-			[ :a :b | 
-			| aSortAtTop |
-			(aSortAtTop := parserNodeClasses includes: a) = (parserNodeClasses includes: b)
-				ifTrue: [ a name < b name ]
-				ifFalse: [ aSortAtTop ] ]
-]
-
-{ #category : #building }
-GtSmaCCRewriteElement >> parserNodeClasses [
-	rewrite parserClass
-		ifNotNil:
-			[ :pc | 
-			pc symbolTypes
-				do:
-					[ :each | 
-					| cls supers |
-					(each ~= #SmaCCParseNode and: [ (cls := Smalltalk at: each) includesBehavior: SmaCCParseNode ])
-						ifTrue:
-							[ supers := cls withAllSuperclasses.
-							^ (supers at: supers size - SmaCCParseNode withAllSuperclasses size) withAllSubclasses asSet ] ] ].
-	^ #()
-]
-
-{ #category : #building }
-GtSmaCCRewriteElement >> patternStyler [
-	| styler |
-	(rewrite parserClass notNil and: [ (styler := rewrite parserClass gtStyler) notNil ]) ifFalse: [ ^ BlTextNullStyler new ].
-	styler startingState: rewrite match startingStateIndex.
-	styler
-		addStylerRule:
-			((GtSmaCCNodeStylerRule new)
-				nodeClassName: #SmaCCPatternNode;
-				styleBlock:
-						[ :s | 
-							s
-								foreground: BrGlamorousColors linkColor;
-								bold ]).
-	^ styler
-]
-
 { #category : #accessing }
 GtSmaCCRewriteElement >> rewrite: aRewrite [
 	super rewrite: aRewrite.
@@ -249,69 +121,15 @@ GtSmaCCRewriteElement >> rewrite: aRewrite [
 ]
 
 { #category : #building }
-GtSmaCCRewriteElement >> sourceStyler [
-	^ (GtCompositeSmaCCASTStyler forParser: GtPharoParser)
-		startingState: GtPharoParser startingStateForMethodSequence;
-		stylers:
-				{GtSmaCCPharoStyler new.
-						GtPharoDynamicHighlightStyler new};
-		yourself
-]
-
-{ #category : #building }
 GtSmaCCRewriteElement >> transformationCodeElement [
-	| editor |
-	editor := BrEditor new.
-	editor
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		matchParent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
-		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
-		matchParent.
-	editor editor styler: self sourceStyler.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite transformation code: editor editor text asString ].
-	editor
-		addShortcut:
-			((BlShortcutWithAction new)
-				combination: BlKeyCombination primaryShiftF;
-				action:
-						[ | source |
-							source := self format: editor editor text asString.
-							rewrite transformation code: source.
-							editor editor text: source asRopedText ]).
-	^ (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent;
-		addChild: editor as: #transformationCode
+	^ transformationCodeElement
+		ifNil: [ transformationCodeElement := GtSmaCCCodeElement new ]
 ]
 
 { #category : #building }
 GtSmaCCRewriteElement >> transformationPatternElement [
-	| editor |
-	editor := BrEditor new.
-	editor
-		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
-		matchParent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
-		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
-		matchParent.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | rewrite transformation string: editor editor text asString ].
-	^ (BrVerticalPane new)
-		padding: (BlInsets all: 5);
-		matchParent;
-		addChild: editor as: #transformationPattern
+	^ transformationPatternElement
+		ifNil: [ transformationPatternElement := GtSmaCCPatternElement new ]
 ]
 
 { #category : #building }
@@ -355,22 +173,8 @@ GtSmaCCRewriteElement >> updateMatch [
 { #category : #updating }
 GtSmaCCRewriteElement >> updateMatchContents [
 	rewrite match class type = #Pattern
-		ifTrue:
-			[ self childNamed: #stateList ifFound: [ :dropdown | dropdown selectedItem: rewrite match startingState ].
-			self
-				childNamed: #matchPattern
-				ifFound:
-					[ :editor | 
-					editor editor styler: self patternStyler.
-					editor text: rewrite match source asRopedText ] ]
-		ifFalse:
-			[ self childNamed: #nodeList ifFound: [ :dropdown | dropdown selectedItem: rewrite match nodeClass ].
-			self
-				childNamed: #matchCode
-				ifFound:
-					[ :editor | 
-					editor editor styler: self sourceStyler.
-					editor text: rewrite match code asRopedText ] ]
+		ifTrue: [ matchPatternElement model: rewrite match ]
+		ifFalse: [ matchCodeElement model: rewrite match ]
 ]
 
 { #category : #updating }
@@ -388,8 +192,6 @@ GtSmaCCRewriteElement >> updateTransformation [
 { #category : #updating }
 GtSmaCCRewriteElement >> updateTransformationContents [
 	rewrite transformation class type = #String
-		ifTrue:
-			[ self childNamed: #transformationPattern ifFound: [ :editor | editor text: rewrite transformation string asRopedText ] ]
-		ifFalse:
-			[ self childNamed: #transformationCode ifFound: [ :editor | editor text: rewrite transformation code asRopedText ] ]
+		ifTrue: [ transformationPatternElement model: rewrite transformation ]
+		ifFalse: [ transformationCodeElement model: rewrite transformation ]
 ]
