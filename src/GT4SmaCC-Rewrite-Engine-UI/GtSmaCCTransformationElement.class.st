@@ -8,8 +8,7 @@ Class {
 		'transformationElement',
 		'rewriteFilter',
 		'rewrites',
-		'announcer',
-		'filterString'
+		'announcer'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI'
 }
@@ -82,6 +81,15 @@ GtSmaCCTransformationElement >> applyRewriteFilter: aString [
 	self displayRewrite: self selectedRewrite
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationElement >> connectModel [
+	rewrites ifNil: [ ^ self ].
+	rewrites announcer weak
+		when: #rewrites
+		send: #updateRewrites
+		to: self
+]
+
 { #category : #accessing }
 GtSmaCCTransformationElement >> currentDirectory [
 	| filename |
@@ -125,6 +133,12 @@ GtSmaCCTransformationElement >> deleteTransformationDropdownFor: button [
 						margin: (BlInsets all: 2);
 						action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 							self deleteRewrite ]) ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationElement >> disconnectModel [
+	rewrites ifNil: [ ^ self ].
+	rewrites announcer unsubscribe: self
 ]
 
 { #category : #actions }
@@ -352,8 +366,10 @@ GtSmaCCTransformationElement >> rewrites [
 
 { #category : #ui }
 GtSmaCCTransformationElement >> rewrites: aRewriteFile [
+	self disconnectModel.
 	rewrites = aRewriteFile ifTrue: [ ^ self ].
 	rewrites := aRewriteFile.
+	self connectModel.
 	self updateRewrites
 ]
 
