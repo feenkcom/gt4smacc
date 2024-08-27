@@ -9,6 +9,7 @@ Class {
 
 { #category : #'initialize-release' }
 GtSmaCCMethodDefinitionElement >> build [
+	| completionStrategy completionController |
 	super build.
 	editor := BrEditor new.
 	editor
@@ -17,22 +18,39 @@ GtSmaCCMethodDefinitionElement >> build [
 		vFitContent;
 		aptitude: BrGlamorousCodeEditorAptitude new;
 		beEditable;
-		padding:
-				(BlInsets
-						top: 5
-						left: 10
-						bottom: 5
-						right: 10);
+		padding: (BlInsets
+				top: 5
+				left: 10
+				bottom: 5
+				right: 10);
 		matchParent.
 	editor
-		addShortcut:
-			((BlShortcutWithAction new)
+		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryShiftF;
 				action: [ self format ]).
 	editor editor styler: self styler.
-	editor editor when: BrTextEditorModifiedEvent do: [ :event | self sourceChanged ].
+	editor editor
+		when: BrTextEditorModifiedEvent
+		do: [ :event | self sourceChanged ].
+	completionStrategy := GtPharoCompletionStrategy new.
+	completionStrategy classOrMetaClass: SmaCCRewriteMatchContext.
+	completionStrategy isMethod: true.
+	completionController := GtCompletionController
+			on: editor
+			strategy: completionStrategy.
+	completionController install.
 	self updateSource.
 	self addChild: editor
+]
+
+{ #category : #private }
+GtSmaCCMethodDefinitionElement >> connectModel [
+	super connectModel.
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer weak
+		when: #source
+		send: #updateSource
+		to: self
 ]
 
 { #category : #actions }

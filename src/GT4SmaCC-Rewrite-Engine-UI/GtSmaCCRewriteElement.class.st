@@ -70,6 +70,19 @@ GtSmaCCRewriteElement >> build [
 	transformationTabGroup when: BrTabSelectedEvent do: [ :event | self transformationTabSwitched ]
 ]
 
+{ #category : #private }
+GtSmaCCRewriteElement >> connectModel [
+	super connectModel.
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer weak
+		when: #match
+			send: #updateMatch
+			to: self;
+		when: #transformation
+			send: #updateTransformation
+			to: self
+]
+
 { #category : #initialization }
 GtSmaCCRewriteElement >> initialize [
 	super initialize.
@@ -149,13 +162,6 @@ GtSmaCCRewriteElement >> transformationTabSwitched [
 						ifTrue:
 							[ transformationCode := rewrite transformation copy.
 							rewrite transformation: transformationPattern ] ] ]
-]
-
-{ #category : #updating }
-GtSmaCCRewriteElement >> update: aSymbol [
-	aSymbol = #match ifTrue: [ self updateMatch ].
-	aSymbol = #transformation ifTrue: [ self updateTransformation ].
-	^ super update: aSymbol
 ]
 
 { #category : #updating }

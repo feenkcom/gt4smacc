@@ -69,6 +69,19 @@ GtSmaCCPropertyDefinitionElement >> build [
 	self updateGlobals
 ]
 
+{ #category : #private }
+GtSmaCCPropertyDefinitionElement >> connectModel [
+	super connectModel.
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer weak
+		when: #locals
+			send: #updateLocals
+			to: self;
+		when: #globals
+			send: #updateGlobals
+			to: self
+]
+
 { #category : #building }
 GtSmaCCPropertyDefinitionElement >> removeButton: aString list: list [
 	^ BrButton new
@@ -82,13 +95,6 @@ GtSmaCCPropertyDefinitionElement >> removeButton: aString list: list [
 					rewrite
 						perform: ('remove' , aString , ':') asSymbol
 						with: (list items at: i ifAbsent: [  ]) ] ]
-]
-
-{ #category : #updating }
-GtSmaCCPropertyDefinitionElement >> update: aSymbol [
-	aSymbol = #locals ifTrue: [ self updateLocals ].
-	aSymbol = #globals ifTrue: [ self updateGlobals ].
-	^ super update: aSymbol
 ]
 
 { #category : #private }

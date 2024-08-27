@@ -10,6 +10,16 @@ GtSmaCCRewriteFileElement >> build [
 	self updateParserClass
 ]
 
+{ #category : #private }
+GtSmaCCRewriteFileElement >> connectModel [
+	super connectModel.
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer weak
+		when: #parserClass
+		send: #updateParserClass
+		to: self
+]
+
 { #category : #building }
 GtSmaCCRewriteFileElement >> parserElement [
 	| element |
@@ -31,12 +41,6 @@ GtSmaCCRewriteFileElement >> parserElement [
 				when: BrSelectionChanged do: [ :event | rewrite parserClass: event target selectedItem ])
 		as: #parserClass.
 	^ element
-]
-
-{ #category : #updating }
-GtSmaCCRewriteFileElement >> update: aSymbol [
-	aSymbol = #parserClass ifTrue: [ self updateParserClass ].
-	^ super update: aSymbol
 ]
 
 { #category : #updating }

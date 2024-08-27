@@ -400,7 +400,7 @@ GtSmaCCPreviewElement >> updateEditorsForAnnotation: annotation [
 		childNamed: #inputSource
 		ifFound: [ :element | 
 			element editor text
-				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+				clearAttributes: [ :each | each class = GtSmaCCTransformedAttribute ].
 			annotation
 				ifNotNil: [ element editor text
 						attributes: {GtSmaCCTransformedAttribute new}
@@ -412,7 +412,7 @@ GtSmaCCPreviewElement >> updateEditorsForAnnotation: annotation [
 		childNamed: #outputSource
 		ifFound: [ :element | 
 			element editor text
-				clearAttributes: [ :each | each isKindOf: GtSmaCCTransformedAttribute ].
+				clearAttributes: [ :each | each class = GtSmaCCTransformedAttribute ].
 			annotation
 				ifNotNil: [ | firstIndex |
 					firstIndex := SmallInteger maxVal.

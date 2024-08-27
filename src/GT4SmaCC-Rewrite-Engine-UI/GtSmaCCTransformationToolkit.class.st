@@ -119,11 +119,9 @@ GtSmaCCTransformationToolkit >> buildUI [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> connectToModel [
-	| announcer |
 	results := Dictionary new.
 	model addDependent: self.
-	announcer := model announcer weak.
-	announcer
+	model announcer weak
 		when: #files
 			send: #updateFiles
 			to: self;
@@ -310,15 +308,15 @@ GtSmaCCTransformationToolkit >> initialize [
 	self model: SmaCCTransformationToolkitModel new.
 	self
 		addShortcut: (BlShortcutWithAction new
-				combination: (BlKeyCombination builder
+				combination: ((BlKeyCombination builder
 						key: BlKeyboardKey F5;
-						build);
+						build) or: BlKeyCombination primaryG);
 				action: [ :anEvent :aShortcut | self preview ]).
 	self
 		addShortcut: (BlShortcutWithAction new
-				combination: (BlKeyCombination builder shift
+				combination: ((BlKeyCombination builder shift
 						key: BlKeyboardKey F5;
-						build);
+						build) or: BlKeyCombination primaryD);
 				action: [ :anEvent :aShortcut | self run ])
 ]
 
