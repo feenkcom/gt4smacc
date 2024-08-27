@@ -46,23 +46,26 @@ GtSmaCCAbstractRewriteElement >> build [
 	self addCommentElement
 ]
 
+{ #category : #private }
+GtSmaCCAbstractRewriteElement >> connectModel [
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer weak
+		when: #comment
+		send: #updateComment
+		to: self
+]
+
+{ #category : #private }
+GtSmaCCAbstractRewriteElement >> disconnectModel [
+	rewrite ifNil: [ ^ self ].
+	rewrite announcer unsubscribe: self
+]
+
 { #category : #'initialize-release' }
 GtSmaCCAbstractRewriteElement >> initialize [
 	super initialize.
 	self matchParent.
 	self padding: (BlInsets all: 5)
-]
-
-{ #category : #'hooks - children' }
-GtSmaCCAbstractRewriteElement >> onAddedToParent [
-	super onAddedToParent.
-	rewrite notNil ifTrue: [ rewrite addDependent: self ]
-]
-
-{ #category : #'hooks - children' }
-GtSmaCCAbstractRewriteElement >> onRemovedFromParent: aParentElement [
-	super onRemovedFromParent: aParentElement.
-	rewrite notNil ifTrue: [ rewrite removeDependent: self ]
 ]
 
 { #category : #accessing }
@@ -72,16 +75,10 @@ GtSmaCCAbstractRewriteElement >> rewrite [
 
 { #category : #accessing }
 GtSmaCCAbstractRewriteElement >> rewrite: aRewrite [
-	rewrite notNil ifTrue: [ rewrite removeDependent: self ].
+	self disconnectModel.
 	rewrite := aRewrite.
-	(rewrite notNil and: [ parent notNil ]) ifTrue: [ self addDependent: self ].
+	self connectModel.
 	self updateContent
-]
-
-{ #category : #updating }
-GtSmaCCAbstractRewriteElement >> update: aSymbol [
-	aSymbol = #comment ifTrue: [ self updateComment ].
-	^ super update: aSymbol
 ]
 
 { #category : #updating }

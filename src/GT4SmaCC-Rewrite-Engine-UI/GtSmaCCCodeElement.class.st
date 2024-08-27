@@ -31,7 +31,7 @@ GtSmaCCCodeElement >> format: aString [
 
 { #category : #initialization }
 GtSmaCCCodeElement >> initialize [
-	| editor |
+	| editor completionStrategy completionController |
 	super initialize.
 	editor := BrEditor new.
 	editor
@@ -56,6 +56,13 @@ GtSmaCCCodeElement >> initialize [
 					source := self format: editor editor text asString.
 					model code: source.
 					editor editor text: source asRopedText ]).
+	completionStrategy := GtPharoCompletionStrategy new.
+	completionStrategy classOrMetaClass: SmaCCRewriteMatchContext.
+	completionStrategy isMethod: false.
+	completionController := GtCompletionController
+			on: editor
+			strategy: completionStrategy.
+	completionController install.
 	self padding: (BlInsets all: 5).
 	self matchParent.
 	self addChild: editor as: #code
