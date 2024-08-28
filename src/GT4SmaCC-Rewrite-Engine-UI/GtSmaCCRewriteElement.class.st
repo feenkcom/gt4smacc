@@ -179,8 +179,8 @@ GtSmaCCRewriteElement >> updateMatch [
 { #category : #updating }
 GtSmaCCRewriteElement >> updateMatchContents [
 	rewrite match class type = #Pattern
-		ifTrue: [ matchPatternElement model: rewrite match ]
-		ifFalse: [ matchCodeElement model: rewrite match ]
+		ifTrue: [ self matchPatternElement model: rewrite match ]
+		ifFalse: [ self matchCodeElement model: rewrite match ]
 ]
 
 { #category : #updating }
@@ -198,6 +198,6 @@ GtSmaCCRewriteElement >> updateTransformation [
 { #category : #updating }
 GtSmaCCRewriteElement >> updateTransformationContents [
 	rewrite transformation class type = #String
-		ifTrue: [ transformationPatternElement model: rewrite transformation ]
-		ifFalse: [ transformationCodeElement model: rewrite transformation ]
+		ifTrue: [ self transformationPatternElement model: rewrite transformation ]
+		ifFalse: [ self transformationCodeElement model: rewrite transformation ]
 ]
