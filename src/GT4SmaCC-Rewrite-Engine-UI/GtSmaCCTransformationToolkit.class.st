@@ -397,9 +397,11 @@ GtSmaCCTransformationToolkit >> runOn: aCollection [
 				[ self model runOn: aCollection ]
 					ensure: [ self userData removeKey: #transformationJob ifAbsent: [  ] ] ])
 			announcer: Announcer new.
-	notification := GtCompilationNotificationJob new.
-	notification job: job.
-	notification registerNotifications.
+	notification := GtNotificationJob new
+			summaryClass: GtCompilationNotificationSummary;
+			job: job;
+			registerNotifications;
+			yourself.
 	^ [ job run ] asAsyncPromise
 ]
 
