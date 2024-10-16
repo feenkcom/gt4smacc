@@ -33,7 +33,6 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 GtSmaCCCoder class >> defaultTextAttributes [
 	^ {
 		(BlFontFamilyAttribute named: 'Source Code Pro') beNotOverwritableByStyler.
-		(BlFontSizeAttribute size: 12) beNotOverwritableByStyler
 	}
 ]
 
