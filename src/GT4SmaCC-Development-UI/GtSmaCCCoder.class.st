@@ -275,8 +275,7 @@ GtSmaCCCoder >> highlighter [
 
 { #category : #accessing }
 GtSmaCCCoder >> highlighter: aHighlightingVisitor [
-	self attributeNamed: #highlighter put: aHighlightingVisitor.
-	self styleSource
+	self attributeNamed: #highlighter put: aHighlightingVisitor
 ]
 
 { #category : #'initialize-release' }

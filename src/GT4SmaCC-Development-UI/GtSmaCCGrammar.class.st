@@ -10,7 +10,7 @@ Class {
 		'caseInsensitive',
 		'unicode'
 	],
-	#category : 'GT4SmaCC-Development-UI-Model'
+	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
 { #category : #'instance creation' }
@@ -522,4 +522,20 @@ GtSmaCCGrammar >> updateFlag: aString to: aBoolean directive: aRule in: aSmaCCSt
 				ifTrue: [ aSmaCCString
 						deleteFrom: aRule originalAST startPosition
 						to: aRule originalAST stopPosition ] ]
+]
+
+{ #category : #'initialize-release' }
+GtSmaCCGrammar >> updateSource: aString [
+	| oldAnnouncer |
+	originalAST := SmaCCDefinitionParser parseWithErrors: aString.
+	originalAST isNil ifTrue: [ ^ self ].
+	rules := OrderedCollection new.
+	glr := false.
+	caseInsensitive := false.
+	unicode := false.
+	oldAnnouncer := announcer.
+	[ announcer := Announcer new.
+	originalAST rules do: [ :each | self addRuleNode: each ] ]
+		ensure: [ announcer := oldAnnouncer ].
+	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
 ]

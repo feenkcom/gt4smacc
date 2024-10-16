@@ -26,20 +26,14 @@ SmaCCParser class >> gtAnnotationsFor: aView context: aDictionary [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> gtGrammarFor: aView [
-	<gtView>
-	^ self gtGrammarFor: aView context: Dictionary new
-]
-
-{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
+	<gtView>
 	<gtClassView>
 	| coder |
-	self parserDefinitionString isEmpty
-		ifTrue: [ ^ aView empty ].
+	self parserDefinitionString isEmpty ifTrue: [ ^ aView empty ].
 	coder := aDictionary
-		at: #coder
-		ifAbsentPut: [ GtSmaCCGrammarCoder onParser: self ].
+			at: #coder
+			ifAbsentPut: [ GtSmaCCGrammarCoder onParser: self ].
 	^ aView explicit
 		title: 'Grammar';
 		priority: 1;
@@ -50,15 +44,30 @@ SmaCCParser class >> gtGrammarFor: aView context: aDictionary [
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
-SmaCCParser class >> gtSourceFor: aView [
+SmaCCParser class >> gtSourceFor: aView context: aDictionary [
 	<gtView>
 	<gtClassView>
-	self parserDefinitionString isEmpty
-		ifTrue: [ ^ aView empty ].
+	| coder |
+	self parserDefinitionString isEmpty ifTrue: [ ^ aView empty ].
+	coder := aDictionary
+			at: #coder
+			ifAbsentPut: [ GtSmaCCGrammarCoder onParser: self ].
 	^ aView explicit
 		title: 'Source';
 		priority: 6;
-		stencil: [ GtSmaCCGrammarElement onGrammar: (GtSmaCCGrammar onParser: self) ]
+		stencil: [ | element |
+			element := GtSmaCCGrammarElement onGrammar: coder grammar.
+			element
+				when: BlElementAddedToSceneGraphEvent
+				do: [ :event | 
+					coder grammar source = element source
+						ifFalse: [ element sourceEditor text: coder grammar source asRopedText ] ].
+			element
+				when: BlElementRemovedFromSceneGraphEvent
+				do: [ :event | 
+					coder grammar source = element source
+						ifFalse: [ coder grammar updateSource: element source ] ].
+			element ]
 ]
 
 { #category : #'*GT4SmaCC-Development-UI' }
