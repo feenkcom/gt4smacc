@@ -33,7 +33,6 @@ GtSmaCCCoder class >> coderClassFor: anItem [
 GtSmaCCCoder class >> defaultTextAttributes [
 	^ {
 		(BlFontFamilyAttribute named: 'Source Code Pro') beNotOverwritableByStyler.
-		(BlFontSizeAttribute size: 12) beNotOverwritableByStyler
 	}
 ]
 
@@ -275,8 +274,7 @@ GtSmaCCCoder >> highlighter [
 
 { #category : #accessing }
 GtSmaCCCoder >> highlighter: aHighlightingVisitor [
-	self attributeNamed: #highlighter put: aHighlightingVisitor.
-	self styleSource
+	self attributeNamed: #highlighter put: aHighlightingVisitor
 ]
 
 { #category : #'initialize-release' }
