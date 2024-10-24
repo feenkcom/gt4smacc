@@ -148,9 +148,9 @@ GtSmaCCDebuggerElement >> buildParserElement [
 	element matchParent.
 	element addChild: self buildParserStack as: #parserStack.
 	element addChild: self buildParserActions as: #parserActions.
-	self updateContents.
+	self enqueueTask: [ self updateContents ] asBlTask.
 	(self session parser isKindOf: SmaCCGLRParser) ifFalse: [ ^ element ].
-	^ (BrVerticalPane new)
+	^ BrVerticalPane new
 		matchParent;
 		addChild: element;
 		addChild: self buildGLRStates;
