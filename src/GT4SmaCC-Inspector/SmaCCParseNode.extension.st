@@ -118,13 +118,21 @@ SmaCCParseNode >> gtParentsFor: aView [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
-SmaCCParseNode >> gtScrollToPosition: index inEditor: editor [
-	index isNil
+SmaCCParseNode class >> gtScroll: aString toPosition: anIndex inEditor: anEditor [
+	anIndex isNil
 		ifTrue: [ ^ self ].
-	editor
+	anEditor
 		scrollToPosition:
-			(self topParent completeSource asString
-				lineNumberCorrespondingToIndex: index)
+			(aString asString
+				lineNumberCorrespondingToIndex: anIndex)
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode >> gtScrollToPosition: index inEditor: editor [
+	self class
+		gtScroll: self topParent completeSource asString
+		toPosition: index
+		inEditor: editor
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
@@ -148,6 +156,27 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
+SmaCCParseNode class >> gtSourceEditor: aTopNode withNode: aNodeOrToken highlight: aColor styler: aStyler [
+	| anEditor aText aSource |
+	aSource := aTopNode completeSource asString.
+	aText := aSource asRopedText.
+	aStyler ifNotNil: [ aStyler style: aText ast: aTopNode ].
+	aNodeOrToken stopPosition isZero
+		ifFalse: [ (aText from: aNodeOrToken startPosition to: aNodeOrToken stopPosition)
+				attributes: {BlTextHighlightAttribute new
+							beNotOverwritableByStyler;
+							paint: aColor} ].
+	anEditor := BrEditor new
+			text: aText;
+			aptitude: BrGlamorousCodeEditorAptitude new.
+	self
+		gtScroll: aSource
+		toPosition: aNodeOrToken startPosition
+		inEditor: anEditor.
+	^ anEditor
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 	^ self
 		gtSourceEditorWithHighlight: aColor
@@ -156,19 +185,11 @@ SmaCCParseNode >> gtSourceEditorWithHighlight: aColor [
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtSourceEditorWithHighlight: aColor styler: styler [
-	| source editor |
-	source := self topParent completeSource asString asRopedText.
-	styler ifNotNil: [ styler style: source ast: self topParent ].
-	self stopPosition isZero
-		ifFalse: [ (source from: self startPosition to: self stopPosition)
-				attributes: {BlTextHighlightAttribute new
-							beNotOverwritableByStyler;
-							paint: aColor} ].
-	editor := BrEditor new
-			text: source;
-			aptitude: BrGlamorousCodeEditorAptitude new.
-	self gtScrollToPosition: self startPosition inEditor: editor.
-	^ editor
+	^ self class
+		gtSourceEditor: self topParent
+		withNode: self
+		highlight: aColor
+		styler: styler
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
