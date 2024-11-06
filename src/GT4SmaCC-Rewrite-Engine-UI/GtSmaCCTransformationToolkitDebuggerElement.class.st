@@ -564,9 +564,12 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 				childNamed: #stack
 				ifFound:
 					[ :list | 
-					| stream contextStream |
+					| stream contextStream promise |
 					contextStream := GtSmaCCTransformationStackStream onContext: debuggingSession context.
-					(contextStream asyncSimilarCopy next then: [ :value | topContext := value value ]) await.
+					promise := (contextStream asyncSimilarCopy next 
+						then: [ :value | topContext := value value ]) 
+							await: GtMoldableDebugger defaultFutureExecutionConfiguration.
+					self enqueueTask: (BlPromiseTask new promise: promise).
 					stream := (contextStream
 						collect:
 							[ :each | 
