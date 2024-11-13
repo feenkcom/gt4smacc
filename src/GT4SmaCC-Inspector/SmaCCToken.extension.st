@@ -3,13 +3,13 @@ Extension { #name : #SmaCCToken }
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCToken >> gtSourceFor: aView context: aGtPhlowContext [
 	<gtView>
-	| aSource aNode |
+	| aNode aSource |
 	aGtPhlowContext navigation
-		previousObjectDo: [ :anObject | 
-			(anObject isKindOf: SmaCCParseNode)
-				ifTrue: [ 
-					aNode := anObject.
-					aSource := anObject topParent completeSource ] ]
+		previousObjectSuchThat: [ :anObject |
+			anObject isKindOf: SmaCCParseNode ]
+		do: [ :anObject | 
+			aNode := anObject.
+			aSource := anObject topParent completeSource ]
 		ifAbsent: [ ^ aView empty ].
 	aSource ifNil: [ ^ aView empty ].
 		
