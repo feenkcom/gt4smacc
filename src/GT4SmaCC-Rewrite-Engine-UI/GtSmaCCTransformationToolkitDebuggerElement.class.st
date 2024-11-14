@@ -245,7 +245,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> intervalFromMethodNode: aNode inS
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> isTransformation: aContext andRewrite: aRewrite [
-	^ aRewrite transformation method == aContext method
+	^ aRewrite transformation method == aContext method method
 ]
 
 { #category : #ui }
