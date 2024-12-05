@@ -314,7 +314,7 @@ GtSmaCCPreviewElement >> newPreviewOutputSourceElement [
 { #category : #accessing }
 GtSmaCCPreviewElement >> newPreviewRulesElement [
 	| list |
-	list := (GtPhlowProtoView new columnedList
+	list := (GtPhlowView new columnedList
 			column: 'Rewrite'
 				stencil: [ :each | 
 					BrHorizontalPane new
