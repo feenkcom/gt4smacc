@@ -113,6 +113,18 @@ GtSmaCCCoderElement >> initialize [
 		clipChildren: false.
 	self addChild: self deleteElement as: #deleteButton.
 	self
+		when: BlClickEvent
+		do: [ :anEvent | 
+			self isCollapsed
+				ifTrue: [ self expand.
+					self
+						enqueueTask: [ self
+								childNamed: #editor
+								ifFound: [ :each | each requestFocus ]
+								ifNone: [  ] ] asBlTask ]
+				ifFalse: [ anEvent currentTarget requestFocus ].
+			anEvent consumed: true ].
+	self
 		background: Color white;
 		aptitude: (GtCoderExpanderAptitude new
 				borderWidth: 0;
