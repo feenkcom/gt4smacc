@@ -8,7 +8,7 @@ Class {
 		'ast',
 		'isDeleted'
 	],
-	#category : 'GT4SmaCC-Development-UI-Model'
+	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
 { #category : #'instance creation' }
@@ -76,14 +76,17 @@ GtSmaCCGrammarItem >> isReferenced [
 
 { #category : #testing }
 GtSmaCCGrammarItem >> isValid [
-	isDeleted
-		ifTrue: [ ^ true ].
+	isDeleted ifTrue: [ ^ true ].
 	^ [ SmaCCDefinitionParser
 		parse: self source
 		startingAt: self parserStartingState.
 	true ]
 		on: SmaCCParserError
-		do: [ :ex | ex return: false ]
+		do: [ :ex | 
+			[ SmaCCDefinitionParser
+				parse: self source
+				startingAt: SmaCCDefinitionParser startingStateForEmptyRule.
+			ex return: true ] on: Error do: [ :e | ex return: false ] ]
 ]
 
 { #category : #accessing }
