@@ -29,12 +29,7 @@ GtYAMLCompletionStrategy >> buildCompleterFrom: anObject [
 			^ result ].
 	(anObject isString
 		and: [ (anObject beginsWith: '<') and: [ anObject endsWith: '>?' ] ])
-		ifTrue: [ ^ GtYAMLBlockCompleter new
-				block: [ :string :pos | 
-					self
-						findCompletionsOf: string
-						at: pos
-						withValuesFrom: anObject allButLast ] ].
+		ifTrue: [ ^ self completerForLookup: anObject allButLast ].
 	(anObject isString or: [ anObject isKindOf: Number ])
 		ifTrue: [ ^ GtYAMLValueCompleter new values: (self stringsIn: anObject) ].
 	anObject isCollection
@@ -62,6 +57,16 @@ GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
 	^ #()
 ]
 
+{ #category : #initialization }
+GtYAMLCompletionStrategy >> completerForLookup: lookup [
+	^ GtYAMLBlockCompleter new
+		block: [ :string :pos | 
+			self
+				findCompletionsOf: string
+				at: pos
+				withValuesFrom: lookup ]
+]
+
 { #category : #accessing }
 GtYAMLCompletionStrategy >> completionResultFor: aText at: positionInteger requested: aBoolean [
 	| results |
@@ -75,9 +80,7 @@ GtYAMLCompletionStrategy >> completionResultFor: aText at: positionInteger reque
 
 { #category : #private }
 GtYAMLCompletionStrategy >> findCompletionsOf: aString at: positionInteger withValuesFrom: nameString [
-	^ (((self pathsTo: nameString)
-		collect: [ :each | self lookupValuesForPath: each ]) flatten asAsyncStream
-		select: [ :each | each beginsWith: aString ]) withoutDuplicates
+	^ (self potentialValuesOf: aString forLookup: nameString) withoutDuplicates
 		collect: [ :each | 
 			GtInsertTextCompletionAction
 				labeled: (self labelFor: each withSearch: aString)
@@ -119,6 +122,13 @@ GtYAMLCompletionStrategy >> pathsTo: nameString [
 		current: OrderedCollection new
 		do: [ :current | allPaths add: current copy ].
 	^ allPaths
+]
+
+{ #category : #private }
+GtYAMLCompletionStrategy >> potentialValuesOf: aString forLookup: nameString [
+	^ ((self pathsTo: nameString)
+		collect: [ :each | self lookupValuesForPath: each ]) flatten asAsyncStream
+		select: [ :each | each beginsWith: aString ]
 ]
 
 { #category : #initialization }
