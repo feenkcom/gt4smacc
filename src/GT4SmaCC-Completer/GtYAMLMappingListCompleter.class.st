@@ -41,6 +41,44 @@ GtYAMLMappingListCompleter >> initialize [
 	items := OrderedCollection new
 ]
 
+{ #category : #merging }
+GtYAMLMappingListCompleter >> items [
+	^ items
+]
+
+{ #category : #merging }
+GtYAMLMappingListCompleter >> merge: aCompleter [
+	^ aCompleter mergeFromMappingList: self
+]
+
+{ #category : #merging }
+GtYAMLMappingListCompleter >> mergeFromMappingList: aCompleter [
+	| result myGroups otherGroups otherValue |
+	result := self class new.
+	myGroups := items groupedBy: #name.
+	otherGroups := items groupedBy: #name.
+	myGroups
+		keysAndValuesDo: [ :key :myValue | 
+			otherValue := otherGroups removeKey: key ifAbsent: [ #() ].
+			result
+				addItem: (GtYAMLMappingItemCompleter new
+						name: key;
+						value: (myValue , otherValue
+								inject: GtYAMLEmptyCompleter instance
+								into: [ :sum :each | sum merge: each ]);
+						yourself) ].
+	otherGroups
+		keysAndValuesDo: [ :key :value | 
+			result
+				addItem: (GtYAMLMappingItemCompleter new
+						name: key;
+						value: (value
+								inject: GtYAMLEmptyCompleter instance
+								into: [ :sum :each | sum merge: each ]);
+						yourself) ].
+	^ result
+]
+
 { #category : #accessing }
 GtYAMLMappingListCompleter >> pathTo: nameString current: aCollection do: aBlock [
 	items

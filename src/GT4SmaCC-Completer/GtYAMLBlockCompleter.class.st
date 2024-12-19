@@ -21,3 +21,8 @@ GtYAMLBlockCompleter >> block: anObject [
 GtYAMLBlockCompleter >> complete: aString at: positionInteger [
 	^ block value: aString value: positionInteger
 ]
+
+{ #category : #merging }
+GtYAMLBlockCompleter >> merge: aCompleter [
+	^ aCompleter mergeFromBlock: self
+]
