@@ -16,3 +16,8 @@ GtYAMLEmptyCompleter class >> instance [
 GtYAMLEmptyCompleter >> findCompleterFor: aYAMLNode [
 	^ self
 ]
+
+{ #category : #merging }
+GtYAMLEmptyCompleter >> merge: aCompleter [
+	^ aCompleter mergeFromEmpty: self
+]

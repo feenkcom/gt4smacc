@@ -23,6 +23,16 @@ GtYAMLListCompleter >> lookupNodesIn: aNode [
 	^ aNode items
 ]
 
+{ #category : #merging }
+GtYAMLListCompleter >> merge: aCompleter [
+	^ aCompleter mergeFromList: self
+]
+
+{ #category : #merging }
+GtYAMLListCompleter >> mergeFromList: aCompleter [
+	^ self class new value: (value merge: aCompleter value)
+]
+
 { #category : #accessing }
 GtYAMLListCompleter >> pathTo: nameString current: aCollection do: aBlock [
 	aCollection add: self.

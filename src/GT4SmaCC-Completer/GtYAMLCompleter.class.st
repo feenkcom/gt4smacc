@@ -26,6 +26,41 @@ GtYAMLCompleter >> labelFor: aString withSearch: subString [
 	^ text
 ]
 
+{ #category : #merging }
+GtYAMLCompleter >> merge: aCompleter [
+	self subclassResponsibility
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromBlock: aCompleter [
+	^ aCompleter
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromEmpty: aCompleter [
+	^ self
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromList: aCompleter [
+	^ aCompleter	"Pick one"
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromMappingItem: aCompleter [
+	^ aCompleter	"Pick one"
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromMappingList: aCompleter [
+	^ aCompleter	"Pick one"
+]
+
+{ #category : #merging }
+GtYAMLCompleter >> mergeFromValue: aCompleter [
+	^ aCompleter	"Pick one"
+]
+
 { #category : #accessing }
 GtYAMLCompleter >> pathTo: nameString current: aCollection do: aBlock [
 	
