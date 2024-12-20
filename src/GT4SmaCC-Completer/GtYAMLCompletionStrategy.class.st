@@ -37,36 +37,6 @@ GtYAMLCompletionStrategy >> buildCompleterFrom: anObject [
 	self error: 'Unknown object type'
 ]
 
-{ #category : #initialization }
-GtYAMLCompletionStrategy >> buildFromJSONSchema: anObject [
-	| result type |
-	anObject isNil ifTrue: [ ^ GtYAMLEmptyCompleter instance ].
-	type := anObject type.
-	type = 'boolean'
-		ifTrue: [ ^ GtYAMLValueCompleter new values: #('true' 'false') ].
-	type = 'string'
-		ifTrue: [ ^ GtYAMLValueCompleter new
-				values: (anObject enum ifNotNil: [ :v | v collect: #asString ] ifNil: [ #() ]) ].
-	type = 'array'
-		ifTrue: [ ^ GtYAMLListCompleter new
-				value: (self buildFromJSONSchema: (anObject resolveSubSchema: anObject items)) ].
-	type = 'object'
-		ifTrue: [ result := GtYAMLMappingListCompleter new.
-			(anObject properties ifNil: [ Dictionary new ])
-				keysAndValuesDo: [ :key :each | 
-					result
-						addItem: (GtYAMLMappingItemCompleter new
-								name: key;
-								value: (self buildFromJSONSchema: (anObject resolveSubSchema: each));
-								yourself) ].
-			^ result ].
-	type
-		ifNil: [ ^ (anObject anyOf ifNil: [ #() ])
-				inject: GtYAMLEmptyCompleter instance
-				into: [ :sum :each | sum merge: (self buildFromJSONSchema: (anObject resolveSubSchema: each)) ] ].
-	^ GtYAMLEmptyCompleter instance
-]
-
 { #category : #accessing }
 GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
 	| current |
@@ -100,6 +70,7 @@ GtYAMLCompletionStrategy >> completer: anObject [
 { #category : #initialization }
 GtYAMLCompletionStrategy >> completerForLookup: lookup [
 	^ GtYAMLBlockCompleter new
+		name: lookup;
 		block: [ :string :pos | 
 			self
 				findCompletionsOf: string
@@ -141,7 +112,7 @@ GtYAMLCompletionStrategy >> loadCompleterFrom: aString [
 
 { #category : #initialization }
 GtYAMLCompletionStrategy >> loadCompleterFromJSONSchema: anObject [
-	completer := self buildFromJSONSchema: anObject
+	completer := GtYAMLCompleter forJSONSchema: anObject
 ]
 
 { #category : #private }

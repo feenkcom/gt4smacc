@@ -56,7 +56,7 @@ GtYAMLMappingListCompleter >> mergeFromMappingList: aCompleter [
 	| result myGroups otherGroups otherValue |
 	result := self class new.
 	myGroups := items groupedBy: #name.
-	otherGroups := items groupedBy: #name.
+	otherGroups := aCompleter items groupedBy: #name.
 	myGroups
 		keysAndValuesDo: [ :key :myValue | 
 			otherValue := otherGroups removeKey: key ifAbsent: [ #() ].
@@ -65,7 +65,7 @@ GtYAMLMappingListCompleter >> mergeFromMappingList: aCompleter [
 						name: key;
 						value: (myValue , otherValue
 								inject: GtYAMLEmptyCompleter instance
-								into: [ :sum :each | sum merge: each ]);
+								into: [ :sum :each | sum merge: each value ]);
 						yourself) ].
 	otherGroups
 		keysAndValuesDo: [ :key :value | 
@@ -74,7 +74,7 @@ GtYAMLMappingListCompleter >> mergeFromMappingList: aCompleter [
 						name: key;
 						value: (value
 								inject: GtYAMLEmptyCompleter instance
-								into: [ :sum :each | sum merge: each ]);
+								into: [ :sum :each | sum merge: each value ]);
 						yourself) ].
 	^ result
 ]
@@ -87,4 +87,15 @@ GtYAMLMappingListCompleter >> pathTo: nameString current: aCollection do: aBlock
 				pathTo: nameString
 				current: aCollection
 				do: aBlock ]
+]
+
+{ #category : #'as yet unclassified' }
+GtYAMLMappingListCompleter >> yamlOn: stream indent: anInteger [
+	items
+		do: [ :each | 
+			stream position > 0
+				ifTrue: [ stream
+						cr;
+						next: anInteger * 2 put: $  ].
+			each yamlOn: stream indent: anInteger ]
 ]

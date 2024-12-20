@@ -51,3 +51,13 @@ GtYAMLListCompleter >> value [
 GtYAMLListCompleter >> value: aCompleter [
 	value := aCompleter
 ]
+
+{ #category : #converting }
+GtYAMLListCompleter >> yamlOn: stream indent: anInteger [
+	stream position > 0
+		ifTrue: [ stream
+				cr;
+				next: anInteger * 2 put: $  ].
+	stream << '- '.
+	value yamlOn: stream indent: anInteger + 1
+]
