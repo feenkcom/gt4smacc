@@ -2,7 +2,8 @@ Class {
 	#name : #GtYAMLBlockCompleter,
 	#superclass : #GtYAMLCompleter,
 	#instVars : [
-		'block'
+		'block',
+		'name'
 	],
 	#category : #'GT4SmaCC-Completer-YAML'
 }
@@ -25,4 +26,20 @@ GtYAMLBlockCompleter >> complete: aString at: positionInteger [
 { #category : #merging }
 GtYAMLBlockCompleter >> merge: aCompleter [
 	^ aCompleter mergeFromBlock: self
+]
+
+{ #category : #accessing }
+GtYAMLBlockCompleter >> name [
+	^ name
+]
+
+{ #category : #accessing }
+GtYAMLBlockCompleter >> name: anObject [
+	name := anObject
+]
+
+{ #category : #converting }
+GtYAMLBlockCompleter >> yamlOn: stream indent: anInteger [
+	name ifNil: [ ^ self ].
+	stream << name << '?'
 ]

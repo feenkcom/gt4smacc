@@ -40,3 +40,8 @@ GtYAMLValueCompleter >> values [
 GtYAMLValueCompleter >> values: stringCollection [
 	values := stringCollection
 ]
+
+{ #category : #converting }
+GtYAMLValueCompleter >> yamlOn: stream indent: anInteger [
+	stream << (',' join: values)
+]

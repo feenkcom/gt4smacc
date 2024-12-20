@@ -81,3 +81,9 @@ GtYAMLMappingItemCompleter >> value [
 GtYAMLMappingItemCompleter >> value: anObject [
 	value := anObject
 ]
+
+{ #category : #converting }
+GtYAMLMappingItemCompleter >> yamlOn: stream indent: anInteger [
+	stream << name << ': '.
+	value yamlOn: stream indent: anInteger + 1
+]
