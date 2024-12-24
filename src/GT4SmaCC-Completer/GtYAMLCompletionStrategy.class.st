@@ -39,11 +39,46 @@ GtYAMLCompletionStrategy >> buildCompleterFrom: anObject [
 
 { #category : #accessing }
 GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
-	| current |
-	node stopPosition = positionInteger
-		ifTrue: [ | parents index |
-			current := completer.
-			parents := node allParents reversed.
+	| current itemToComplete nodeToComplete parents index keyValueNode |
+	itemToComplete := node.
+	node isErrorNode
+		ifTrue: [ node
+				nodesDo: [ :each |  ]
+				andTokensDo: [ :each | each stopPosition = positionInteger ifTrue: [ itemToComplete := each ] ]
+				includeErrors: true ].
+	itemToComplete stopPosition = positionInteger
+		ifTrue: [ nodeToComplete := node ]
+		ifFalse: [ ast
+				withAllNodesOfType: YAMLMappingNode
+				do: [ :each | 
+					(each key stopPosition <= positionInteger
+						and: [ keyValueNode isNil
+								or: [ keyValueNode key stopPosition < each key stopPosition ] ])
+						ifTrue: [ keyValueNode := each ] ].
+			keyValueNode
+				ifNil: [ nodeToComplete := node topParent ]
+				ifNotNil: [ (self startOfLineWSCountAt: positionInteger)
+						ifNil: [ keyValueNode value
+								ifNil: [ itemToComplete := nil.
+									nodeToComplete := SmaCCParseNode new
+											parent: keyValueNode;
+											yourself ] ]
+						ifNotNil: [ :count | 
+							current := keyValueNode.
+							[ current notNil
+								and: [ (self startOfLineCharacterCountAt: current startPosition - 1) > count ] ]
+								whileTrue: [ keyValueNode := current.
+									current := current parentOfType: YAMLMappingNode ].
+							current notNil ifTrue: [ keyValueNode := current ].
+							nodeToComplete := (self
+									startOfLineCharacterCountAt: keyValueNode startPosition - 1) < count
+									ifTrue: [ SmaCCParseNode new
+											parent: keyValueNode;
+											yourself ]
+									ifFalse: [ keyValueNode ] ] ] ].
+	nodeToComplete
+		ifNotNil: [ current := completer.
+			parents := nodeToComplete allParents reversed.
 			index := parents detectIndex: [ :each | each isErrorNode ] ifNone: [ 0 ].
 			index > 1
 				ifTrue: [ index := index - 1.
@@ -53,7 +88,13 @@ GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
 						ifTrue: [ index := index - 1 ] ]
 				ifFalse: [ index := parents size ].
 			1 to: index do: [ :i | current := current findCompleterFor: (parents at: i) ].
-			^ current complete: node source at: positionInteger ].
+			^ current
+				complete: ((itemToComplete isNil
+						or: [ positionInteger = 0
+								or: [ (node topParent completeSource at: positionInteger) isSeparator ] ])
+						ifTrue: [ '' ]
+						ifFalse: [ itemToComplete source ])
+				at: positionInteger ].
 	^ #()
 ]
 
@@ -145,6 +186,32 @@ GtYAMLCompletionStrategy >> potentialValuesOf: aString forLookup: nameString [
 	^ ((self pathsTo: nameString)
 		collect: [ :each | self lookupValuesForPath: each ]) flatten asAsyncStream
 		select: [ :each | each beginsWith: aString ]
+]
+
+{ #category : #accessing }
+GtYAMLCompletionStrategy >> startOfLineCharacterCountAt: anInteger [
+	| source index count |
+	source := ast topParent completeSource.
+	index := anInteger.
+	count := 0.
+	[ index > 0 and: [ (String crlf includes: (source at: index)) not ] ]
+		whileTrue: [ index := index - 1.
+			count := count + 1 ].
+	^ count
+]
+
+{ #category : #accessing }
+GtYAMLCompletionStrategy >> startOfLineWSCountAt: anInteger [
+	| source index count char |
+	source := ast topParent completeSource.
+	index := anInteger.
+	count := 0.
+	[ index > 0
+		and: [ (char := source at: index) isSeparator
+				and: [ (String crlf includes: char) not ] ] ]
+		whileTrue: [ index := index - 1.
+			count := count + 1 ].
+	^ (index <= 0 or: [ String crlf includes: char ]) ifTrue: [ count ]
 ]
 
 { #category : #initialization }
