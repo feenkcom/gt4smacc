@@ -39,7 +39,7 @@ GtYAMLCompletionStrategy >> buildCompleterFrom: anObject [
 
 { #category : #accessing }
 GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
-	| current itemToComplete nodeToComplete parents index keyValueNode |
+	| current itemToComplete nodeToComplete parents index keyValueNode listItemNode |
 	itemToComplete := node.
 	node isErrorNode
 		ifTrue: [ node
@@ -55,8 +55,24 @@ GtYAMLCompletionStrategy >> completeNode: node at: positionInteger [
 						and: [ keyValueNode isNil
 								or: [ keyValueNode key stopPosition < each key stopPosition ] ])
 						ifTrue: [ keyValueNode := each ] ].
+			ast
+				withAllNodesOfType: YAMLListItemNode
+				do: [ :each | 
+					each minus startPosition < positionInteger
+						ifTrue: [ (keyValueNode isNil
+								or: [ each minus startPosition > keyValueNode key stopPosition ])
+								ifTrue: [ keyValueNode := nil.
+									(listItemNode isNil
+										or: [ listItemNode minus startPosition < each minus startPosition ])
+										ifTrue: [ listItemNode := each ] ] ] ].
 			keyValueNode
-				ifNil: [ nodeToComplete := node topParent ]
+				ifNil: [ nodeToComplete := listItemNode
+							ifNil: [ node topParent ]
+							ifNotNil: [ listItemNode value
+									ifNil: [ SmaCCParseNode new
+											parent: listItemNode;
+											yourself ]
+									ifNotNil: [ nil ] ] ]
 				ifNotNil: [ (self startOfLineWSCountAt: positionInteger)
 						ifNil: [ keyValueNode value
 								ifNil: [ itemToComplete := nil.

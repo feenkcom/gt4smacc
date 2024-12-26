@@ -68,6 +68,28 @@ addresses:
 ]
 
 { #category : #accessing }
+GtYAMLCompletionExamples >> completeEmptyKeyAfterList [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self loadingCompletions.
+	text := '
+phones:
+  - 
+  ' asRopedText.
+	position := text size.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: true.
+	items := (result stream asyncSimilarCopy take: 20) toArray wait.
+	self assert: items size equals: 2.
+	self
+		assert: (items collect: #label) asSortedCollection asArray
+		equals: #('isPrimary:' 'number:').
+	^ result
+]
+
+{ #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKeyInMiddle [
 	<gtExample>
 	| strategy result items text position endText |
@@ -131,6 +153,26 @@ test: - one' asRopedText.
 	items := (result stream asyncSimilarCopy take: 20) toArray wait.
 	self assert: items notEmpty.
 	self assert: ((items collect: #label) includes: 'zip:').
+	^ result
+]
+
+{ #category : #accessing }
+GtYAMLCompletionExamples >> completeEmptyListValue [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self loadingCompletions.
+	text := '
+test:
+  - 
+  ' asRopedText.
+	position := text size.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: true.
+	items := (result stream asyncSimilarCopy take: 20) toArray wait.
+	self assert: items size equals: 4.
+	self assert: ((items collect: #label) includes: 'one').
 	^ result
 ]
 
