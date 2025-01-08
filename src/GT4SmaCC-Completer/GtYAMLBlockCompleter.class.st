@@ -28,6 +28,11 @@ GtYAMLBlockCompleter >> merge: aCompleter [
 	^ aCompleter mergeFromBlock: self
 ]
 
+{ #category : #merging }
+GtYAMLBlockCompleter >> mergeFromValue: aCompleter [
+	^ self
+]
+
 { #category : #accessing }
 GtYAMLBlockCompleter >> name [
 	^ name
