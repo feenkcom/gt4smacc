@@ -162,6 +162,12 @@ GtYAMLCompletionStrategy >> hasCompletionsAt: anInteger in: aText [
 	^ true
 ]
 
+{ #category : #'as yet unclassified' }
+GtYAMLCompletionStrategy >> initialize [
+	super initialize.
+	completer := GtYAMLEmptyCompleter instance
+]
+
 { #category : #initialization }
 GtYAMLCompletionStrategy >> loadCompleterFrom: aString [
 	completer := self buildCompleterFrom: (YAMLParser parse: aString) object
