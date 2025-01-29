@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCCoderListElement,
 	#superclass : #GtSmaCCDefinitionListElement,
 	#instVars : [
-		'badgeTypes'
+		'badgeTypes',
+		'filterModel'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -27,14 +28,14 @@ GtSmaCCCoderListElement >> badgeFilter [
 
 { #category : #ui }
 GtSmaCCCoderListElement >> filterElement [
-	| element |
-	element := BrVerticalPane new.
-	element padding: (BlInsets right: 10).
-	element hMatchParent.
-	element vFitContent.
-	element addChild: self textSearchElement as: #textSearch.
-	element addChild: self typeFilterElement as: #toggles.
-	^ element
+	filterModel
+		ifNil: [ filterModel := GtFilterItemsModel new
+					availableFiltersBuilder: GtSmaCCDefinitionsFilter.
+			filterModel weak
+				when: GtFiltersModelAnnouncement
+				send: #updateFilters
+				to: self ].
+	^ filterModel asFiltersElement
 ]
 
 { #category : #private }
@@ -173,7 +174,9 @@ GtSmaCCCoderListElement >> typeFilterElement [
 { #category : #private }
 GtSmaCCCoderListElement >> updateFilters [
 	| filter |
-	filter := self searchFilter & self ruleTypeFilter & self badgeFilter.
+	filter := (filterModel items collect: #asSearchFilter)
+			inject: GtSmaCCNoFilter new
+			into: [ :sum :each | sum & each ].
 	group filter: filter.
 	self updateList
 ]
