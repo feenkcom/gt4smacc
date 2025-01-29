@@ -535,7 +535,13 @@ GtSmaCCGrammar >> updateSource: aString [
 	unicode := false.
 	oldAnnouncer := announcer.
 	[ announcer := Announcer new.
-	originalAST rules do: [ :each | self addRuleNode: each ] ]
+	originalAST rules do: [ :each | self addRuleNode: each ].
+	rules
+		do: [ :each | 
+			each isDirective
+				ifTrue: [ each isGLR ifTrue: [ glr := true ].
+					each isCaseInsensitive ifTrue: [ caseInsensitive := true ].
+					each isUnicode ifTrue: [ unicode := true ] ] ] ]
 		ensure: [ announcer := oldAnnouncer ].
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
 ]
