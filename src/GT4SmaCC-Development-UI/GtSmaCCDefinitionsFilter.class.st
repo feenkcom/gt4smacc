@@ -9,13 +9,18 @@ GtSmaCCDefinitionsFilter class >> availableFilters [
 	| availableFilters |
 	availableFilters := SortedCollection sortBlock: [ :a :b | a order < b order ].
 	self
-		withAllSubclassesDo: [ :each | each filterDescriptor ifNotNil: [ :filter | availableFilters add: filter ] ].
+		withAllSubclassesDo: [ :each | each filterDescriptors do: [ :filter | availableFilters add: filter ] ].
 	^ availableFilters
 ]
 
 { #category : #accessing }
 GtSmaCCDefinitionsFilter class >> filterDescriptor [
 	^ nil
+]
+
+{ #category : #accessing }
+GtSmaCCDefinitionsFilter class >> filterDescriptors [
+	^ self filterDescriptor ifNotNil: [ :each | {each} ] ifNil: [ #() ]
 ]
 
 { #category : #accessing }

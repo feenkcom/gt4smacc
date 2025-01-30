@@ -2,7 +2,6 @@ Class {
 	#name : #GtSmaCCCoderListElement,
 	#superclass : #GtSmaCCDefinitionListElement,
 	#instVars : [
-		'badgeTypes',
 		'filterModel'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
@@ -10,7 +9,9 @@ Class {
 
 { #category : #filtering }
 GtSmaCCCoderListElement >> addBadgeFilter: aSymbol [
-	badgeTypes add: aSymbol.
+	(self includesBadge: aSymbol) ifTrue: [ ^ self ].
+	filterModel
+		addFilterModel: (GtSmaCCSelectorFilter filterDescriptorForSelector: aSymbol).
 	self updateFilters
 ]
 
@@ -19,17 +20,11 @@ GtSmaCCCoderListElement >> addItemLookTo: dataSource [
 	dataSource lookBlock: [ GtSmaCCBadgesAptitude new definitionList: self ]
 ]
 
-{ #category : #filtering }
-GtSmaCCCoderListElement >> badgeFilter [
-	^ badgeTypes
-		inject: GtSmaCCNoFilter new
-		into: [ :sum :each | sum & (GtSmaCCSelectorFilter selector: each) ]
-]
-
 { #category : #ui }
 GtSmaCCCoderListElement >> filterElement [
 	filterModel
 		ifNil: [ filterModel := GtFilterItemsModel new
+					items: {GtSmaCCSourcePatternFilter filterDescriptor};
 					availableFiltersBuilder: GtSmaCCDefinitionsFilter.
 			filterModel weak
 				when: GtFiltersModelAnnouncement
@@ -40,10 +35,19 @@ GtSmaCCCoderListElement >> filterElement [
 
 { #category : #private }
 GtSmaCCCoderListElement >> filterErrors [
+	filterModel addFilterModel: GtSmaCCDefinitionErrorFilter filterDescriptor
+]
+
+{ #category : #filtering }
+GtSmaCCCoderListElement >> findFilterForSelector: aSymbol [
 	| filter |
-	filter := GtSmaCCDefinitionErrorFilter new.
-	group filter: filter.
-	self updateList
+	filter := GtSmaCCSelectorFilter filterDescriptorForSelector: aSymbol.
+	^ filterModel items
+		detect: [ :each | 
+			each = filter
+				and: [ (each isKindOf: GtFilterSelectableItemModel) not
+						or: [ each selectedItem = filter selectedItem ] ] ]
+		ifNone: [ nil ]
 ]
 
 { #category : #accessing }
@@ -54,18 +58,15 @@ GtSmaCCCoderListElement >> group: aDefinitionGroupResult [
 
 { #category : #testing }
 GtSmaCCCoderListElement >> includesBadge: aSymbol [
-	^ badgeTypes includes: aSymbol
-]
-
-{ #category : #'initialize-release' }
-GtSmaCCCoderListElement >> initialize [
-	super initialize.
-	badgeTypes := Set new
+	^ (self findFilterForSelector: aSymbol) notNil
 ]
 
 { #category : #filtering }
 GtSmaCCCoderListElement >> removeBadgeFilter: aSymbol [
-	badgeTypes remove: aSymbol ifAbsent: [  ].
+	| model |
+	model := self findFilterForSelector: aSymbol.
+	model ifNil: [ ^ self ].
+	filterModel removeFilterModel: model.
 	self updateFilters
 ]
 
@@ -128,6 +129,13 @@ GtSmaCCCoderListElement >> textSearchElement [
 				right: 0).
 	element padding: (BlInsets all: 3).
 	^ element
+]
+
+{ #category : #filtering }
+GtSmaCCCoderListElement >> toggleBadgeFilter: aSymbol [
+	^ (self includesBadge: aSymbol)
+		ifTrue: [ self removeBadgeFilter: aSymbol ]
+		ifFalse: [ self addBadgeFilter: aSymbol ]
 ]
 
 { #category : #ui }

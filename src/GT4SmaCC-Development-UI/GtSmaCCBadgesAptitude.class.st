@@ -5,7 +5,7 @@ Class {
 		'definitionList',
 		'badgeList'
 	],
-	#category : 'GT4SmaCC-Development-UI-Looks'
+	#category : #'GT4SmaCC-Development-UI-Looks'
 }
 
 { #category : #initialization }
@@ -16,30 +16,23 @@ GtSmaCCBadgesAptitude >> badgeToggles [
 		do: [ :each | 
 			(widget coder grammarItem perform: each last)
 				ifTrue: [ toggles
-						add:
-							(BrToggle new
+						add: (BrButton new
 								layout: BlLinearLayout horizontal alignCenter;
 								constraintsDo: [ :c | 
 									c horizontal fitContent.
 									c vertical exact: 16.
 									c padding: (BlInsets all: 6) ];
-								margin:
-									(BlInsets
+								margin: (BlInsets
 										top: 0
 										left: 2
 										bottom: 0
 										right: 2);
-								activated: (definitionList includesBadge: each last);
-								label:
-									(each first asRopedText
-										attributes:
-											{(BlFontSizeAttribute size: 12).
-											(BlFontFamilyAttribute named: 'Source Sans Pro')});
-								aptitude: BrGlamorousButtonLabelAptitude + BrGlamorousToggleBackgroundAptitude;
-								when: BrToggleActivatedEvent
-									do: [ :anEvent | definitionList addBadgeFilter: each last ];
-								when: BrToggleDeactivatedEvent
-									do: [ :anEvent | definitionList removeBadgeFilter: each last ];
+								label: (each first asRopedText
+										attributes: {BlFontSizeAttribute size: 12.
+												BlFontFamilyAttribute named: 'Source Sans Pro'});
+								aptitude: BrGlamorousButtonLabelAptitude;
+								when: BlClickEvent
+									do: [ :anEvent | definitionList toggleBadgeFilter: each last ];
 								yourself) ] ].
 	^ toggles
 ]
