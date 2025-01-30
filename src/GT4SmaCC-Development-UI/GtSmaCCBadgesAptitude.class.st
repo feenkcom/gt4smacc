@@ -27,9 +27,7 @@ GtSmaCCBadgesAptitude >> badgeToggles [
 										left: 2
 										bottom: 0
 										right: 2);
-								label: (each first asRopedText
-										attributes: {BlFontSizeAttribute size: 12.
-												BlFontFamilyAttribute named: 'Source Sans Pro'});
+								label: each first asRopedText glamorousRegularFont glamorousRegularSmallSize;
 								aptitude: BrGlamorousButtonLabelAptitude;
 								when: BlClickEvent
 									do: [ :anEvent | definitionList toggleBadgeFilter: each last ];
