@@ -19,6 +19,20 @@ GtSmaCCCoderListElement >> addItemLookTo: dataSource [
 	dataSource lookBlock: [ GtSmaCCBadgesAptitude new definitionList: self ]
 ]
 
+{ #category : #private }
+GtSmaCCCoderListElement >> buildFilter [
+	| filter |
+	filter := GtSmaCCNoFilter new.
+	((filterModel items collect: #asSearchFilter) groupedBy: #class)
+		keysAndValuesDo: [ :key :filters | 
+			filter := filter
+					& (filters
+							reduce: (key defaultIsIntersection
+									ifTrue: [ [ :a :b | a & b ] ]
+									ifFalse: [ [ :a :b | a | b ] ])) ].
+	^ filter
+]
+
 { #category : #ui }
 GtSmaCCCoderListElement >> filterElement [
 	filterModel
@@ -78,9 +92,7 @@ GtSmaCCCoderListElement >> toggleBadgeFilter: aSymbol [
 { #category : #private }
 GtSmaCCCoderListElement >> updateFilters [
 	| filter |
-	filter := (filterModel items collect: #asSearchFilter)
-			inject: GtSmaCCNoFilter new
-			into: [ :sum :each | sum & each ].
+	filter := self buildFilter.
 	group filter: filter.
 	self updateList
 ]

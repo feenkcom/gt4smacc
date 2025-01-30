@@ -13,6 +13,11 @@ GtSmaCCDefinitionsFilter class >> availableFilters [
 	^ availableFilters
 ]
 
+{ #category : #testing }
+GtSmaCCDefinitionsFilter class >> defaultIsIntersection [
+	^ true
+]
+
 { #category : #accessing }
 GtSmaCCDefinitionsFilter class >> filterDescriptor [
 	^ nil

@@ -7,6 +7,11 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
+{ #category : #testing }
+GtSmaCCRuleFilter class >> defaultIsIntersection [
+	^ false
+]
+
 { #category : #accessing }
 GtSmaCCRuleFilter class >> filterDescriptor [
 	^ GtFilterShortListModel new
@@ -26,7 +31,7 @@ GtSmaCCRuleFilter class >> ruleClass: aClass [
 	^ self new ruleClass: aClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 GtSmaCCRuleFilter >> matches: anObject [
 	ruleClass ifNil: [ ^ true ].
 	^ anObject isKindOf: ruleClass

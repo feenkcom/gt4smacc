@@ -7,6 +7,11 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
+{ #category : #testing }
+GtSmaCCSelectorFilter class >> defaultIsIntersection [
+	^ false
+]
+
 { #category : #accessing }
 GtSmaCCSelectorFilter class >> filterDescriptorForSelector: aSelector [
 	^ aSelector = #isScannerMethod
