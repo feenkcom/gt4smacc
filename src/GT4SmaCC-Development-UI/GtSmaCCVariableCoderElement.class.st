@@ -93,28 +93,30 @@ GtSmaCCVariableCoderElement >> initialize [
 	self
 		vFitContent;
 		hMatchParent.
-	resizer := BrResizer new
-		beBottom;
-		aptitude: BrGlamorousResizerAptitude new;
-		constraintsDo: [ :c | c ignoreByLayout ];
-		when: BlDoubleClickEvent
-			do: [ self
-				childNamed: #bodyEditor
-				ifFound: [ :anEditor | anEditor constraintsDo: [ :c | c vertical fitContent ] ]
-				ifNone: [  ] ];
-		yourself.
 	self
-		aptitude:
-			(GtCoderExpanderAptitude new
+		when: BlClickEvent
+		do: [ :anEvent | 
+			self isCollapsed ifTrue: [ self expand ].
+			anEvent consumed: true ].
+	resizer := BrResizer new
+			beBottom;
+			aptitude: BrGlamorousResizerAptitude new;
+			constraintsDo: [ :c | c ignoreByLayout ];
+			when: BlDoubleClickEvent
+				do: [ self
+						childNamed: #bodyEditor
+						ifFound: [ :anEditor | anEditor constraintsDo: [ :c | c vertical fitContent ] ]
+						ifNone: [  ] ];
+			yourself.
+	self
+		aptitude: (GtCoderExpanderAptitude new
 				borderWidth: 0;
-				padding:
-					(BlInsets
+				padding: (BlInsets
 						top: 1
 						left: 10
 						bottom: 1
 						right: 10))
-				+
-					(BrInteractiveAptitude new
+				+ (BrInteractiveAptitude new
 						style: [ :aStyler | 
 							aStyler
 								default: [ resizer removeFromParent.
@@ -122,37 +124,28 @@ GtSmaCCVariableCoderElement >> initialize [
 							aStyler
 								expanded: [ self addChild: resizer.
 									self
-										enqueueTask:
-											(BlTaskAction new
+										enqueueTask: (BlTaskAction new
 												action: [ self
 														childNamed: #bodyEditor
 														ifFound: [ :anEditor | resizer target: anEditor ]
 														ifNone: [ resizer target: nil ] ]).
 									self background: Color white ] ]).
 	self
-		addShortcut:
-			(BlShortcutWithAction new
-				combination:
-					(BlKeyCombination builder
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlKeyCombination builder
 						primary;
 						enter;
 						build);
 				action: [ self toggle ]);
-		addShortcut:
-			(BlShortcutWithAction new
-				combination:
-					(BlCompulsoryCombination new
-						withAll:
-							{BlKeyCombination builder primary build.
-							(BlSingleKeyCombination key: BlKeyboardKey t)});
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlCompulsoryCombination new
+						withAll: {BlKeyCombination builder primary build.
+								BlSingleKeyCombination key: BlKeyboardKey t});
 				action: [ :each | self toggleNextRenaming ]);
-		addShortcut:
-			(BlShortcutWithAction new
-				combination:
-					(BlCompulsoryCombination new
-						withAll:
-							{BlKeyCombination builder primary shift build.
-							(BlSingleKeyCombination key: BlKeyboardKey t)});
+		addShortcut: (BlShortcutWithAction new
+				combination: (BlCompulsoryCombination new
+						withAll: {BlKeyCombination builder primary shift build.
+								BlSingleKeyCombination key: BlKeyboardKey t});
 				action: [ :each | self togglePreviousRenaming ])
 ]
 

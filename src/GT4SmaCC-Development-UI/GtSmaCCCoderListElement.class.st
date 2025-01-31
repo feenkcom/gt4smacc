@@ -1,9 +1,6 @@
 Class {
 	#name : #GtSmaCCCoderListElement,
 	#superclass : #GtSmaCCDefinitionListElement,
-	#instVars : [
-		'filterModel'
-	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
@@ -34,16 +31,10 @@ GtSmaCCCoderListElement >> buildFilter [
 ]
 
 { #category : #ui }
-GtSmaCCCoderListElement >> filterElement [
-	filterModel
-		ifNil: [ filterModel := GtFilterItemsModel new
-					items: {GtSmaCCSourcePatternFilter filterDescriptor};
-					availableFiltersBuilder: GtSmaCCDefinitionsFilter.
-			filterModel weak
-				when: GtFiltersModelAnnouncement
-				send: #updateFilters
-				to: self ].
-	^ filterModel asFiltersElement
+GtSmaCCCoderListElement >> buildFilterModel [
+	^ GtFilterItemsModel new
+		items: {GtSmaCCSourcePatternFilter filterDescriptor};
+		availableFiltersBuilder: GtSmaCCDefinitionsFilter
 ]
 
 { #category : #private }
@@ -87,12 +78,4 @@ GtSmaCCCoderListElement >> toggleBadgeFilter: aSymbol [
 	^ (self includesBadge: aSymbol)
 		ifTrue: [ self removeBadgeFilter: aSymbol ]
 		ifFalse: [ self addBadgeFilter: aSymbol ]
-]
-
-{ #category : #private }
-GtSmaCCCoderListElement >> updateFilters [
-	| filter |
-	filter := self buildFilter.
-	group filter: filter.
-	self updateList
 ]

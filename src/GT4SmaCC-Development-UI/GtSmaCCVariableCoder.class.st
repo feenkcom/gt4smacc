@@ -189,3 +189,7 @@ GtSmaCCVariableCoder >> referencesText [
 			[ :node :index :production | references add: (self referenceTextFor: node at: index in: production) ].
 	^ references
 ]
+
+{ #category : #initialization }
+GtSmaCCVariableCoder >> resetEditors [
+]

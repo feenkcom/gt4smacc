@@ -19,9 +19,6 @@ GtSmaCCDefinitionGroupResult class >> onCoder: aGrammarCoder [
 GtSmaCCDefinitionGroupResult >> asElement [
 	^ GtSmaCCCoderListElement new
 		group: self;
-		childNamed: #toggles
-			ifFound: [ :element | element removeFromParent ]
-			ifNone: [  ];
 		yourself
 ]
 
