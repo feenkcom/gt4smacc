@@ -103,10 +103,10 @@ GtSmaCCStyler >> privateStyle: aText [
 	[ | ast |
 	text := aText.
 	ast := SmaCCDefinitionParser
-		parseWithErrors: aText asString
-		startingAt: startingState.
+			parseWithErrors: aText asString
+			startingAt: startingState.
 	coder highlighter
-		ifNotNil: [ :highlighter | highlighter styleNode: ast using: self ].
+		ifNotNil: [ :highlighter | highlighter style: aText ast: ast ].
 	self syntaxStylingVisitor styleNode: ast using: self ]
 		on: Error
 		do: [ :ex | ex return ].
@@ -131,8 +131,11 @@ GtSmaCCStyler >> startingState: anInteger [
 { #category : #private }
 GtSmaCCStyler >> style: aText ast: anAST [
 	text := aText.
-	[ [ coder highlighter ifNotNil: [ :highlighter | highlighter styleNode: anAST using: self ].
-	self syntaxStylingVisitor styleNode: anAST using: self ] on: Error do: [ :ex | ex return ] ] ensure: [ text := nil ]
+	[ [ coder highlighter
+		ifNotNil: [ :highlighter | highlighter style: aText ast: anAST ].
+	self syntaxStylingVisitor styleNode: anAST using: self ]
+		on: Error
+		do: [ :ex | ex return ] ] ensure: [ text := nil ]
 ]
 
 { #category : #private }

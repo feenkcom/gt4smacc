@@ -1,19 +1,27 @@
 Class {
 	#name : #GtSmaCCStylingVisitor,
-	#superclass : #SmaCCDefinitionNodeVisitor,
+	#superclass : #GtSmaCCASTStyler,
+	#traits : 'TSmaCCDefinitionNodeVisitor',
+	#classTraits : 'TSmaCCDefinitionNodeVisitor classTrait',
 	#instVars : [
 		'styler'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
+
+{ #category : #styling }
+GtSmaCCStylingVisitor >> styleAST: aNode [
+	self accept: aNode
+]
 
 { #category : #styling }
 GtSmaCCStylingVisitor >> styleNode: aNode using: aStyler [
 	styler := aStyler.
-	self accept: aNode
+	text := styler text.
+	self styleAST: aNode
 ]
 
 { #category : #accessing }
 GtSmaCCStylingVisitor >> text [
-	^ styler text
+	^ text
 ]
