@@ -3,7 +3,8 @@ Class {
 	#superclass : #BrVerticalPane,
 	#instVars : [
 		'group',
-		'listElement'
+		'listElement',
+		'filterModel'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -28,9 +29,25 @@ GtSmaCCDefinitionListElement >> buildElement [
 	self updateList
 ]
 
+{ #category : #'as yet unclassified' }
+GtSmaCCDefinitionListElement >> buildFilter [
+	^ self subclassResponsibility
+]
+
+{ #category : #ui }
+GtSmaCCDefinitionListElement >> buildFilterModel [
+	self subclassResponsibility
+]
+
 { #category : #ui }
 GtSmaCCDefinitionListElement >> filterElement [
-	^ nil
+	filterModel
+		ifNil: [ filterModel := self buildFilterModel.
+			filterModel weak
+				when: GtFiltersModelAnnouncement
+				send: #updateFilters
+				to: self ].
+	^ filterModel asFiltersElement
 ]
 
 { #category : #accessing }
@@ -79,6 +96,7 @@ GtSmaCCDefinitionListElement >> scrollAndOpenItem: aString [
 
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateFilters [
+	group filter: self buildFilter.
 	self updateList
 ]
 

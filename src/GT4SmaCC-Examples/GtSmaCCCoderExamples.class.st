@@ -5,17 +5,6 @@ Class {
 }
 
 { #category : #filtering }
-GtSmaCCCoderExamples >> astFilter [
-	<gtExample>
-	| filter scope filtered |
-	filter := GtSmaCCSelectorFilter selector: #hasASTExpression.
-	scope := self filterScope.
-	filtered := filter applyInScope: scope.
-	self assert: filtered size > 1.
-	^ filtered
-]
-
-{ #category : #filtering }
 GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	<gtExample>
 	| filter scope filtered |

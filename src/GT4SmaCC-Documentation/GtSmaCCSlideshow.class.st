@@ -203,27 +203,25 @@ New items can be added to the grammar by using the ' asRopedText , ('+' asRopedT
 { #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideElement [
 	<gtExample>
-	
-	| coderElement coderList textSearch toggles |
+	| coderElement textSearch addSearch |
 	coderElement := self createParserCoderOn: JSONParser.
+	textSearch := (coderElement childNamed: GtFilterSettingsId) childNamed: #editor.
+	textSearch parent
+		addChild: ((self yellowExplanationTargetCircleFor: #textSearch)
+				relocate: 2 @ textSearch extent y / 2).
+	addSearch := coderElement childNamed: GtFiltersAddId.
+	addSearch parent
+		addChild: ((self yellowExplanationTargetCircleFor: #addSearch)
+				relocate: addSearch bounds center).
 	coderElement
-		allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtFilterTagElement ]
-		ifFound: [ :each | coderList := each ].
-	textSearch := coderElement childNamed: #textSearch.
-	textSearch parent addChild: ((self yellowExplanationTargetCircleFor: #textSearch) relocate: 2 @ textSearch extent y / 2).
-	toggles := coderElement childNamed: #toggles.
-	toggles children first addChild: ((self yellowExplanationTargetCircleFor: #production) relocate: 0 @ toggles height / 2).
-	toggles children second addChild: ((self yellowExplanationTargetCircleFor: #token) relocate: 0 @ toggles height / 2).
-	toggles children third addChild: ((self yellowExplanationTargetCircleFor: #directive) relocate: 0 @ toggles height / 2).
-	coderElement
-		allChildrenDepthFirstDo:
-			[ :each | 
+		allChildrenDepthFirstDo: [ :each | 
 			(each isKindOf: GtSmaCCCoderElement)
-				ifTrue:
-					[ each
+				ifTrue: [ each
 						childNamed: #badges
-						ifFound:
-							[ :badges | badges children notEmpty ifTrue: [ badges children first addChild: (self yellowExplanationTargetCircleFor: #badges) ] ] ] ].
+						ifFound: [ :badges | 
+							badges children notEmpty
+								ifTrue: [ badges children first
+										addChild: (self yellowExplanationTargetCircleFor: #badges) ] ] ] ].
 	^ coderElement
 ]
 
@@ -241,12 +239,13 @@ GtSmaCCSlideshow >> filterSlideFor: aSlide [
 { #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideText [
 	^ ('When working with a large grammar, you need to be able to quickly search for items. First, you can filter the items by entering a '
-		asRopedText , ('search string' asRopedText glamorousExplanationFor: #textSearch)
-		, '. Also, you can limit the types of items displayed by using the  ' asRopedText
-		, ('production' asRopedText glamorousExplanationFor: #production) , ', ' asRopedText
-		, ('token' asRopedText glamorousExplanationFor: #token) , ', or ' asRopedText
-		, ('directive' asRopedText glamorousExplanationFor: #directive) , ' toggles. Finally, you can use the ' asRopedText
-		, ('badge toggles' asRopedText glamorousExplanationFor: #badges) , ' on the items.' asRopedText)
+		asRopedText
+		, ('search string' asRopedText glamorousExplanationFor: #textSearch)
+		, '. You can create new searches by ' asRopedText
+		, ('adding' asRopedText glamorousExplanationFor: #addSearch)
+		, ' new filters. Finally, you can use the ' asRopedText
+		, ('badge toggles' asRopedText glamorousExplanationFor: #badges)
+		, ' on the items.' asRopedText)
 		glamorousRegularFont;
 		fontSize: 20
 ]

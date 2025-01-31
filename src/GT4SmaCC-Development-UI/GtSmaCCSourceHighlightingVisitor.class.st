@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'pattern'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #'instance creation' }
@@ -20,10 +20,9 @@ GtSmaCCSourceHighlightingVisitor >> pattern: aString [
 ]
 
 { #category : #styling }
-GtSmaCCSourceHighlightingVisitor >> styleNode: aNode using: aStyler [
+GtSmaCCSourceHighlightingVisitor >> styleAST: anAST [
 	| string index |
-	styler := aStyler.
-	string := self text asString asLowercase.
+	string := text asString asLowercase.
 	index := 1.
 	[ index := string indexOfSubCollection: pattern startingAt: index.
 	index > 0 ]

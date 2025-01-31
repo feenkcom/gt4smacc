@@ -4,8 +4,16 @@ Class {
 	#instVars : [
 		'pattern'
 	],
-	#category : 'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Filters'
 }
+
+{ #category : #accessing }
+GtSmaCCDefinitionImplementorPatternFilter class >> filterDescriptor [
+	^ GtFilterTextModel new
+		creator: [ :aString | self pattern: aString ];
+		named: 'Name';
+		order: 12
+]
 
 { #category : #'instance creation' }
 GtSmaCCDefinitionImplementorPatternFilter class >> pattern: aString [

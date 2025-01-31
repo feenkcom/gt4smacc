@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCGrammarCoderElement,
 	#superclass : #GtSmaCCListCoderElement,
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #ui }
@@ -84,4 +84,16 @@ GtSmaCCGrammarCoderElement >> toggleButton: aString activated: aSymbol [
 			do:
 				[ :anEvent | grammarCoder perform: (aSymbol , ':') asSymbol with: false ].
 	^ toggle
+]
+
+{ #category : #ui }
+GtSmaCCGrammarCoderElement >> updateList [
+	super updateList.
+	self childNamed: #glr ifFound: [ :each | each activated: grammarCoder isGLR ].
+	self
+		childNamed: #caseInsensitive
+		ifFound: [ :each | each activated: grammarCoder isCaseInsensitive ].
+	self
+		childNamed: #unicode
+		ifFound: [ :each | each activated: grammarCoder isUnicode ]
 ]
