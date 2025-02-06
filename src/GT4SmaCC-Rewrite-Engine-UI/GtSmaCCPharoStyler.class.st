@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCPharoStyler,
 	#superclass : #GtPharoStyler,
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-Styling'
 }
 
 { #category : #visiting }

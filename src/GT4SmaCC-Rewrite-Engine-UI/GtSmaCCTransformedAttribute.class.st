@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCTransformedAttribute,
 	#superclass : #BlTextDecorationAttribute,
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-Attributes'
 }
 
 { #category : #'initialize-release' }

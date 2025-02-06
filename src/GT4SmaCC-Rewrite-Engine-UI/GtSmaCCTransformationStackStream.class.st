@@ -7,7 +7,7 @@ Class {
 		'topContext',
 		'currentContext'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-Debugging'
 }
 
 { #category : #'instance creation' }
