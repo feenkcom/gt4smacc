@@ -72,7 +72,7 @@ GtSmaCCTransformationToolkit >> addFiles: aCollection [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> addResult: aValue [
-	results at: aValue filename put: aValue.
+	results at: aValue filename asFileReference put: aValue.
 	self userData
 		at: #transformationJob
 		ifPresent: [ :job | job currentValue: job currentValue + 1 ]
