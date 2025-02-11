@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'editor'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
 
 { #category : #'initialize-release' }

@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCMatchCodeElement,
 	#superclass : #GtSmaCCCodeElement,
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
 
 { #category : #'as yet unclassified' }
@@ -11,12 +11,13 @@ GtSmaCCMatchCodeElement >> connectToModel [
 	model announcer weak
 		when: #nodeClass
 		send: #updateNodeClass
-		to: self
+		to: self.
+	self childNamed: #nodeList ifFound: [ :list | list items: self nodeClasses ]
 ]
 
 { #category : #initialization }
 GtSmaCCMatchCodeElement >> initialize [
-	| label nodeList |
+	| label nodeList browse |
 	super initialize.
 
 	label := BrLabel new
@@ -30,13 +31,22 @@ GtSmaCCMatchCodeElement >> initialize [
 			when: BrSelectionChanged
 				do: [ :event | model nodeClass: event target selectedItem ];
 			yourself.
+	browse := BrButton new
+			fitContent;
+			margin: (BlInsets top: 3 left: 5);
+			aptitude: BrGlamorousButtonWithIconAptitude;
+			action: [ model nodeClass
+					ifNotNil: [ :cls | browse phlow spawnTool: (GtClassCoderTool forClass: cls) ] ];
+			icon: BrGlamorousVectorIcons browse;
+			label: 'Browse'.
 	self
 		addChild: (BrHorizontalPane new
 				margin: (BlInsets bottom: 5);
 				vFitContent;
 				hMatchParent;
 				addChild: label;
-				addChild: nodeList as: #nodeList)
+				addChild: nodeList as: #nodeList;
+				addChild: browse)
 		at: 1
 ]
 

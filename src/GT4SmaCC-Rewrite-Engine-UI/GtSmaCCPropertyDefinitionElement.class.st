@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCPropertyDefinitionElement,
 	#superclass : #GtSmaCCAbstractRewriteElement,
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
 
 { #category : #building }

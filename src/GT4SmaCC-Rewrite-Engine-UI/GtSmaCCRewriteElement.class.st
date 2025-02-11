@@ -11,7 +11,7 @@ Class {
 		'transformationPatternElement',
 		'matchPatternElement'
 	],
-	#category : #'GT4SmaCC-Rewrite-Engine-UI'
+	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
 
 { #category : #building }
