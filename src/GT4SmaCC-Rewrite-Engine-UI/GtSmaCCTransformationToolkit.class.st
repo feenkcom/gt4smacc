@@ -3,7 +3,8 @@ Class {
 	#superclass : #BrVerticalPane,
 	#instVars : [
 		'model',
-		'results'
+		'results',
+		'filterModel'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
@@ -102,6 +103,22 @@ GtSmaCCTransformationToolkit >> addTabs [
 		as: #tabGroup
 ]
 
+{ #category : #filtering }
+GtSmaCCTransformationToolkit >> buildFilter [
+	| filter |
+	filter := GtSmaCCTransformationFilesFilter new toolkit: self.
+	(filterModel items collect: #asSearchFilter)
+		do: [ :each | filter := filter & (each toolkit: self) ].
+	^ filter
+]
+
+{ #category : #filtering }
+GtSmaCCTransformationToolkit >> buildFilterModel [
+	^ GtFilterItemsModel new
+		items: {GtSmaCCTransformationFilenameFilter filterDescriptor};
+		availableFiltersBuilder: GtSmaCCTransformationFilesFilter
+]
+
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> buildUI [
 	self
@@ -128,6 +145,19 @@ GtSmaCCTransformationToolkit >> connectToModel [
 		when: #filename
 			send: #updateFilename
 			to: self
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> errorStringFor: each [
+	^ ((self resultFor: each) ifNotNil: [ :result | result errorString ])
+		ifNil: [ '' ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> errorTransformationFor: each [
+	^ ((self resultFor: each) ifNotNil: [ :result | result transformation ])
+		ifNil: [ '' ]
+		ifNotNil: [ :t | t displayString ]
 ]
 
 { #category : #private }
@@ -175,12 +205,30 @@ GtSmaCCTransformationToolkit >> filesElementDo: aBlock [
 
 { #category : #ui }
 GtSmaCCTransformationToolkit >> filesView: aView [
-	<gtTransformationViews>
 	^ aView columnedList
 		title: 'Files';
 		priority: 10;
 		withMultipleSelection;
 		items: [ self files ];
+		contextItemLabel: 'Preview'
+			action: [ :el :each | self spawnPreviewFor: each ];
+		contextItemLabel: 'Run'
+			action: [ :el :each | [ self model runOn: {each} ] fork ];
+		contextItemLabel: 'Run all' action: [ :el :each | self runAll ];
+		column: 'File' text: [ :each | self localFilename: each ];
+		column: 'Ran'
+			text: [ :each | (self resultFor: each) ifNotNil: [ 'X' ] ifNil: [ '' ] ]
+			width: 35;
+		column: 'Error' text: [ :each | self errorStringFor: each ];
+		column: 'Transformation' text: [ :each | self errorTransformationFor: each ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> filesWithSearchView: aView [
+	<gtTransformationViews>
+	^ aView explicit
+		title: 'Files';
+		priority: 10;
 		actionButtonIcon: BrGlamorousVectorIcons playinspect
 			tooltip: 'Preview'
 			action: [ self preview ];
@@ -218,24 +266,22 @@ GtSmaCCTransformationToolkit >> filesView: aView [
 		actionButtonIcon: BrGlamorousVectorIcons remove
 			tooltip: 'Remove selection'
 			action: [ self removeFiles: nil ];
-		contextItemLabel: 'Preview'
-			action: [ :el :each | self spawnPreviewFor: each ];
-		contextItemLabel: 'Run'
-			action: [ :el :each | [ self model runOn: {each} ] fork ];
-		contextItemLabel: 'Run all' action: [ :el :each | self runAll ];
-		column: 'File' text: [ :each | self localFilename: each ];
-		column: 'Ran'
-			text: [ :each | (self resultFor: each) ifNotNil: [ 'X' ] ifNil: [ '' ] ]
-			width: 35;
-		column: 'Error'
-			text: [ :each | 
-				((self resultFor: each) ifNotNil: [ :result | result errorString ])
-					ifNil: [ '' ] ];
-		column: 'Transformation'
-			text: [ :each | 
-				((self resultFor: each) ifNotNil: [ :result | result transformation ])
-					ifNil: [ '' ]
-					ifNotNil: [ :t | t displayString ] ]
+		stencil: [ | pane |
+			pane := BrVerticalPane new matchParent.
+			pane addChild: self filterElement.
+			pane addChild: (self filesView: GtPhlowProtoView new) asElement.
+			pane ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> filterElement [
+	filterModel
+		ifNil: [ filterModel := self buildFilterModel.
+			filterModel weak
+				when: GtFiltersModelAnnouncement
+				send: #updateFilters
+				to: self ].
+	^ filterModel asFiltersElement
 ]
 
 { #category : #ui }
@@ -246,6 +292,11 @@ GtSmaCCTransformationToolkit >> gtRulesByClassFor: aView [
 		priority: 30;
 		object: [ self model rewrites ];
 		view: #gtRulesByClassFor:
+]
+
+{ #category : #testing }
+GtSmaCCTransformationToolkit >> hasRun: anObject [
+	^ (self resultFor: anObject) notNil
 ]
 
 { #category : #initialization }
@@ -445,5 +496,12 @@ GtSmaCCTransformationToolkit >> updateFilename [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> updateFiles [
-	self filesElementDo: [ :element | element items: self files ]
+	| filter |
+	filter := self buildFilter.
+	self filesElementDo: [ :element | element stream: filter asAsyncStream ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> updateFilters [
+	self updateFiles
 ]
