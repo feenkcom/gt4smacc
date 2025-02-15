@@ -212,9 +212,11 @@ GtSmaCCTransformationToolkit >> filesView: aView [
 		items: [ self files ];
 		contextItemLabel: 'Preview'
 			action: [ :el :each | self spawnPreviewFor: each ];
-		contextItemLabel: 'Run'
-			action: [ :el :each | [ self model runOn: {each} ] fork ];
-		contextItemLabel: 'Run all' action: [ :el :each | self runAll ];
+		contextItemLabel: 'Transform'
+			action: [ :el :each | self runOn: {each} local: true ];
+		contextItemLabel: 'Transform all' action: [ :el :each | self runAll ];
+		contextItemLabel: 'Transform all using remote runner'
+			action: [ :el :each | self runAllUsingRemoteRunner ];
 		column: 'File' text: [ :each | self localFilename: each ];
 		column: 'Ran'
 			text: [ :each | (self resultFor: each) ifNotNil: [ 'X' ] ifNil: [ '' ] ]
@@ -238,6 +240,9 @@ GtSmaCCTransformationToolkit >> filesWithSearchView: aView [
 		actionButtonIcon: BrGlamorousVectorIcons playAsynchronous
 			tooltip: 'Transform all'
 			action: [ self runAll ];
+		actionButtonIcon: self playAllOnServerIcon
+			tooltip: 'Transform all using remote runner'
+			action: [ self runAllUsingRemoteRunner ];
 		actionDropdownButtonIcon: BrGlamorousVectorIcons folder
 			tooltip: 'Add all files in folder'
 			content: [ :button | 
@@ -393,6 +398,16 @@ GtSmaCCTransformationToolkit >> model: aTransformationToolkitModel [
 	self buildUI
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> playAllOnServerIcon [
+	^ [ BlElement new
+		size: 18 @ 16;
+		geometry: (BlSvgPath new
+				svg: 'M -.70100145 3.5 L -.70100145 13.4 L 6.6989986 8.45 Z M 4.29899855 3.5 L 4.29899855 13.4 L 11.6989986 8.45 Z M 14.668068 12.2 L 14.668068 12.2 C 15.238442 12.2 15.705104 12.098149 16.068068 11.894444 C 16.431033 11.69074 16.707574 11.436113 16.897698 11.130556 L 16.897698 11.741667 C 16.897698 11.83426 16.923624 11.910648 16.975476 11.970833 C 17.027328 12.031019 17.096463 12.061111 17.182883 12.061111 L 17.753253 12.061111 C 17.839674 12.061111 17.91097 12.031019 17.967142 11.970833 C 18.023315 11.910648 18.051402 11.83426 18.051402 11.741667 L 18.051402 7.227778 C 18.051402 6.505552 17.841836 5.903706 17.422698 5.422222 C 17.00356 4.9407383 16.310048 4.7 15.342142 4.7 C 14.780411 4.7 14.305107 4.8041656 13.916216 5.0125 C 13.527326 5.2208344 13.239983 5.466202 13.054179 5.748611 C 12.868376 6.03102 12.775476 6.278703 12.775476 6.491667 C 12.775476 6.5750004 12.803562 6.646759 12.859735 6.7069444 C 12.915908 6.76713 12.982883 6.797222 13.060661 6.797222 L 13.566216 6.797222 C 13.635353 6.797222 13.689364 6.781019 13.728253 6.748611 C 13.767143 6.7162035 13.803871 6.653704 13.838439 6.561111 C 13.950785 6.3296285 14.127944 6.1282416 14.36992 5.9569444 C 14.611897 5.785647 14.931647 5.7 15.32918 5.7 C 16.35758 5.7 16.871772 6.176847 16.871772 7.1305556 L 16.871772 7.533333 L 14.927328 7.825 C 14.12362 7.95463 13.488441 8.213887 13.021772 8.602778 C 12.555103 8.991669 12.321772 9.491664 12.321772 10.102778 C 12.321772 10.491669 12.427635 10.845832 12.639365 11.165278 C 12.851094 11.484724 13.136276 11.737036 13.49492 11.922222 C 13.853564 12.107408 14.244609 12.2 14.668068 12.2 Z M 16.871772 8.852778 L 16.871772 8.852778 C 16.871772 9.612041 16.690292 10.190739 16.327328 10.588889 C 15.964363 10.987039 15.497701 11.186111 14.927328 11.186111 C 14.529795 11.186111 14.18628 11.08426 13.896772 10.880556 C 13.607264 10.676851 13.462513 10.385187 13.462513 10.005556 C 13.462513 9.67222 13.622388 9.394446 13.942142 9.172222 C 14.261897 8.949999 14.73288 8.792593 15.355105 8.7 L 16.871772 8.463889 Z'
+				viewbox: (-10 @ 0 extent: 18 @ 16));
+		background: Color black ] asStencil
+]
+
 { #category : #actions }
 GtSmaCCTransformationToolkit >> preview [
 	self
@@ -424,19 +439,44 @@ GtSmaCCTransformationToolkit >> resultFor: aFilename [
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> run [
-	self filesElementDo: [ :el | self runOn: el selectedItems ]
+	self filesElementDo: [ :el | self runOn: el selectedItems local: true ]
 ]
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> runAll [
-	self filesElementDo: [ :el | self runOn: self model files ]
+	self filesElementDo: [ :el | self runOn: self model files local: true ]
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> runAllUsingRemoteRunner [
+	self filesElementDo: [ :el | self runOn: self model files local: false ]
 ]
 
 { #category : #actions }
-GtSmaCCTransformationToolkit >> runOn: aCollection [
-	| notification job |
+GtSmaCCTransformationToolkit >> runOn: aCollection local: aBoolean [
+	| notification job selector server oldServerString serverProcess |
 	aCollection isEmpty ifTrue: [ ^ self ].
-	aCollection size = 1 ifTrue: [ ^ self model runOn: aCollection ].
+	aCollection size = 1 ifTrue: [ ^ self model localRunOn: aCollection ].
+	selector := #localRunOn:.
+	aBoolean
+		ifFalse: [ selector := #serverRunOn:.
+			server := SmaCCServer startOn: 0.
+			oldServerString := self model server.
+			self model server: 'localhost:' , server port printString.
+			serverProcess := [ [ [ server run ] ensure: [ server stop ] ]
+					on: Error
+					do: [ :ex | ex return ] ] fork.
+			(GtRemoteRunner default registeredWorkerCount max: 1)
+				timesRepeat: [ | rrJob |
+					rrJob := GtRrJob
+							script: '
+									[| worker |
+									worker := SmaCCRewriteServerWorker new.
+									worker startConnectingTo: ''localhost'' onPort: '
+									, server port printString
+									, '.
+									] on: Exit do: [:ex | ex return]'.
+					GtRemoteRunner default submitJob: rrJob ] ].
 	job := (GtJob
 			block: [ :j | 
 				| totalCount current |
@@ -445,7 +485,7 @@ GtSmaCCTransformationToolkit >> runOn: aCollection [
 				j max: totalCount.
 				current := 0.
 				self userData at: #transformationJob put: j.
-				[ self model runOn: aCollection ]
+				[ self model perform: selector with: aCollection ]
 					ensure: [ self userData removeKey: #transformationJob ifAbsent: [  ] ] ])
 			announcer: Announcer new.
 	notification := GtNotificationJob new
@@ -453,7 +493,12 @@ GtSmaCCTransformationToolkit >> runOn: aCollection [
 			job: job;
 			registerNotifications;
 			yourself.
-	^ [ job run ] asAsyncPromise
+	^ [ [ job run ]
+		ensure: [ aBoolean
+				ifFalse: [ self model server: oldServerString.
+					serverProcess terminate.
+					server stop ] ].
+	job ] asAsyncPromise
 ]
 
 { #category : #actions }
