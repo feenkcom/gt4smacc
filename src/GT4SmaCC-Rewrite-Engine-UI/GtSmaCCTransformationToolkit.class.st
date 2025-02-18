@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'model',
 		'results',
-		'filterModel'
+		'filterModel',
+		'updateTask'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
@@ -73,12 +74,16 @@ GtSmaCCTransformationToolkit >> addFiles: aCollection [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> addResult: aValue [
-	results at: aValue filename asFileReference put: aValue.
-	self userData
-		at: #transformationJob
-		ifPresent: [ :job | job currentValue: job currentValue + 1 ]
-		ifAbsent: [  ].
-	self updateFiles
+	self
+		inUIProcessDo: [ | fileRef |
+			fileRef := aValue filename asFileReference.
+			results at: fileRef put: aValue.
+			results at: fileRef asAbsolute asFileReference put: aValue.
+			self userData
+				at: #transformationJob
+				ifPresent: [ :job | job currentValue: job currentValue + 1 ]
+				ifAbsent: [  ].
+			self delayUpdateFiles ]
 ]
 
 { #category : #ui }
@@ -145,6 +150,16 @@ GtSmaCCTransformationToolkit >> connectToModel [
 		when: #filename
 			send: #updateFilename
 			to: self
+]
+
+{ #category : #private }
+GtSmaCCTransformationToolkit >> delayUpdateFiles [
+	updateTask ifNotNil: [ ^ self ].
+	updateTask := BlDelayedTaskAction new
+			action: [ updateTask := nil.
+				self updateFiles ];
+			delay: 100 milliseconds.
+	self enqueueTask: updateTask
 ]
 
 { #category : #ui }
@@ -435,7 +450,9 @@ GtSmaCCTransformationToolkit >> removeFiles: aFileReference [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> resultFor: aFilename [
-	^ results at: aFilename ifAbsent: [  ]
+	^ results
+		at: aFilename
+		ifAbsent: [ results at: aFilename asAbsolute asFileReference ifAbsent: [  ] ]
 ]
 
 { #category : #actions }
