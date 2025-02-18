@@ -29,6 +29,15 @@ SmaCCTransformationToolkitModel >> createSubdirectoriesDescription [
 ]
 
 { #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> gtDefaultInspectorTool [
+	^ GtPhlowCompositeTool new
+		addTool: (GtPhlowExplicitTool new
+				name: 'SmaCC';
+				stencil: [ GtSmaCCTransformationToolkit new model: self ]);
+		addTool: super gtDefaultInspectorTool
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
 SmaCCTransformationToolkitModel >> gtInputView: aView [
 	<gtView>
 	^ aView explicit
