@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'model',
 		'results',
-		'filterModel'
+		'filterModel',
+		'updateTask'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
@@ -73,12 +74,16 @@ GtSmaCCTransformationToolkit >> addFiles: aCollection [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkit >> addResult: aValue [
-	results at: aValue filename asFileReference put: aValue.
-	self userData
-		at: #transformationJob
-		ifPresent: [ :job | job currentValue: job currentValue + 1 ]
-		ifAbsent: [  ].
-	self updateFiles
+	self
+		inUIProcessDo: [ | fileRef |
+			fileRef := aValue filename asFileReference.
+			results at: fileRef put: aValue.
+			results at: fileRef asAbsolute asFileReference put: aValue.
+			self userData
+				at: #transformationJob
+				ifPresent: [ :job | job currentValue: job currentValue + 1 ]
+				ifAbsent: [  ].
+			self delayUpdateFiles ]
 ]
 
 { #category : #ui }
@@ -147,6 +152,16 @@ GtSmaCCTransformationToolkit >> connectToModel [
 			to: self
 ]
 
+{ #category : #private }
+GtSmaCCTransformationToolkit >> delayUpdateFiles [
+	updateTask ifNotNil: [ ^ self ].
+	updateTask := BlDelayedTaskAction new
+			action: [ updateTask := nil.
+				self updateFiles ];
+			delay: 100 milliseconds.
+	self enqueueTask: updateTask
+]
+
 { #category : #ui }
 GtSmaCCTransformationToolkit >> errorStringFor: each [
 	^ ((self resultFor: each) ifNotNil: [ :result | result errorString ])
@@ -212,8 +227,7 @@ GtSmaCCTransformationToolkit >> filesView: aView [
 		items: [ self files ];
 		contextItemLabel: 'Preview'
 			action: [ :el :each | self spawnPreviewFor: each ];
-		contextItemLabel: 'Transform'
-			action: [ :el :each | self runOn: {each} local: true ];
+		contextItemLabel: 'Transform' action: [ :el :each | self runOn: {each} ];
 		contextItemLabel: 'Transform all' action: [ :el :each | self runAll ];
 		contextItemLabel: 'Transform all using remote runner'
 			action: [ :el :each | self runAllUsingRemoteRunner ];
@@ -379,11 +393,8 @@ GtSmaCCTransformationToolkit >> initialize [
 { #category : #private }
 GtSmaCCTransformationToolkit >> localFilename: aString [
 	| commonParentDir |
-	commonParentDir := model commonParentDirectory.
-	(commonParentDir notEmpty
-		and: [ commonParentDir last ~= FileSystem disk delimiter ])
-		ifTrue: [ commonParentDir := commonParentDir , '/' ].
-	^ aString asFileReference pathString allButFirst: commonParentDir size
+	commonParentDir := model commonParentDirectory asFileReference.
+	^ (aString asFileReference relativeTo: commonParentDir) pathString
 ]
 
 { #category : #accessing }
@@ -396,6 +407,11 @@ GtSmaCCTransformationToolkit >> model: aTransformationToolkitModel [
 	model := aTransformationToolkitModel. 
 	self connectToModel.
 	self buildUI
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> onTaskCompletedAnnouncement: anAnnouncement [
+	self addResult: anAnnouncement taskResult
 ]
 
 { #category : #ui }
@@ -434,49 +450,38 @@ GtSmaCCTransformationToolkit >> removeFiles: aFileReference [
 
 { #category : #private }
 GtSmaCCTransformationToolkit >> resultFor: aFilename [
-	^ results at: aFilename ifAbsent: [  ]
+	^ results
+		at: aFilename
+		ifAbsent: [ results at: aFilename asAbsolute asFileReference ifAbsent: [  ] ]
 ]
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> run [
-	self filesElementDo: [ :el | self runOn: el selectedItems local: true ]
+	self filesElementDo: [ :el | self runOn: el selectedItems ]
 ]
 
 { #category : #actions }
 GtSmaCCTransformationToolkit >> runAll [
-	self filesElementDo: [ :el | self runOn: self model files local: true ]
+	self filesElementDo: [ :el | self runOn: self model files ]
 ]
 
 { #category : #ui }
 GtSmaCCTransformationToolkit >> runAllUsingRemoteRunner [
-	self filesElementDo: [ :el | self runOn: self model files local: false ]
+	| job |
+	job := self model asRRJob.
+	job showProgressNotification.
+	job
+		when: GtRrTaskCompletedAnnouncement
+		send: #onTaskCompletedAnnouncement:
+		to: self.
+	GtRemoteRunner default submitJob: job
 ]
 
 { #category : #actions }
-GtSmaCCTransformationToolkit >> runOn: aCollection local: aBoolean [
-	| notification job selector server oldServerString serverProcess |
+GtSmaCCTransformationToolkit >> runOn: aCollection [
+	| notification job |
 	aCollection isEmpty ifTrue: [ ^ self ].
-	aCollection size = 1 ifTrue: [ ^ self model localRunOn: aCollection ].
-	selector := #localRunOn:.
-	aBoolean
-		ifFalse: [ selector := #serverRunOn:.
-			server := SmaCCServer startOn: 0.
-			oldServerString := self model server.
-			self model server: 'localhost:' , server port printString.
-			serverProcess := [ [ [ server run ] ensure: [ server stop ] ]
-					on: Error
-					do: [ :ex | ex return ] ] fork.
-			(GtRemoteRunner default registeredWorkerCount max: 1)
-				timesRepeat: [ | rrJob |
-					rrJob := GtRrJob
-							script: '
-									[| worker |
-									worker := SmaCCRewriteServerWorker new.
-									worker startConnectingTo: ''localhost'' onPort: '
-									, server port printString
-									, '.
-									] on: Exit do: [:ex | ex return]'.
-					GtRemoteRunner default submitJob: rrJob ] ].
+	aCollection size = 1 ifTrue: [ ^ self model runOn: aCollection ].
 	job := (GtJob
 			block: [ :j | 
 				| totalCount current |
@@ -485,7 +490,7 @@ GtSmaCCTransformationToolkit >> runOn: aCollection local: aBoolean [
 				j max: totalCount.
 				current := 0.
 				self userData at: #transformationJob put: j.
-				[ self model perform: selector with: aCollection ]
+				[ self model runOn: aCollection ]
 					ensure: [ self userData removeKey: #transformationJob ifAbsent: [  ] ] ])
 			announcer: Announcer new.
 	notification := GtNotificationJob new
@@ -493,12 +498,7 @@ GtSmaCCTransformationToolkit >> runOn: aCollection local: aBoolean [
 			job: job;
 			registerNotifications;
 			yourself.
-	^ [ [ job run ]
-		ensure: [ aBoolean
-				ifFalse: [ self model server: oldServerString.
-					serverProcess terminate.
-					server stop ] ].
-	job ] asAsyncPromise
+	^ [ job run ] asAsyncPromise
 ]
 
 { #category : #actions }

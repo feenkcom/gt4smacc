@@ -1,6 +1,23 @@
 Extension { #name : #SmaCCTransformationToolkitModel }
 
 { #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> asRRJob [
+	| job |
+	job := GtRrTasksJob
+			tasks: (self files
+					collect: [ :each | 
+						GtSmaCCTransformationTask new
+							filename: each asFileReference pathString;
+							rewritesFile: rewrites filename asFileReference pathString;
+							commonParentDirectory: self commonParentDirectory;
+							inputParserName: inputParserClass name;
+							outputParserName: (validationParserClass ifNotNil: [ validationParserClass name ]);
+							outputDirectory: outputDirectory;
+							lineEnding: lineEnding ]).
+	^ job
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
 SmaCCTransformationToolkitModel >> createSubdirectoriesDescription [
 	<magritteDescription>
 	^ MABooleanDescription new
@@ -9,6 +26,15 @@ SmaCCTransformationToolkitModel >> createSubdirectoriesDescription [
 		priority: 180;
 		default: true;
 		yourself
+]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitModel >> gtDefaultInspectorTool [
+	^ GtPhlowCompositeTool new
+		addTool: (GtPhlowExplicitTool new
+				name: 'SmaCC';
+				stencil: [ GtSmaCCTransformationToolkit new model: self ]);
+		addTool: super gtDefaultInspectorTool
 ]
 
 { #category : #'*GT4SmaCC-Rewrite-Engine-UI' }

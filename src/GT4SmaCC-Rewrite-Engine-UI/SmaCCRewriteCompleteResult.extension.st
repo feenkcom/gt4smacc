@@ -21,3 +21,8 @@ SmaCCRewriteCompleteResult >> gtPreviewFor: aView [
 		title: 'Preview';
 		stencil: [ GtSmaCCPreviewElement new previewResult: self ]
 ]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCRewriteCompleteResult class >> leJsonV4Name [
+	^ #smaccCompleteRewriteResult
+]
