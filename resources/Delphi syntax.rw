@@ -1,0 +1,581 @@
+Parser: DelphiParser
+
+(
+-unitCode
+)
+
+#isInInterface: aNode
+	^ (aNode parentOfType: DelphiInterfaceSectionNode) notNil!
+
+#isParentStatement: aNode
+	^ (((aNode parent nodeVariables includes: #statement)
+		and: [ aNode parent statement == aNode ])
+		or: [ (aNode parent compositeNodeVariables includes: #statements)
+				and: [ aNode parent statements identityIncludes: aNode ] ])
+		or: [ (aNode parent isKindOf: DelphiIfStatementNode)
+				and: [ aNode parent thenStatement == aNode
+						or: [ aNode parent elseStatement == aNode ] ] ]!
+
+#typeOfExpression: aNode
+	(aNode isKindOf: DelphiLiteralExpressionNode)
+		ifTrue: [ aNode value source first = $' ifTrue: [ ^ 'string' ].
+			aNode value source first isDigit
+				ifTrue: [ ^ (aNode value source includes: $.) ifTrue: [ 'double' ] ifFalse: [ 'int' ] ] ].
+	(aNode isKindOf: DelphiBinaryExpressionNode)
+		ifTrue: [ ^ self typeOfExpression: aNode leftExpression ].
+	^ 'object'!
+
+#variableNameForExpression: aNode
+	^ aNode
+		attributeNamed: #varName
+		ifAbsentPut: [ String
+				streamContents: [ :stream | 
+					stream nextPutAll: 'var'.
+					aNode source do: [ :c | c isAlphaNumeric ifTrue: [ stream nextPut: c ] ] ] ]!
+
+"add unit class if needed"
+DelphiUnitFileNode
+->
+[self unitCode: OrderedCollection new.
+self continue.
+self unitCode isEmpty ifTrue: [ ^ self ].
+self source
+	append: 'public partial class Unit';
+	append: match unitName source;
+	append: ' {'.
+self unitCode
+	do: [ :each | 
+		self source append: String lf.
+		self move: each after: self source stopIndex ].
+self source
+	append: String lf;
+	append: '}']
+
+"comments"
+SmaCCParseNode
+->
+[match comments
+	ifNotNil: [ :c | 
+		c
+			do: [ :interval | 
+				| char |
+				char := self characterAt: interval first.
+				char = ${
+					ifTrue: [ self replace: interval first with: '/*'.
+						self replace: interval last with: '*/' ].
+				char = $(
+					ifTrue: [ self replace: interval first with: '/'.
+						self replace: interval last with: '/' ] ] ].
+self continue]
+
+DelphiUnitFileNode
+->
+[self deleteWithWhitespaceAfter: match unitToken.
+self deleteWithWhitespaceAfter: match unitName.
+self delete: match semicolon.
+self delete: match endToken.
+self deleteWithWhitespaceBefore: match period.
+self continue]
+
+DelphiProgramFileNode
+->
+[self replace: match programToken with: 'public class'.
+self insert: ' {' after: match programName.
+self deleteAll: match semicolons.
+self deleteWithWhitespaceAfter: match usesToken.
+self deleteAll: match commas.
+self deleteAll: match inTokens.
+self deleteAll: match filenames.
+self deleteAllWithWhitespaceAfter: match moduleNames.
+self deleteWithWhitespaceBefore: match period.
+self insert: 'public void Main() ' before: match main.
+self insert: String lf , '}' after: match.
+self continue]
+
+DelphiInterfaceSectionNode
+->
+[self deleteWithWhitespaceBefore: match interfaceToken.
+self deleteWithWhitespaceBefore: match usesToken.
+self deleteAllWithWhitespaceBefore: match moduleNames.
+self deleteAllWithWhitespaceBefore: match commas.
+self deleteWithWhitespaceBefore: match semicolon.
+self continue]
+
+DelphiInitializationSectionNode
+->
+[self
+	replace: match initializationToken
+	with: 'static Unit' , match topParent unitName source , '() {'.
+self insert: '}' after: match.
+self unitCode add: match.
+self continue]
+
+DelphiDefinedTypeListNode
+->
+[self deleteWithWhitespaceAfter: match typeToken.
+self continue]
+
+DelphiNamedDefinedTypeNode
+[match type isKindOf: DelphiNewClassTypeNode]
+->
+[self
+	insert: ((self isInInterface: match) ifTrue: [ 'public ' ] ifFalse: [ '' ]) , 'class '
+	before: match.
+self
+	replace: match equalToken
+	with: (match type left ifNil: [ '' ] ifNotNil: [ ':' ]).
+self delete: match semicolon.
+self continue]
+
+"delete metaclass type definition"
+DelphiNamedDefinedTypeNode
+[match type isKindOf: DelphiMetaclassTypeNode]
+->
+[self delete: match]
+
+DelphiNewClassTypeNode
+->
+[self delete: match classToken.
+self delete: match left.
+self delete: match right.
+self insert: ' {' after: (match right ifNil: [ match classToken ]).
+match endToken
+	ifNil: [ self insert: '}' after: match ]
+	ifNotNil: [ self replace: match endToken with: '}' ].
+self continue]
+
+DelphiPrivateClassSectionNode
+->
+[self continue.
+self deleteWithWhitespaceAfter: match privateToken.
+self insert: 'private ' beforeAll: match components]
+
+DelphiPublicClassSectionNode
+->
+[self continue.
+self deleteWithWhitespaceAfter: match publicToken.
+self insert: 'public ' beforeAll: match components]
+
+DelphiPublishedClassSectionNode
+->
+[self continue.
+self deleteWithWhitespaceAfter: match publishedToken.
+self insert: 'public ' beforeAll: match components]
+
+DelphiVariableDefinitionNode
+->
+[self move: match type before: match names first.
+self insert: ' ' before: match names first.
+self deleteWithWhitespaceAfter: match colon.
+self continue]
+
+DelphiImplementationSectionNode
+->
+[self deleteWithWhitespaceBefore: match implementationToken.
+self deleteWithWhitespaceBefore: match usesToken.
+self deleteAllWithWhitespaceBefore: match moduleNames.
+self deleteAllWithWhitespaceBefore: match commas.
+self deleteWithWhitespaceBefore: match semicolon.
+self continue.
+match definitions
+	do: [ :each | 
+		(each isKindOf: DelphiMethodDefinitionNode)
+			ifTrue: [ (each attributeNamed: #isMoved ifAbsent: [ false ])
+					ifFalse: [ self unitCode add: each ] ] ]]
+
+DelphiConstantListNode
+[(match parentOfType: DelphiMethodDefinitionNode) isNil]
+->
+[self deleteWithWhitespaceAfter: match constToken.
+self unitCode add: match.
+self continue.
+self insert: 'const ' beforeAll: match definitions]
+
+DelphiConstantDefinitionNode
+->
+[match type
+	ifNotNil: [ self move: match type before: match name.
+		self insert: ' ' before: match name.
+		self deleteWithWhitespaceBefore: match colon ]
+	ifNil: [ self
+			insert: (self typeOfExpression: match expression) , ' '
+			before: match ].
+self continue]
+
+DelphiVarsNode
+[(match parentOfType: DelphiMethodDefinitionNode) isNil]
+->
+[self unitCode add: match.
+self deleteWithWhitespaceAfter: match varToken.
+(self isInInterface: match)
+	ifTrue: [ self insert: 'public ' beforeAll: match variableDefinitions ].
+self continue]
+
+DelphiVariableNode
+->
+[self move: match type before: match names first.
+self insert: ' ' before: match names first.
+self deleteWithWhitespaceAfter: match colon.
+self continue]
+
+DelphiArrayTypeNode
+->
+[self delete: match ofToken.
+self deleteWithWhitespaceAfter: match arrayToken.
+self insert: '[]' after: match type.
+self continue]
+
+"delete method header"
+DelphiMethodHeaderNode
+[match parent isKindOf: DelphiInterfaceSectionNode]
+->
+[self deleteWithWhitespaceAfter: match]
+
+"move method implementation to interface"
+DelphiMethodHeaderNode
+[self isInInterface: match]
+->
+[self delete: match.
+match topParent implementationSection definitions
+	detect: [ :each | 
+		(each isKindOf: DelphiMethodDefinitionNode)
+			and: [ (each header qualifiedName name source sameAs: match qualifiedName name source)
+					and: [ (each attributeNamed: #isMoved ifAbsent: [ false ]) not ] ] ]
+	ifFound: [ :each | 
+		self move: each before: match.
+		each attributeNamed: #isMoved put: true ]
+	ifNone: [ self continue ]]
+
+DelphiMethodDefinitionNode
+->
+[self delete: match semicolon.
+self continue]
+
+DelphiMethodHeaderNode
+[(self isInInterface: match) not]
+->
+[self delete: match qualifiedName namespace.
+self delete: match qualifiedName period.
+self delete: match semicolons last.
+self replaceAll: match semicolons allButLast with: ','.
+match left ifNil: [ self insert: '()' after: match qualifiedName ].
+self continue]
+
+DelphiProcedureHeaderNode
+->
+[self replace: match procedureToken with: 'void'.
+self continue]
+
+DelphiFunctionHeaderNode
+->
+[self delete: match functionToken.
+self move: match type before: match functionToken..
+self deleteWithWhitespaceBefore: match colon.
+self continue]
+
+DelphiArgumentNode
+->
+[self continue.
+match typeToken
+	ifNotNil: [ :token | 
+		(token source sameAs: 'const') ifTrue: [ self deleteWithWhitespaceAfter: token ].
+		(token source sameAs: 'var') ifTrue: [ self replace: token with: 'ref' ] ].
+match type
+	ifNil: [ self insert: 'dynamic ' before: match names first ]
+	ifNotNil: [ self move: match type before: match names first ].
+self insert: ' ' before: match names first.
+self deleteWithWhitespaceBefore: match colon.
+match names size > 1
+	ifTrue: [ | type |
+		type := match type
+				ifNil: [ 'dynamic' ]
+				ifNotNil: [ self sourceFor: match type ].
+		2
+			to: match names size
+			do: [ :i | 
+				self insert: type before: (match names at: i).
+				self insert: ' ' before: (match names at: i) ] ]]
+
+"vars in method"
+DelphiVarsNode
+[match parent isKindOf: DelphiMethodDefinitionNode]
+->
+[self deleteWithWhitespaceAfter: match varToken.
+self
+	moveFrom: match variableDefinitions first
+	to: match variableDefinitions last
+	after: match parent block beginToken stopPosition.
+self insert: String lf before: match parent block beginToken stopPosition.
+self continue]
+
+DelphiStatementBlockNode
+->
+[self replace: match beginToken with: '{'.
+(match statements isEmpty
+	or: [ (match statements last isKindOf: DelphiEmptyStatementNode) not
+			and: [ match statements size > match semicolons size
+					or: [ match statements notEmpty
+							and: [ match statements last stopPosition > match semicolons last stopPosition ] ] ] ])
+	ifTrue: [ self insert: ';' before: match endToken ].
+self replace: match endToken with: '}'.
+self continue]
+
+DelphiAssignmentExpressionNode
+->
+[self replace: match assignment with: '='.
+self continue]
+
+DelphiLiteralExpressionNode
+->
+[| char |
+char := self characterAt: match startPosition.
+char = $'
+	ifTrue: [ match startPosition + 1
+			to: match stopPosition - 1
+			do: [ :i | 
+				('\"''' includes: (self originalSource at: i))
+					ifTrue: [ self insert: '\' before: i ] ].
+		self replace: match startPosition with: '"'.
+		self replace: match stopPosition with: '"' ].
+char = $#
+	ifTrue: [ self
+			replace: match
+			with: (String
+					streamContents: [ :stream | 
+						stream nextPut: $".
+						match value source
+							readStreamDo: [ :s | 
+								| int block |
+								int := 0.
+								block := [ stream nextPutAll: '\x'.
+									int
+										printOn: stream
+										base: 16
+										showRadix: false ].
+								[ s atEnd ]
+									whileFalse: [ | c |
+										c := s next.
+										c = $#
+											ifTrue: [ s position > 1 ifTrue: [ block value ].
+												int := 0 ]
+											ifFalse: [ int := int * 10 + (c asInteger - $0 asInteger) ] ].
+								block value ].
+						stream nextPut: $" ]) ].
+self continue]
+
+DelphiSetExpressionNode
+->
+[self replace: match left with: 'new [] {'.
+self replace: match right with: '}'.
+self continue]
+
+DelphiIfStatementNode
+->
+[self replace: match ifToken with: 'if'.
+match expression leftParens isEmpty
+	ifTrue: [ self insert: #('(' ')') around: match expression ].
+self continue.
+(match thenStatement isKindOf: DelphiStatementBlockNode)
+	ifFalse: [ self insert: ';' after: match thenStatement ].
+self delete: match thenToken.
+match elseToken ifNotNil: [ self replace: match elseToken with: 'else' ]]
+
+DelphiBinaryExpressionNode
+->
+[match operator source = '<>' ifTrue: [ self replace: match operator with: '!=' ].
+match operator source = '=' ifTrue: [ self replace: match operator with: '==' ].
+(match operator source sameAs: 'and')
+	ifTrue: [ self replace: match operator with: '&&' ].
+(match operator source sameAs: 'or')
+	ifTrue: [ self replace: match operator with: '||' ].
+(match operator source sameAs: 'div')
+	ifTrue: [ self replace: match operator with: '/' ].
+(match operator source sameAs: 'mod')
+	ifTrue: [ self replace: match operator with: '%' ].
+self continue]
+
+DelphiPropertyHeaderNode
+->
+[self delete: match propertyToken.
+match type
+	ifNil: [ self insert: 'dynamic ' before: match ]
+	ifNotNil: [ self move: match type before: match propertyToken ].
+match colon
+	ifNil: [ self
+			insert: ' {'
+					, ((match readers isEmpty and: [ match writers isEmpty ])
+							ifTrue: [ ' get; set;' ]
+							ifFalse: [ '' ])
+			after: match name ]
+	ifNotNil: [ self replace: match colon with: '{' ].
+self replace: match semicolon with: '}'.
+self continue]
+
+DelphiPropertyReaderNode
+->
+[self replace: match readToken with: 'get => '.
+self insert: '();' after: match.
+self continue]
+
+DelphiPropertyWriterNode
+->
+[self replace: match writeToken with: 'set =>'.
+self insert: '(value);' after: match.
+self continue]
+
+DelphiPropertyExpressionNode
+[self isParentStatement: match]
+->
+[self insert: '()' after: match.
+self continue]
+
+Statement
+>>>break<<<
+->
+>>>break<<<
+
+DelphiVariableExpressionNode
+[self isParentStatement: match]
+->
+[self insert: '()' after: match.
+self continue]
+
+DelphiTryStatementNode
+->
+[self replace: match tryToken with: 'try {'.
+self replace: match endToken with: '}'.
+self continue]
+
+DelphiExceptNode
+->
+[self
+	replace: match exceptToken
+	with: '} catch' , (match exceptionCases isEmpty ifTrue: [ ' {' ] ifFalse: [ '' ]).
+match exceptionCases notEmpty
+	ifTrue: [ self insert: #('(' ')') around: match exceptionCases first ].
+self continue]
+
+DelphiOnDoNode
+->
+[self delete: match onToken.
+self insert: '} catch (' before: match.
+match type
+	ifNil: [ self insert: 'Exception' before: match onToken ]
+	ifNotNil: [ self move: match type before: match onToken ].
+self delete: match colon.
+self replace: match doToken with: ') {'.
+self continue]
+
+DelphiFinallyNode
+->
+[self replace: match finallyToken with: '} finally {'.
+self continue]
+
+DelphiRaiseStatementNode
+->
+[self replace: match raiseToken with: 'throw'.
+self continue]
+
+DelphiForStatementNode
+->
+[| var |
+self continue.
+var := self sourceFor: match variable.
+self replace: match forToken with: 'for'.
+self insert: '(' before: match variable.
+self replace: match assignmentToken with: '='.
+self insert: ';' after: match fromExpr.
+self replace: match toToken with: var.
+self insert: '<= ' before: match toExpr.
+self insert: '; ++' after: match toExpr.
+self insert: var after: match toExpr.
+self insert: ')' after: match toExpr.
+self delete: match doToken]
+
+DelphiWhileStatementNode
+->
+[self replace: match whileToken with: 'while'.
+self insert: #('(' ')') around: match expression.
+self delete: match doToken.
+self continue]
+
+DelphiRepeatStatementNode
+->
+[self continue.
+self replace: match repeatToken with: 'do {'.
+self replace: match untilToken with: '} while'.
+self insert: #('(' ')') around: match expression]
+
+DelphiWithStatementNode
+->
+[self continue.
+self insert: '{ ' before: match.
+self insert: '; }' after: match.
+self deleteWithWhitespaceAfter: match withToken.
+self replaceAll: match commas with: ';'.
+self insert: ';' after: match expressions last.
+match expressions
+	do: [ :each | 
+		self
+			insert: 'var ' , (self variableNameForExpression: each) , ' = '
+			before: each ].
+self deleteWithWhitespaceBefore: match doToken]
+
+DelphiCaseStatementNode
+->
+[self continue.
+self replace: match caseToken with: 'switch'.
+self insert: #('(' ')') around: match expression.
+self replace: match ofToken with: '{'.
+match elseToken ifNotNil: [ self replace: match elseToken with: 'default:' ].
+self replace: match endToken with: '}']
+
+DelphiCaseOptionNode
+->
+[self continue.
+self insert: 'case ' before: match.
+self insert: '; break' after: match]
+
+DelphiNotExpressionNode
+->
+[self replace: match notToken with: '!'.
+self continue]
+
+DelphiInheritedFunctionCallNode
+->
+[| name header |
+name := 'super.'.
+match name
+	ifNotNil: [ match left ifNil: [ self insert: '()' after: match ] ]
+	ifNil: [ header := (match parentOfType: DelphiMethodDefinitionNode) header.
+		name := name , header qualifiedName name value , '('
+				, (String
+						streamContents: [ :stream | 
+							header arguments
+								do: [ :arg | 
+									arg names
+										do: [ :n | stream nextPutAll: n value ]
+										separatedBy: [ stream nextPutAll: ', ' ] ]
+								separatedBy: [ stream nextPutAll: ', ' ] ]) , ')' ].
+self replace: match inheritedToken with: name.
+self continue]
+
+Statement
+>>>Inc(`a`)<<<
+->
+>>>++`a`<<<
+
+Statement
+>>>string(`a`)<<<
+->
+>>>((string)`a`)<<<
+
+Statement
+>>>`a` in `b`<<<
+->
+>>>(`a`.Includes(`b`))<<<
+
+Statement
+>>>`a`^ <<<
+->
+>>>*`a`<<<
