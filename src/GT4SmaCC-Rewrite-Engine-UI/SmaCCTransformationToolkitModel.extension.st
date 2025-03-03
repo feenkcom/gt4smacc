@@ -7,7 +7,7 @@ SmaCCTransformationToolkitModel >> asRRJob [
 			tasks: (self files
 					collect: [ :each | 
 						GtSmaCCTransformationTask new
-							filename: each;
+							filename: (each isString ifTrue: [ each ] ifFalse: [ each pathString ]);
 							rewritesFile: rewrites filename asFileReference pathString;
 							commonParentDirectory: self commonParentDirectory;
 							inputParserName: inputParserClass name;
