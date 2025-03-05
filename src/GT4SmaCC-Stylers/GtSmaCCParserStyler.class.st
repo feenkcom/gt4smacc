@@ -122,7 +122,7 @@ GtSmaCCParserStyler class >> cssStyler: aParserClass [
 					stencil: [ BlElement new
 							size: 10 @ 10;
 							background: color;
-							addAptitude: (BrGlamorousWithDropdownAptitude
+							addAptitude: (BrGlamorousWithExplicitDropdownAptitude
 									handle: [ BlElement new
 											size: 10 @ 10;
 											background: color ]

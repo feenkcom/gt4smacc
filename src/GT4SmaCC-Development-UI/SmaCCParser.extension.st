@@ -125,7 +125,7 @@ SmaCCParser class >> gtTestElement [
 			startingStateButton margin: (BlInsets all: 2).
 			startingStateButton
 				addAptitude:
-					(BrGlamorousWithDropdownAptitude
+					(BrGlamorousWithExplicitDropdownAptitude
 						handle:
 							[ (BrButton new)
 								beSmallSize;

@@ -348,7 +348,7 @@ GtSmaCCTransformationToolkit >> initialize [
 			label: 'Save configuration';
 			beSmallSize;
 			margin: (BlInsets all: 2);
-			addAptitude: (BrGlamorousWithDropdownAptitude
+			addAptitude: (BrGlamorousWithExplicitDropdownAptitude
 					handle: [ BrButton new
 							beSmallSize;
 							icon: BrGlamorousIcons savetodisk;
