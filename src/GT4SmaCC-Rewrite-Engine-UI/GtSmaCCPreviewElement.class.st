@@ -29,10 +29,8 @@ GtSmaCCPreviewElement >> addMenuItemsFor: aSymbol to: editorElement [
 										with: self ] ] ].
 	options isEmpty ifTrue: [ ^ self ].
 	editorElement
-		addAptitude: (BrGlamorousWithContextMenuAptitude
-				content: [ BrGlamorousSimpleContextMenuContent new
-						items: options;
-						yourself ])
+		addAptitude: (BrGlamorousWithExplicitContextMenuAptitude
+				items: options)
 ]
 
 { #category : #accessing }
