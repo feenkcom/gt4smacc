@@ -3,8 +3,7 @@ Class {
 	#superclass : #BrButton,
 	#instVars : [
 		'selectedItem',
-		'items',
-		'withDropdownLook'
+		'items'
 	],
 	#category : #'GT4SmaCC-Rewrite-Engine-UI-UI'
 }
@@ -17,7 +16,7 @@ GtSmaCCDropDownList >> initialize [
 		aptitude:
 			BrGlamorousButtonWithLabelAptitude
 				+
-					(withDropdownLook := BrGlamorousWithDropdownAptitude
+					(BrGlamorousWithExplicitDropdownAptitude
 						handle: [ BrButton new
 								aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
 								padding:
@@ -80,7 +79,7 @@ GtSmaCCDropDownList >> popupList [
 							anEvent consumed: true.
 							self selectedItem: each.
 							list selectOne: index.
-							withDropdownLook hide ];
+							anEvent currentTarget fireEvent: BrDropdownHideWish new ];
 				yourself ].
 	list when: BrSelectionChanged do: [ :event | self dispatchEvent: event ].
 	list items: self items.

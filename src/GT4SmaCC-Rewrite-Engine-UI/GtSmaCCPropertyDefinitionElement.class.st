@@ -14,7 +14,7 @@ GtSmaCCPropertyDefinitionElement >> addButton: aString [
 	button beSmallSize.
 	button margin: (BlInsets all: 2).
 	button
-		addAptitude: (BrGlamorousWithDropdownAptitude
+		addAptitude: (BrGlamorousWithExplicitDropdownAptitude
 				handle: [ BrButton new
 						beSmallSize;
 						icon: BrGlamorousIcons add;
@@ -46,10 +46,10 @@ GtSmaCCPropertyDefinitionElement >> addButton: aString [
 								label: 'Add';
 								icon: BrGlamorousIcons add asElement;
 								margin: (BlInsets all: 2);
-								action: [ | variableName |
+								action: [ :theButton | | variableName |
 									variableName := editor text asString.
 									(RBScanner isVariable: variableName)
-										ifTrue: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
+										ifTrue: [ theButton fireEvent: BrDropdownHideWish new.
 											rewrite perform: ('add' , aString , ':') asSymbol with: variableName ] ]) ]).
 	^ button
 ]
