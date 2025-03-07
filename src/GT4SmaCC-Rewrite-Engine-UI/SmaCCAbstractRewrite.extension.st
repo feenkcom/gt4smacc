@@ -37,6 +37,9 @@ SmaCCAbstractRewrite >> gtEditorFor: aView context: aContext [
 				| element fileSelectElement |
 				fileSelectElement := BrFileSelectOrCreate new
 						size: 500 @ 350;
+						addAptitude: BrGlamorousWithHorizontalResizerAptitude new
+								+ BrGlamorousWithHorizontalResizerAptitude new beLeft
+								+ BrGlamorousWithVerticalResizerAptitude new;
 						folder: (self topParent filename
 								ifNil: [ '.' asFileReference ]
 								ifNotNil: [ :fn | fn parent ]);

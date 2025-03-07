@@ -56,6 +56,9 @@ GtSmaCCTransformationElement >> addTransformationDropdownFor: button [
 					element
 						addChild: (BrFileSelectOrCreate new
 								size: 500 @ 350;
+								addAptitude: BrGlamorousWithHorizontalResizerAptitude new
+										+ BrGlamorousWithHorizontalResizerAptitude new beLeft
+										+ BrGlamorousWithVerticalResizerAptitude new;
 								folder: self currentDirectory;
 								fileFilterBlock: [ :file | file extension = 'rw' ];
 								okAction: [ :file :btn | 

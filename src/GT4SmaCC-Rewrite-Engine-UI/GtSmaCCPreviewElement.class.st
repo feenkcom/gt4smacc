@@ -337,7 +337,7 @@ GtSmaCCPreviewElement >> newPreviewRulesElement [
 			asElement.
 	list padding: (BlInsets all: 5).
 	list border: (BlBorder paint: Color lightGray width: 1).
-	list children last
+	(list childWithId: GtPhlowColumnedListId)
 		when: BrSelectionChanged
 		do: [ :event | 
 			self
