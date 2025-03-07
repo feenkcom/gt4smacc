@@ -311,29 +311,41 @@ GtSmaCCPreviewElement >> newPreviewOutputSourceElement [
 
 { #category : #accessing }
 GtSmaCCPreviewElement >> newPreviewRulesElement [
-	| list |
-	list := (GtPhlowView new columnedList
-			column: 'Rewrite'
-				stencil: [ :each | 
-					BrHorizontalPane new
-						fitContent;
-						addChild: (BrButton new
-								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
-								label: each rewrite displayString;
-								action: [ self gotoRewrite: each rewrite ]);
-						addChild: (BrButton new
-								beSmallSize;
-								aptitude: BrGlamorousButtonWithIconAptitude;
-								label: 'Debug';
-								icon: BrGlamorousVectorIcons debug asElement;
-								margin: (BlInsets all: 2);
-								action: [ self
-										debugRewrite: each rewrite
-										forNode: each nodeClass
-										at: each nodeInterval ]) ];
-			column: 'Node' text: [ :each | each nodeClass displayString ];
+	| list phlowList |
+	phlowList := GtPhlowView new columnedList.
+	phlowList column
+		title: 'Rewrite';
+		cellStencil: [ BrHorizontalPane new
+				fitContent;
+				addChild: (BrButton new
+							aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonLabelAptitude;
+							label: '';
+							action: [ :label | self gotoRewrite: (label userData at: #rewrite) ])
+					as: #label;
+				addChild: (BrButton new
+							beSmallSize;
+							aptitude: BrGlamorousButtonWithIconAptitude;
+							label: 'Debug';
+							icon: BrGlamorousVectorIcons debug asElement;
+							margin: (BlInsets all: 2);
+							action: [ :button | 
+								| result |
+								result := button userData at: #result.
+								self
+									debugRewrite: result rewrite
+									forNode: result nodeClass
+									at: result nodeInterval ])
+					as: #button ];
+		dataBinder: [ :pane :each | 
+			| label |
+			label := pane childNamed: #label.
+			label label: each rewrite displayString.
+			label userData at: #rewrite put: each rewrite.
+			(pane childNamed: #button) userData at: #result put: each ].
+	phlowList column: 'Node' text: [ :each | each nodeClass displayString ].
+	list := (phlowList
 			column: 'Location'
-				text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
+			text: [ :each | each nodeInterval first printString , '-' , each nodeInterval last printString ])
 			asElement.
 	list padding: (BlInsets all: 5).
 	list border: (BlBorder paint: Color lightGray width: 1).
