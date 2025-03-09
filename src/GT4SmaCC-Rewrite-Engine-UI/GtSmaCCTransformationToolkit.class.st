@@ -262,6 +262,9 @@ GtSmaCCTransformationToolkit >> filesWithSearchView: aView [
 			content: [ :button | 
 				BrFileSelector new
 					size: 500 @ 350;
+					addAptitude: BrGlamorousWithHorizontalResizerAptitude new
+							+ BrGlamorousWithHorizontalResizerAptitude new beLeft
+							+ BrGlamorousWithVerticalResizerAptitude new;
 					fileFilterBlock: [ :file | false ];
 					okAction: [ :file :btn | 
 						button dispatchEvent: (BrDropdownHideWish new anchor: button).
@@ -276,6 +279,9 @@ GtSmaCCTransformationToolkit >> filesWithSearchView: aView [
 						fileExtensions ifEmpty: [ '' ].
 				BrFileSelector new
 					size: 500 @ 350;
+					addAptitude: BrGlamorousWithHorizontalResizerAptitude new
+							+ BrGlamorousWithHorizontalResizerAptitude new beLeft
+							+ BrGlamorousWithVerticalResizerAptitude new;
 					fileFilterBlock: [ :file | extensions anySatisfy: [ :each | '*' , each match: file basename ] ];
 					okAction: [ :file :btn | 
 						button dispatchEvent: (BrDropdownHideWish new anchor: button).
@@ -358,6 +364,9 @@ GtSmaCCTransformationToolkit >> initialize [
 					content: [ | element fileSelectElement |
 						fileSelectElement := BrFileSelectOrCreate new
 								size: 500 @ 350;
+								addAptitude: BrGlamorousWithHorizontalResizerAptitude new
+										+ BrGlamorousWithHorizontalResizerAptitude new beLeft
+										+ BrGlamorousWithVerticalResizerAptitude new;
 								folder: (model filename ifNil: [ '.' asFileReference ] ifNotNil: [ :fn | fn parent ]);
 								fileFilterBlock: [ :file | file extension = 'rwc' ];
 								okAction: [ :file :btn | 

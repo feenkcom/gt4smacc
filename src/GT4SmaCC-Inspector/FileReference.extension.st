@@ -7,6 +7,6 @@ FileReference >> gtSmaCCRewritesFor: aView [
 	^ aView forward
 		title: 'Rewrites';
 		priority: 1;
-		object: [ SmaCCRewriteRuleFileParser parse: self contents ];
+		object: [ SmaCCRewriteRuleFileParser parseFile: self ];
 		view: #gtEditorFor:context:
 ]
