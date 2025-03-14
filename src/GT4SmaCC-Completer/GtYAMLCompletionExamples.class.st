@@ -406,6 +406,48 @@ GtYAMLCompletionExamples >> initialCompletion [
 	^ result
 ]
 
+{ #category : #'as yet unclassified' }
+GtYAMLCompletionExamples >> keyMatchExample [
+	<gtExample>
+	| strategy result items text position |
+	strategy := self loadingCompletions.
+	strategy
+		completer: (GtYAMLKeyMatchCompleter new defaultCompleter: strategy completer).
+	strategy completer
+		add: (GtYAMLBlockCompleter new
+				name: '<something>';
+				block: [ :string :pos | 
+					{GtInsertTextCompletionAction
+							labeled: string , '1'
+							completion: '1'
+							position: pos
+							from: pos - string size + 1} ])
+		forKey: 'something'.
+	text := '
+name: Testing
+add' asRopedText.
+	position := text size.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: 'addresses:'.
+	text := '
+name: Testing
+something: asdf' asRopedText.
+	position := text size.
+	result := strategy
+			completionResultFor: text
+			at: position
+			requested: false.
+	items := (result stream asyncSimilarCopy take: 2) toArray wait.
+	self assert: items size equals: 1.
+	self assert: items first label equals: 'asdf1'.
+	^ result
+]
+
 { #category : #accessing }
 GtYAMLCompletionExamples >> loadingCompletions [
 	<gtExample>
