@@ -83,80 +83,72 @@ SmaCCParser class >> gtTestElement [
 	editorElement matchParent.
 	editorElement aptitude: BrGlamorousCodeEditorAptitude.
 	self gtStyler ifNotNil: [ :styler | editorElement editor styler: styler ].
-	actionBar := (BrToolbar new)
-		padding: (BlInsets top: 3 left: 3);
-		aptitude: BrGlamorousToolbarAptitude new;
-		addItem:
-				((BrButton new)
-						beSmallSize;
-						aptitude: BrGlamorousButtonWithIconAptitude;
-						label: 'Inspect';
-						icon: BrGlamorousVectorIcons inspect;
-						action:
-								[ :button | 
-									editorElement editor text clearAttributes: [ :each | each isKindOf: GtSourceCoderErrorAttribute ].
-									[ button phlow
-										spawnObject: (self parse: editorElement editor text asString startingAt: (self perform: currentState)) ]
-										on: SmaCCParserError
-										do: [ :ex | ex gtDisplayErrorIn: editorElement editor ] ]);
-		addItem:
-				((BrButton new)
-						beSmallSize;
-						aptitude: BrGlamorousButtonWithIconAptitude;
-						label: 'Debug';
-						icon: BrGlamorousVectorIcons debug;
-						action:
-								[ :button | 
-									self
-										debug: editorElement editor text asString
-										startingAt: (self perform: currentState)
-										from: button ]).
+	actionBar := BrToolbar new
+			padding: (BlInsets top: 3 left: 3);
+			aptitude: BrGlamorousToolbarAptitude new;
+			addItem: (BrButton new
+					beSmallSize;
+					aptitude: BrGlamorousButtonWithIconAptitude;
+					label: 'Inspect';
+					icon: BrGlamorousVectorIcons inspect;
+					action: [ :button | 
+						editorElement editor text
+							clearAttributes: [ :each | each isKindOf: GtSourceCoderErrorAttribute ].
+						[ button phlow
+							spawnObject: (self
+									parse: editorElement editor text asString
+									startingAt: (self perform: currentState)) ]
+							on: SmaCCParserError
+							do: [ :ex | ex gtDisplayErrorIn: editorElement editor ] ]);
+			addItem: (BrButton new
+					beSmallSize;
+					aptitude: BrGlamorousButtonWithIconAptitude;
+					label: 'Debug';
+					icon: BrGlamorousVectorIcons debug;
+					action: [ :button | 
+						self
+							debug: editorElement editor text asString
+							startingAt: (self perform: currentState)
+							from: button ]).
 	self startingStateNames size > 1
-		ifTrue:
-			[ currentState := ('startingStateFor'
-				,
-					(self startingStateNames
-						detect: [ :each | (self perform: ('startingStateFor' , each) asSymbol) = 1 ]
-						ifNone: [ self startingStateNames first ])) asSymbol.
+		ifTrue: [ currentState := ('startingStateFor'
+					, (self startingStateNames
+							detect: [ :each | (self perform: ('startingStateFor' , each) asSymbol) = 1 ]
+							ifNone: [ self startingStateNames first ])) asSymbol.
 			startingStateButton := BrButton new.
 			startingStateButton aptitude: BrGlamorousButtonWithLabelAptitude.
 			startingStateButton label: (currentState allButFirst: 16).
 			startingStateButton beSmallSize.
 			startingStateButton margin: (BlInsets all: 2).
 			startingStateButton
-				addAptitude:
-					(BrGlamorousWithExplicitDropdownAptitude
-						handle:
-							[ (BrButton new)
+				addAptitude: (BrGlamorousWithExplicitDropdownAptitude
+						handle: [ BrButton new
 								beSmallSize;
 								label: (currentState allButFirst: 16);
-								aptitude:
-										BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonWithLabelTooltipAptitude - BrGlamorousButtonExteriorAptitude ]
-						content:
-							[ | list |
+								aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonWithLabelTooltipAptitude2
+										- BrGlamorousButtonExteriorAptitude ]
+						content: [ | list |
 							list := BrSimpleList new.
 							list fitContent.
 							list
-								stencil:
-									[ :each | 
-									(BrLabel new)
+								stencil: [ :each | 
+									BrLabel new
 										aptitude: BrGlamorousLabelAptitude new + BrGlamorousListItemAptitude;
-										padding:
-												(BlInsets
-														top: 3
-														left: 3
-														bottom: 3
-														right: 8);
+										padding: (BlInsets
+												top: 3
+												left: 3
+												bottom: 3
+												right: 8);
 										text: each;
 										hMatchParent;
 										vFitContent;
 										when: BlClickEvent
-											do:
-												[ :anEvent | 
-													anEvent consumed: true.
-													currentState := ('startingStateFor' , each) asSymbol.
-													startingStateButton label: each.
-													startingStateButton dispatchEvent: (BrDropdownHideWish new anchor: startingStateButton) ];
+											do: [ :anEvent | 
+												anEvent consumed: true.
+												currentState := ('startingStateFor' , each) asSymbol.
+												startingStateButton label: each.
+												startingStateButton
+													dispatchEvent: (BrDropdownHideWish new anchor: startingStateButton) ];
 										yourself ].
 							list items: self startingStateNames.
 							list ]).
