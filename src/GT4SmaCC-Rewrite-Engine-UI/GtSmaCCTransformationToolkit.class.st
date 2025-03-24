@@ -359,7 +359,7 @@ GtSmaCCTransformationToolkit >> initialize [
 							beSmallSize;
 							icon: BrGlamorousIcons savetodisk;
 							label: 'Save configuration';
-							aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude
+							aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude2
 									- BrGlamorousButtonExteriorAptitude ]
 					content: [ | element fileSelectElement |
 						fileSelectElement := BrFileSelectOrCreate new

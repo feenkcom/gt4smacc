@@ -112,7 +112,7 @@ GtSmaCCSimulatorElement >> testElement [
 	editor text: ('' asRopedText attributes: GtSmaCCCoder defaultTextAttributes).
 	element := BrEditorElement new.
 	element
-		addAptitude: (BrGlamorousWithLabelTooltipAptitude new text: 'Source To Simulate on').
+		addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: 'Source To Simulate on').
 	element
 		constraintsDo: [ :c | 
 			c maxHeight: 350.
