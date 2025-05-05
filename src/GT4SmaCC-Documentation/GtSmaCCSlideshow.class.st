@@ -64,11 +64,10 @@ GtSmaCCSlideshow >> createSlideText [
 { #category : #'debugger slide' }
 GtSmaCCSlideshow >> debuggerSlideElement [
 	<gtExample>
-	
+	<return: #GtSmaCCDebuggerElement>
 	| session element |
 	session := self
-		startDebuggerOn:
-			'{
+			startDebuggerOn: '{
   "colors": [
     {
       "color": "black",
@@ -86,34 +85,37 @@ GtSmaCCSlideshow >> debuggerSlideElement [
     }
    ]
 }'
-		in: JSONParser.
+			in: JSONParser.
 	element := GtSmaCCDebuggerElement on: session.
 	element aptitude: BrShadowAptitude.
 	element
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ element
-								childNamed: #parserStack
-								ifFound: [ :each | each addChild: ((self yellowExplanationTargetCircleFor: #parserStack) relocate: 2 @ 8) ].
-							element
-								childNamed: #parserActions
-								ifFound: [ :each | each addChild: ((self yellowExplanationTargetCircleFor: #parserActions) relocate: 2 @ 8) ].
-							element
-								childNamed: #source
-								ifFound:
-									[ :each | each parent addChild: ((self yellowExplanationTargetCircleFor: #parserSource) relocate: 2 @ 8 + each position) ].
-							element
-								childNamed: #toolbar
-								ifFound:
-									[ :each | 
-									each
-										allChildrenDepthFirstDo:
-											[ :child | 
-											((child isKindOf: BrButton) and: [ child label asString ~= '' ])
-												ifTrue:
-													[ child addChild: ((self yellowExplanationTargetCircleFor: child label asString asSymbol) relocate: 2 @ 8) ] ] ] ]).
+				action: [ element
+						childNamed: #parserStack
+						ifFound: [ :each | 
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #parserStack) relocate: 2 @ 8) ].
+					element
+						childNamed: #parserActions
+						ifFound: [ :each | 
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #parserActions) relocate: 2 @ 8) ].
+					element
+						childNamed: #source
+						ifFound: [ :each | 
+							each parent
+								addChild: ((self yellowExplanationTargetCircleFor: #parserSource)
+										relocate: 2 @ 8 + each position) ].
+					element
+						childNamed: #toolbar
+						ifFound: [ :each | 
+							each
+								allChildrenDepthFirstDo: [ :child | 
+									((child isKindOf: BrButton) and: [ child label asString ~= '' ])
+										ifTrue: [ child
+												addChild: ((self yellowExplanationTargetCircleFor: child label asString asSymbol)
+														relocate: 2 @ 8) ] ] ] ]).
 	^ element
 ]
 
@@ -156,19 +158,22 @@ GtSmaCCSlideshow >> debuggerSlideText [
 { #category : #'coder explanation slide' }
 GtSmaCCSlideshow >> explanationSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| coderElement |
 	coderElement := self createParserCoderOn: LineParser.
 	self addCommonExplanationTargetsFor: coderElement.
 	coderElement
-		allChildrenDepthFirstDo:
-			[ :each | 
+		allChildrenDepthFirstDo: [ :each | 
 			(each isKindOf: GtSmaCCCoderElement)
-				ifTrue:
-					[ each coder isProductionRule
-						ifTrue: [ each addChild: ((self yellowExplanationTargetCircleFor: #productions) relocate: 2 @ 8) ].
-					each coder isTokenRule ifTrue: [ each addChild: ((self yellowExplanationTargetCircleFor: #tokens) relocate: 2 @ 8) ].
-					each coder isDirective ifTrue: [ each addChild: ((self yellowExplanationTargetCircleFor: #directives) relocate: 2 @ 8) ] ] ].
+				ifTrue: [ each coder isProductionRule
+						ifTrue: [ each
+								addChild: ((self yellowExplanationTargetCircleFor: #productions) relocate: 2 @ 8) ].
+					each coder isTokenRule
+						ifTrue: [ each
+								addChild: ((self yellowExplanationTargetCircleFor: #tokens) relocate: 2 @ 8) ].
+					each coder isDirective
+						ifTrue: [ each
+								addChild: ((self yellowExplanationTargetCircleFor: #directives) relocate: 2 @ 8) ] ] ].
 	^ coderElement
 ]
 
@@ -203,6 +208,7 @@ New items can be added to the grammar by using the ' asRopedText , ('+' asRopedT
 { #category : #'filter slide' }
 GtSmaCCSlideshow >> filterSlideElement [
 	<gtExample>
+	<return: #BlElement>
 	| coderElement textSearch addSearch |
 	coderElement := self createParserCoderOn: JSONParser.
 	textSearch := (coderElement childNamed: GtFilterSettingsId) childNamed: #editor.
@@ -253,29 +259,29 @@ GtSmaCCSlideshow >> filterSlideText [
 { #category : #'production simulator slide' }
 GtSmaCCSlideshow >> productionSimulatorSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| coderElement |
 	coderElement := self createParserCoderOn: JSONParser.
 	(self findItem: 'value' in: coderElement)
-		ifNotNil:
-			[ :each | 
+		ifNotNil: [ :each | 
 			| bar |
 			each expand.
 			bar := each childNamed: #actionBar.
-			bar children first addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8).
+			bar children first
+				addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8).
 			each coder viewParserSimulator: (each childNamed: #actionBar) children first ].
 	coderElement
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ (coderElement
-								allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtSmaCCParserSimulatorElement ]
-								ifFound: [ :each | each ])
-								ifNotNil:
-									[ :each | 
-									each addChild: ((self yellowExplanationTargetCircleFor: #testInput) relocate: 2 @ 8 + (each childNamed: #testInput) position).
-									(each childNamed: #parseTree) addChild: ((self yellowExplanationTargetCircleFor: #parseTree) relocate: 2 @ 8) ] ]).
+				action: [ (coderElement
+						allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtSmaCCParserSimulatorElement ]
+						ifFound: [ :each | each ])
+						ifNotNil: [ :each | 
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #testInput)
+										relocate: 2 @ 8 + (each childNamed: #testInput) position).
+							(each childNamed: #parseTree)
+								addChild: ((self yellowExplanationTargetCircleFor: #parseTree) relocate: 2 @ 8) ] ]).
 	^ coderElement
 ]
 
@@ -309,25 +315,26 @@ GtSmaCCSlideshow >> productionSimulatorSlideText [
 { #category : #'testing slide' }
 GtSmaCCSlideshow >> testingSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| coderElement |
 	coderElement := self createParserCoderOn: JSONParser.
 	self addCommonExplanationTargetsFor: coderElement.
 	self switchToTab: 'Test' in: coderElement.
 	coderElement
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ coderElement
-								childNamed: #parserTestInput
-								ifFound: [ :each | each parent addChild: ((self yellowExplanationTargetCircleFor: #testInput) relocate: 2 @ 8) ].
-							coderElement
-								childNamed: #parserTestActions
-								ifFound:
-									[ :each | 
-									each children first addChild: ((self yellowExplanationTargetCircleFor: #inspectButton) relocate: 2 @ 8).
-									each children second addChild: ((self yellowExplanationTargetCircleFor: #debugButton) relocate: 2 @ 8) ] ]).
+				action: [ coderElement
+						childNamed: #parserTestInput
+						ifFound: [ :each | 
+							each parent
+								addChild: ((self yellowExplanationTargetCircleFor: #testInput) relocate: 2 @ 8) ].
+					coderElement
+						childNamed: #parserTestActions
+						ifFound: [ :each | 
+							each children first
+								addChild: ((self yellowExplanationTargetCircleFor: #inspectButton) relocate: 2 @ 8).
+							each children second
+								addChild: ((self yellowExplanationTargetCircleFor: #debugButton) relocate: 2 @ 8) ] ]).
 	^ coderElement
 ]
 
@@ -357,27 +364,27 @@ GtSmaCCSlideshow >> testingSlideText [
 { #category : #'token simulator slide' }
 GtSmaCCSlideshow >> tokenSimulatorSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| coderElement |
 	coderElement := self createParserCoderOn: JSONParser.
 	(self findItem: '<string>' in: coderElement)
-		ifNotNil:
-			[ :each | 
+		ifNotNil: [ :each | 
 			| bar |
 			each expand.
 			bar := each childNamed: #actionBar.
-			bar children first addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8).
+			bar children first
+				addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8).
 			each coder viewTokenSimulator: (each childNamed: #actionBar) children first ].
 	coderElement
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ (coderElement
-								allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtSmaCCTokenSimulatorElement ]
-								ifFound: [ :each | each ])
-								ifNotNil:
-									[ :each | each addChild: ((self yellowExplanationTargetCircleFor: #testInput) relocate: 2 @ 8 + (each childNamed: #testInput) position) ] ]).
+				action: [ (coderElement
+						allChildrenBreadthFirstDetect: [ :each | each isKindOf: GtSmaCCTokenSimulatorElement ]
+						ifFound: [ :each | each ])
+						ifNotNil: [ :each | 
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #testInput)
+										relocate: 2 @ 8 + (each childNamed: #testInput) position) ] ]).
 	^ coderElement
 ]
 

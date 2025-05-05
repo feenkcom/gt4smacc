@@ -7,6 +7,7 @@ Class {
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeAtStartOfFile [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -30,6 +31,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyFile [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '' asRopedText.
@@ -49,6 +51,7 @@ GtYAMLCompletionExamples >> completeEmptyFile [
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKey [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -70,6 +73,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKeyAfterList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -92,6 +96,7 @@ phones:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKeyInMiddle [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position endText |
 	strategy := self loadingCompletions.
 	text := '
@@ -114,6 +119,7 @@ test: - one' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKeyIndent [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position endText |
 	strategy := self loadingCompletions.
 	text := '
@@ -136,6 +142,7 @@ test: - one' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyKeyUnder [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position endText |
 	strategy := self loadingCompletions.
 	text := '
@@ -159,6 +166,7 @@ test: - one' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyListValue [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -179,6 +187,7 @@ test:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeEmptyStringValues [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -201,6 +210,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeInitialKey [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -221,6 +231,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeKeyBeforeOtherKeyValues [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position endText |
 	strategy := self loadingCompletions.
 	text := '
@@ -243,6 +254,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completeStringValues [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -263,6 +275,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionInsideOfFlowList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -281,6 +294,7 @@ test: [one, f ]' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionInsideOfList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -300,6 +314,7 @@ phones:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionInsideOfPattern [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -320,6 +335,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionOfLookupValue [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -348,6 +364,7 @@ primary: aa' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionWithParseError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -367,6 +384,7 @@ add' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> completionWithParseErrorInMiddle [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := '
@@ -392,6 +410,7 @@ addresses:
 { #category : #accessing }
 GtYAMLCompletionExamples >> initialCompletion [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	text := 'add' asRopedText.
@@ -409,6 +428,7 @@ GtYAMLCompletionExamples >> initialCompletion [
 { #category : #'as yet unclassified' }
 GtYAMLCompletionExamples >> keyMatchExample [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self loadingCompletions.
 	strategy
@@ -451,6 +471,7 @@ something: asdf' asRopedText.
 { #category : #accessing }
 GtYAMLCompletionExamples >> loadingCompletions [
 	<gtExample>
+	<return: #GtYAMLCompletionStrategy>
 	| strategy |
 	strategy := GtYAMLCompletionStrategy new.
 	strategy

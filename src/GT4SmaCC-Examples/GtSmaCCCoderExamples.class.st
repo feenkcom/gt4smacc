@@ -7,9 +7,9 @@ Class {
 { #category : #filtering }
 GtSmaCCCoderExamples >> astNodeReferencesFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
-	filter := GtSmaCCNodeReferencesFilter
-		name: 'ClassProductionExpression'.
+	filter := GtSmaCCNodeReferencesFilter name: 'ClassProductionExpression'.
 	scope := self filterScope.
 	filtered := filter applyInScope: scope.
 	self assert: filtered isEmpty not.
@@ -19,6 +19,7 @@ GtSmaCCCoderExamples >> astNodeReferencesFilter [
 { #category : #filtering }
 GtSmaCCCoderExamples >> codeExpressionFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
 	filter := GtSmaCCSelectorFilter selector: #hasCodeExpression.
 	scope := self filterScope.
@@ -30,6 +31,7 @@ GtSmaCCCoderExamples >> codeExpressionFilter [
 { #category : #model }
 GtSmaCCCoderExamples >> csGrammar [
 	<gtExample>
+	<return: #GtSmaCCGrammar>
 	| grammar class |
 	class := Smalltalk at: #CSharpParser ifAbsent: [ ^ nil ].
 	grammar := GtSmaCCGrammar onParser: class.
@@ -40,6 +42,7 @@ GtSmaCCCoderExamples >> csGrammar [
 { #category : #'parser simulation' }
 GtSmaCCCoderExamples >> csIfSimulateError [
 	<gtExample>
+	<return: #OrderedCollection>
 	^ self csIfSimulator
 		ifNotNil: [ :simulator | 
 			| result |
@@ -57,6 +60,7 @@ GtSmaCCCoderExamples >> csIfSimulateError [
 { #category : #'parser simulation' }
 GtSmaCCCoderExamples >> csIfSimulateIncomplete [
 	<gtExample>
+	<return: #OrderedCollection>
 	^ self csIfSimulator
 		ifNotNil: [ :simulator | 
 			| result |
@@ -73,6 +77,7 @@ GtSmaCCCoderExamples >> csIfSimulateIncomplete [
 { #category : #'parser simulation' }
 GtSmaCCCoderExamples >> csIfSimulateResult [
 	<gtExample>
+	<return: #SmaCCReducedItem>
 	^ self csIfSimulator
 		ifNotNil: [ :simulator | 
 			| result |
@@ -89,36 +94,37 @@ GtSmaCCCoderExamples >> csIfSimulateResult [
 { #category : #'parser simulation' }
 GtSmaCCCoderExamples >> csIfSimulator [
 	<gtExample>
+	<return: #GtSmaCCParserSimulator>
 	| identifier |
 	identifier := self csIfStatement.
-	identifier isNil
-		ifTrue: [ ^ nil ].
+	identifier isNil ifTrue: [ ^ nil ].
 	^ GtSmaCCParserSimulator on: identifier
 ]
 
 { #category : #ui }
 GtSmaCCCoderExamples >> csIfSimulatorUI [
 	<gtExample>
+	<return: #GtSmaCCParserSimulatorElement>
 	| simulator |
 	simulator := self csIfSimulator.
-	simulator isNil
-		ifTrue: [ ^ nil ].
+	simulator isNil ifTrue: [ ^ nil ].
 	^ GtSmaCCParserSimulatorElement onSimulator: simulator
 ]
 
 { #category : #model }
 GtSmaCCCoderExamples >> csIfStatement [
 	<gtExample>
+	<return: #GtSmaCCProductionRule>
 	| grammar |
 	grammar := self csGrammar.
-	grammar isNil
-		ifTrue: [ ^ nil ].
+	grammar isNil ifTrue: [ ^ nil ].
 	^ grammar ruleNamed: 'if_statement'
 ]
 
 { #category : #filtering }
 GtSmaCCCoderExamples >> defaultExpressionFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
 	filter := GtSmaCCSelectorFilter selector: #hasDefaultExpression.
 	scope := self filterScope.
@@ -130,24 +136,23 @@ GtSmaCCCoderExamples >> defaultExpressionFilter [
 { #category : #model }
 GtSmaCCCoderExamples >> exampleDelete [
 	<gtExample>
+	<return: #GtSmaCCGrammar>
 	| grammar |
 	grammar := self exampleGrammar.
 	(grammar ruleNamed: 'NotReferenced') delete.
-	self
-		assert: (grammar source indexOfSubCollection: 'NotReferenced') = 0.
+	self assert: (grammar source indexOfSubCollection: 'NotReferenced') = 0.
 	(grammar ruleNamed: '<notReferenced>') delete.
-	self
-		assert: (grammar source indexOfSubCollection: '<notReferenced>') = 0.
+	self assert: (grammar source indexOfSubCollection: '<notReferenced>') = 0.
 	^ grammar
 ]
 
 { #category : #model }
 GtSmaCCCoderExamples >> exampleGrammar [
 	<gtExample>
+	<return: #GtSmaCCGrammar>
 	| grammar |
 	grammar := GtSmaCCGrammar
-		forDefinition:
-			'<whitespace> : \s+; 
+			forDefinition: '<whitespace> : \s+; 
 			<notReferenced> : a+; 
 			<a> : a+; 
 			Start : A;
@@ -167,6 +172,7 @@ GtSmaCCCoderExamples >> exampleGrammar [
 { #category : #filtering }
 GtSmaCCCoderExamples >> filterScope [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| grammar scope |
 	grammar := self smaccDefinitionGrammar.
 	scope := GtSmaCCDefinitionGroupResult new.
@@ -178,10 +184,10 @@ GtSmaCCCoderExamples >> filterScope [
 { #category : #model }
 GtSmaCCCoderExamples >> glrDirective [
 	<gtExample>
+	<return: #GtSmaCCDirective>
 	| grammar directive |
 	grammar := self smaccDefinitionGrammar.
-	directive := grammar rules
-		detect: [ :each | each source beginsWith: '%glr' ].
+	directive := grammar rules detect: [ :each | each source beginsWith: '%glr' ].
 	self assert: directive source last = $;.
 	self assert: directive isDirective.
 	^ directive
@@ -190,20 +196,17 @@ GtSmaCCCoderExamples >> glrDirective [
 { #category : #coders }
 GtSmaCCCoderExamples >> grammarCoder [
 	<gtExample>
+	<return: #GtSmaCCGrammarCoder>
 	| coder grammar |
 	grammar := self smaccDefinitionGrammar.
 	coder := GtSmaCCGrammarCoder onGrammar: grammar.
 	coder updateCompletions.
 	self assert: coder source = self smaccGrammarClass parserDefinitionString.
 	self assert: coder group size = grammar rules size.
-	self
-		assert: (coder productionCompletionStrategy hasCompletionEntryFor: 'Pro').
-	self
-		assert: (coder productionCompletionStrategy hasCompletionEntryFor: '<se').
-	self
-		assert: (coder tokenCompletionStrategy hasCompletionEntryFor: 'Pro') not.
-	self
-		assert: (coder tokenCompletionStrategy hasCompletionEntryFor: '<se').
+	self assert: (coder productionCompletionStrategy hasCompletionEntryFor: 'Pro').
+	self assert: (coder productionCompletionStrategy hasCompletionEntryFor: '<se').
+	self assert: (coder tokenCompletionStrategy hasCompletionEntryFor: 'Pro') not.
+	self assert: (coder tokenCompletionStrategy hasCompletionEntryFor: '<se').
 	self assert: (coder ruleNamed: self productionRuleName) notNil.
 	self assert: (coder ruleNamed: self semicolonName) notNil.
 	^ coder
@@ -212,12 +215,14 @@ GtSmaCCCoderExamples >> grammarCoder [
 { #category : #ui }
 GtSmaCCCoderExamples >> grammarElement [
 	<gtExample>
+	<return: #GtSmaCCGrammarCoderElement>
 	^ self grammarCoder asElement
 ]
 
 { #category : #filtering }
 GtSmaCCCoderExamples >> implementorsFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
 	filter := GtSmaCCDefinitionImplementorPatternFilter pattern: 'tok'.
 	scope := self filterScope.
@@ -229,6 +234,7 @@ GtSmaCCCoderExamples >> implementorsFilter [
 { #category : #model }
 GtSmaCCCoderExamples >> jsGrammar [
 	<gtExample>
+	<return: #GtSmaCCGrammar>
 	| grammar class |
 	class := Smalltalk at: #JSParser ifAbsent: [ ^ nil ].
 	grammar := GtSmaCCGrammar onParser: class.
@@ -239,20 +245,20 @@ GtSmaCCCoderExamples >> jsGrammar [
 { #category : #model }
 GtSmaCCCoderExamples >> jsIdentifier [
 	<gtExample>
+	<return: #GtSmaCCTokenRule>
 	| grammar |
 	grammar := self jsGrammar.
-	grammar isNil
-		ifTrue: [ ^ nil ].
+	grammar isNil ifTrue: [ ^ nil ].
 	^ grammar ruleNamed: '<identifier>'
 ]
 
 { #category : #'token simulation' }
 GtSmaCCCoderExamples >> jsIdentifierSimulator [
 	<gtExample>
+	<return: #GtSmaCCTokenSimulator>
 	| identifier simulator |
 	identifier := self jsIdentifier.
-	identifier isNil
-		ifTrue: [ ^ nil ].
+	identifier isNil ifTrue: [ ^ nil ].
 	simulator := GtSmaCCTokenSimulator on: identifier.
 	simulator
 		when: GtSmaCCTokenSimulationAccept
@@ -264,10 +270,10 @@ GtSmaCCCoderExamples >> jsIdentifierSimulator [
 { #category : #ui }
 GtSmaCCCoderExamples >> jsIdentifierSimulatorUI [
 	<gtExample>
+	<return: #GtSmaCCTokenSimulatorElement>
 	| identifier simulator |
 	identifier := self jsIdentifier.
-	identifier isNil
-		ifTrue: [ ^ nil ].
+	identifier isNil ifTrue: [ ^ nil ].
 	simulator := GtSmaCCTokenSimulator on: identifier.
 	^ GtSmaCCTokenSimulatorElement onSimulator: simulator
 ]
@@ -275,6 +281,7 @@ GtSmaCCCoderExamples >> jsIdentifierSimulatorUI [
 { #category : #model }
 GtSmaCCCoderExamples >> productionRule [
 	<gtExample>
+	<return: #GtSmaCCProductionRule>
 	| grammar rule |
 	grammar := self smaccDefinitionGrammar.
 	rule := grammar ruleNamed: self productionRuleName.
@@ -287,20 +294,21 @@ GtSmaCCCoderExamples >> productionRule [
 { #category : #coders }
 GtSmaCCCoderExamples >> productionRuleCoder [
 	<gtExample>
+	<return: #GtSmaCCProductionCoder>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
 	grammarCoder updateCompletions.
 	rule := grammarCoder ruleNamed: self productionRuleName.
 	coder := GtSmaCCCoder on: rule in: grammarCoder.
 	self assert: coder sourceEditor text asString = rule source.
-	self
-		assert: coder collapsedEditor text asString = self productionRuleName.
+	self assert: coder collapsedEditor text asString = self productionRuleName.
 	^ coder
 ]
 
 { #category : #ui }
 GtSmaCCCoderExamples >> productionRuleElement [
 	<gtExample>
+	<return: #GtSmaCCCoderElement>
 	^ self productionRuleCoder asElement
 ]
 
@@ -312,9 +320,9 @@ GtSmaCCCoderExamples >> productionRuleName [
 { #category : #filtering }
 GtSmaCCCoderExamples >> referencesFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
-	filter := GtSmaCCDefinitionReferencesFilter
-		name: self productionRuleName.
+	filter := GtSmaCCDefinitionReferencesFilter name: self productionRuleName.
 	scope := self filterScope.
 	filtered := filter applyInScope: scope.
 	self assert: filtered isEmpty not.
@@ -324,6 +332,7 @@ GtSmaCCCoderExamples >> referencesFilter [
 { #category : #ui }
 GtSmaCCCoderExamples >> semicolonCoderElement [
 	<gtExample>
+	<return: #GtSmaCCCoderElement>
 	^ self semicolonTokenCoder asElement
 ]
 
@@ -335,6 +344,7 @@ GtSmaCCCoderExamples >> semicolonName [
 { #category : #model }
 GtSmaCCCoderExamples >> semicolonToken [
 	<gtExample>
+	<return: #GtSmaCCTokenRule>
 	| grammar rule |
 	grammar := self smaccDefinitionGrammar.
 	rule := grammar ruleNamed: self semicolonName.
@@ -347,6 +357,7 @@ GtSmaCCCoderExamples >> semicolonToken [
 { #category : #coders }
 GtSmaCCCoderExamples >> semicolonTokenCoder [
 	<gtExample>
+	<return: #GtSmaCCTokenCoder>
 	| coder rule grammarCoder |
 	grammarCoder := self grammarCoder.
 	grammarCoder updateCompletions.
@@ -360,17 +371,15 @@ GtSmaCCCoderExamples >> semicolonTokenCoder [
 { #category : #'token simulation' }
 GtSmaCCCoderExamples >> simulateHex [
 	<gtExample>
+	<return: #GtSmaCCTokenSimulator>
 	| grammar rule simulator nodes |
-	grammar := GtSmaCCGrammar
-		forDefinition: '<a> : <hex>; <hex> : [0-9a-fA-F];'.
+	grammar := GtSmaCCGrammar forDefinition: '<a> : <hex>; <hex> : [0-9a-fA-F];'.
 	rule := grammar ruleNamed: '<a>'.
 	simulator := GtSmaCCTokenSimulator on: rule.
 	nodes := IdentitySet new.
 	simulator
 		when: GtSmaCCTokenSimulationAccept
-		do: [ :ann | 
-			ann nodes
-				do: [ :each | nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ].
+		do: [ :ann | ann nodes do: [ :each | nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ].
 	simulator simulateOn: 'a'.
 	self assert: nodes size = 2.
 	^ simulator
@@ -379,6 +388,7 @@ GtSmaCCCoderExamples >> simulateHex [
 { #category : #'token simulation' }
 GtSmaCCCoderExamples >> simulateRight [
 	<gtExample>
+	<return: #GtSmaCCTokenSimulator>
 	| grammar rule simulator errorCount acceptCount input |
 	grammar := self smaccDefinitionGrammar.
 	rule := grammar ruleNamed: '<right>'.
@@ -399,8 +409,7 @@ GtSmaCCCoderExamples >> simulateRight [
 			self assert: ann index < 3.
 			(ann input = input and: [ ann index > 0 ])
 				ifTrue: [ self assert: ann nodes size = 1.
-					self
-						assert: ann nodes anyOne source first = (input at: ann index) ] ].
+					self assert: ann nodes anyOne source first = (input at: ann index) ] ].
 	simulator simulateOn: input.
 	self assert: acceptCount = 3.
 	^ simulator
@@ -409,6 +418,7 @@ GtSmaCCCoderExamples >> simulateRight [
 { #category : #ui }
 GtSmaCCCoderExamples >> simulateRightUI [
 	<gtExample>
+	<return: #GtSmaCCTokenSimulatorElement>
 	| grammar rule simulator |
 	grammar := self smaccDefinitionGrammar.
 	rule := grammar ruleNamed: '<right>'.
@@ -419,6 +429,7 @@ GtSmaCCCoderExamples >> simulateRightUI [
 { #category : #model }
 GtSmaCCCoderExamples >> smaccDefinitionGrammar [
 	<gtExample>
+	<return: #GtSmaCCGrammar>
 	| grammar |
 	grammar := GtSmaCCGrammar onParser: self smaccGrammarClass.
 	self assert: grammar rules notEmpty.
@@ -428,6 +439,7 @@ GtSmaCCCoderExamples >> smaccDefinitionGrammar [
 { #category : #model }
 GtSmaCCCoderExamples >> smaccDefinitionGrammarStartingProductions [
 	<gtExample>
+	<return: #OrderedCollection>
 	| grammar startingProductions names |
 	grammar := self smaccDefinitionGrammar.
 	startingProductions := grammar startingProductions.
@@ -436,8 +448,7 @@ GtSmaCCCoderExamples >> smaccDefinitionGrammarStartingProductions [
 	self assert: (names includes: 'ProductionRule').
 	self assert: (names includes: 'RegexRule').
 	self assert: (names includes: 'DirectiveLine').
-	self
-		assert: (startingProductions allSatisfy: [ :each | each isReferenced ]).
+	self assert: (startingProductions allSatisfy: [ :each | each isReferenced ]).
 	^ startingProductions
 ]
 
@@ -449,6 +460,7 @@ GtSmaCCCoderExamples >> smaccGrammarClass [
 { #category : #filtering }
 GtSmaCCCoderExamples >> tokenReferencesFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
 	filter := GtSmaCCDefinitionReferencesFilter name: self semicolonName.
 	scope := self filterScope.
@@ -460,6 +472,7 @@ GtSmaCCCoderExamples >> tokenReferencesFilter [
 { #category : #filtering }
 GtSmaCCCoderExamples >> variableReferencesFilter [
 	<gtExample>
+	<return: #GtSmaCCDefinitionGroupResult>
 	| filter scope filtered |
 	filter := GtSmaCCVariableReferencesFilter name: '''rule'''.
 	scope := self filterScope.

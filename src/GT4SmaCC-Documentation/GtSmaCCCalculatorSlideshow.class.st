@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCalculatorSlideshow,
 	#superclass : #GtSmaCCSlides,
-	#category : 'GT4SmaCC-Documentation'
+	#category : #'GT4SmaCC-Documentation'
 }
 
 { #category : #'evaluation slide' }
@@ -35,13 +35,12 @@ GtSmaCCCalculatorSlideshow >> addExpressionStylerTo: aSmaCCCoderElement [
 { #category : #'directive slide' }
 GtSmaCCCalculatorSlideshow >> directiveSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| element |
 	element := self createParserCoderOn: GtSmaCCCalculatorParser.
 	self addCommonExplanationTargetsFor: element.
 	self
-		setSource:
-			'<number>
+		setSource: '<number>
 	: \d+ (\. \d+)?
 	;
 <whitespace>
@@ -121,13 +120,12 @@ GtSmaCCCalculatorSlideshow >> directiveSlideText [
 { #category : #'evaluation slide' }
 GtSmaCCCalculatorSlideshow >> evaluationSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| element |
 	element := self createParserCoderOn: GtSmaCCCalculatorParser.
 	self addCommonExplanationTargetsFor: element.
 	self
-		setSource:
-			'<number>
+		setSource: '<number>
 	: \d+ (\. \d+)?
 	;
 <whitespace>
@@ -144,16 +142,14 @@ Expression
 	;'
 		in: element.
 	element
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ (self findItem: 'Expression' in: element)
-								ifNotNil:
-									[ :each | 
-									each expand.
-									self addEvaluationStylerTo: each.
-									each addChild: ((self yellowExplanationTargetCircleFor: #Expression) relocate: 2 @ 8) ] ]).
+				action: [ (self findItem: 'Expression' in: element)
+						ifNotNil: [ :each | 
+							each expand.
+							self addEvaluationStylerTo: each.
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #Expression) relocate: 2 @ 8) ] ]).
 	^ element
 ]
 
@@ -305,12 +301,11 @@ GtSmaCCCalculatorSlideshow >> expressionValidationStyler [
 { #category : #'expressions slide' }
 GtSmaCCCalculatorSlideshow >> expressionsSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| element |
 	element := self createParserCoderOn: GtSmaCCCalculatorParser.
 	self
-		setSource:
-			'<number>
+		setSource: '<number>
 	: \d+ (\. \d+)?
 	;
 <whitespace>
@@ -322,19 +317,18 @@ Expression
 	;'
 		in: element.
 	element
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
-				action:
-						[ (self findItem: 'Expression' in: element)
-								ifNotNil:
-									[ :each | 
-									| bar |
-									each expand.
-									self addExpressionStylerTo: each.
-									each addChild: ((self yellowExplanationTargetCircleFor: #Expression) relocate: 2 @ 8).
-									bar := each childNamed: #actionBar.
-									bar children first addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8) ] ]).
+				action: [ (self findItem: 'Expression' in: element)
+						ifNotNil: [ :each | 
+							| bar |
+							each expand.
+							self addExpressionStylerTo: each.
+							each
+								addChild: ((self yellowExplanationTargetCircleFor: #Expression) relocate: 2 @ 8).
+							bar := each childNamed: #actionBar.
+							bar children first
+								addChild: ((self yellowExplanationTargetCircleFor: #simulateButton) relocate: 2 @ 8) ] ]).
 	^ element
 ]
 
@@ -445,21 +439,21 @@ GtSmaCCCalculatorSlideshow >> isValidWhitespaceToken: aGrammar [
 { #category : #'number token slide' }
 GtSmaCCCalculatorSlideshow >> numberTokenSlideElement [
 	<gtExample>
-	
+	<return: #BlElement>
 	| element |
 	element := self createParserCoderOn: GtSmaCCCalculatorParser.
 	self
-		setSource:
-			'Expression
+		setSource: 'Expression
 	: <number>
 	;'
 		in: element.
 	(self grammarFrom: element)
-		when: GtSmaCCGrammarItemChanged do: [ :annoucement | self updateNumberSlideToggles: element with: annoucement ];
-		when: GtSmaCCGrammarRulesChanged do: [ :annoucement | self updateTokenTargetsIn: element ].
+		when: GtSmaCCGrammarItemChanged
+			do: [ :annoucement | self updateNumberSlideToggles: element with: annoucement ];
+		when: GtSmaCCGrammarRulesChanged
+			do: [ :annoucement | self updateTokenTargetsIn: element ].
 	element
-		enqueueTask:
-			((BlDelayedTaskAction new)
+		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
 				action: [ (self findItem: 'Expression' in: element) ifNotNil: [ :each | each expand ] ]).
 	^ element
