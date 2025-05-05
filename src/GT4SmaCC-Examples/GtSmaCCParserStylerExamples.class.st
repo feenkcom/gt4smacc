@@ -7,37 +7,42 @@ Class {
 { #category : #styling }
 GtSmaCCParserStylerExamples >> csharpStyler [
 	<gtExample>
+	<return: #GtSmaCCParserStyler>
 	^ CSharpParser gtStyler
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> csvStyler [
 	<gtExample>
+	<return: #GtSmaCCParserStyler>
 	^ CSVParser gtStyler
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> javaExpressionStyler [
 	<gtExample>
-	^ self javaStyler
-		startingState: JavaParser startingStateForexpression
+	<return: #GtSmaCCParserStyler>
+	^ self javaStyler startingState: JavaParser startingStateForexpression
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> javaStyler [
 	<gtExample>
+	<return: #GtSmaCCParserStyler>
 	^ JavaParser gtStyler
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> jsStyler [
 	<gtExample>
+	<return: #GtSmaCCParserStyler>
 	^ JSParser gtStyler
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> jsStylerTextElement [
 	<gtExample>
+	<return: #BrEditorElement>
 	| editorElement textEditor |
 	textEditor := BrTextEditorModel new.
 	textEditor styler: self jsStyler.
@@ -53,12 +58,14 @@ GtSmaCCParserStylerExamples >> jsStylerTextElement [
 { #category : #styling }
 GtSmaCCParserStylerExamples >> jsonStyler [
 	<gtExample>
+	<return: #GtSmaCCParserStyler>
 	^ JSONParser gtStyler
 ]
 
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledCSV [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := '1,a,!
 2,b,@
@@ -72,6 +79,7 @@ GtSmaCCParserStylerExamples >> styledCSV [
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledCSharp [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := 'using System;
 	
@@ -92,6 +100,7 @@ namespace Foo.Bar {
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledJS [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := '// This is a comment
 for (var i = 0; i < 10; i++)
@@ -103,6 +112,7 @@ for (var i = 0; i < 10; i++)
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledJSON [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := '{"menu": {
   "id": "file",
@@ -122,6 +132,7 @@ GtSmaCCParserStylerExamples >> styledJSON [
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledJSONWithError [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := '{"menu": {
   "id": "file",
@@ -141,6 +152,7 @@ GtSmaCCParserStylerExamples >> styledJSONWithError [
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledJava [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := 'package test;
 	
@@ -162,6 +174,7 @@ public class Something {
 { #category : #styling }
 GtSmaCCParserStylerExamples >> styledJavaWithStartingState [
 	<gtExample>
+	<return: #BlRunRopedText>
 	| text |
 	text := 'this.foo(3 + 4 /* 7 */)' asRopedText.
 	self javaExpressionStyler style: text.

@@ -7,6 +7,7 @@ Class {
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> allNodes [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| allNodes count |
 	allNodes := self grammarAST // ''.
 	count := 0.
@@ -18,6 +19,7 @@ GtSmaCCQueryExamples >> allNodes [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> allNodesWithNameToken [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| nameNodes |
 	nameNodes := self allNodes @ #name <- ''.
 	self assert: nameNodes notEmpty.
@@ -27,6 +29,7 @@ GtSmaCCQueryExamples >> allNodesWithNameToken [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> andQuery [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| ast productions tokens empty all anded |
 	ast := self grammarAST.
 	productions := ast / SmaCCProductionRuleNode.
@@ -44,15 +47,16 @@ GtSmaCCQueryExamples >> andQuery [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> grammarAST [
 	<gtExample>
+	<return: #SmaCCGrammarDefinitionNode>
 	^ SmaCCDefinitionParser definitionAST
 ]
 
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsAST [
 	<gtExample>
+	<return: #JSModuleNode>
 	^ JSParser
-		parse:
-			'
+		parse: '
 function fib1(a) {
 	if (a <= 1) return 1;
 	return fib1(a - 1) + fib1(a - 2); 
@@ -74,6 +78,7 @@ console.log(fib1(10) - fib2(10));
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsCallExpressionNodes [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| expressions |
 	expressions := self jsAST // #JSCallExpressionNode.
 	self assert: expressions size = 5.
@@ -83,8 +88,9 @@ GtSmaCCQueryExamples >> jsCallExpressionNodes [
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsCallsWith10AsArg [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| calls |
-	calls := self jsAST // 'literal' @ 'value' <- '10' \\ 'callexpression'.
+	calls := ((self jsAST // 'literal') @ 'value' <- '10') \\ 'callexpression'.
 	self assert: calls size = 2.
 	^ calls
 ]
@@ -92,6 +98,7 @@ GtSmaCCQueryExamples >> jsCallsWith10AsArg [
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsExpressionsFoundInASubnodeExpressionOfAnIfStatement [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| ifExpressions |
 	ifExpressions := self jsAST // 'ifstatement' / 'expression'.
 	self assert: ifExpressions size = 1.
@@ -102,6 +109,7 @@ GtSmaCCQueryExamples >> jsExpressionsFoundInASubnodeExpressionOfAnIfStatement [
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsExpressionsFoundInTheVariableExpressionOfAnIfStatement [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| ifExpressions |
 	ifExpressions := self jsAST // 'ifstatement' /@ 'expression'.
 	self assert: ifExpressions size = 1.
@@ -112,19 +120,20 @@ GtSmaCCQueryExamples >> jsExpressionsFoundInTheVariableExpressionOfAnIfStatement
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsFunctions [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| functions |
 	functions := self jsAST // 'function'.
 	self assert: functions size = 2.
 	self assert: functions notEmpty.
 	self assert: functions isEmpty not.
-	self
-		assert: (functions allSatisfy: [ :each | each isKindOf: JSFunctionNode ]).
+	self assert: (functions allSatisfy: [ :each | each isKindOf: JSFunctionNode ]).
 	^ functions
 ]
 
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsLiterals [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| calls |
 	calls := self jsAST // 'literal'.
 	self assert: calls size equals: 9.
@@ -134,8 +143,9 @@ GtSmaCCQueryExamples >> jsLiterals [
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsLiteralsWithValue10 [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| calls |
-	calls := self jsAST // 'literal' @ 'value' <- '10'.
+	calls := (self jsAST // 'literal') @ 'value' <- '10'.
 	self assert: calls size = 2.
 	^ calls
 ]
@@ -143,6 +153,7 @@ GtSmaCCQueryExamples >> jsLiteralsWithValue10 [
 { #category : #'js examples' }
 GtSmaCCQueryExamples >> jsRecursiveFibCalls [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| calls |
 	calls := self jsAST // 'function' // 'callexpression'.
 	self assert: calls size = 2.
@@ -152,6 +163,7 @@ GtSmaCCQueryExamples >> jsRecursiveFibCalls [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> orQuery [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| ast productions tokens both all |
 	ast := self grammarAST.
 	productions := ast / SmaCCProductionRuleNode.
@@ -168,8 +180,10 @@ GtSmaCCQueryExamples >> orQuery [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> rulesThatUseTerm [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| rules |
-	rules := self grammarAST // 'productionsymbol' @ 'name' <- #Term \\ 'productionrule'.
+	rules := ((self grammarAST // 'productionsymbol') @ 'name' <- #Term)
+			\\ 'productionrule'.
 	self assert: rules size > 1.
 	^ rules
 ]
@@ -177,8 +191,9 @@ GtSmaCCQueryExamples >> rulesThatUseTerm [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> rulesWithTerm [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| rules |
-	rules := self grammarAST // 'productionrule' @ 'name' <- 'Term'.
+	rules := (self grammarAST // 'productionrule') @ 'name' <- 'Term'.
 	self assert: rules size > 2.
 	^ rules
 ]
@@ -186,8 +201,9 @@ GtSmaCCQueryExamples >> rulesWithTerm [
 { #category : #'grammar examples' }
 GtSmaCCQueryExamples >> termRule [
 	<gtExample>
+	<return: #GtSmaCCNodeQuery>
 	| rules |
-	rules := self grammarAST // 'productionrule' @ 'name' <- #Term.
+	rules := (self grammarAST // 'productionrule') @ 'name' <- #Term.
 	self assert: rules size = 1.
 	^ rules
 ]

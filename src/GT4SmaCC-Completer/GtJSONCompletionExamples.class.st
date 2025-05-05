@@ -7,6 +7,7 @@ Class {
 { #category : #examples }
 GtJSONCompletionExamples >> completeEmptyRequested [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '{  }' asRopedText.
@@ -24,6 +25,7 @@ GtJSONCompletionExamples >> completeEmptyRequested [
 { #category : #examples }
 GtJSONCompletionExamples >> completeEmptyValueBeforeNumber [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -42,6 +44,7 @@ GtJSONCompletionExamples >> completeEmptyValueBeforeNumber [
 { #category : #examples }
 GtJSONCompletionExamples >> completeEmptyValueBeforePairRequested [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -54,15 +57,14 @@ GtJSONCompletionExamples >> completeEmptyValueBeforePairRequested [
 			requested: true.
 	items := (result stream asyncSimilarCopy take: 5) toArray wait.
 	self assert: items size equals: 2.
-	self
-		assert: (items collect: #label) sort
-		equals: #('"false"' '"true"').
+	self assert: (items collect: #label) sort equals: #('"false"' '"true"').
 	^ result
 ]
 
 { #category : #examples }
 GtJSONCompletionExamples >> completeInsideValue [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -81,6 +83,7 @@ GtJSONCompletionExamples >> completeInsideValue [
 { #category : #examples }
 GtJSONCompletionExamples >> completeInsideValueWithError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -99,6 +102,7 @@ GtJSONCompletionExamples >> completeInsideValueWithError [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKey [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -117,6 +121,7 @@ GtJSONCompletionExamples >> completeKey [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKeyBeforePair [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -136,6 +141,7 @@ GtJSONCompletionExamples >> completeKeyBeforePair [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKeyInError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -154,6 +160,7 @@ GtJSONCompletionExamples >> completeKeyInError [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKeyInList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -172,6 +179,7 @@ GtJSONCompletionExamples >> completeKeyInList [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKeyInListWithError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -190,6 +198,7 @@ GtJSONCompletionExamples >> completeKeyInListWithError [
 { #category : #examples }
 GtJSONCompletionExamples >> completeKeyInString [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '{ "del" : "true" }' asRopedText.
@@ -207,6 +216,7 @@ GtJSONCompletionExamples >> completeKeyInString [
 { #category : #examples }
 GtJSONCompletionExamples >> completeUnionKeyInList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -225,6 +235,7 @@ GtJSONCompletionExamples >> completeUnionKeyInList [
 { #category : #examples }
 GtJSONCompletionExamples >> completeUnionKeyWithCheck [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -243,6 +254,7 @@ GtJSONCompletionExamples >> completeUnionKeyWithCheck [
 { #category : #examples }
 GtJSONCompletionExamples >> completeUnionKeyWithCheckInError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -261,6 +273,7 @@ GtJSONCompletionExamples >> completeUnionKeyWithCheckInError [
 { #category : #examples }
 GtJSONCompletionExamples >> completeUnionValueInList [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -279,6 +292,7 @@ GtJSONCompletionExamples >> completeUnionValueInList [
 { #category : #examples }
 GtJSONCompletionExamples >> completeUnknownKeyWithCheck [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -296,6 +310,7 @@ GtJSONCompletionExamples >> completeUnknownKeyWithCheck [
 { #category : #examples }
 GtJSONCompletionExamples >> completeValue [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -314,6 +329,7 @@ GtJSONCompletionExamples >> completeValue [
 { #category : #examples }
 GtJSONCompletionExamples >> completeValueBeforePair [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -334,6 +350,7 @@ GtJSONCompletionExamples >> completeValueBeforePair [
 { #category : #examples }
 GtJSONCompletionExamples >> completeValueInError [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -352,6 +369,7 @@ GtJSONCompletionExamples >> completeValueInError [
 { #category : #examples }
 GtJSONCompletionExamples >> completeValueInString [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '{ "deleted" : "t"}' asRopedText.
@@ -369,6 +387,7 @@ GtJSONCompletionExamples >> completeValueInString [
 { #category : #examples }
 GtJSONCompletionExamples >> completeWithBlock [
 	<gtExample>
+	<return: #GtStreamedCompletionResult>
 	| strategy result items text position |
 	strategy := self completionStrategy.
 	text := '
@@ -387,6 +406,7 @@ GtJSONCompletionExamples >> completeWithBlock [
 { #category : #examples }
 GtJSONCompletionExamples >> completer [
 	<gtExample>
+	<return: #GtJSONObjectCompleter>
 	| completer person trueFalseCompleter address phone object |
 	trueFalseCompleter := GtJSONValueCompleter new
 			addValue: '"true"';
@@ -451,6 +471,7 @@ GtJSONCompletionExamples >> completer [
 { #category : #examples }
 GtJSONCompletionExamples >> completionStrategy [
 	<gtExample>
+	<return: #GtJSONCompletionStrategy>
 	^ GtJSONCompletionStrategy new
 		completer: self completer;
 		yourself
