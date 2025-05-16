@@ -15,8 +15,8 @@ GtSmaCCMethodDefinitionElement >> build [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		hMatchParent;
-		vFitContent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
+		vFitContentLimited;
+		aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude;
 		beEditable;
 		padding: (BlInsets
 				top: 5
