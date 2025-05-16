@@ -37,7 +37,7 @@ GtSmaCCCodeElement >> initialize [
 	editor
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		matchParent;
-		aptitude: BrGlamorousCodeEditorAptitude new;
+		aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude;
 		beEditable;
 		padding: (BlInsets
 				top: 5

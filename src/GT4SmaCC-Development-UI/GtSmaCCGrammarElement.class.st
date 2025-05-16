@@ -92,9 +92,12 @@ GtSmaCCGrammarElement >> sourceEditorElement [
 	element border: (BlBorder paint: (Color lightGray alpha: 0.5)).
 	element padding: (BlInsets all: 10).
 	element matchParent.
-	element aptitude: BrGlamorousCodeEditorAptitude new.
+	element
+		aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude.
 	completionStrategy := GtWeightedStringsCompletionStrategy new.
-	completionController := GtCompletionController on: element strategy: completionStrategy.
+	completionController := GtCompletionController
+			on: element
+			strategy: completionStrategy.
 	completionController closeOnEmptyCompletion: false.
 	completionController install.
 	^ element
