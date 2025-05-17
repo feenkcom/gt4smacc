@@ -79,7 +79,7 @@ GtSmaCCCoderElement >> contentElement [
 	| element |
 	element := BrVerticalPane new.
 	element margin: (BlInsets left: 5).
-	element vFitContent.
+	element vFitContentLimited.
 	element hMatchParent.
 	element addChild: self sourceEditor as: #editor.
 	element addChild: self actionBar as: #actionBar.
@@ -108,7 +108,7 @@ GtSmaCCCoderElement >> deleteElement [
 GtSmaCCCoderElement >> initialize [
 	super initialize.
 	self
-		vFitContent;
+		vFitContentLimited;
 		hMatchParent;
 		clipChildren: false.
 	self addChild: self deleteElement as: #deleteButton.
@@ -145,7 +145,7 @@ GtSmaCCCoderElement >> sourceEditor [
 	element := BrEditor new.
 	element padding: (BlInsets all: 2).
 	element hMatchParent.
-	element vFitContent.
+	element vFitContentLimited.
 	element editor: coder sourceEditor.
 	element styler: element editor styler.
 	element editor styleText.
@@ -153,9 +153,7 @@ GtSmaCCCoderElement >> sourceEditor [
 	coder completionStrategy
 		ifNotNil: [ :strategy | 
 			| completionController |
-			completionController := GtCompletionController
-				on: element
-				strategy: strategy.
+			completionController := GtCompletionController on: element strategy: strategy.
 			completionController closeOnEmptyCompletion: false.
 			completionController install ].
 	^ element

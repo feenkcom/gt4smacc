@@ -88,7 +88,7 @@ GtSmaCCPreviewElement >> editorFor: aString parser: aClass scrollToError: aBoole
 	| element index |
 	element := BrEditor new.
 	element
-		aptitude: BrGlamorousCodeEditorAptitude;
+		aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude;
 		padding: (BlInsets all: 5);
 		matchParent.
 	element editor text: (aString ifNil: [ '' ]) asRopedText.
