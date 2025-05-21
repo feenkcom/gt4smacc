@@ -44,7 +44,7 @@ SmaCCParseNode >> gtExploreFor: aView [
 					e vertical matchParent.
 					e horizontal matchParent ];
 				beReadOnlyWithSelection;
-				aptitude: BrShadowAptitude;
+				addAptitude: BrShadowAptitude;
 				background: Color white;
 				margin: (BlInsets all: 10).
 			element addChild: editor.
@@ -168,7 +168,7 @@ SmaCCParseNode class >> gtSourceEditor: aTopNode withNode: aNodeOrToken highligh
 							paint: aColor} ].
 	anEditor := BrEditor new
 			text: aText;
-			aptitude: BrGlamorousCodeEditorAptitude new.
+			aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude.
 	self
 		gtScroll: aSource
 		toPosition: aNodeOrToken startPosition
