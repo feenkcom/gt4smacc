@@ -304,7 +304,8 @@ GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
 		when: GtRenameActionAnnouncement
 		do: [ :ann | 
 			ann eventType = #uninstall
-				ifTrue: [ self enableCodeCompletion ] ].
+				ifTrue: [ self enableCodeCompletion ] ]
+		for: self.
 	renameAction install
 ]
 
