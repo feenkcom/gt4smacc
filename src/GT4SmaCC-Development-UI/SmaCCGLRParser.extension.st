@@ -1,6 +1,34 @@
 Extension { #name : #SmaCCGLRParser }
 
 { #category : #'*GT4SmaCC-Development-UI' }
+SmaCCGLRParser class >> ambiguousAnalysis [
+	| analysis parser |
+	analysis := GtSmaCCAmbiguousAnalysis new parserClass: self.
+	parser := self new.
+	(parser shortestPathsFrom: 1)
+		keysAndValuesDo: [ :state :stack | 
+			1
+				to: self symbolNames size
+				do: [ :id | 
+					| actions |
+					actions := OrderedCollection new.
+					parser
+						addActionsForState: state
+						symbol: id
+						to: actions.
+					actions size > 1
+						ifTrue: [ analysis
+								addDuplicatesFrom: (parser
+										stateStack: (OrderedCollection withAll: stack);
+										currentToken: (SmaCCToken
+												value: ''
+												start: 0
+												ids: {id});
+										yourself) ] ] ].
+	^ analysis
+]
+
+{ #category : #'*GT4SmaCC-Development-UI' }
 SmaCCGLRParser class >> analyzeAmbiguousParses: aString [
 	| analysis anInteger aStream parser method |
 	analysis := GtSmaCCAmbiguousAnalysis new parserClass: self.
