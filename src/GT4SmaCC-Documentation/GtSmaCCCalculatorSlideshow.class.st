@@ -58,7 +58,8 @@ Expression
 		in: element.
 	(self grammarFrom: element)
 		when: GtSmaCCGrammarAnnouncement
-		do: [ :annoucement | self updateDirectiveSlideToggles: element with: annoucement ].
+		do: [ :annoucement | self updateDirectiveSlideToggles: element with: annoucement ]
+		for: self.
 	^ element
 ]
 
