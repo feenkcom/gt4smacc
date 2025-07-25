@@ -17,8 +17,9 @@ GtSmaCCDefinitionGroupResult class >> onCoder: aGrammarCoder [
 
 { #category : #elements }
 GtSmaCCDefinitionGroupResult >> asElement [
-	^ GtSmaCCCoderListElement new
+	^ GtSmaCCFilteredCoderElement new
 		group: self;
+		coder: self grammarCoder;
 		yourself
 ]
 

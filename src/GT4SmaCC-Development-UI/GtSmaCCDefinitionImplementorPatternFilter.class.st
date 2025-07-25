@@ -1,9 +1,6 @@
 Class {
 	#name : #GtSmaCCDefinitionImplementorPatternFilter,
-	#superclass : #GtSmaCCDefinitionsFilter,
-	#instVars : [
-		'pattern'
-	],
+	#superclass : #GtSmaCCDefinitionImplementorFilter,
 	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
@@ -13,18 +10,6 @@ GtSmaCCDefinitionImplementorPatternFilter class >> filterDescriptor [
 		creator: [ :aString | self pattern: aString ];
 		named: 'Name';
 		order: 12
-]
-
-{ #category : #'instance creation' }
-GtSmaCCDefinitionImplementorPatternFilter class >> pattern: aString [
-	^ self new
-		pattern: aString;
-		yourself
-]
-
-{ #category : #accessing }
-GtSmaCCDefinitionImplementorPatternFilter >> highlighter [
-	^ GtSmaCCImplementorHighlightingVisitor pattern: pattern
 ]
 
 { #category : #testing }
@@ -37,9 +22,4 @@ GtSmaCCDefinitionImplementorPatternFilter >> matches: anObject [
 		ifNil: [ false ]
 		ifNotNil:
 			[ :name | (name asLowercase indexOfSubCollection: pattern asLowercase) > 0 ]
-]
-
-{ #category : #accessing }
-GtSmaCCDefinitionImplementorPatternFilter >> pattern: aString [
-	pattern := aString
 ]

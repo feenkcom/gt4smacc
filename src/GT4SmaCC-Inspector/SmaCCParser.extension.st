@@ -14,7 +14,13 @@ SmaCCParser >> buildMondrian: mondrian forStack: stack [
 						bottom: 5
 						right: 10);
 				text: each name asRopedText;
-				aptitude: BrGlamorousLabelAptitude new;
+				aptitude: BrGlamorousLabelAptitude new
+						+ (BrGlamorousWithExplicitTooltipAptitude
+								content: [ | editor |
+									editor := BrEditor new.
+									editor fitContent.
+									editor editor text: each description asRopedText.
+									editor ]);
 				background: BrGlamorousColors neutralBackgroundColor;
 				geometry: (BlRoundedRectangleGeometry cornerRadius: 8);
 				border: (BlBorder
