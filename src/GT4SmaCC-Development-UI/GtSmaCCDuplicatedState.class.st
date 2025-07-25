@@ -66,15 +66,21 @@ GtSmaCCDuplicatedState >> gtGraphViewFor: aView [
 	^ aView forward
 		title: 'Graph';
 		object: [ self parserClass new
-				stateStack: minimizedStack;
+				stateStack: self stateStack;
 				yourself ];
 		view: #gtGraphViewIn:
 ]
 
 { #category : #views }
-GtSmaCCDuplicatedState >> gtTracesFor: aView [
+GtSmaCCDuplicatedState >> gtTracesFor: aView context: aDictionary [
 	<gtView>
-	| index |
+	| index coder |
+	self parserClass
+		ifNotNil: [ :parserClass | 
+			parserClass parserDefinitionString isEmpty
+				ifFalse: [ coder := aDictionary
+							at: #coder
+							ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	index := SmallInteger maxVal.
 	^ aView tree
 		title: 'Traces';
@@ -91,18 +97,30 @@ GtSmaCCDuplicatedState >> gtTracesFor: aView [
 			reductions collect: [ :each | each reversed ] ];
 		children: [ :each | each size > 1 ifTrue: [ {each allButFirst} ] ifFalse: [ #() ] ];
 		itemStencil: [ :each | 
-			BrEditor new
-				hMatchParent;
-				vFitContentLimited;
-				aptitude: BrGlamorousCodeEditorAptitude;
-				beReadOnlyWithoutSelection;
-				yourself ];
+			| editor |
+			editor := BrEditor new.
+			editor hMatchParent.
+			editor vFitContentLimited.
+			editor aptitude: BrGlamorousCodeEditorAptitude.
+			editor beReadOnlyWithoutSelection.
+			editor
+				removeEventHandlersSuchThat: [ :handler | 
+					(handler isKindOf: BlEventHandler)
+						and: [ handler eventClass = BlMouseUpEvent or: [ handler eventClass = BlClickEvent ] ] ].
+			editor ];
 		itemDataBinder: [ :editor :each :i | 
 			| text |
 			text := each first displayText.
 			each size <= index
 				ifTrue: [ text foreground: BrGlamorousColors disabledHeaderTextColor ].
-			editor editor text: text ]
+			editor editor text: text ];
+		send: [ :each | 
+			| item |
+			item := coder
+					ifNotNil: [ each detect: [ :e | (coder ruleNamed: e name) notNil ] ifNone: [  ] ].
+			item
+				ifNotNil: [ (GtSmaCCGrammarFilter on: coder)
+						& (GtSmaCCDefinitionImplementorFilter pattern: item name) ] ]
 ]
 
 { #category : #comparing }
@@ -132,6 +150,7 @@ GtSmaCCDuplicatedState >> minimizeStack: aStack from: anIndex [
 { #category : #views }
 GtSmaCCDuplicatedState >> minimizedStack [
 	^ minimizedStack
+		ifNil: [ minimizedStack := self minimizeStack: stateStack from: 1 ]
 ]
 
 { #category : #accessing }
@@ -146,8 +165,7 @@ GtSmaCCDuplicatedState >> stateStack [
 
 { #category : #accessing }
 GtSmaCCDuplicatedState >> stateStack: anObject [
-	stateStack := anObject.
-	minimizedStack := self minimizeStack: stateStack from: 1
+	stateStack := anObject
 ]
 
 { #category : #accessing }

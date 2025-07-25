@@ -39,9 +39,14 @@ GtSmaCCAmbiguousAnalysis >> duplicatedStates: aCollection [
 ]
 
 { #category : #views }
-GtSmaCCAmbiguousAnalysis >> gtActionViewFor: aView [
+GtSmaCCAmbiguousAnalysis >> gtActionViewFor: aView context: aDictionary [
 	<gtView>
 	| actions |
+	parserClass
+		ifNotNil: [ parserClass parserDefinitionString isEmpty
+				ifFalse: [ aDictionary
+						at: #coder
+						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	actions := Dictionary new.
 	duplicatedStates
 		do: [ :each | 
@@ -60,9 +65,14 @@ GtSmaCCAmbiguousAnalysis >> gtActionViewFor: aView [
 ]
 
 { #category : #views }
-GtSmaCCAmbiguousAnalysis >> gtActionsViewFor: aView [
+GtSmaCCAmbiguousAnalysis >> gtActionsViewFor: aView context: aDictionary [
 	<gtView>
 	| actions |
+	parserClass
+		ifNotNil: [ parserClass parserDefinitionString isEmpty
+				ifFalse: [ aDictionary
+						at: #coder
+						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	actions := duplicatedStates groupedBy: #actions.
 	^ aView columnedList
 		title: 'By actions';
@@ -80,8 +90,13 @@ GtSmaCCAmbiguousAnalysis >> gtActionsViewFor: aView [
 ]
 
 { #category : #views }
-GtSmaCCAmbiguousAnalysis >> gtStatesAndTokensViewFor: aView [
+GtSmaCCAmbiguousAnalysis >> gtStatesAndTokensViewFor: aView context: aDictionary [
 	<gtView>
+	parserClass
+		ifNotNil: [ parserClass parserDefinitionString isEmpty
+				ifFalse: [ aDictionary
+						at: #coder
+						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	^ aView columnedList
 		title: 'By stack & token';
 		items: [ (duplicatedStates
@@ -97,8 +112,13 @@ GtSmaCCAmbiguousAnalysis >> gtStatesAndTokensViewFor: aView [
 ]
 
 { #category : #views }
-GtSmaCCAmbiguousAnalysis >> gtTokensViewFor: aView [
+GtSmaCCAmbiguousAnalysis >> gtTokensViewFor: aView context: aDictionary [
 	<gtView>
+	parserClass
+		ifNotNil: [ parserClass parserDefinitionString isEmpty
+				ifFalse: [ aDictionary
+						at: #coder
+						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	^ aView columnedList
 		title: 'By token';
 		items: [ (duplicatedStates groupedBy: [ :e | e tokenIds first ]) associations

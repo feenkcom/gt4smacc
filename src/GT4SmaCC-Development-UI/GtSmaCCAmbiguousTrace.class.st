@@ -79,7 +79,7 @@ GtSmaCCAmbiguousTrace >> duplicatedState: anObject [
 	duplicatedState := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #views }
 GtSmaCCAmbiguousTrace >> gtGraphViewFor: aView [
 	<gtView>
 	^ aView forward
@@ -90,12 +90,12 @@ GtSmaCCAmbiguousTrace >> gtGraphViewFor: aView [
 		view: #gtGraphViewIn:
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCAmbiguousTrace >> parserClass [
 	^ duplicatedState parserClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCAmbiguousTrace >> reductions [
 	| reductions returnTable parser |
 	parser := self parserClass new stateStack: stack copy.
@@ -109,7 +109,7 @@ GtSmaCCAmbiguousTrace >> reductions [
 	^ reductions
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 GtSmaCCAmbiguousTrace >> saveReductionsFrom: parser returnTable: returnTable position: anInteger into: reductions [
 	| actions groupedActions reduceActions size |
 	size := parser stateStack size - anInteger.
