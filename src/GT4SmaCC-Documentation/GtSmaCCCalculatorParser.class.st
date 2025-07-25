@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCalculatorParser,
 	#superclass : #SmaCCParser,
-	#category : 'GT4SmaCC-Documentation-GT4SmaCC-Documentation'
+	#category : #'GT4SmaCC-Documentation-GT4SmaCC-Documentation'
 }
 
 { #category : #generated }
