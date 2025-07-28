@@ -450,9 +450,11 @@ GtSmaCCCalculatorSlideshow >> numberTokenSlideElement [
 		in: element.
 	(self grammarFrom: element)
 		when: GtSmaCCGrammarItemChanged
-			do: [ :annoucement | self updateNumberSlideToggles: element with: annoucement ];
+			do: [ :annoucement | self updateNumberSlideToggles: element with: annoucement ]
+			for: self;
 		when: GtSmaCCGrammarRulesChanged
-			do: [ :annoucement | self updateTokenTargetsIn: element ].
+			do: [ :annoucement | self updateTokenTargetsIn: element ]
+			for: self.
 	element
 		enqueueTask: (BlDelayedTaskAction new
 				delay: 500 milliSeconds;
