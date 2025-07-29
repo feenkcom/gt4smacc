@@ -32,7 +32,7 @@ GtSmaCCSlides >> createParserCoderOn: aClass [
 	
 	| coderElement |
 	coderElement := BlUseAsyncFeatures
-		disableDuring: [ (GtPager createWrappedOn: (GtClassCoderLiveSlide new class: aClass)) maximized ].
+		disableDuring: [ (GtPagerSettings usedPager createWrappedOn: (GtClassCoderLiveSlide new class: aClass)) maximized ].
 	^ (BlElement new)
 		constraintsDo:
 				[ :c | 
