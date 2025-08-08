@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'variableNames'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #'instance creation' }
@@ -16,7 +16,11 @@ GtSmaCCNodeVariableStylerRule class >> nodeClassName: aSymbol variableNames: aCo
 
 { #category : #applying }
 GtSmaCCNodeVariableStylerRule >> applyTo: anObject on: aText [
-	variableNames do: [ :each | (anObject perform: each asSymbol) ifNotNil: [ :item | self style: item on: aText ] ]
+	variableNames
+		do: [ :each | 
+			(anObject respondsTo: each asSymbol)
+				ifTrue: [ (anObject perform: each asSymbol)
+						ifNotNil: [ :item | self style: item on: aText ] ] ]
 ]
 
 { #category : #accessing }
