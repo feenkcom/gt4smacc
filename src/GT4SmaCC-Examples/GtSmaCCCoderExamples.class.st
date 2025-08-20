@@ -51,7 +51,8 @@ GtSmaCCCoderExamples >> csIfSimulateError [
 				do: [ :ann | 
 					self assert: ann stack size = 5.
 					self assert: ann index = 11.
-					result := ann stack ].
+					result := ann stack ]
+				for: self.
 			simulator simulateOn: 'if (a == 3;'.
 			self assert: result notNil.
 			^ result ]
@@ -68,7 +69,8 @@ GtSmaCCCoderExamples >> csIfSimulateIncomplete [
 				when: GtSmaCCParserSimulationIncompleteInput
 				do: [ :ann | 
 					self assert: ann stack size = 4.
-					result := ann stack ].
+					result := ann stack ]
+				for: self.
 			simulator simulateOn: 'if (a == 3)'.
 			self assert: result notNil.
 			^ result ]
@@ -85,7 +87,8 @@ GtSmaCCCoderExamples >> csIfSimulateResult [
 				when: GtSmaCCParserSimulationAccept
 				do: [ :ann | 
 					self assert: ann results size = 1.
-					result := ann results first ].
+					result := ann results first ]
+				for: self.
 			simulator simulateOn: 'if (a == 3) return 4;'.
 			self assert: result notNil.
 			^ result ]
@@ -262,7 +265,8 @@ GtSmaCCCoderExamples >> jsIdentifierSimulator [
 	simulator := GtSmaCCTokenSimulator on: identifier.
 	simulator
 		when: GtSmaCCTokenSimulationAccept
-		do: [ :ann | self assert: (ann index = 0 or: [ ann nodes notEmpty ]) ].
+		do: [ :ann | self assert: (ann index = 0 or: [ ann nodes notEmpty ]) ]
+		for: self.
 	simulator simulateOn: '\u'.
 	^ simulator
 ]
@@ -379,7 +383,10 @@ GtSmaCCCoderExamples >> simulateHex [
 	nodes := IdentitySet new.
 	simulator
 		when: GtSmaCCTokenSimulationAccept
-		do: [ :ann | ann nodes do: [ :each | nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ].
+		do: [ :ann | 
+			ann nodes do: [ :each | 
+				nodes add: (each nodeOfType: SmaCCTokenRuleNode) ] ]
+		for: self.
 	simulator simulateOn: 'a'.
 	self assert: nodes size = 2.
 	^ simulator
@@ -400,7 +407,8 @@ GtSmaCCCoderExamples >> simulateRight [
 		do: [ :ann | 
 			ann input = input
 				ifTrue: [ errorCount := errorCount + 1.
-					self assert: ann index = 3 ] ].
+					self assert: ann index = 3 ] ]
+		for: self.
 	acceptCount := 0.
 	simulator
 		when: GtSmaCCTokenSimulationAccept
@@ -409,7 +417,8 @@ GtSmaCCCoderExamples >> simulateRight [
 			self assert: ann index < 3.
 			(ann input = input and: [ ann index > 0 ])
 				ifTrue: [ self assert: ann nodes size = 1.
-					self assert: ann nodes anyOne source first = (input at: ann index) ] ].
+					self assert: ann nodes anyOne source first = (input at: ann index) ] ]
+		for: self.
 	simulator simulateOn: input.
 	self assert: acceptCount = 3.
 	^ simulator
