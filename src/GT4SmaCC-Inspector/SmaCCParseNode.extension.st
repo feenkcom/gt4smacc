@@ -25,12 +25,11 @@ SmaCCParseNode >> gtExploreFor: aView [
 	<gtView>
 	| topParent |
 	topParent := self topParent.
-	topParent completeSource isNil
-		ifTrue: [ ^ aView empty ].
+	topParent completeSource isNil ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		priority: 5;
 		title: 'Explore';
-		stencil: [ | element editor tree |
+		stencil: [ | element editor tree allParents treeElement |
 			element := BlElement new.
 			element layout: BlLinearLayout horizontal.
 			element
@@ -38,7 +37,7 @@ SmaCCParseNode >> gtExploreFor: aView [
 					c vertical matchParent.
 					c horizontal matchParent ].
 			editor := self
-				gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
+					gtSourceEditorWithHighlight: BrGlamorousColors neutralBackgroundColor.
 			editor
 				constraintsDo: [ :e | 
 					e vertical matchParent.
@@ -48,17 +47,26 @@ SmaCCParseNode >> gtExploreFor: aView [
 				background: Color white;
 				margin: (BlInsets all: 10).
 			element addChild: editor.
-			(topParent gtTreeFor: GtPhlowView empty)
-				asElementDo: [ :e | tree := e ].
-			tree
+			treeElement := (topParent gtTreeFor: GtPhlowView empty)
+					asElementDo: [ :e | e ].
+			tree := treeElement children last.
+			treeElement
 				constraintsDo: [ :e | 
 					e vertical matchParent.
 					e horizontal matchParent ];
 				aptitude: BrShadowAptitude;
 				background: Color white;
 				margin: (BlInsets all: 10).
-			element addChild: tree.
-			topParent gtHookEditor: editor toTree: tree children last.
+			element addChild: treeElement.
+			topParent gtHookEditor: editor toTree: tree.
+			allParents := self allParents asIdentitySet.
+			tree
+				expandSuchThat: [ :each | 
+					(allParents includes: each value last)
+						or: [ each value second = #nodes
+								and: [ allParents anySatisfy: [ :e | each value last includes: e ] ] ] ].
+			tree viewModel root
+				allChildrenNodesDepthFirstDo: [ :each | each value last = self ifTrue: [ tree selectAndScrollTo: each value ] ].
 			element ]
 ]
 
