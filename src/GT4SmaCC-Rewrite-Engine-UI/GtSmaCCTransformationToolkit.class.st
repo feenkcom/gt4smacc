@@ -349,7 +349,7 @@ GtSmaCCTransformationToolkit >> initialize [
 				text: '')
 		as: #filenameLabel.
 	button := BrButton new
-			icon: BrGlamorousIcons savetodisk;
+			icon: BrGlamorousVectorIcons savetodisk;
 			aptitude: BrGlamorousButtonWithIconAptitude;
 			label: 'Save configuration';
 			beSmallSize;
@@ -357,7 +357,7 @@ GtSmaCCTransformationToolkit >> initialize [
 			addAptitude: (BrGlamorousWithExplicitDropdownAptitude
 					handle: [ BrButton new
 							beSmallSize;
-							icon: BrGlamorousIcons savetodisk;
+							icon: BrGlamorousVectorIcons savetodisk;
 							label: 'Save configuration';
 							aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude2
 									- BrGlamorousButtonExteriorAptitude ]

@@ -31,7 +31,7 @@ SmaCCAbstractRewrite >> gtEditorFor: aView context: aContext [
 				transformationElement
 					ifNil: [ BlElement new ]
 					ifNotNil: [ transformationElement deleteTransformationDropdownFor: button ] ];
-		actionDropdownButtonIcon: BrGlamorousIcons save
+		actionDropdownButtonIcon: BrGlamorousVectorIcons save
 			tooltip: 'Save transformations'
 			content: [ :button | 
 				| element fileSelectElement |

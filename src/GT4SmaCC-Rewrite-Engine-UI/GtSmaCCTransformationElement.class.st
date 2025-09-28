@@ -132,7 +132,7 @@ GtSmaCCTransformationElement >> deleteTransformationDropdownFor: button [
 						beSmallSize;
 						aptitude: BrGlamorousButtonWithIconAptitude;
 						label: 'Delete';
-						icon: BrGlamorousIcons remove asElement;
+						icon: BrGlamorousVectorIcons remove asElement;
 						margin: (BlInsets all: 2);
 						action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 							self deleteRewrite ]) ]
@@ -184,7 +184,7 @@ GtSmaCCTransformationElement >> filterDropdownFor: button [
 				beSmallSize;
 				aptitude: BrGlamorousButtonWithIconAptitude;
 				label: 'Apply Filter';
-				icon: BrGlamorousIcons filter asElement;
+				icon: BrGlamorousVectorIcons filter asElement;
 				margin: (BlInsets all: 2);
 				action: [ button dispatchEvent: (BrDropdownHideWish new anchor: button).
 					self applyRewriteFilter: editor editor text asString ]);

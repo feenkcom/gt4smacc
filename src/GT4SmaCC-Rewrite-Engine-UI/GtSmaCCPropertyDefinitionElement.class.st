@@ -8,7 +8,7 @@ Class {
 GtSmaCCPropertyDefinitionElement >> addButton: aString [
 	| button |
 	button := BrButton new.
-	button icon: BrGlamorousIcons add.
+	button icon: BrGlamorousVectorIcons add.
 	button aptitude: BrGlamorousButtonWithIconAptitude.
 	button label: 'Add'.
 	button beSmallSize.
@@ -17,7 +17,7 @@ GtSmaCCPropertyDefinitionElement >> addButton: aString [
 		addAptitude: (BrGlamorousWithExplicitDropdownAptitude
 				handle: [ BrButton new
 						beSmallSize;
-						icon: BrGlamorousIcons add;
+						icon: BrGlamorousVectorIcons add;
 						label: 'Add';
 						aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonWithLabelTooltipAptitude2
 								- BrGlamorousButtonExteriorAptitude ]
@@ -44,7 +44,7 @@ GtSmaCCPropertyDefinitionElement >> addButton: aString [
 								beSmallSize;
 								aptitude: BrGlamorousButtonWithIconAptitude;
 								label: 'Add';
-								icon: BrGlamorousIcons add asElement;
+								icon: BrGlamorousVectorIcons add asElement;
 								margin: (BlInsets all: 2);
 								action: [ :theButton | 
 									| variableName |
@@ -89,7 +89,7 @@ GtSmaCCPropertyDefinitionElement >> removeButton: aString list: list [
 		beSmallSize;
 		aptitude: BrGlamorousButtonWithIconAptitude;
 		label: 'Remove';
-		icon: BrGlamorousIcons remove asElement;
+		icon: BrGlamorousVectorIcons remove asElement;
 		margin: (BlInsets all: 2);
 		action: [ list selectedIndices
 				collect: [ :i | 
