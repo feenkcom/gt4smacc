@@ -55,7 +55,7 @@ GtSmaCCCodeGenerationExamples >> astGeneration [
 			| Expression ''left'' "-" ''operator'' Expression ''right'' {{BinaryExpression}}
 			| Expression ''left'' "*" ''operator'' Expression ''right'' {{BinaryExpression}}
 			| Expression ''left'' "/" ''operator'' Expression ''right'' {{BinaryExpression}}
-			| "(" ''leftParen'' Expression ")" ''rightParen'' {{Expression}}
+			| "(" ''leftParen'' Expression ")" ''rightParen'' {{}}
 			| <number> ''value'' {{Number}}
 			;
 	'.
@@ -193,4 +193,97 @@ GtSmaCCCodeGenerationExamples >> parserClassName [
 { #category : #private }
 GtSmaCCCodeGenerationExamples >> scannerClassName [
 	^ 'AAAExampleScanner'
+]
+
+{ #category : #'examples - evaluation' }
+GtSmaCCCodeGenerationExamples >> simpleCsv [
+	<gtExample>
+	<after: #cleanUp>
+	| grammar value |
+	grammar := '
+		<value> : [^\,\r\n];
+		<eol> : \r?\n | \r;
+		File
+			: (Line? <eol>)* Line?
+			;
+		Line
+			: Value ("," Value)*
+			;
+		Value : <value>;
+	'.
+	self compileParser: grammar.
+	self assert: (self parserClass parse: '') equals: OrderedCollection new.
+	self assert: (self parserClass parse: '\') size equals: 1.
+	value := self parserClass parse: '1,2,3,4\\5,6,7,8' withCRs.
+	self assert: value size equals: 16.
+	^ value
+]
+
+{ #category : #'examples - evaluation' }
+GtSmaCCCodeGenerationExamples >> simpleCsvAST [
+	<gtExample>
+	<after: #cleanUp>
+	| grammar value |
+	grammar := '
+		%root Root;
+		%prefix GtCSV;
+		%suffix Node;
+		<value> : [^\,\r\n];
+		<eol> : \r?\n | \r;
+		File
+			: (Line ''line''? <eol>)* Line ''line''? {{}}
+			;
+		Line
+			: Value ''value'' ("," ''comma'' Value ''value'')* {{}}
+			;
+		Value : <value> ''string'' {{}};
+	'.
+	self compileParser: grammar.
+	value := self parserClass parse: '1,2,3,4\\5,6,7,8' withCRs.
+	self assert: value class name equals: #GtCSVFileNode.
+	self assert: value lines size equals: 2.
+	self assert: value lines first class name equals: #GtCSVLineNode.
+	self assert: value lines first values size equals: 4.
+	self assert: value lines first values first class name equals: #GtCSVValueNode.
+	self assert: value lines first values first string value equals: '1'.
+	^ value
+]
+
+{ #category : #'examples - evaluation' }
+GtSmaCCCodeGenerationExamples >> simpleCsvAsValues [
+	<gtExample>
+	<after: #cleanUp>
+	| grammar value |
+	grammar := '
+		<value> : [^\,\r\n];
+		<eol> : \r?\n | \r;
+		File
+			: Lines {''1''}
+			;
+		Lines
+			: Line {OrderedCollection with: ''1''}
+			| Lines ''lines'' <eol> Line ''line'' {lines add: line; yourself}
+			;
+		Line
+			: Values {''1'' contents}
+			| {#()}
+			;
+		Values
+			: Values ''stream'' "," Value ''value'' {stream nextPut: value; yourself}
+			| Value { {} writeStream nextPut: ''1''; yourself}
+			;
+		Value : <value> {''1'' value};
+	'.
+	self compileParser: grammar.
+	self assert: (self parserClass parse: '') equals: (OrderedCollection with: #()).
+	self
+		assert: (self parserClass parse: '\' withCRs)
+		equals: (OrderedCollection with: #() with: #()).
+	value := self parserClass parse: '\1,2,3,4\\5,6,7,8' withCRs.
+	self assert: value size equals: 4.
+	self assert: value first equals: #().
+	self assert: value second equals: #('1' '2' '3' '4').
+	self assert: value third equals: #().
+	self assert: value fourth equals: #('5' '6' '7' '8').
+	^ value
 ]
