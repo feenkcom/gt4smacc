@@ -79,7 +79,7 @@ GtSmaCCCodeGenerationExamples >> astGeneration [
 
 { #category : #cleanup }
 GtSmaCCCodeGenerationExamples >> cleanUp [
-	RPackage organizer
+	self class packageOrganizer
 		packageNamed: self packageName
 		ifPresent: [ :package | package removeFromSystem ]
 ]
