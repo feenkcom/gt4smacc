@@ -10,7 +10,7 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 	spec for: #'common' do: [
 		spec
 			baseline: 'SmaCC' with: [
-				spec repository: 'github://j-brant/SmaCC:v3.0.121' ].
+				spec repository: 'github://j-brant/SmaCC:v3.0.122' ].
 		spec
 			baseline: 'RemoteRunner' with: [
 				spec repository: 'github://feenkcom/gtoolkit-remoterunner:v0.6.1847/src' ].
