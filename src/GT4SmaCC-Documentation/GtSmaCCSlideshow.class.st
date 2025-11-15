@@ -6,23 +6,26 @@ Class {
 
 { #category : #private }
 GtSmaCCSlideshow >> addButtonFor: coderElement [
-	^ coderElement
-		allChildrenBreadthFirstDetect:
-			[ :aChild | (aChild isKindOf: BrToolbar) ]
-		ifFound: [ :aChild | aChild childAt: 2 ]
+	| aQuery |
+	aQuery := coderElement query // GtNavigationNewDropdownId.
+	
+	self assert: aQuery result size equals: 1.
+	^ aQuery anyOne
 ]
 
 { #category : #'create parser slide' }
 GtSmaCCSlideshow >> createSlideElement [
 	| coderElement buttonTarget |
-	coderElement := BlScripter new element: GtCoderElement new createInPager maximized; elementWithoutParent.
+	coderElement := BlScripter new
+			element: GtCoderElement new createInPager maximized;
+			elementWithoutParent.
 	buttonTarget := self addButtonFor: coderElement.
-	buttonTarget addChild: ((self yellowExplanationTargetCircleFor: #addButton) relocate: 2 @ 10).
-	^ (BlElement new)
-		constraintsDo:
-				[ :c | 
-					c vertical matchParent.
-					c horizontal matchParent ];
+	buttonTarget
+		addChild: ((self yellowExplanationTargetCircleFor: #addButton) relocate: 2 @ 10).
+	^ BlElement new
+		constraintsDo: [ :c | 
+			c vertical matchParent.
+			c horizontal matchParent ];
 		aptitude: BrShadowAptitude;
 		background: Color white;
 		margin: (BlInsets all: 5);
