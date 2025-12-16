@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCParserSimulator,
 	#superclass : #GtSmaCCSimulator,
-	#category : 'GT4SmaCC-Development-UI-Simulation'
+	#category : #'GT4SmaCC-Development-UI-Simulation'
 }
 
 { #category : #ui }

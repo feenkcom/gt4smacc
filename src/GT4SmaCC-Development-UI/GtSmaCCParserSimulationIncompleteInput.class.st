@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stack'
 	],
-	#category : 'GT4SmaCC-Development-UI-Simulation'
+	#category : #'GT4SmaCC-Development-UI-Simulation'
 }
 
 { #category : #'instance creation' }

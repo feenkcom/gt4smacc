@@ -5,6 +5,7 @@ SmaCCGLRParser class >> ambiguousAnalysis [
 	| analysis parser |
 	analysis := GtSmaCCAmbiguousAnalysis new parserClass: self.
 	parser := self new.
+	parser scanner: parser class scannerClass new.
 	(parser shortestPathsFrom: 1)
 		keysAndValuesDo: [ :state :stack | 
 			1

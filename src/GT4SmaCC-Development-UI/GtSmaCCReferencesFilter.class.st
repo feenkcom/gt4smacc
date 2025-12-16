@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'name'
 	],
-	#category : 'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
 { #category : #'instance creation' }

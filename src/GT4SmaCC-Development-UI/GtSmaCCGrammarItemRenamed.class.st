@@ -5,7 +5,7 @@ Class {
 		'previousName',
 		'newName'
 	],
-	#category : 'GT4SmaCC-Development-UI-Model'
+	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
 { #category : #testing }

@@ -6,7 +6,7 @@ Class {
 		'production',
 		'rule'
 	],
-	#category : 'GT4SmaCC-Development-UI-Transformations'
+	#category : #'GT4SmaCC-Development-UI-Transformations'
 }
 
 { #category : #'instance creation' }

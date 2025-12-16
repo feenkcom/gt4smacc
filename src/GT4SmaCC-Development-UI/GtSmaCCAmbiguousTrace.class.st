@@ -33,6 +33,7 @@ GtSmaCCAmbiguousTrace class >> performAction: anInteger forStack: aStateStack du
 GtSmaCCAmbiguousTrace class >> trace: aStateStack duplicatedState: aDuplicatedState traces: traces [
 	| parser actions |
 	parser := aDuplicatedState parserClass new stateStack: aStateStack.
+	parser scanner: parser class scannerClass new.
 	parser
 		currentToken: (SmaCCToken
 				value: ''

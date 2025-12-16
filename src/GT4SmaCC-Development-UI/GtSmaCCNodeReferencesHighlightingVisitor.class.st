@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCNodeReferencesHighlightingVisitor,
 	#superclass : #GtSmaCCReferencesHighlightingVisitor,
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #generated }
