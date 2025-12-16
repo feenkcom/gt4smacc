@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCDirective,
 	#superclass : #GtSmaCCGrammarItem,
-	#category : 'GT4SmaCC-Development-UI-Model'
+	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
 { #category : #accessing }

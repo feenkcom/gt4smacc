@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCoderElementHolder,
 	#superclass : #BlInfiniteHolder,
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #accessing }

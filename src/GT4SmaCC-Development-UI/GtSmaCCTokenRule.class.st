@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCTokenRule,
 	#superclass : #GtSmaCCGrammarItem,
-	#category : 'GT4SmaCC-Development-UI-Model'
+	#category : #'GT4SmaCC-Development-UI-Model'
 }
 
 { #category : #testing }

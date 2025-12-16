@@ -4,7 +4,7 @@ Class {
 	#classVars : [
 		'HighlightAttributes'
 	],
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #'class initialization' }

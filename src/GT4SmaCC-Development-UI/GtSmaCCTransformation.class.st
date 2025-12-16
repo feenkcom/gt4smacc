@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'grammar'
 	],
-	#category : 'GT4SmaCC-Development-UI-Transformations'
+	#category : #'GT4SmaCC-Development-UI-Transformations'
 }
 
 { #category : #execution }

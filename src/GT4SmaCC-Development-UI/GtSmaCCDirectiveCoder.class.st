@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCDirectiveCoder,
 	#superclass : #GtSmaCCCoder,
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #private }

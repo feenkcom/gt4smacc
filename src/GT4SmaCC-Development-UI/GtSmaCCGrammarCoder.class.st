@@ -12,7 +12,7 @@ Class {
 		'completionsProcess',
 		'variableGroup'
 	],
-	#category : 'GT4SmaCC-Development-UI-Coders'
+	#category : #'GT4SmaCC-Development-UI-Coders'
 }
 
 { #category : #'instance creation' }

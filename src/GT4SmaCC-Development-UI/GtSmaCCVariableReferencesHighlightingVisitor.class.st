@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCVariableReferencesHighlightingVisitor,
 	#superclass : #GtSmaCCReferencesHighlightingVisitor,
-	#category : 'GT4SmaCC-Development-UI-Styler'
+	#category : #'GT4SmaCC-Development-UI-Styler'
 }
 
 { #category : #visting }

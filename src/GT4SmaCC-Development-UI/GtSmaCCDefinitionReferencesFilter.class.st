@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCDefinitionReferencesFilter,
 	#superclass : #GtSmaCCReferencesFilter,
-	#category : 'GT4SmaCC-Development-UI-Filters'
+	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
 { #category : #accessing }

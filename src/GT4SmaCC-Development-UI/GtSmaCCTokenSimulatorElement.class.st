@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCTokenSimulatorElement,
 	#superclass : #GtSmaCCSimulatorElement,
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #private }

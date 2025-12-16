@@ -143,7 +143,7 @@ GtSmaCCAmbiguousAnalysis >> gtViewFor: aView [
 		priority: 1;
 		title: 'Traces';
 		object: [ duplicatedStates any ];
-		view: #gtTracesFor:
+		view: #gtTracesFor:context:
 ]
 
 { #category : #accessing }

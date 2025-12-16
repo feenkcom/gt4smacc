@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'editType'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #ui }

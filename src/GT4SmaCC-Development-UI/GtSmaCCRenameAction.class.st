@@ -5,7 +5,7 @@ Class {
 		'otherLocations',
 		'otherRenameAttributes'
 	],
-	#category : 'GT4SmaCC-Development-UI-UI'
+	#category : #'GT4SmaCC-Development-UI-UI'
 }
 
 { #category : #initialization }
