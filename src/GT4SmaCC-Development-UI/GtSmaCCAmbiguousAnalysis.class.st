@@ -48,7 +48,7 @@ GtSmaCCAmbiguousAnalysis >> gtActionViewFor: aView context: aDictionary [
 						at: #coder
 						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	actions := Dictionary new.
-	duplicatedStates
+	self duplicatedStates
 		do: [ :each | 
 			each actions
 				do: [ :action | (actions at: action actionName ifAbsentPut: [ Bag new ]) add: each ] ].
@@ -73,7 +73,7 @@ GtSmaCCAmbiguousAnalysis >> gtActionsViewFor: aView context: aDictionary [
 				ifFalse: [ aDictionary
 						at: #coder
 						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
-	actions := duplicatedStates groupedBy: #actions.
+	actions := self duplicatedStates groupedBy: #actions.
 	^ aView columnedList
 		title: 'By actions';
 		items: [ actions associations
@@ -99,7 +99,7 @@ GtSmaCCAmbiguousAnalysis >> gtStatesAndTokensViewFor: aView context: aDictionary
 						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	^ aView columnedList
 		title: 'By stack & token';
-		items: [ (duplicatedStates
+		items: [ (self duplicatedStates
 				groupedBy: [ :e | 
 					{e minimizedStack.
 						e tokenIds first} ]) associations
@@ -121,7 +121,7 @@ GtSmaCCAmbiguousAnalysis >> gtTokensViewFor: aView context: aDictionary [
 						ifAbsentPut: [ GtSmaCCGrammarCoder onParser: parserClass ] ] ].
 	^ aView columnedList
 		title: 'By token';
-		items: [ (duplicatedStates groupedBy: [ :e | e tokenIds first ]) associations
+		items: [ (self duplicatedStates groupedBy: [ :e | e tokenIds first ]) associations
 				asSortedCollection: [ :a :b | a value size > b value size ] ];
 		column: 'Token' text: [ :each | self symbolNameFor: each key ];
 		column: 'Count' text: [ :each | each value size ];
@@ -135,14 +135,14 @@ GtSmaCCAmbiguousAnalysis >> gtTokensViewFor: aView context: aDictionary [
 GtSmaCCAmbiguousAnalysis >> gtViewFor: aView [
 	<gtView>
 	| any |
-	any := duplicatedStates any.
-	duplicatedStates
+	any := self duplicatedStates any.
+	self duplicatedStates
 		detect: [ :each | (any isSimilarTo: each) not ]
 		ifFound: [ :each | ^ aView empty ].
 	^ aView forward
 		priority: 1;
 		title: 'Traces';
-		object: [ duplicatedStates any ];
+		object: [ self duplicatedStates any ];
 		view: #gtTracesFor:context:
 ]
 

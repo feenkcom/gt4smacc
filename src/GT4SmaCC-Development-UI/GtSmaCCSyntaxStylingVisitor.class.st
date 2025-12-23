@@ -66,7 +66,7 @@ GtSmaCCSyntaxStylingVisitor >> visitCodeProductionExpression: aCodeProductionExp
 	codeText := self text from: aCodeProductionExpression code startPosition + 1 to: aCodeProductionExpression code stopPosition - 1.
 	BrRBTextStyler new
 		classOrMetaClass: SmaCCParser;
-		workspace: Dictionary new;
+		isForWorkspace: true;
 		style: codeText.
 	(self text from: aCodeProductionExpression code startPosition to: aCodeProductionExpression code stopPosition)
 		italic;
