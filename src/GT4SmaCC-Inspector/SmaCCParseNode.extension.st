@@ -73,31 +73,28 @@ SmaCCParseNode >> gtExploreFor: aView [
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode >> gtHookEditor: anEditor toTree: aTree [
 	| highlightAttribute |
-	highlightAttribute := (BlTextDecorationAttribute new underline)
-		beNotOverwritableByStyler;
-		color: BrGlamorousColors textHighlightColor;
-		thickness: 3.
+	highlightAttribute := BlTextDecorationAttribute new underline
+			beNotOverwritableByStyler;
+			color: BrGlamorousColors textHighlightColor;
+			thickness: 3.
 	aTree
 		when: BrSelectionChanged
-		do:
-			[ :anEvent | 
+		do: [ :anEvent | 
 			aTree
-				selectedNodeDo:
-					[ :aNode | 
-					| item |
+				selectedNodeDo: [ :aNode | 
+					| item text |
 					item := aNode value last.
 					((item isKindOf: SmaCCParseNode) or: [ item isKindOf: SmaCCToken ])
-						ifTrue:
-							[ anEditor editor text clearAttributes: [ :attr | attr == highlightAttribute ].
-							anEditor editor text
+						ifTrue: [ text := anEditor editor text.
+							text clearAttributes: [ :attr | attr == highlightAttribute ].
+							text
 								attributes: {highlightAttribute}
-								from: item startPosition
-								to: item stopPosition.
+								from: (item startPosition min: text size)
+								to: (item stopPosition min: text size).
 							self gtScrollToPosition: item startPosition inEditor: anEditor ] ] ].
 	anEditor editor
 		when: BrTextEditorCursorMovedEvent
-		do:
-			[ :event | 
+		do: [ :event | 
 			| position |
 			anEditor cursors do: [ :each | position := each position ].
 			position notNil ifTrue: [ self gtSelectItemIn: aTree at: position ] ]
@@ -165,23 +162,25 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 
 { #category : #'*GT4SmaCC-Inspector' }
 SmaCCParseNode class >> gtSourceEditor: aTopNode withNode: aNodeOrToken highlight: aColor styler: aStyler [
-	| anEditor aText aSource |
-	aSource := aTopNode completeSource asString.
-	aText := aSource asRopedText.
-	aStyler ifNotNil: [ aStyler style: aText ast: aTopNode ].
+	| editor text source |
+	source := aTopNode completeSource asString.
+	text := source asRopedText.
+	aStyler ifNotNil: [ aStyler style: text ast: aTopNode ].
 	aNodeOrToken stopPosition isZero
-		ifFalse: [ (aText from: aNodeOrToken startPosition to: aNodeOrToken stopPosition)
+		ifFalse: [ (text
+				from: (aNodeOrToken startPosition min: source size)
+				to: (aNodeOrToken stopPosition min: source size))
 				attributes: {BlTextHighlightAttribute new
 							beNotOverwritableByStyler;
 							paint: aColor} ].
-	anEditor := BrEditor new
-			text: aText;
+	editor := BrEditor new
+			text: text;
 			aptitude: BrGlamorousCodeEditorAptitude + BrGlamorousEditorSearchTextAptitude.
 	self
-		gtScroll: aSource
+		gtScroll: source
 		toPosition: aNodeOrToken startPosition
-		inEditor: anEditor.
-	^ anEditor
+		inEditor: editor.
+	^ editor
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
