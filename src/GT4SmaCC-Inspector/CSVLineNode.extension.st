@@ -5,6 +5,7 @@ CSVLineNode >> gtValuesFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Values';
+		priority: 1;
 		items: [ self values collect: [ :each | each value ] ];
 		column: 'Value' text: [ :each | each gtDisplayString ]
 ]
