@@ -6,6 +6,7 @@ CSVFileNode >> gtLinesFor: aView [
 	| list |
 	list := aView columnedList
 			title: 'Lines';
+			priority: 1;
 			items: [ self lines ].
 	(1 to: self lines first values size)
 		doWithIndex: [ :line :index | 
