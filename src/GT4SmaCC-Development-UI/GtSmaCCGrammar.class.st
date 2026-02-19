@@ -411,12 +411,9 @@ GtSmaCCGrammar >> rulesNamed: aString [
 { #category : #accessing }
 GtSmaCCGrammar >> scannerClass [
 	^ (scannerClassName notNil
-		ifTrue: [ Smalltalk at: scannerClassName ])
+		ifTrue: [ Smalltalk at: scannerClassName ifAbsent: [  ] ])
 		ifNil: [ self parserClass
-				ifNotNil: [ :cls | 
-					[ cls scannerClass ]
-						on: Error
-						do: [ :ex | ex return ] ] ]
+				ifNotNil: [ :cls | [ cls scannerClass ] on: Error do: [ :ex | ex return ] ] ]
 ]
 
 { #category : #accessing }
