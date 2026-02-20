@@ -8,7 +8,8 @@ Class {
 		'originalAST',
 		'glr',
 		'caseInsensitive',
-		'unicode'
+		'unicode',
+		'package'
 	],
 	#category : #'GT4SmaCC-Development-UI-Model'
 }
@@ -228,7 +229,10 @@ GtSmaCCGrammar >> caseInsensitiveDirective [
 
 { #category : #actions }
 GtSmaCCGrammar >> compileParser [
-	SmaCCGrammarCompiler new
+	| compiler |
+	compiler := SmaCCGrammarCompiler new.
+	package ifNotNil: [ compiler codeGenerator defaultCategory: package ].
+	compiler
 		buildDefinition: self source;
 		compileInto: scannerClassName andParser: parserClassName
 ]
@@ -337,6 +341,16 @@ GtSmaCCGrammar >> isUnicode: aBoolean [
 { #category : #testing }
 GtSmaCCGrammar >> isValid [
 	^ rules allSatisfy: [ :each | each isValid ]
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> package [
+	^ package
+]
+
+{ #category : #accessing }
+GtSmaCCGrammar >> package: anObject [
+	package := anObject
 ]
 
 { #category : #accessing }
