@@ -361,12 +361,10 @@ GtSmaCCGrammar >> parserClass [
 { #category : #'initialize-release' }
 GtSmaCCGrammar >> parserClass: aClass [
 	parserClassName := aClass name.
-	scannerClassName := [ aClass scannerClass name ]
-		on: Error
-		do: [ :ex | ex return ].
+	[ scannerClassName := aClass scannerClass name.
+	package := aClass package name ] on: Error do: [ :ex | ex return ].
 	originalAST := aClass definitionAST.
-	originalAST isNil
-		ifTrue: [ ^ self ].
+	originalAST isNil ifTrue: [ ^ self ].
 	originalAST rules do: [ :each | self addRuleNode: each ].
 	glr := self hasGLRDirective.
 	unicode := self hasUnicodeDirective.
