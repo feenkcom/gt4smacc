@@ -5,7 +5,8 @@ Class {
 		'nodeHighlight',
 		'codeHighlight',
 		'currentContext',
-		'topContext'
+		'topContext',
+		'smaccSession'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -45,11 +46,12 @@ GtSmaCCTransformationToolkitDebuggerElement class >> registerToolsOn: registry [
 
 { #category : #accessing }
 GtSmaCCTransformationToolkitDebuggerElement class >> sessionClass [
-	^ SmaCCTransformationToolkitDebugSession
+	^ GtDebugSession
 ]
 
 { #category : #callbacks }
 GtSmaCCTransformationToolkitDebuggerElement >> actOnDebugSessionChanged [
+	smaccSession := SmaCCTransformationToolkitDebugSession from: self session.
 	self buildUI
 ]
 
@@ -299,6 +301,11 @@ GtSmaCCTransformationToolkitDebuggerElement >> propertyVariables [
 	^ receiver class classPool associations asSortedCollection: [ :a :b | a key < b key ]
 ]
 
+{ #category : #private }
+GtSmaCCTransformationToolkitDebuggerElement >> smaccSession [
+	^ smaccSession
+]
+
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> sourceElement [
 	^ (BrEditor new)
@@ -494,8 +501,9 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateInspectors [
 GtSmaCCTransformationToolkitDebuggerElement >> updateNewSource [
 	self
 		childNamed: #newSource
-		ifFound:
-			[ :editor | editor editor text asString ~= self session newSource ifTrue: [ editor editor text: self session newSource asRopedText ] ].
+		ifFound: [ :editor | 
+			editor editor text asString ~= self smaccSession newSource
+				ifTrue: [ editor editor text: self smaccSession newSource asRopedText ] ].
 	self updateNewSourceHighlight
 ]
 
@@ -515,7 +523,9 @@ GtSmaCCTransformationToolkitDebuggerElement >> updateNewSourceHighlight [
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateOriginalSource [
-	self childNamed: #originalSource ifFound: [ :editor | editor editor text: self session originalSource asRopedText ].
+	self
+		childNamed: #originalSource
+		ifFound: [ :editor | editor editor text: self smaccSession originalSource asRopedText ].
 	self updateOriginalSourceHighlight
 ]
 
@@ -544,40 +554,35 @@ GtSmaCCTransformationToolkitDebuggerElement >> updatePropertyInspector [
 GtSmaCCTransformationToolkitDebuggerElement >> updateStack [
 	currentContext := nil.
 	self interruptedContext == topContext
-		ifTrue:
-			[ self
+		ifTrue: [ self
 				childNamed: #stack
-				ifFound:
-					[ :list | 
+				ifFound: [ :list | 
 					list
 						childNamed: #editor
-						ifFound:
-							[ :editor | 
+						ifFound: [ :editor | 
 							self
 								highlightAndScroll: editor
-								interval:
-									(self sourceSelectionIntervalForContext: topContext andRewrite: (debuggingSession rewriteForContext: topContext))
+								interval: (self
+										sourceSelectionIntervalForContext: topContext
+										andRewrite: (self smaccSession rewriteForContext: topContext))
 								using: codeHighlight ] ] ]
-		ifFalse:
-			[ topContext := nil.
+		ifFalse: [ topContext := nil.
 			self
 				childNamed: #stack
-				ifFound:
-					[ :list | 
+				ifFound: [ :list | 
 					| stream contextStream promise |
-					contextStream := GtSmaCCTransformationStackStream onContext: debuggingSession context.
-					promise := (contextStream asyncSimilarCopy next 
-						then: [ :value | topContext := value value ]) 
+					contextStream := GtSmaCCTransformationStackStream
+							onContext: self session context.
+					promise := (contextStream asyncSimilarCopy next
+							then: [ :value | topContext := value value ])
 							await: GtMoldableDebugger defaultFutureExecutionConfiguration.
 					self enqueueTask: (BlPromiseTask new promise: promise).
 					stream := (contextStream
-						collect:
-							[ :each | 
-							{debuggingSession rewriteForContext: each.
-								each} ]) select: [ :each | each first notNil ].
+							collect: [ :each | 
+								{self smaccSession rewriteForContext: each.
+									each} ]) select: [ :each | each first notNil ].
 					list
-						itemsProvider:
-							((BrStreamItemsProvider new)
+						itemsProvider: (BrStreamItemsProvider new
 								stream: stream asyncSimilarCopy;
 								preloadAmount: 1) ] ]
 ]

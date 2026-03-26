@@ -89,12 +89,15 @@ GtSmaCCSlides >> setSource: aString in: anElement [
 GtSmaCCSlides >> startDebuggerOn: aString in: aParser [
 	| process context debuggingSession |
 	context := [ aParser parse: aString ] asContext.
-	process := Process forContext: context priority: Processor userInterruptPriority.
-	debuggingSession := SmaCCParserDebugSession
-		named: 'Debug parse'
-		on: process
-		startedAt: process suspendedContext.
-	[ SmaCCParserDebugSession handlesContext: debuggingSession context ] whileFalse: [ debuggingSession stepInto ].
+	process := Process
+			forContext: context
+			priority: Processor userInterruptPriority.
+	debuggingSession := GtDebugSession
+			named: 'Debug parse'
+			on: process
+			startedAt: process suspendedContext.
+	[ SmaCCParserDebugSession handlesContext: debuggingSession context ]
+		whileFalse: [ debuggingSession stepInto ].
 	^ debuggingSession
 ]
 

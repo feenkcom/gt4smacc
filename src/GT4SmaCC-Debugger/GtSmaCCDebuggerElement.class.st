@@ -10,7 +10,8 @@ Class {
 		'scannerTab',
 		'contextTab',
 		'contextElement',
-		'glrLabel'
+		'glrLabel',
+		'smaccSession'
 	],
 	#classInstVars : [
 		'availableAutomatically'
@@ -60,6 +61,7 @@ GtSmaCCDebuggerElement >> acceptAttributes [
 
 { #category : #callbacks }
 GtSmaCCDebuggerElement >> actOnDebugSessionChanged [
+	smaccSession := SmaCCParserDebugSession from: self session.
 	self buildUI
 ]
 
@@ -149,7 +151,7 @@ GtSmaCCDebuggerElement >> buildParserElement [
 	element addChild: self buildParserStack as: #parserStack.
 	element addChild: self buildParserActions as: #parserActions.
 	self enqueueTask: [ self updateContents ] asBlTask.
-	(self session parser isKindOf: SmaCCGLRParser) ifFalse: [ ^ element ].
+	(self smaccSession parser isKindOf: SmaCCGLRParser) ifFalse: [ ^ element ].
 	^ BrVerticalPane new
 		matchParent;
 		addChild: element;
@@ -250,7 +252,7 @@ GtSmaCCDebuggerElement >> buildScannerProperties [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> buildSource [
 	| editorElement text |
-	text := self session inputText asRopedText.
+	text := self smaccSession inputText asRopedText.
 	text attributes: GtSmaCCCoder defaultTextAttributes.
 	editorElement := BrEditor new.
 	editorElement
@@ -354,9 +356,9 @@ GtSmaCCDebuggerElement >> debuggerActions [
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> glrStateText [
 	| text index states |
-	states := self session glrParserStates.
+	states := self smaccSession glrParserStates.
 	index := states
-		identityIndexOf: self session parser currentGLRState
+		identityIndexOf: self smaccSession parser currentGLRState
 		ifAbsent: [ 1 ].
 	text := ('GLR State: ' , index printString , ' of '
 		, states size printString) asRopedText.
@@ -385,7 +387,7 @@ GtSmaCCDebuggerElement >> initialize [
 GtSmaCCDebuggerElement >> moveCursor [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
-	sourceEditor moveCursorTo: self session scanner position
+	sourceEditor moveCursorTo: self smaccSession scanner position
 ]
 
 { #category : #private }
@@ -405,7 +407,7 @@ GtSmaCCDebuggerElement >> removeContext [
 		enqueueTask:
 			(BlTaskAction new
 				action: [ self tabs removeTab: tab.
-					self session isScanning
+					self smaccSession isScanning
 						ifTrue: [ scannerTab select ]
 						ifFalse: [ parserTab select ] ])
 ]
@@ -431,7 +433,7 @@ GtSmaCCDebuggerElement >> selectSourceFor: anObject [
 	sourceEditor isNil
 		ifTrue: [ ^ self ].
 	self clearAttributes.
-	interval := self session tokenIntervalFor: anObject.
+	interval := self smaccSession tokenIntervalFor: anObject.
 	interval isNil
 		ifTrue: [ ^ self ].
 	self
@@ -468,6 +470,11 @@ GtSmaCCDebuggerElement >> showContext [
 					contextElement ])
 ]
 
+{ #category : #private }
+GtSmaCCDebuggerElement >> smaccSession [
+	^ smaccSession
+]
+
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> tabs [
 	^ self childNamed: #tabs
@@ -480,7 +487,7 @@ GtSmaCCDebuggerElement >> updateContents [
 	self updateGLRStates.
 	self updateScannerProperties.
 	self clearAttributes.
-	self session isScanning
+	self smaccSession isScanning
 		ifTrue: [ self updateScanner ]
 		ifFalse: [ self updateParser ]
 ]
@@ -522,7 +529,7 @@ GtSmaCCDebuggerElement >> updateGLRStates [
 GtSmaCCDebuggerElement >> updateParser [
 	(scannerTab notNil and: [ scannerTab viewModel isSelected ])
 		ifTrue: [ self enqueueTask: (BlTaskAction new action: [ parserTab select ]) ].
-	self session isInsideReductionAction
+	self smaccSession isInsideReductionAction
 		ifTrue: [ self showContext ]
 		ifFalse: [ self removeContext ].
 	parserStackList selectedIndices
@@ -534,7 +541,7 @@ GtSmaCCDebuggerElement >> updateParser [
 GtSmaCCDebuggerElement >> updateParserStack [
 	parserStackList notNil
 		ifTrue: [ | items |
-			items := self session parserStack.
+			items := self smaccSession parserStack.
 			parserStackList items: items.
 			((1 to: items size)
 				detect: [ :i | (items at: i) last ~= '' ]
@@ -544,7 +551,7 @@ GtSmaCCDebuggerElement >> updateParserStack [
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateParserStates [
 	stateActionsList notNil
-		ifTrue: [ stateActionsList items: self session potentialStateActions ]
+		ifTrue: [ stateActionsList items: self smaccSession potentialStateActions ]
 ]
 
 { #category : #'private-updating' }
@@ -553,7 +560,7 @@ GtSmaCCDebuggerElement >> updateScanner [
 	self showContext.
 	(parserTab notNil and: [ parserTab viewModel isSelected ])
 		ifTrue: [ self enqueueTask: (BlTaskAction new action: [ scannerTab select ]) ].
-	scanner := self session scanner.
+	scanner := self smaccSession scanner.
 	success := scanner matchActions notNil.
 	success
 		ifFalse: [ ^ self ].
@@ -566,5 +573,5 @@ GtSmaCCDebuggerElement >> updateScanner [
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateScannerProperties [
 	scannerPropertiesList notNil
-		ifTrue: [ scannerPropertiesList items: self session scannerProperties ]
+		ifTrue: [ scannerPropertiesList items: self smaccSession scannerProperties ]
 ]
