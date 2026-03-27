@@ -101,10 +101,11 @@ GtSmaCCTransformationToolkitDebuggerElement >> currentContext [
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> debuggerActions [
-	^ {SmaCCSendRuleDebugAction.
+	^ ({SmaCCSendRuleDebugAction.
 		SmaCCStepRuleDebugAction.
 		SmaCCStepToNextNodeAction.
-		SmaCCStepToNextRewriteAction} collect: [ :each | each forDebugger: self ]
+		SmaCCStepToNextRewriteAction} collect: [ :each | each forDebugger: self ])
+		, {ResumeDebugAction gt2ContextDebuggingActionFor: self}
 ]
 
 { #category : #ui }
@@ -333,63 +334,57 @@ GtSmaCCTransformationToolkitDebuggerElement >> sourceSelectionIntervalForContext
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> stackElement [
 	| list |
-	list := (BrSimpleList new)
-		padding: (BlInsets all: 5);
-		matchParent;
-		itemStencil:
-				[ (BrExpander new)
-						margin:
-								(BlInsets
-										top: 3
-										left: 3
-										bottom: 3
-										right: 8);
-						padding: (BlInsets all: 3);
-						aptitude:
-								((GtCoderExpanderAptitude new)
-										borderWidth: 0;
-										padding:
-												(BlInsets
-														top: 1
-														left: 10
-														bottom: 1
-														right: 10));
-						hMatchParent;
-						vFitContent ];
-		itemDataBinder:
-				[ :expander :each :index | 
-					| isBlock labelString |
-					isBlock := each last isBlockContext.
-					labelString := ((isBlock ifTrue: [ '[' ] ifFalse: [ '' ]) , each first displayString
-						, (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) gtDisplayString) asRopedText bold.
-					expander
-						header:
-								[ (BrLabel new)
-										aptitude: BrGlamorousLabelAptitude;
-										vFitContent;
-										hMatchParent;
-										text: labelString ];
-						content:
-								[ | editor |
-									editor := self textElementForContext: each last andRewrite: each first.
-									editor enqueueTask: (BlTaskAction new action: [ editor requestFocus ]).
-									(BrVerticalPane new)
-										hMatchParent;
-										vFitContent;
-										addChild:
-												((BrLabel new)
-														aptitude: BrGlamorousLabelAptitude;
-														vFitContent;
-														hMatchParent;
-														text: labelString);
-										addChild: editor as: #editor ];
-						expanded: index = 1 ].
-	^ (BlElement new)
+	list := BrSimpleList new
+			padding: (BlInsets all: 5);
+			matchParent;
+			itemStencil: [ BrExpander new
+					margin: (BlInsets
+							top: 3
+							left: 3
+							bottom: 3
+							right: 8);
+					padding: (BlInsets all: 3);
+					aptitude: (GtCoderExpanderAptitude new
+							borderWidth: 0;
+							padding: (BlInsets
+									top: 1
+									left: 10
+									bottom: 1
+									right: 10));
+					hMatchParent;
+					vFitContentLimited ];
+			itemDataBinder: [ :expander :each :index | 
+				| isBlock labelString |
+				isBlock := each last isBlockContext.
+				labelString := ((isBlock ifTrue: [ '[' ] ifFalse: [ '' ])
+						, each first displayString
+						, (isBlock ifTrue: [ ']' ] ifFalse: [ '' ]) gtDisplayString) asRopedText
+						bold.
+				expander
+					header: [ BrLabel new
+							aptitude: BrGlamorousLabelAptitude;
+							vFitContent;
+							hMatchParent;
+							text: labelString ];
+					content: [ | editor |
+						editor := self textElementForContext: each last andRewrite: each first.
+						editor vFitContentLimited.
+						editor enqueueTask: (BlTaskAction new action: [ editor requestFocus ]).
+						BrVerticalPane new
+							hMatchParent;
+							vFitContentLimited;
+							addChild: (BrLabel new
+									aptitude: BrGlamorousLabelAptitude;
+									vFitContent;
+									hMatchParent;
+									text: labelString);
+							addChild: editor as: #editor ];
+					expanded: index = 1 ].
+	^ BlElement new
 		margin: (BlInsets all: 5);
-		constraintsDo:
-				[ :c | 
-					c vertical matchParent.
-					c horizontal matchParent ];
+		constraintsDo: [ :c | 
+			c vertical matchParent.
+			c horizontal matchParent ];
 		addChild: list as: #stack;
 		yourself
 ]
@@ -476,7 +471,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 				| actionButton |
 				actionButton := BrButton new
 						aptitude: BrGlamorousButtonWithIconAptitude;
-						label: aDebuggingAction name;
+						label: aDebuggingAction label;
 						action: [ self executeAction: aDebuggingAction ].
 				aDebuggingAction icon
 					ifNotNil: [ :anIcon | actionButton icon: aDebuggingAction icon asElement ].
@@ -486,6 +481,7 @@ GtSmaCCTransformationToolkitDebuggerElement >> toolbarButtons [
 
 { #category : #ui }
 GtSmaCCTransformationToolkitDebuggerElement >> updateContents [
+	self session ifNil: [ ^ self ].
 	self updateStack.
 	self updateNewSource.
 	self updateInspectors
