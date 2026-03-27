@@ -2,11 +2,13 @@ Extension { #name : #SmaCCParser }
 
 { #category : #'*GT4SmaCC-Development-UI' }
 SmaCCParser class >> debug: aString startingAt: anInteger from: anElement [
-	| process context debuggingSession |
-	context := [ self parse: aString startingAt: anInteger ] asContext.
-	process := Process forContext: context priority: Processor userInterruptPriority.
-	debuggingSession := process newDebugSessionNamed: 'Debug parse' startedAt: process suspendedContext.
-	[ SmaCCParserDebugSession handlesContext: debuggingSession context ] whileFalse: [ debuggingSession stepInto ].
+	| process debuggingSession |
+	process := [ self parse: aString startingAt: anInteger ] newProcess.
+	debuggingSession := process
+			newDebugSessionNamed: 'Debug parse'
+			startedAt: process suspendedContext.
+	[ SmaCCParserDebugSession handlesContext: debuggingSession context ]
+		whileFalse: [ debuggingSession stepInto ].
 	process debug
 ]
 

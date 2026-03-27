@@ -51,7 +51,7 @@ GtSmaCCDebuggerElement class >> registerToolsOn: registry [
 
 { #category : #accessing }
 GtSmaCCDebuggerElement class >> sessionClass [
-	^ SmaCCParserDebugSession
+	^ GtDebugSession
 ]
 
 { #category : #'private-updating' }
@@ -199,7 +199,7 @@ GtSmaCCDebuggerElement >> buildParserToolbarActions [
 				| actionButton |
 				actionButton := BrButton new
 						aptitude: BrGlamorousButtonWithIconAptitude;
-						label: aDebuggingAction name;
+						label: aDebuggingAction label;
 						action: [ aDebuggingAction execute.
 							self updateContents ].
 				aDebuggingAction icon
@@ -346,11 +346,12 @@ GtSmaCCDebuggerElement >> currentInputSelectionInterval [
 
 { #category : #'building widgets' }
 GtSmaCCDebuggerElement >> debuggerActions [
-	^ {SmaCCParserStepThroughAction.
+	^ ({SmaCCParserStepThroughAction.
 		SmaCCParserStepToReduceAction.
 		SmaCCParserNextTokenAction.
 		SmaCCStepToNextCharacterAction.
-		SmaCCStepToCursorAction} collect: [ :each | each forDebugger: self ]
+		SmaCCStepToCursorAction} collect: [ :each | each forDebugger: self ])
+		, {ResumeDebugAction gt2ContextDebuggingActionFor: self}
 ]
 
 { #category : #'building widgets' }
@@ -482,6 +483,7 @@ GtSmaCCDebuggerElement >> tabs [
 
 { #category : #'private-updating' }
 GtSmaCCDebuggerElement >> updateContents [
+	self session ifNil: [ ^ self ].
 	self updateParserStack.
 	self updateParserStates.
 	self updateGLRStates.

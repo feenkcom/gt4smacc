@@ -10,3 +10,8 @@ SmaCCTransformationToolkitDebugAction class >> iconNamed: aSymbol [
 		ifTrue: [ BrGlamorousVectorIcons perform: nameToTry ]
 		ifFalse: [ super iconNamed: aSymbol ]
 ]
+
+{ #category : #'*GT4SmaCC-Rewrite-Engine-UI' }
+SmaCCTransformationToolkitDebugAction >> label [
+	^ self name
+]
