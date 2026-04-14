@@ -170,7 +170,7 @@ SmaCCParseNode class >> gtSourceEditor: aTopNode withNode: aNodeOrToken highligh
 		ifFalse: [ (text
 				from: (aNodeOrToken startPosition min: source size)
 				to: (aNodeOrToken stopPosition min: source size))
-				attributes: {BlTextHighlightAttribute new
+				attributes: {BlTextUnderlayAttribute new
 							beNotOverwritableByStyler;
 							paint: aColor} ].
 	editor := BrEditor new
