@@ -27,7 +27,7 @@ GtSmaCCAmbiguousReduction >> displayText [
 			str space.
 			(i = index
 				ifTrue: [ str next
-						attribute: (BlTextHighlightAttribute new paint: BrGlamorousColors textHighlightColor) ]
+						attribute: (BlTextUnderlayAttribute new paint: BrGlamorousColors textHighlightColor) ]
 				ifFalse: [ str ]) print: each ].
 	str nextPutAll: ' ;'.
 	^ str contents
