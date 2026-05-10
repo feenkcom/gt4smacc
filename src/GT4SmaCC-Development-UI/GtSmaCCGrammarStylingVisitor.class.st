@@ -18,16 +18,13 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	name := aToken source.
 	grammar := styler originalGrammar ifNil: [ aNode topParent ].
 	definition := grammar definitionNamed: name.
-	definition isNil
-		ifTrue: [ ^ self style: aToken with: #formatMissing: ].
-	self text
-		attributes:
-			{(BrGlamorousTriangleExpanderTextAttributeV2 new
-				stencil: [ self
-								textEditorOn: definition source
-								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
+	definition isNil ifTrue: [ ^ self style: aToken with: #formatMissing: ].
+
+	(self text from: aToken stopPosition to: aToken stopPosition)
+		expanded: false
+		adornment: [ self
+				textEditorOn: definition source
+				usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ]
 ]
 
 { #category : #'initialize-release' }
