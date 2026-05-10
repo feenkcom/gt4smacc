@@ -24,12 +24,10 @@ GtSmaCCSyntaxStylingVisitor >> formatMethod: aCompiledMethod for: aToken [
 	stStyler := BrRBTextStyler new.
 	stStyler classOrMetaClass: aCompiledMethod methodClass.
 	self text
-		attributes:
-			{(BrGlamorousTriangleExpanderTextAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ (GtPharoMethodCoder forMethod: aCompiledMethod) asCoderViewModel 								expanded: true;
-								asElement ] ])}
+		attributes: {BrGlamorousTriangleExpanderTextAttributeV2 new
+					stencil: [ (GtPharoMethodCoder forMethod: aCompiledMethod) asCoderViewModel
+							expanded: true;
+							asElement ]}
 		from: aToken stopPosition
 		to: aToken stopPosition
 ]

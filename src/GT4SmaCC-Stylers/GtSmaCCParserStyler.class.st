@@ -605,22 +605,20 @@ GtSmaCCParserStyler class >> yamlAliasExpanderStyler: aParserClass [
 										ifTrue: [ text copyFrom: interval first to: interval last ]
 										ifFalse: [ node completeSource asString copyFrom: interval first to: interval last ].
 								text
-									attribute: (BrGlamorousTriangleExpanderTextAttribute new
-											attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-													beAppend;
-													stencil: [ | editor |
-														editor := BrEditor new.
-														(source
-															anySatisfy: [ :each | each = Character cr or: [ each = Character lf ] ])
-															ifTrue: [ editor hMatchParent.
-																editor margin: (BlInsets left: 10 right: 10) ]
-															ifFalse: [ editor hFitContent ].
-														editor vFitContentLimited.
-														editor padding: (BlInsets all: 5).
-														editor background: Color white.
-														editor
-															aptitude: BrGlamorousCodeEditorAptitude new + BrShadowAptitude new.
-														editor text: source asRopedText glamorousCodeFont ] ])
+									attribute: (BrGlamorousTriangleExpanderTextAttributeV2 new
+											stencil: [ | editor |
+												editor := BrEditor new.
+												(source
+													anySatisfy: [ :each | each = Character cr or: [ each = Character lf ] ])
+													ifTrue: [ editor hMatchParent.
+														editor margin: (BlInsets left: 10 right: 10) ]
+													ifFalse: [ editor hFitContent ].
+												editor vFitContentLimited.
+												editor padding: (BlInsets all: 5).
+												editor background: Color white.
+												editor
+													aptitude: BrGlamorousCodeEditorAptitude new + BrShadowAptitude new.
+												editor text: source asRopedText glamorousCodeFont ])
 									from: node stopPosition
 									to: node stopPosition ] ]}
 ]

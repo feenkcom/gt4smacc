@@ -22,12 +22,10 @@ GtSmaCCGrammarStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		ifTrue: [ ^ self style: aToken with: #formatMissing: ].
 	self text
 		attributes:
-			{(BrGlamorousTriangleExpanderTextAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ self
+			{(BrGlamorousTriangleExpanderTextAttributeV2 new
+				stencil: [ self
 								textEditorOn: definition source
-								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ] ])}
+								usingStyler: (GtSmaCCGrammarStyler for: styler scannerClass grammar: grammar) ])}
 		from: aToken stopPosition
 		to: aToken stopPosition
 ]

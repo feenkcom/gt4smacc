@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCommentStylerRule,
 	#superclass : #GtSmaCCStylerRule,
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #applying }

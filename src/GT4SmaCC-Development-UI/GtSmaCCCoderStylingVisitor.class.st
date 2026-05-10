@@ -40,14 +40,12 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 		ifFalse: [ ^ self ].
 	self text
 		attributes:
-			{(BrGlamorousTriangleExpanderTextAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ | element coder |
+			{(BrGlamorousTriangleExpanderTextAttributeV2 new
+				stencil: [ | element coder |
 							coder := GtSmaCCCoder on: item in: styler grammarCoder.
 							element := coder asElement.
 							element expand.
-							element ] ])}
+							element ])}
 		from: aToken stopPosition
 		to: aToken stopPosition
 ]
