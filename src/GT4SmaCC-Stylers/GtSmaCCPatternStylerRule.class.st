@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'patternAST'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #'instance creation' }

@@ -36,18 +36,14 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 	item isNil
 		ifTrue: [ self style: aToken with: #formatMissing:.
 			^ self createDefinitionButtonFor: aToken ].
-	(GtSmaCCCoder hasCoderFor: item)
-		ifFalse: [ ^ self ].
-	self text
-		attributes:
-			{(BrGlamorousTriangleExpanderTextAttribute new
-				attributesCreatingBlock: [ BrTextAdornmentDynamicAttribute new
-						beAppend;
-						stencil: [ | element coder |
-							coder := GtSmaCCCoder on: item in: styler grammarCoder.
-							element := coder asElement.
-							element expand.
-							element ] ])}
-		from: aToken stopPosition
-		to: aToken stopPosition
+	(GtSmaCCCoder hasCoderFor: item) ifFalse: [ ^ self ].
+
+
+	(self text from: aToken stopPosition to: aToken stopPosition)
+		expanded: false
+		adornment: [ | element coder |
+			coder := GtSmaCCCoder on: item in: styler grammarCoder.
+			element := coder asElement.
+			element expand.
+			element ]
 ]

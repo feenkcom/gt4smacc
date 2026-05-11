@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'ids'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #initialization }
