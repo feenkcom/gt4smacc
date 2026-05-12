@@ -5,7 +5,7 @@ Class {
 		'nodeClassName',
 		'nodeClass'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #'instance creation' }

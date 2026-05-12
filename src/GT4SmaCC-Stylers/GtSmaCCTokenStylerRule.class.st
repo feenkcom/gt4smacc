@@ -5,7 +5,7 @@ Class {
 		'tokenName',
 		'id'
 	],
-	#category : 'GT4SmaCC-Stylers'
+	#category : #'GT4SmaCC-Stylers'
 }
 
 { #category : #'instance creation' }
