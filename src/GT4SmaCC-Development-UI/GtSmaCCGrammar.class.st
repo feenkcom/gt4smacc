@@ -468,9 +468,9 @@ GtSmaCCGrammar >> source [
 { #category : #'initialize-release' }
 GtSmaCCGrammar >> source: aString [
 	originalAST := SmaCCDefinitionParser parseWithErrors: aString.
-	originalAST isNil
-		ifTrue: [ ^ self ].
-	originalAST rules do: [ :each | self addRuleNode: each ]
+	originalAST ifNil: [ ^ self ].
+	originalAST rules do: [ :each | self addRuleNode: each ].
+	self updateFlagsFromDirectives
 ]
 
 { #category : #private }
@@ -534,6 +534,16 @@ GtSmaCCGrammar >> updateFlag: aString to: aBoolean directive: aRule in: aSmaCCSt
 ]
 
 { #category : #'initialize-release' }
+GtSmaCCGrammar >> updateFlagsFromDirectives [
+	rules
+		do: [ :each | 
+			each isDirective
+				ifTrue: [ each isGLR ifTrue: [ glr := true ].
+					each isCaseInsensitive ifTrue: [ caseInsensitive := true ].
+					each isUnicode ifTrue: [ unicode := true ] ] ]
+]
+
+{ #category : #'initialize-release' }
 GtSmaCCGrammar >> updateSource: aString [
 	| oldAnnouncer |
 	originalAST := SmaCCDefinitionParser parseWithErrors: aString.
@@ -545,12 +555,6 @@ GtSmaCCGrammar >> updateSource: aString [
 	oldAnnouncer := announcer.
 	[ announcer := Announcer new.
 	originalAST rules do: [ :each | self addRuleNode: each ].
-	rules
-		do: [ :each | 
-			each isDirective
-				ifTrue: [ each isGLR ifTrue: [ glr := true ].
-					each isCaseInsensitive ifTrue: [ caseInsensitive := true ].
-					each isUnicode ifTrue: [ unicode := true ] ] ] ]
-		ensure: [ announcer := oldAnnouncer ].
+	self updateFlagsFromDirectives ] ensure: [ announcer := oldAnnouncer ].
 	self announce: (GtSmaCCGrammarRulesChanged forGrammar: self)
 ]
