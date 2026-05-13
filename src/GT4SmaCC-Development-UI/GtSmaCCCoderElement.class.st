@@ -147,6 +147,7 @@ GtSmaCCCoderElement >> sourceEditor [
 	element hMatchParent.
 	element vFitContentLimited.
 	element editor: coder sourceEditor.
+	element text: coder sourceEditor text.
 	element styler: element editor styler.
 	element editor styleText.
 	coder addShortcutsTo: element.
