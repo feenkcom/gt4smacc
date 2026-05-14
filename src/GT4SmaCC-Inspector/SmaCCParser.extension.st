@@ -58,6 +58,21 @@ SmaCCParser >> buildMondrian: mondrian forStack: stack [
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
+SmaCCParser class >> gtAsyncFilesWithParserErrorsIn: aDirectory [
+	^ (self gtAsyncSourceFilesIn: aDirectory)
+		select: [ :each | 
+			[ self parseFile: each.
+			false ] on: Error do: [ :ex | ex return: true ] ]
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
+SmaCCParser class >> gtAsyncSourceFilesIn: aDirectory [
+	^ aDirectory
+		asyncAllFilesWithExtensions: (self fileExtensions
+				collect: [ :each | each first = $. ifTrue: [ each allButFirst ] ifFalse: [ each ] ])
+]
+
+{ #category : #'*GT4SmaCC-Inspector' }
 SmaCCParser >> gtGraphViewIn: aView [
 	<gtView>
 	((self class class whichClassIncludesSelector: #transitionTable)

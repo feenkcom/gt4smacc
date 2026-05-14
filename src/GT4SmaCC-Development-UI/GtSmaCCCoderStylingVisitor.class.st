@@ -38,7 +38,6 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 			^ self createDefinitionButtonFor: aToken ].
 	(GtSmaCCCoder hasCoderFor: item) ifFalse: [ ^ self ].
 
-
 	(self text from: aToken stopPosition to: aToken stopPosition)
 		expanded: false
 		adornment: [ | element coder |
@@ -46,4 +45,5 @@ GtSmaCCCoderStylingVisitor >> formatInlineDefinition: aNode token: aToken [
 			element := coder asElement.
 			element expand.
 			element ]
+		id: #'smacc--token-expander'
 ]
