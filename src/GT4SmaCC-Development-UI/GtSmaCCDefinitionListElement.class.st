@@ -2,9 +2,10 @@ Class {
 	#name : #GtSmaCCDefinitionListElement,
 	#superclass : #BrVerticalPane,
 	#instVars : [
-		'group',
 		'listElement',
-		'filterModel'
+		'filterModel',
+		'originalGroup',
+		'group'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -17,8 +18,7 @@ GtSmaCCDefinitionListElement >> addItemLookTo: dataSource [
 GtSmaCCDefinitionListElement >> buildElement [
 	self matchParent.
 	self
-		padding:
-			(BlInsets
+		padding: (BlInsets
 				top: 0
 				left: 10
 				bottom: 10
@@ -39,6 +39,24 @@ GtSmaCCDefinitionListElement >> buildFilterModel [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> defaultFilter [
+	^ self userData at: #defaultFilter ifAbsent: [ self noFilterClass new ]
+]
+
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> defaultFilter: aFilter [
+	aFilter
+		ifNil: [ self userData removeKey: #defaultFilter ifAbsent: [  ] ]
+		ifNotNil: [ self userData at: #defaultFilter put: aFilter ].
+	self enqueueTask: [ self updateFilters ] asBlTask
+]
+
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> filter [
+	^ self defaultFilter ifNil: [ GtSmaCCNoVariableFilter new ]
+]
+
 { #category : #ui }
 GtSmaCCDefinitionListElement >> filterElement [
 	filterModel
@@ -57,7 +75,11 @@ GtSmaCCDefinitionListElement >> group [
 
 { #category : #accessing }
 GtSmaCCDefinitionListElement >> group: aDefinitionGroupResult [
-	group := aDefinitionGroupResult.
+	group := self noFilterClass new applyInScope: aDefinitionGroupResult.
+	aDefinitionGroupResult announcer weak
+		when: GtSmaCCVariableGroupItemsChanged
+		send: #updateFilters
+		to: self.
 	self buildElement
 ]
 
@@ -73,6 +95,11 @@ GtSmaCCDefinitionListElement >> listElement [
 					c horizontal matchParent.
 					c vertical matchParent ].
 			listElement ]
+]
+
+{ #category : #accessing }
+GtSmaCCDefinitionListElement >> noFilterClass [
+	^ self subclassResponsibility
 ]
 
 { #category : #actions }
@@ -96,6 +123,7 @@ GtSmaCCDefinitionListElement >> scrollAndOpenItem: aString [
 
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateFilters [
+	group ifNil: [ ^ self ].
 	group filter: self buildFilter.
 	self updateList
 ]
@@ -103,6 +131,7 @@ GtSmaCCDefinitionListElement >> updateFilters [
 { #category : #private }
 GtSmaCCDefinitionListElement >> updateList [
 	| highlighter |
+	listElement ifNil: [ ^ self ].
 	highlighter := group highlighter.
 	group coders do: [ :each | each highlighter: highlighter ].
 	listElement dataSource updateCoders

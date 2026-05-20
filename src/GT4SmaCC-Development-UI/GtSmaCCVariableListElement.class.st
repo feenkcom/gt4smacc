@@ -6,8 +6,9 @@ Class {
 
 { #category : #filtering }
 GtSmaCCVariableListElement >> buildFilter [
+	filterModel ifNil: [ ^ self defaultFilter ].
 	^ filterModel items
-		inject: GtSmaCCNoVariableFilter new
+		inject: self defaultFilter
 		into: [ :sum :each | sum & each asSearchFilter ]
 ]
 
@@ -19,7 +20,6 @@ GtSmaCCVariableListElement >> buildFilterModel [
 ]
 
 { #category : #accessing }
-GtSmaCCVariableListElement >> group: aDefinitionGroupResult [
-	super
-		group: (GtSmaCCNoVariableFilter new applyInScope: aDefinitionGroupResult)
+GtSmaCCVariableListElement >> noFilterClass [
+	^ GtSmaCCNoVariableFilter
 ]

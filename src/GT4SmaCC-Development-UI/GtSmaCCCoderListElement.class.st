@@ -19,7 +19,8 @@ GtSmaCCCoderListElement >> addItemLookTo: dataSource [
 { #category : #private }
 GtSmaCCCoderListElement >> buildFilter [
 	| filter |
-	filter := GtSmaCCNoFilter new.
+	filter := self defaultFilter.
+	filterModel ifNil: [ ^ filter ].
 	((filterModel items collect: #asSearchFilter) groupedBy: #class)
 		keysAndValuesDo: [ :key :filters | 
 			filter := filter
@@ -54,15 +55,14 @@ GtSmaCCCoderListElement >> findFilterForSelector: aSymbol [
 		ifNone: [ nil ]
 ]
 
-{ #category : #accessing }
-GtSmaCCCoderListElement >> group: aDefinitionGroupResult [
-	super
-		group: (GtSmaCCNoFilter new applyInScope: aDefinitionGroupResult)
-]
-
 { #category : #testing }
 GtSmaCCCoderListElement >> includesBadge: aSymbol [
 	^ (self findFilterForSelector: aSymbol) notNil
+]
+
+{ #category : #accessing }
+GtSmaCCCoderListElement >> noFilterClass [
+	^ GtSmaCCNoFilter
 ]
 
 { #category : #filtering }

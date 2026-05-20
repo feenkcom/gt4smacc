@@ -37,11 +37,11 @@ GtSmaCCListCoderElement >> actionBar [
 
 { #category : #ui }
 GtSmaCCListCoderElement >> actions [
-	^ {(GtCoderAction new
-		title: 'Accept' translated;
-		icon: BrGlamorousVectorIcons accept;
-		action: [ :button | self compileParser ];
-		yourself)}
+	^ {GtCoderAction new
+			title: 'Accept' translated;
+			icon: BrGlamorousVectorIcons accept;
+			action: [ :button | self compileParser ];
+			yourself}
 ]
 
 { #category : #ui }
@@ -49,6 +49,7 @@ GtSmaCCListCoderElement >> buildElement [
 	self matchParent.
 	self
 		addChild: (self coderListElementClass new
+					defaultFilter: self defaultFilter;
 					group: self group;
 					yourself)
 			as: #list;
@@ -95,9 +96,24 @@ GtSmaCCListCoderElement >> compilationBar [
 
 { #category : #actions }
 GtSmaCCListCoderElement >> compileParser [
-	grammarCoder isValid
-		ifFalse: [ ^ self showErrors ].
-	grammarCoder compileParser
+	| issues |
+	grammarCoder isValid ifFalse: [ ^ self showErrors ].
+	issues := grammarCoder compileParser.
+	issues hasIssues ifTrue: [ self phlow spawnObject: issues ]
+]
+
+{ #category : #accessing }
+GtSmaCCListCoderElement >> defaultFilter [
+	^ self userData at: #defaultFilter ifAbsent: [  ]
+]
+
+{ #category : #accessing }
+GtSmaCCListCoderElement >> defaultFilter: aFilter [
+	self userData at: #defaultFilter put: aFilter.
+	self
+		childNamed: #list
+		ifFound: [ :element | element defaultFilter: aFilter ]
+		ifNone: [  ]
 ]
 
 { #category : #accessing }

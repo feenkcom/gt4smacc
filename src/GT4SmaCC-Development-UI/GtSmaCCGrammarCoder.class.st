@@ -60,14 +60,13 @@ GtSmaCCGrammarCoder >> addMenuItemsElement [
 	^ GtCoderContextMenuContent new
 		constraintsDo: [ :c | c horizontal matchParent ];
 		editorElement: self;
-		items:
-			(self addMenuItems
+		items: (self addMenuItems
 				collect: [ :each | 
 					GtCoderContextMenuAction new
 						action: [ :element | grammar perform: each second ];
 						title: each first ]);
 		hMatchParent;
-		vMatchParent
+		vFitContent
 ]
 
 { #category : #accessing }
@@ -98,7 +97,9 @@ GtSmaCCGrammarCoder >> coders [
 
 { #category : #actions }
 GtSmaCCGrammarCoder >> compileParser [
-	grammar compileParser
+	^ grammar compileParser
+		grammarCoder: self;
+		yourself
 ]
 
 { #category : #actions }

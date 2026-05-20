@@ -120,15 +120,13 @@ GtSmaCCSearchGroupResult >> itemsDo: aBlock [
 { #category : #enumerating }
 GtSmaCCSearchGroupResult >> refreshItems [
 	| filteredItems |
-	filtered
-		ifTrue: [ ^ self ].
+	filtered ifTrue: [ ^ self ].
 	filteredItems := OrderedCollection new.
-	filter ifNotNil: [ 
-		scope itemsDo: [ :anObject | 
-			(filter matches: anObject) ifTrue: [
-				filteredItems add: anObject ] ] ].
+	filter
+		ifNotNil: [ scope
+				itemsDo: [ :anObject | (filter matches: anObject) ifTrue: [ filteredItems add: anObject ] ] ].
 	items := filteredItems.
-	filtered := true.
+	filtered := true
 ]
 
 { #category : #removing }

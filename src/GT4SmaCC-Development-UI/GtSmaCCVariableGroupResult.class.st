@@ -15,6 +15,12 @@ GtSmaCCVariableGroupResult class >> onCoder: aGrammarCoder [
 		yourself
 ]
 
+{ #category : #private }
+GtSmaCCVariableGroupResult >> announceItemsChanged [
+	self announcer
+		announce: (GtSmaCCVariableGroupItemsChanged new groupResult: self)
+]
+
 { #category : #accessing }
 GtSmaCCVariableGroupResult >> coderFor: aString [
 	^ (coderMap ifNil: [ coderMap := Dictionary new ])
@@ -44,12 +50,19 @@ GtSmaCCVariableGroupResult >> grammarCoder: aGrammarCoder [
 
 { #category : #updating }
 GtSmaCCVariableGroupResult >> updateItems: nameCollection [
-	| names |
+	| names oldItems |
 	names := nameCollection asSet.
+	filtered := false.
+	oldItems := items.
 	self refreshItems.
 	items do: [ :each | names remove: each ifAbsent: [  ] ].
-	names isEmpty
-		ifTrue: [ ^ self ].
+	names isEmpty ifTrue: [ ^ self ].
 	items addAll: names.
-	items sort
+	items sort.
+	oldItems ~= items ifTrue: [ self announceItemsChanged ]
+]
+
+{ #category : #private }
+GtSmaCCVariableGroupResult >> updatedItemsFrom: anObject [
+	self announceItemsChanged
 ]

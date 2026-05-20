@@ -229,12 +229,20 @@ GtSmaCCGrammar >> caseInsensitiveDirective [
 
 { #category : #actions }
 GtSmaCCGrammar >> compileParser [
-	| compiler |
+	| compiler issues |
 	compiler := SmaCCGrammarCompiler new.
 	package ifNotNil: [ compiler codeGenerator defaultCategory: package ].
-	compiler
-		buildDefinition: self source;
-		compileInto: scannerClassName andParser: parserClassName
+	compiler buildDefinition: self source.
+	issues := OrderedCollection new.
+	[ compiler compileInto: scannerClassName andParser: parserClassName ]
+		on: SmaCCCompilationNotification
+		do: [ :ex | 
+			issues add: ex issue.
+			ex pass ].
+	^ GtSmaCCCompilationIssues new
+		issues: issues;
+		grammar: self;
+		yourself
 ]
 
 { #category : #private }
