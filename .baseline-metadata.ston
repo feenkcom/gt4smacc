@@ -1,6 +1,6 @@
 {
 	"repositories" : {
-		"github://j-brant/SmaCC" : "v3.0.159",
+		"github://j-brant/SmaCC" : "v3.0.160",
 		"github://feenkcom/gtoolkit-remoterunner/src" : "v0.7.122"
 	}
 }
