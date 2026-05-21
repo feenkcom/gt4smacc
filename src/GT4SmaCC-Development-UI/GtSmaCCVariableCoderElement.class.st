@@ -179,13 +179,14 @@ GtSmaCCVariableCoderElement >> ownerElement [
 
 { #category : #ui }
 GtSmaCCVariableCoderElement >> referenceElements [
-	^ coder referencesText
+	^ (self showOnlyUnnamed
+		ifTrue: [ coder unnamedReferencesText ]
+		ifFalse: [ coder referencesText ])
 		collect: [ :each | 
 			| editorElement |
 			editorElement := BrEditorElement new.
 			editorElement
-				margin:
-					(BlInsets
+				margin: (BlInsets
 						top: 2
 						left: 15
 						bottom: 0
@@ -196,11 +197,15 @@ GtSmaCCVariableCoderElement >> referenceElements [
 					c horizontal matchParent.
 					c vertical fitContent ].
 			editorElement
-				editor:
-					(BrTextEditorModel new
+				editor: (BrTextEditorModel new
 						text: each readonly;
 						yourself).
 			editorElement ]
+]
+
+{ #category : #ui }
+GtSmaCCVariableCoderElement >> showOnlyUnnamed [
+	^ self ownerElement ifNil: [ false ] ifNotNil: [ :each | each showOnlyUnnamed ]
 ]
 
 { #category : #private }

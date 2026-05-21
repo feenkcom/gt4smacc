@@ -4,7 +4,7 @@ Class {
 	#category : #'GT4SmaCC-Development-UI-Filters'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCVariableFilter class >> availableFilters [
 	^ {GtFilterTextModel new
 			creator: [ :aString | GtSmaCCVariableNameFilter pattern: aString ];
@@ -12,7 +12,7 @@ GtSmaCCVariableFilter class >> availableFilters [
 			order: 10}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCVariableFilter >> resultType [
 	^ GtSmaCCVariableGroupResult
 ]

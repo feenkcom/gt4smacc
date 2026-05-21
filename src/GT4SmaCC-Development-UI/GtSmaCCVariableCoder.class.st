@@ -193,3 +193,18 @@ GtSmaCCVariableCoder >> referencesText [
 { #category : #initialization }
 GtSmaCCVariableCoder >> resetEditors [
 ]
+
+{ #category : #accessing }
+GtSmaCCVariableCoder >> unnamedReferencesText [
+	| references |
+	references := OrderedCollection new.
+	self
+		referencesDo: [ :node :index :production | 
+			node variableNameToken
+				ifNil: [ references
+						add: (self
+								referenceTextFor: node
+								at: index
+								in: production) ] ].
+	^ references
+]

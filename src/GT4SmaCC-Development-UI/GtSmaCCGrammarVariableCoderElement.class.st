@@ -2,7 +2,8 @@ Class {
 	#name : #GtSmaCCGrammarVariableCoderElement,
 	#superclass : #GtSmaCCListCoderElement,
 	#instVars : [
-		'editType'
+		'editType',
+		'showOnlyUnnamed'
 	],
 	#category : #'GT4SmaCC-Development-UI-UI'
 }
@@ -31,6 +32,16 @@ GtSmaCCGrammarVariableCoderElement >> group [
 GtSmaCCGrammarVariableCoderElement >> initialize [
 	super initialize.
 	editType := self editTypes first
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarVariableCoderElement >> showOnlyUnnamed [
+	^ showOnlyUnnamed ifNil: [ false ]
+]
+
+{ #category : #accessing }
+GtSmaCCGrammarVariableCoderElement >> showOnlyUnnamed: anObject [
+	showOnlyUnnamed := anObject
 ]
 
 { #category : #private }

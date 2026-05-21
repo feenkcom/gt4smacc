@@ -14,6 +14,16 @@ GtSmaCCReferencesFilter class >> name: aString [
 		yourself
 ]
 
+{ #category : #comparing }
+GtSmaCCReferencesFilter >> = anObject [
+	^ super = anObject and: [ self name = anObject name ]
+]
+
+{ #category : #comparing }
+GtSmaCCReferencesFilter >> hash [
+	^ super hash bitXor: name hash
+]
+
 { #category : #accessing }
 GtSmaCCReferencesFilter >> highlighter [
 	^ self highlighterClass name: name
@@ -22,6 +32,11 @@ GtSmaCCReferencesFilter >> highlighter [
 { #category : #accessing }
 GtSmaCCReferencesFilter >> highlighterClass [
 	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
+GtSmaCCReferencesFilter >> name [
+	^ name
 ]
 
 { #category : #accessing }

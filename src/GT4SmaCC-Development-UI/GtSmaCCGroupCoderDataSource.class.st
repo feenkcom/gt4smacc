@@ -59,10 +59,10 @@ GtSmaCCGroupCoderDataSource >> onCreateHolder: anInfiniteElement type: anItemTyp
 { #category : #updating }
 GtSmaCCGroupCoderDataSource >> updateCoders [
 	| cachedCodersToRemove |
-	cachedCodersToRemove := elementsByCoder keys reject: [ :aCoder | group coders includes: aCoder ].
+	cachedCodersToRemove := elementsByCoder keys
+			reject: [ :aCoder | group coders includes: aCoder ].
 	cachedCodersToRemove
-		do:
-			[ :aCoder | 
+		do: [ :aCoder | 
 			elementsByCoder removeKey: aCoder ifAbsent: [  ].
 			aCoder resetEditors ].
 	self notifyChanged
