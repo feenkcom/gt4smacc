@@ -37,6 +37,7 @@ GtSmaCCCompilationIssues >> gtMissingSymbolsFor: aView [
 	(grammarCoder isNil or: [ items isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView forward
 		title: 'Missing symbols';
+		priority: 5;
 		object: [ (GtSmaCCGrammarFilter on: grammarCoder)
 				& ((items collect: [ :each | GtSmaCCDefinitionReferencesFilter name: each ])
 						reduce: [ :a :b | a | b ]) ];
@@ -51,6 +52,7 @@ GtSmaCCCompilationIssues >> gtNodeCreationFor: aView [
 	(grammarCoder isNil or: [ items isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView forward
 		title: 'Node creation';
+		priority: 10;
 		object: [ (GtSmaCCGrammarFilter on: grammarCoder)
 				& (GtSmaCCNameDefinitionFilter new names: items) ];
 		view: #gtItemsFor:
@@ -64,6 +66,7 @@ GtSmaCCCompilationIssues >> gtProductionShouldReturnNodeFor: aView [
 	(grammarCoder isNil or: [ items isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView forward
 		title: 'Production should be nodes';
+		priority: 11;
 		object: [ (GtSmaCCGrammarFilter on: grammarCoder)
 				& (GtSmaCCNameDefinitionFilter new names: items) ];
 		view: #gtItemsFor:
@@ -77,6 +80,7 @@ GtSmaCCCompilationIssues >> gtUnusedSymbolsFor: aView [
 	(grammarCoder isNil or: [ items isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView forward
 		title: 'Unused symbols';
+		priority: 30;
 		object: [ (GtSmaCCGrammarFilter on: grammarCoder)
 				& (GtSmaCCNameDefinitionFilter new names: items) ];
 		view: #gtItemsFor:
@@ -90,6 +94,7 @@ GtSmaCCCompilationIssues >> gtValueIsNotUsedFor: aView [
 	items isEmpty ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'Unused values';
+		priority: 20;
 		stencil: [ | element names |
 			names := items flatCollectAsSet: [ :each | each itemNames ].
 			element := (GtSmaCCGrammarCoder onGrammar: grammar) asVariableElement.
