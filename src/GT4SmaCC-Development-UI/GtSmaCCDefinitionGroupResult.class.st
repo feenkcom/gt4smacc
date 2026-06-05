@@ -63,10 +63,17 @@ GtSmaCCDefinitionGroupResult >> gtItemsFor: aView [
 
 { #category : #accessing }
 GtSmaCCDefinitionGroupResult >> highlighter [
-	filter notNil
-		ifTrue: [ filter highlighter ifNotNil: [ :highlighter | ^ highlighter ] ].
-	scope notNil
-		ifTrue: [ ^ scope highlighter ].
+	| filterHighlighter |
+	filter ifNotNil: [ filterHighlighter := filter highlighter ].
+	scope
+		ifNotNil: [ ^ scope highlighter
+				ifNil: [ filterHighlighter ]
+				ifNotNil: [ :each | 
+					filterHighlighter
+						ifNil: [ each ]
+						ifNotNil: [ GtCompositeHighlighter
+								forHighlighters: {each.
+										filterHighlighter} ] ] ].
 	^ nil
 ]
 
