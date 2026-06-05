@@ -10,6 +10,58 @@ Class {
 }
 
 { #category : #accessing }
+GtSmaCCCompilationIssues >> ambiguousActionFilters [
+	| filters |
+	filters := OrderedCollection new.
+	self ambiguousActions
+		do: [ :each | 
+			| filter |
+			filter := GtSmaCCAmbiguousFilter from: each.
+			(1 to: filters size)
+				detect: [ :i | filter canBeMergedWith: (filters at: i) ]
+				ifFound: [ :i | 
+					filters
+						at: i
+						put: (GtSmaCCAmbiguousFilter
+								merged: {filter.
+										filters at: i}) ]
+				ifNone: [ filters add: filter ] ].
+	^ filters
+]
+
+{ #category : #accessing }
+GtSmaCCCompilationIssues >> ambiguousActionHandledByPrecedenceFilters [
+	| filters |
+	filters := OrderedCollection new.
+	self ambiguousActionsHandledByPrecedence
+		do: [ :each | 
+			| filter |
+			filter := GtSmaCCAmbiguousFilter from: each.
+			(1 to: filters size)
+				detect: [ :i | filter canBeMergedWith: (filters at: i) ]
+				ifFound: [ :i | 
+					filters
+						at: i
+						put: (GtSmaCCAmbiguousFilter
+								merged: {filter.
+										filters at: i}) ]
+				ifNone: [ filters add: filter ] ].
+	^ filters
+]
+
+{ #category : #accessing }
+GtSmaCCCompilationIssues >> ambiguousActions [
+	^ self issues at: SmaCCAmbiguousActionIssue ifAbsent: [ #() ]
+]
+
+{ #category : #accessing }
+GtSmaCCCompilationIssues >> ambiguousActionsHandledByPrecedence [
+	^ self issues
+		at: SmaCCAmbiguousActionHandledByPrecedenceIssue
+		ifAbsent: [ #() ]
+]
+
+{ #category : #accessing }
 GtSmaCCCompilationIssues >> grammar [
 	^ grammar
 ]
@@ -27,6 +79,82 @@ GtSmaCCCompilationIssues >> grammarCoder [
 { #category : #accessing }
 GtSmaCCCompilationIssues >> grammarCoder: anObject [
 	grammarCoder := anObject
+]
+
+{ #category : #views }
+GtSmaCCCompilationIssues >> gtAmbiguousActionsFor: aView [
+	<gtView>
+	(grammarCoder isNil or: [ self ambiguousActions isEmpty ])
+		ifTrue: [ ^ aView empty ].
+	^ aView tree
+		title: 'Amibiguous actions';
+		priority: 25;
+		items: [ | map |
+			map := Dictionary new.
+			self ambiguousActionFilters
+				do: [ :each | 
+					each reductionNames
+						do: [ :name | 
+							each lookaheads
+								do: [ :sym | 
+									((map at: name ifAbsentPut: [ Dictionary new ])
+										at: sym
+										ifAbsentPut: [ OrderedCollection new ]) add: each ] ] ].
+			map keys asSortedCollection
+				collect: [ :name | 
+					{name.
+						(map at: name) keys asSortedCollection
+							collect: [ :sym | 
+								{sym.
+									(((map at: name) at: sym)
+										asSortedCollection: [ :a :b | a count > b count ])
+										collect: [ :filter | 
+											{' ' join: filter path.
+												#().
+												filter} ].
+									((map at: name) at: sym) anyOne} ].
+						(map at: name) anyOne anyOne} ] ];
+		children: [ :each | each second ];
+		itemText: [ :each | each first asRopedText ];
+		send: [ :each | (GtSmaCCGrammarFilter on: grammarCoder) & each third ]
+]
+
+{ #category : #views }
+GtSmaCCCompilationIssues >> gtAmbiguousActionsHandledByPrecedenceFor: aView [
+	<gtView>
+	(grammarCoder isNil or: [ self ambiguousActionsHandledByPrecedence isEmpty ])
+		ifTrue: [ ^ aView empty ].
+	^ aView tree
+		title: 'Amibiguous actions handled by precedence';
+		priority: 35;
+		items: [ | map |
+			map := Dictionary new.
+			self ambiguousActionHandledByPrecedenceFilters
+				do: [ :each | 
+					each reductionNames
+						do: [ :name | 
+							each lookaheads
+								do: [ :sym | 
+									((map at: name ifAbsentPut: [ Dictionary new ])
+										at: sym
+										ifAbsentPut: [ OrderedCollection new ]) add: each ] ] ].
+			map keys asSortedCollection
+				collect: [ :name | 
+					{name.
+						(map at: name) keys asSortedCollection
+							collect: [ :sym | 
+								{sym.
+									(((map at: name) at: sym)
+										asSortedCollection: [ :a :b | a count > b count ])
+										collect: [ :filter | 
+											{' ' join: filter path.
+												#().
+												filter} ].
+									((map at: name) at: sym) anyOne} ].
+						(map at: name) anyOne anyOne} ] ];
+		children: [ :each | each second ];
+		itemText: [ :each | each first asRopedText ];
+		send: [ :each | (GtSmaCCGrammarFilter on: grammarCoder) & each third ]
 ]
 
 { #category : #views }
@@ -118,25 +246,25 @@ GtSmaCCCompilationIssues >> issues: aCollection [
 	issues := aCollection groupedBy: #class
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCCompilationIssues >> missingSymbols [
 	^ (self issues at: SmaCCMissingSymbolsIssue ifAbsent: [ #() ])
 		flatCollectAsSet: [ :each | each missing collect: #name ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCCompilationIssues >> nodeCreation [
 	^ (self issues at: SmaCCNodeCreationIssue ifAbsent: [ #() ])
 		collectAsSet: [ :each | each reduction rhs productionSymbol ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCCompilationIssues >> productionsShouldReturnNodes [
 	^ (self issues at: SmaCCNonTerminalShouldBeNode ifAbsent: [ #() ])
 		collectAsSet: [ :each | (each rhs at: each problemIndex) name ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtSmaCCCompilationIssues >> unusedSymbols [
 	^ (self issues at: SmaCCUnusedSymbolsIssue ifAbsent: [ #() ])
 		flatCollectAsSet: [ :each | each unused collect: #name ]
