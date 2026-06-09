@@ -1,7 +1,7 @@
 Class {
 	#name : #GtJSParserExamples,
 	#superclass : #GtSmaCCParserExamples,
-	#category : #'GT4SmaCC-Examples'
+	#category : #'GT4SmaCC-Examples-Parser'
 }
 
 { #category : #examples }

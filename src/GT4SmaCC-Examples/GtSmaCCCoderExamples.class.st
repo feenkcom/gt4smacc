@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCoderExamples,
 	#superclass : #Object,
-	#category : #'GT4SmaCC-Examples'
+	#category : #'GT4SmaCC-Examples-Coder'
 }
 
 { #category : #filtering }

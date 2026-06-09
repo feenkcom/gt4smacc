@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCScannerExamples,
 	#superclass : #Object,
-	#category : #'GT4SmaCC-Examples'
+	#category : #'GT4SmaCC-Examples-Scanner'
 }
 
 { #category : #examples }
