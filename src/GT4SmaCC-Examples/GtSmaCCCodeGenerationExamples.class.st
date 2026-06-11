@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCCodeGenerationExamples,
 	#superclass : #Object,
-	#category : #'GT4SmaCC-Examples'
+	#category : #'GT4SmaCC-Examples-Compilation'
 }
 
 { #category : #'examples - evaluation' }

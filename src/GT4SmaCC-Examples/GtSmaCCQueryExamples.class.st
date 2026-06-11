@@ -1,7 +1,7 @@
 Class {
 	#name : #GtSmaCCQueryExamples,
 	#superclass : #Object,
-	#category : #'GT4SmaCC-Examples'
+	#category : #'GT4SmaCC-Examples-Queries'
 }
 
 { #category : #'grammar examples' }
