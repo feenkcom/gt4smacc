@@ -445,6 +445,17 @@ GtSmaCCTransformationToolkit >> preview [
 					self spawnPreviewFor: file ] ]
 ]
 
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> previewTest [
+	(self childNamed: #tabGroup)
+		allChildrenBreadthFirstDetect: [ :each | each isKindOf: BrEditor ]
+		ifFound: [ :each | 
+			| file |
+			file := FileSystem memory / 'test'.
+			file writeStreamDo: [ :stream | stream nextPutAll: each text asString ].
+			self spawnPreviewFor: file ]
+]
+
 { #category : #actions }
 GtSmaCCTransformationToolkit >> removeFiles: aFileReference [
 	self
@@ -515,6 +526,18 @@ GtSmaCCTransformationToolkit >> spawnPreviewFor: file [
 	^ [ | result |
 	result := self executeResultFor: file.
 	self enqueueTask: [ self phlow spawnObject: result ] asBlTask ] fork
+]
+
+{ #category : #ui }
+GtSmaCCTransformationToolkit >> testView: aView [
+	<gtTransformationViews>
+	^ aView textEditor
+		title: 'Test';
+		priority: 50;
+		actionButtonIcon: BrGlamorousVectorIcons playinspect
+			tooltip: 'Preview'
+			action: [ :element | self previewTest ];
+		text: [ '' asRopedText ]
 ]
 
 { #category : #ui }
