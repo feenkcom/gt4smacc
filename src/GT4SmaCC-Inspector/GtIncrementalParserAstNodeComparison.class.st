@@ -205,7 +205,7 @@ GtIncrementalParserAstNodeComparison >> gtTreeFor: aView [
 { #category : #'gt views' }
 GtIncrementalParserAstNodeComparison >> idLabelFor: aComparison [
 	| text |
-	text := (aComparison newAstNode id asString, (aComparison isReused ifTrue: [ ' (reused)' ] ifFalse: [ ' (new)' ])) asRopedText.
+	text := (aComparison newAstNode id asString, (aComparison isReused ifTrue: [ ' (matched)' ] ifFalse: [ ' (new)' ])) asRopedText.
 	^ self stylesTextFor: text for:aComparison
 ]
 
