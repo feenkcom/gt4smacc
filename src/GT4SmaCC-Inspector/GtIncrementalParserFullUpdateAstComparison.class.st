@@ -2,9 +2,9 @@ Class {
 	#name : #GtIncrementalParserFullUpdateAstComparison,
 	#superclass : #Object,
 	#instVars : [
-		'initialAst',
 		'updatedAst',
-		'rootComparison'
+		'rootComparison',
+		'previousAst'
 	],
 	#category : #'GT4SmaCC-Inspector'
 }
@@ -12,7 +12,7 @@ Class {
 { #category : #'instance creation' }
 GtIncrementalParserFullUpdateAstComparison class >> from: anInitialAst to: anUpdatedAst [
 	^ self new
-		initialAst: anInitialAst;
+		previousAst: anInitialAst;
 		updatedAst: anUpdatedAst;
 		buildComparison;
 		yourself
@@ -20,26 +20,41 @@ GtIncrementalParserFullUpdateAstComparison class >> from: anInitialAst to: anUpd
 
 { #category : #building }
 GtIncrementalParserFullUpdateAstComparison >> buildComparison [
-	rootComparison := self comparisonFor: updatedAst against: initialAst
+	rootComparison := self comparisonFor: updatedAst against: previousAst
 ]
 
 { #category : #building }
-GtIncrementalParserFullUpdateAstComparison >> comparisonFor: aNewAstNode against: anOldAstNode [
-	| children oldChildrenById |
-	oldChildrenById := Dictionary new.
-	anOldAstNode ifNotNil: [
-		anOldAstNode children do: [ :each |
-			(each isKindOf: SmaCCParseNode) ifTrue: [ oldChildrenById at: each id put: each ] ] ].
+GtIncrementalParserFullUpdateAstComparison >> comparisonFor: aNewAstNode against: aPreviousAstNode [
+	| allPreviousChildrenById |
+	allPreviousChildrenById := Dictionary new.
+	
+	aPreviousAstNode ifNotNil: [
+		aPreviousAstNode withAllNodesDo: [ :each |
+			(each isKindOf: SmaCCParseNode) ifTrue: [ 
+				allPreviousChildrenById at: each id put: each ] ] ].
+			
+	^ self 
+		comparisonFor: aNewAstNode 
+		against: aPreviousAstNode 
+		previousNodes: allPreviousChildrenById 
+]
+
+{ #category : #building }
+GtIncrementalParserFullUpdateAstComparison >> comparisonFor: aNewAstNode against: aPreviousAstNode previousNodes: allPreviousChildrenById [ 
+	| children |
+			
 	children := aNewAstNode children
 		select: [ :each | each isKindOf: SmaCCParseNode ]
 		thenCollect: [ :each |
 			self
 				comparisonFor: each
-				against: (oldChildrenById at: each id ifAbsent: [ nil ]) ].
+				against: (allPreviousChildrenById at: each id ifAbsent: [ nil ])
+				previousNodes: allPreviousChildrenById  ].
+				
 	^ GtIncrementalParserAstNodeComparison new
 		newAstNode: aNewAstNode;
-		oldAstNode: ((anOldAstNode notNil and: [ aNewAstNode id = anOldAstNode id ]) ifTrue: [ anOldAstNode ] ifFalse: [ nil ]);
-		isReused: (anOldAstNode notNil and: [ aNewAstNode id = anOldAstNode id ]);
+		oldAstNode: ((aPreviousAstNode notNil and: [ aNewAstNode id = aPreviousAstNode id ]) ifTrue: [ aPreviousAstNode ] ifFalse: [ nil ]);
+		isReused: (aPreviousAstNode notNil and: [ aNewAstNode id = aPreviousAstNode id ]);
 		children: children;
 		yourself
 ]
@@ -53,7 +68,8 @@ GtIncrementalParserFullUpdateAstComparison >> gtExploreFor: aView [
 { #category : #'gt views' }
 GtIncrementalParserFullUpdateAstComparison >> gtTreeFor: aView [
 	<gtView>
-	^ rootComparison gtTreeFor: aView
+	^ (rootComparison gtTreeFor: aView)
+			expandUpTo: 2
 ]
 
 { #category : #'gt views' }
@@ -68,21 +84,47 @@ GtIncrementalParserFullUpdateAstComparison >> gtViewCodeDiffFor: aView [
 				fromLabelText: 'Initial Source:';
 				toLabelText: 'Modified Source: ';
 				change: (GtDiffBuilder
-					computeDifferencesFrom: (initialAst completeSource asString 
+					computeDifferencesFrom: (previousAst completeSource asString 
 						copyWithoutAll: {(Character value: 9608)})
 					to: (updatedAst completeSource asString )
 					using: GtSmaCCDiffSplitter forPharo);
 				styler: GtCodeDiffRBTextStyler new	]
 ]
 
-{ #category : #accessing }
-GtIncrementalParserFullUpdateAstComparison >> initialAst [
-	^ initialAst
+{ #category : #'gt views' }
+GtIncrementalParserFullUpdateAstComparison >> gtViewPreviousTreeFor: aView [
+	<gtView>
+	^ (self previousAst gtTreeFor: aView)
+			title: 'Previous AST';
+			priority: 40;
+			column: 'Node Id' text: [ :each  | 
+				(each value at: 2) = #node	
+					ifTrue: [ each last id ]
+					ifFalse: [ '' ] ];
+			expandUpTo: 2
+]
+
+{ #category : #'gt views' }
+GtIncrementalParserFullUpdateAstComparison >> gtViewUpdatedTreeFor: aView [
+	<gtView>
+	^ (self updatedAst gtTreeFor: aView)
+			title: 'Updated AST';
+			priority: 41;
+			column: 'Node Id' text: [ :each  | 
+				(each value at: 2) = #node	
+					ifTrue: [ each last id ]
+					ifFalse: [ '' ] ];
+			expandUpTo: 2
 ]
 
 { #category : #accessing }
-GtIncrementalParserFullUpdateAstComparison >> initialAst: anAst [
-	initialAst := anAst
+GtIncrementalParserFullUpdateAstComparison >> previousAst [
+	^ previousAst
+]
+
+{ #category : #accessing }
+GtIncrementalParserFullUpdateAstComparison >> previousAst: anAst [
+	previousAst := anAst
 ]
 
 { #category : #printing }
