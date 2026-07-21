@@ -13,7 +13,7 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 				spec repository: 'github://j-brant/SmaCC:v3.0.170' ].
 		spec
 			baseline: 'RemoteRunner' with: [
-				spec repository: 'github://feenkcom/gtoolkit-remoterunner:v0.7.144/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-remoterunner:v0.7.145/src' ].
 
 		spec package: 'GT4SmaCC-Inspector' with: [
 			spec requires: #(#SmaCC) ].
