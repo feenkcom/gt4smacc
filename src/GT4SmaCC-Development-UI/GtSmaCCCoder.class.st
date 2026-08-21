@@ -285,15 +285,34 @@ GtSmaCCCoder >> initialize [
 
 { #category : #'private-actions' }
 GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap [
-	| renameAction localIntervals local |
+	| localIntervals local |
 	local := coderIntervalMap keys
 		detect: [ :each | self grammarItem == each grammarItem ]
 		ifNone: [ ^ self ].
 	localIntervals := coderIntervalMap at: local.
 	coderIntervalMap removeKey: local.
+	anElement
+		selectedStringAndIntervalDo: [ :aSelectedString :aSelectedInterval :aTextSize :aDocumentId :aCaretOffset | 
+			self
+				installRenameActionOn: anElement
+				forCoders: coderIntervalMap
+				localIntervals: localIntervals
+				documentId: aDocumentId ]
+		orCursorPositionDo: [ :aStringPosition :aTextSize :aDocumentId :aCaretOffset | 
+			self
+				installRenameActionOn: anElement
+				forCoders: coderIntervalMap
+				localIntervals: localIntervals
+				documentId: aDocumentId ]
+]
+
+{ #category : #'private-actions' }
+GtSmaCCCoder >> installRenameActionOn: anElement forCoders: coderIntervalMap localIntervals: localIntervals documentId: aDocumentId [
+	| renameAction |
 	renameAction := GtSmaCCRenameAction
 		locations: localIntervals
 		element: anElement.
+	renameAction documentId: aDocumentId.
 	coderIntervalMap
 		keysAndValuesDo: [ :coder :intervals | 
 			renameAction
