@@ -12,7 +12,7 @@ BaselineOfGToolkit4SmaCC >> baseline: spec [
 		do: [ 
 			spec 
 				baseline: 'SmaCC' 
-				with: [ spec repository: 'github://j-brant/SmaCC' ].
+				with: [ spec repository: 'github://j-brant/SmaCC:/src' ].
 			spec
 				baseline: 'RemoteRunner'
 				with: [ spec repository: 'github://feenkcom/gtoolkit-remoterunner:main/src' ].
