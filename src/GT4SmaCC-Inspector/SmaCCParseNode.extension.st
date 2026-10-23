@@ -148,16 +148,18 @@ SmaCCParseNode >> gtSelectItemIn: aTree at: position [
 	[ nextNode expand.
 	treeNode := nextNode.
 	nextNode := treeNode childrenNodes
-		detect: [ :each | 
-			(#(#nodes #tokens) includes: each value second)
-				ifTrue: [ each value last
-						anySatisfy: [ :item | self gtIsPosition: position inNode: item ] ]
-				ifFalse: [ (#(node token) includes: each value second)
-						and: [ self gtIsPosition: position inNode: each value last ] ] ]
-		ifNone: [ nil ].
+			detect: [ :each | 
+				(#(#nodes #tokens) includes: each value second)
+					ifTrue: [ each value last
+							anySatisfy: [ :item | self gtIsPosition: position inNode: item ] ]
+					ifFalse: [ (#(node token) includes: each value second)
+							and: [ self gtIsPosition: position inNode: each value last ] ] ]
+			ifNone: [ nil ].
 	nextNode notNil ] whileTrue.
 	aTree selectOne: treeNode indexInTree.
-	aTree children first scrollToPosition: treeNode indexInTree
+	aTree
+		childNamed: #scrollable
+		ifFound: [ :each | each scrollToPosition: treeNode indexInTree ]
 ]
 
 { #category : #'*GT4SmaCC-Inspector' }
