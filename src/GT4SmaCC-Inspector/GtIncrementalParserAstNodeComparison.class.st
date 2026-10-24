@@ -161,14 +161,15 @@ GtIncrementalParserAstNodeComparison >> gtSelectItemIn: aTree at: position [
 	aTree collapseAll.
 	nextNode := aTree viewModel itemAt: 1.
 	[ nextNode expand.
-		treeNode := nextNode.
-		nextNode := treeNode childrenNodes
-			detect: [ :each |
-				self gtIsPosition: position inComparison: each value last ]
+	treeNode := nextNode.
+	nextNode := treeNode childrenNodes
+			detect: [ :each | self gtIsPosition: position inComparison: each value last ]
 			ifNone: [ nil ].
-		nextNode notNil ] whileTrue.
+	nextNode notNil ] whileTrue.
 	aTree selectOne: treeNode indexInTree.
-	aTree children first scrollToPosition: treeNode indexInTree
+	aTree
+		childNamed: #scrollable
+		ifFound: [ :each | each scrollToPosition: treeNode indexInTree ]
 ]
 
 { #category : #'gt views' }
