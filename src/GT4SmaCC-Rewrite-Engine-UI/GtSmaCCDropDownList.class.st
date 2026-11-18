@@ -51,7 +51,7 @@ GtSmaCCDropDownList >> items: aCollection [
 
 { #category : #private }
 GtSmaCCDropDownList >> labelFor: anObject [
-	^ anObject ifNil: [ '' ] ifNotNil: #displayString
+	^ anObject ifNil: [ '' ] ifNotNil: [ :v | v displayString ]
 ]
 
 { #category : #private }
