@@ -67,7 +67,7 @@ GtSmaCCCodeGenerationExamples >> astGeneration [
 	self assert: #GtExStatementNode asClass superclass name equals: #GtExRootNode.
 	self
 		assert: #GtExExpressionNode asClass instVarNames asSortedCollection asArray
-		equals: #('leftParens' 'rightParens').
+		equals: #(#leftParens #rightParens).
 	value := self parserClass parse: '((1 + 2)) - 3 * 4 / 5 ;'.
 	self assert: value class name equals: #GtExStatementNode.
 	self assert: value expression class name equals: #GtExBinaryExpressionNode.
